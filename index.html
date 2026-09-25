@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07070a">
+<meta name="color-scheme" content="dark">
+<title>VETKA</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  *,*::before,*::after{
+    margin:0;padding:0;box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-appearance:none;appearance:none;outline:none;border:0;
+  }
+
+  html,body{
+    background:#07070a;
+    color:#fff;
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    overflow:hidden;
+    height:100%;
+    -webkit-font-smoothing:antialiased;
+    color-scheme:dark;
+  }
+
+  .feed{
+    position:fixed;
+    inset:0;
+    height:100vh;
+    height:100dvh;
+    overflow-y:scroll;
+    overflow-x:hidden;
+    scroll-snap-type:y mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    z-index:1;
+  }
+  .feed::-webkit-scrollbar{display:none;}
+
+  .slide{
+    position:relative;
+    height:100vh;
+    height:100dvh;
+    width:100%;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+    overflow:hidden;
+    background:#000;
+  }
+
+  .video{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    background:#05050a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .video video{
+    position:relative;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+  }
+
+  .veil{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+    background:
+      linear-gradient(180deg,
+        rgba(0,0,0,.55) 0%,
+        rgba(0,0,0,.05) 22%,
+        rgba(0,0,0,.05) 45%,
+        rgba(0,0,0,.55) 72%,
+        rgba(0,0,0,.92) 100%);
+  }
+
+  .sound-btn{
+    position:absolute;
+    top:calc(16px + env(safe-area-inset-top,0px));
+    right:16px;
+    z-index:10;
+    width:32px;
+    height:32px;
+    border-radius:0;
+    background:transparent;
+    border:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:rgba(255,255,255,.4);
+    cursor:pointer;
+    padding:0;
+    transition:color .2s ease;
+  }
+  .sound-btn:active{color:rgba(255,255,255,.7);}
+  .sound-btn svg{
+    width:18px;
+    height:18px;
+    filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));
+  }
+  .sound-btn.on{color:rgba(255,255,255,.7);}
+
+  .side{
+    position:absolute;
+    right:12px;
+    bottom:calc(200px + env(safe-area-inset-bottom,0px));
+    z-index:5;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+    pointer-events:none;
+  }
+
+  .metric{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    pointer-events:auto;
+    background:transparent;
+    border:0;
+    cursor:pointer;
+    padding:0;
+  }
+
+  .metric .ico{
+    width:34px;height:34px;border-radius:50%;
+    background:rgba(205,255,74,.14);
+    border:1px solid rgba(205,255,74,.4);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;color:#CDFF4A;
+    transition:transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .metric:active .ico{transform:scale(.9);}
+  .metric .ico svg{width:16px;height:16px;}
+  .metric .num{font-size:11px;font-weight:600;color:#CDFF4A;text-shadow:0 1px 4px rgba(0,0,0,.6);}
+  .metric .lbl{font-size:8.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
+
+  .metric.invite:active .ico{
+    background:rgba(205,255,74,.9);
+    color:#07070a;
+    border-color:rgba(205,255,74,.9);
+  }
+
+  .bottom{
+    position:absolute;left:0;right:0;bottom:0;z-index:5;
+    padding:0 16px calc(14px + env(safe-area-inset-bottom,0px));
+    display:flex;flex-direction:column;gap:9px;pointer-events:none;
+  }
+  .bottom .actions-row{pointer-events:auto;}
+
+  .live{
+    display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;
+    color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;
+    background:rgba(0,0,0,.4);
+    border:1px solid rgba(255,255,255,.1);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    align-self:flex-start;
+  }
+  .live .dot{
+    width:5px;height:5px;border-radius:50%;background:#CDFF4A;
+    box-shadow:0 0 8px rgba(205,255,74,.85);
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
+
+  .title{
+    font-family:'Unbounded',sans-serif;font-weight:500;
+    font-size:clamp(18px, 5.6vw, 22px);line-height:1.1;letter-spacing:-.02em;
+    color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);
+  }
+
+  .meta{
+    display:flex;align-items:center;flex-wrap:wrap;gap:8px;
+    font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);
+  }
+  .meta .item{display:inline-flex;align-items:center;gap:5px;}
+  .meta i{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.35);}
+  .meta .price{color:#CDFF4A;font-weight:600;}
+
+  .actions-row{display:flex;gap:8px;align-items:center;}
+
+  .cta{
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    padding:12px 16px;border-radius:100px;
+    background:#CDFF4A;color:#07070a;
+    font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+    cursor:pointer;text-decoration:none;
+    box-shadow:0 0 24px rgba(205,255,74,.35);
+    white-space:nowrap;
+  }
+  .cta svg{width:14px;height:14px;flex:none;}
+
+  .btn-ghost{
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    padding:12px 16px;border-radius:100px;
+    background:rgba(255,255,255,.08);
+    color:#fff;
+    font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+    border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    cursor:pointer;text-decoration:none;
+    white-space:nowrap;
+  }
+  .btn-ghost svg{width:14px;height:14px;flex:none;}
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:calc(100px + env(safe-area-inset-bottom,0px));
+    transform:translate(-50%, 20px);
+    z-index:200;
+    padding:12px 20px;
+    border-radius:100px;
+    background:rgba(0,0,0,.88);
+    border:1px solid rgba(205,255,74,.35);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    color:#fff;
+    font-size:13px;
+    font-weight:500;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .3s ease, transform .3s ease;
+    box-shadow:0 0 24px rgba(205,255,74,.2);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .toast::before{
+    content:'';
+    width:6px;height:6px;
+    border-radius:50%;
+    background:#CDFF4A;
+    box-shadow:0 0 8px rgba(205,255,74,.9);
+    flex:none;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translate(-50%, 0);
+  }
+
+  .profile-screen{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    background:#07070a;
+    transform:translateY(100%);
+    transition:transform .4s cubic-bezier(.32,.72,.24,1);
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .profile-screen.open{
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+
+  .profile-screen::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(80% 40% at 50% 0%, rgba(205,255,74,.10), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .profile-scroll{
+    position:absolute;
+    inset:0;
+    overflow-y:auto;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .profile-scroll::-webkit-scrollbar{display:none;}
+
+  .cover{
+    position:relative;
+    height:36vh;
+    min-height:200px;
+    max-height:260px;
+    overflow:hidden;
+    flex:none;
+  }
+  .cover-bg{
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(60% 80% at 30% 30%, rgba(205,255,74,.28), transparent 65%),
+      radial-gradient(70% 70% at 80% 80%, rgba(122,108,255,.35), transparent 65%),
+      radial-gradient(50% 60% at 60% 40%, rgba(255,138,108,.20), transparent 60%),
+      linear-gradient(160deg, #16161e 0%, #08080c 100%);
+  }
+  .cover-bg::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    background-image:radial-gradient(rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size:4px 4px;
+    opacity:.7;
+    mix-blend-mode:overlay;
+  }
+  .cover-veil{
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(180deg,
+        rgba(7,7,10,.55) 0%,
+        rgba(7,7,10,.10) 45%,
+        rgba(7,7,10,.75) 82%,
+        rgba(7,7,10,.98) 100%);
+    pointer-events:none;
+  }
+
+  .profile-topnav{
+    position:absolute;
+    top:0; left:0; right:0;
+    z-index:10;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;
+  }
+  .back,
+  .menu{
+    width:36px;height:36px;flex:none;
+    border-radius:50%;
+    background:rgba(0,0,0,.5);
+    border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;cursor:pointer;
+  }
+  .back svg,
+  .menu svg{width:18px;height:18px;}
+
+  .avatar-abs{
+    position:absolute;
+    left:20px;
+    bottom:-38px;
+    z-index:5;
+    width:92px;
+    height:92px;
+    border-radius:50%;
+    padding:3px;
+    background:linear-gradient(135deg, #CDFF4A 0%, #a8d92e 100%);
+    box-shadow:0 0 40px rgba(205,255,74,.35), 0 8px 24px rgba(0,0,0,.5);
+  }
+  .avatar-abs .inner{
+    width:100%;height:100%;
+    border-radius:50%;
+    background:linear-gradient(160deg, #15151c 0%, #06060a 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Unbounded',sans-serif;
+    font-weight:600;
+    font-size:32px;
+    color:#CDFF4A;
+    border:2px solid #07070a;
+  }
+
+  .profile-info{
+    position:relative;
+    z-index:2;
+    padding:52px 20px 24px;
+  }
+
+  .name-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:4px;
+  }
+  .name{
+    font-family:'Unbounded',sans-serif;
+    font-weight:600;
+    font-size:22px;
+    line-height:1.1;
+    letter-spacing:-.02em;
+    color:#fff;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .verified{width:18px;height:18px;flex:none;}
+  .verified svg{width:18px;height:18px;display:block;}
+
+  .handle{
+    font-size:12.5px;
+    font-weight:500;
+    color:rgba(255,255,255,.55);
+    margin-bottom:12px;
+  }
+
+  .bio{
+    font-size:13.5px;
+    line-height:1.5;
+    color:rgba(255,255,255,.75);
+    margin-bottom:18px;
+    max-width:38ch;
+    overflow:hidden;
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+  }
+
+  .stats{
+    display:flex;
+    gap:24px;
+    margin-bottom:18px;
+    padding-bottom:16px;
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .stat{display:flex;flex-direction:column;gap:2px;}
+  .stat .n{
+    font-family:'Unbounded',sans-serif;
+    font-weight:500;
+    font-size:18px;
+    letter-spacing:-.01em;
+    color:#fff;
+    line-height:1;
+  }
+  .stat .l{
+    font-size:11px;
+    font-weight:500;
+    color:rgba(255,255,255,.45);
+  }
+  .stat.hi .n{color:#CDFF4A;}
+
+  .follow-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    width:100%;
+    padding:14px 22px;
+    border-radius:100px;
+    background:#CDFF4A;
+    color:#07070a;
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition:transform .12s ease, background .2s ease, border-color .2s ease;
+    box-shadow:0 0 28px rgba(205,255,74,.32);
+  }
+  .follow-btn:active{transform:scale(.98);}
+  .follow-btn svg{width:16px;height:16px;flex:none;}
+
+  .follow-btn.followed{
+    background:rgba(205,255,74,.12);
+    color:#CDFF4A;
+    border:1px solid rgba(205,255,74,.4);
+    box-shadow:none;
+  }
+
+  .events-head{
+    padding:8px 20px 12px;
+    font-size:11px;
+    font-weight:500;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,.4);
+  }
+
+  .events-list{
+    padding:0 16px calc(30px + env(safe-area-inset-bottom,0px));
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .event{
+    display:grid;
+    grid-template-columns:64px 1fr auto;
+    gap:14px;
+    align-items:center;
+    padding:14px;
+    border-radius:16px;
+    background:
+      radial-gradient(70% 100% at 0% 0%, rgba(205,255,74,.06), transparent 60%),
+      rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.08);
+    cursor:pointer;
+    transition:background .2s ease;
+  }
+  .event:active{background:rgba(255,255,255,.05);}
+
+  .event .date-box{
+    width:64px;height:64px;
+    flex:none;
+    border-radius:12px;
+    background:linear-gradient(135deg, #14141b 0%, #0a0a0f 100%);
+    border:1px solid rgba(205,255,74,.25);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:1px;
+  }
+  .event .date-box .d{
+    font-family:'Unbounded',sans-serif;
+    font-weight:500;
+    font-size:20px;
+    line-height:1;
+    color:#fff;
+  }
+  .event .date-box .m{
+    font-size:9.5px;
+    font-weight:600;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:#CDFF4A;
+  }
+
+  .event-info{min-width:0;}
+  .event-info .fmt{
+    font-size:9.5px;
+    font-weight:600;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:#CDFF4A;
+    margin-bottom:5px;
+  }
+  .event-info .nm{
+    font-family:'Unbounded',sans-serif;
+    font-weight:500;
+    font-size:14.5px;
+    line-height:1.15;
+    letter-spacing:-.015em;
+    color:#fff;
+    margin-bottom:5px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+  }
+  .event-info .meta2{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:11.5px;
+    font-weight:500;
+    color:rgba(255,255,255,.5);
+  }
+  .event-info .meta2 i{
+    width:3px;height:3px;
+    border-radius:50%;
+    background:rgba(255,255,255,.3);
+    flex:none;
+  }
+  .event-info .meta2 .price{
+    color:#CDFF4A;
+    font-weight:600;
+  }
+
+  .event .go{
+    width:36px;height:36px;flex:none;
+    border-radius:50%;
+    background:#CDFF4A;
+    color:#07070a;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 16px rgba(205,255,74,.3);
+  }
+  .event .go svg{width:16px;height:16px;}
+</style>
+</head>
+<body>
+
+  <div class="feed" id="feed">
+
+    <!-- РИЛС 1 -->
+    <div class="slide" id="r1" data-id="r1">
+      <div class="video">
+        <video
+          data-src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4"
+          loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/>
+          <path d="M22 9l-6 6"/>
+          <path d="M16 9l6 6"/>
+        </svg>
+      </div>
+
+      <div class="side">
+        <button class="metric" data-like>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>247</div>
+          <div class="lbl">хочу пойти</div>
+        </button>
+
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/>
+              <path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl">пригласить</div>
+        </button>
+      </div>
+
+      <div class="bottom">
+        <div class="live"><span class="dot"></span>84 смотрят прямо сейчас</div>
+        <div class="title">Проверка материала</div>
+        <div class="meta">
+          <span class="item">Сегодня · 20:30</span>
+          <i></i>
+          <span class="item">Антресоль&Перец</span>
+          <i></i>
+          <span class="item price">от 500 ₽</span>
+        </div>
+        <div class="actions-row">
+          <a class="cta" href="ССЫЛКА_НА_ОПЛАТУ_1" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
+            Купить билет
+          </a>
+          <button class="btn-ghost" data-open-profile>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6h16"/>
+              <path d="M4 12h16"/>
+              <path d="M4 18h10"/>
+            </svg>
+            Перейти в поток
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- РИЛС 2 -->
+    <div class="slide" id="r2" data-id="r2">
+      <div class="video">
+        <video
+          data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4"
+          loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/>
+          <path d="M22 9l-6 6"/>
+          <path d="M16 9l6 6"/>
+        </svg>
+      </div>
+
+      <div class="side">
+        <button class="metric" data-like>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>156</div>
+          <div class="lbl">хочу пойти</div>
+        </button>
+
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/>
+              <path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl">пригласить</div>
+        </button>
+      </div>
+
+      <div class="bottom">
+        <div class="live"><span class="dot"></span>61 смотрят прямо сейчас</div>
+        <div class="title">Комедия и Таро</div>
+        <div class="meta">
+          <span class="item">Чт · 21:00</span>
+          <i></i>
+          <span class="item">Антресоль&Перец</span>
+          <i></i>
+          <span class="item price">от 700 ₽</span>
+        </div>
+        <div class="actions-row">
+          <a class="cta" href="ССЫЛКА_НА_ОПЛАТУ_2" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
+            Купить билет
+          </a>
+          <button class="btn-ghost" data-open-profile>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6h16"/>
+              <path d="M4 12h16"/>
+              <path d="M4 18h10"/>
+            </svg>
+            Перейти в поток
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- РИЛС 3 -->
+    <div class="slide" id="r3" data-id="r3">
+      <div class="video">
+        <video
+          data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4"
+          loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/>
+          <path d="M22 9l-6 6"/>
+          <path d="M16 9l6 6"/>
+        </svg>
+      </div>
+
+      <div class="side">
+        <button class="metric" data-like>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>312</div>
+          <div class="lbl">хочу пойти</div>
+        </button>
+
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/>
+              <path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl">пригласить</div>
+        </button>
+      </div>
+
+      <div class="bottom">
+        <div class="live"><span class="dot"></span>112 смотрят прямо сейчас</div>
+        <div class="title">Музыкальное лото</div>
+        <div class="meta">
+          <span class="item">Сб · 19:00</span>
+          <i></i>
+          <span class="item">Антресоль&Перец</span>
+          <i></i>
+          <span class="item price">от 600 ₽</span>
+        </div>
+        <div class="actions-row">
+          <a class="cta" href="ССЫЛКА_НА_ОПЛАТУ_3" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
+            Купить билет
+          </a>
+          <button class="btn-ghost" data-open-profile>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6h16"/>
+              <path d="M4 12h16"/>
+              <path d="M4 18h10"/>
+            </svg>
+            Перейти в поток
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ЭКРАН ПРОФИЛЯ -->
+  <div class="profile-screen" id="profile">
+
+    <div class="profile-scroll">
+
+      <div class="cover">
+        <div class="cover-bg"></div>
+        <div class="cover-veil"></div>
+
+        <div class="profile-topnav">
+          <div class="back" id="closeProfile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </div>
+          <div class="menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="1"/>
+              <circle cx="12" cy="5" r="1"/>
+              <circle cx="12" cy="19" r="1"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="avatar-abs">
+          <div class="inner">Б</div>
+        </div>
+      </div>
+
+      <div class="profile-info">
+
+        <div class="name-row">
+          <div class="name">БАЗА</div>
+          <div class="verified">
+            <svg viewBox="0 0 24 24" fill="#CDFF4A">
+              <path d="M12 1l3 3h4v4l3 3-3 3v4h-4l-3 3-3-3H5v-4l-3-3 3-3V4h4l3-3z"/>
+              <path d="M10.5 15.5L7 12l1.4-1.4 2.1 2.1 5-5L17 9l-6.5 6.5z" fill="#07070a"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="handle">@baza · Организатор</div>
+
+        <div class="bio">
+          Стендап на БАЗЕ — каждый вечер. Проверенные комики, неформаты, музыкальное лото. Каждый вечер — новое событие.
+        </div>
+
+        <div class="stats">
+          <div class="stat hi">
+            <div class="n">1.4K</div>
+            <div class="l">подписчиков</div>
+          </div>
+          <div class="stat">
+            <div class="n">128</div>
+            <div class="l">мероприятий</div>
+          </div>
+          <div class="stat">
+            <div class="n">24.8K</div>
+            <div class="l">просмотров</div>
+          </div>
+        </div>
+
+        <button class="follow-btn" id="followBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14"/>
+            <path d="M5 12h14"/>
+          </svg>
+          <span>Подписаться</span>
+        </button>
+
+      </div>
+
+      <div class="events-head">Ближайшие события</div>
+
+      <div class="events-list">
+
+        <div class="event">
+          <div class="date-box">
+            <div class="d">25</div>
+            <div class="m">сент</div>
+          </div>
+          <div class="event-info">
+            <div class="fmt">Стендап · Сегодня</div>
+            <div class="nm">Проверка материала</div>
+            <div class="meta2">
+              <span>20:30</span>
+              <i></i>
+              <span class="price">от 500 ₽</span>
+            </div>
+          </div>
+          <div class="go">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"/>
+              <path d="M13 6l6 6-6 6"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="event">
+          <div class="date-box">
+            <div class="d">26</div>
+            <div class="m">сент</div>
+          </div>
+          <div class="event-info">
+            <div class="fmt">Стендап · Неформат</div>
+            <div class="nm">Комедия и Таро</div>
+            <div class="meta2">
+              <span>21:00</span>
+              <i></i>
+              <span class="price">от 700 ₽</span>
+            </div>
+          </div>
+          <div class="go">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"/>
+              <path d="M13 6l6 6-6 6"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="event">
+          <div class="date-box">
+            <div class="d">28</div>
+            <div class="m">сент</div>
+          </div>
+          <div class="event-info">
+            <div class="fmt">Стендап · Музлато</div>
+            <div class="nm">Музыкальное лото</div>
+            <div class="meta2">
+              <span>19:00</span>
+              <i></i>
+              <span class="price">от 600 ₽</span>
+            </div>
+          </div>
+          <div class="go">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"/>
+              <path d="M13 6l6 6-6 6"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="event">
+          <div class="date-box">
+            <div class="d">30</div>
+            <div class="m">сент</div>
+          </div>
+          <div class="event-info">
+            <div class="fmt">Стендап · Сольник</div>
+            <div class="nm">Сольный концерт</div>
+            <div class="meta2">
+              <span>20:00</span>
+              <i></i>
+              <span class="price">от 900 ₽</span>
+            </div>
+          </div>
+          <div class="go">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"/>
+              <path d="M13 6l6 6-6 6"/>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast">Ссылка скопирована</div>
+
+  <script>
+    (function(){
+      var feed = document.getElementById('feed');
+      var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
+      var videos = feed.querySelectorAll('video');
+      var soundBtns = feed.querySelectorAll('[data-sound-btn]');
+      var soundEnabled = false;
+
+      var profile = document.getElementById('profile');
+      var openBtns = document.querySelectorAll('[data-open-profile]');
+      var closeBtn = document.getElementById('closeProfile');
+      var toast = document.getElementById('toast');
+
+      document.querySelectorAll('[data-like]').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          var count = btn.querySelector('[data-count]');
+          var ico = btn.querySelector('.ico');
+          var liked = btn.classList.toggle('liked');
+          if (liked) {
+            count.textContent = parseInt(count.textContent, 10) + 1;
+            ico.style.background = 'rgba(205,255,74,.9)';
+            ico.style.color = '#07070a';
+            ico.style.borderColor = 'rgba(205,255,74,.9)';
+          } else {
+            count.textContent = parseInt(count.textContent, 10) - 1;
+            ico.style.background = '';
+            ico.style.color = '';
+            ico.style.borderColor = '';
+          }
+        });
+      });
+
+      var toastTimer;
+      function showToast(text){
+        toast.textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){
+          toast.classList.remove('show');
+        }, 2000);
+      }
+
+      document.querySelectorAll('[data-share]').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          var slide = btn.closest('.slide');
+          var id = slide ? slide.dataset.id : '';
+          var url = location.origin + location.pathname + '#' + id;
+
+          if (window.Telegram && window.Telegram.WebApp) {
+            copyToClipboard(url).then(function(){
+              showToast('Ссылка скопирована');
+              try {
+                var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url);
+                window.Telegram.WebApp.openTelegramLink(shareUrl);
+              } catch(err){}
+            });
+            return;
+          }
+
+          if (navigator.share) {
+            copyToClipboard(url).then(function(){
+              showToast('Ссылка скопирована');
+            });
+            navigator.share({
+              title: 'VETKA',
+              text: 'Пойдём вместе?',
+              url: url
+            }).catch(function(){});
+          } else {
+            copyToClipboard(url).then(function(){
+              showToast('Ссылка скопирована');
+            }).catch(function(){
+              showToast('Не удалось скопировать');
+            });
+          }
+        });
+      });
+
+      function copyToClipboard(text){
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function(resolve, reject){
+          try {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'absolute';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            resolve();
+          } catch(e){
+            reject(e);
+          }
+        });
+      }
+
+      function loadVideo(v){
+        if (v._loaded) return;
+        if (v.dataset.src) {
+          v.src = v.dataset.src;
+          v._loaded = true;
+        }
+      }
+
+      function activateRange(idx){
+        var range = [idx - 1, idx, idx + 1];
+        slides.forEach(function(s, i){
+          if (range.indexOf(i) === -1) return;
+          var v = s.querySelector('video');
+          if (v) loadVideo(v);
+        });
+      }
+
+      function playOnlyInView(entry){
+        videos.forEach(function(v){
+          var s = v.closest('.slide');
+          if (s === entry) {
+            v.muted = !soundEnabled;
+            v.play().catch(function(){});
+          } else {
+            v.pause();
+            try { v.currentTime = 0; } catch(e){}
+          }
+        });
+      }
+
+      var currentIndex = 0;
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (e.isIntersecting && e.intersectionRatio > 0.55) {
+            var idx = slides.indexOf(e.target);
+            if (idx !== -1) {
+              currentIndex = idx;
+              activateRange(idx);
+              playOnlyInView(e.target);
+            }
+          }
+        });
+      }, { root: feed, threshold: [0, 0.55, 0.9] });
+
+      slides.forEach(function(s){ io.observe(s); });
+
+      function openByHash(){
+        var hash = location.hash.replace('#', '');
+        if (!hash) return false;
+        var target = document.getElementById(hash);
+        if (!target) return false;
+        setTimeout(function(){
+          target.scrollIntoView({behavior:'auto', block:'start'});
+        }, 50);
+        return true;
+      }
+
+      activateRange(0);
+      if (videos[0] && !location.hash) {
+        videos[0].muted = true;
+        videos[0].play().catch(function(){});
+      }
+
+      openByHash();
+      window.addEventListener('hashchange', openByHash);
+
+      function updateIcons(){
+        soundBtns.forEach(function(btn){
+          var svg = btn.querySelector('svg');
+          if (!svg) return;
+          if (soundEnabled) {
+            btn.classList.add('on');
+            svg.innerHTML =
+              '<path d="M11 5L6 9H3v6h3l5 4V5z"/>' +
+              '<path d="M16 9a4 4 0 0 1 0 6"/>' +
+              '<path d="M19 7a7 7 0 0 1 0 10"/>';
+          } else {
+            btn.classList.remove('on');
+            svg.innerHTML =
+              '<path d="M11 5L6 9H3v6h3l5 4V5z"/>' +
+              '<path d="M22 9l-6 6"/>' +
+              '<path d="M16 9l6 6"/>';
+          }
+        });
+      }
+
+      function enableSound(){
+        if (soundEnabled) return;
+        soundEnabled = true;
+        updateIcons();
+        videos.forEach(function(v){
+          v.muted = false;
+          v.volume = 1;
+        });
+        var current = slides[currentIndex];
+        if (current) {
+          var v = current.querySelector('video');
+          if (v) v.play().catch(function(){});
+        }
+      }
+
+      function disableSound(){
+        if (!soundEnabled) return;
+        soundEnabled = false;
+        updateIcons();
+        videos.forEach(function(v){ v.muted = true; });
+      }
+
+      soundBtns.forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          if (soundEnabled) disableSound();
+          else enableSound();
+        });
+      });
+
+      updateIcons();
+
+      function openProfile(){
+        profile.classList.add('open');
+        videos.forEach(function(v){ v.pause(); });
+      }
+
+      function closeProfile(){
+        profile.classList.remove('open');
+        var current = slides[currentIndex];
+        if (current) {
+          var v = current.querySelector('video');
+          if (v) {
+            v.muted = !soundEnabled;
+            v.play().catch(function(){});
+          }
+        }
+      }
+
+      openBtns.forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          openProfile();
+        });
+      });
+
+      closeBtn.addEventListener('click', function(e){
+        e.stopPropagation();
+        closeProfile();
+      });
+
+      var followBtn = document.getElementById('followBtn');
+      var followed = false;
+      followBtn.addEventListener('click', function(){
+        followed = !followed;
+        if (followed) {
+          followBtn.classList.add('followed');
+          followBtn.querySelector('span').textContent = 'Вы подписаны';
+          followBtn.querySelector('svg').innerHTML = '<path d="M20 6L9 17l-5-5"/>';
+        } else {
+          followBtn.classList.remove('followed');
+          followBtn.querySelector('span').textContent = 'Подписаться';
+          followBtn.querySelector('svg').innerHTML = '<path d="M12 5v14"/><path d="M5 12h14"/>';
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

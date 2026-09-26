@@ -975,10 +975,9 @@
     (function(){
       // ============ SUPABASE ============
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
-      var SUPABASE_ANON_KEY = 'sb_publishable_2MIK1kLBVm9cAiJp-m_J_Q_NYVyj1Q4';
+      var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
       var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // Получаем или создаём anon_id
       function getAnonId(){
         var id = null;
         try { id = localStorage.getItem('vetka_anon_id'); } catch(e){}
@@ -989,7 +988,6 @@
         return id;
       }
 
-      // Универсальный трекинг
       async function trackUser(action, payload){
         payload = payload || {};
         try {
@@ -1018,7 +1016,7 @@
               updates.follows = payload.orgName || 'БАЗА';
             }
             var upd = await supabaseClient.from('users').update(updates).eq('id', existing.id);
-            console.log('Supabase update:', action, upd);
+            console.log('Supabase update:', action, upd.error || 'ok');
           } else {
             var insertData = {
               last_seen: new Date().toISOString(),
@@ -1031,14 +1029,13 @@
             else insertData.anon_id = anonId;
 
             var ins = await supabaseClient.from('users').insert([insertData]).select();
-            console.log('Supabase insert:', action, ins);
+            console.log('Supabase insert:', action, ins.error || 'ok', ins.data);
           }
         } catch(e){
           console.warn('Track error:', e);
         }
       }
 
-      // Отслеживаем первый визит
       trackUser('visit');
 
       // ============ ОСНОВНАЯ ЛОГИКА ============

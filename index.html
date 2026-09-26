@@ -25,6 +25,9 @@
 <noscript><div><img src="https://mc.yandex.ru/watch/113067752" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
 
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -970,6 +973,74 @@
 
   <script>
     (function(){
+      // ============ SUPABASE ============
+      const SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_2MIK1kLBVm9cAiJp-m_J_Q_NYVyj1Q4';
+      const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // --- Трекинг пользователя ---
+      async function trackUser(action, payload = {}) {
+        try {
+          const tgId = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user)
+            ? window.Telegram.WebApp.initDataUnsafe.user.id
+            : null;
+
+          let userId = null;
+
+          if (tgId) {
+            // Ищем существующего по tg_id
+            const { data: existing } = await supabaseClient
+              .from('users')
+              .select('*')
+              .eq('tg_id', tgId)
+              .maybeSingle();
+
+            if (existing) {
+              userId = existing.id;
+              const updates = { last_seen: new Date().toISOString() };
+
+              if (action === 'like') {
+                const likes = Array.isArray(existing.likes) ? existing.likes : [];
+                updates.likes = [...new Set([...likes, payload.rId])];
+              } else if (action === 'invite') {
+                updates.invites = (existing.invites || 0) + 1;
+              } else if (action === 'profile_view') {
+                updates.profile_views = (existing.profile_views || 0) + 1;
+              } else if (action === 'follow') {
+                updates.follows = payload.orgName;
+              }
+              await supabaseClient.from('users').update(updates).eq('id', userId);
+            } else {
+              // Создаём нового
+              const { data: created } = await supabaseClient.from('users').insert([{
+                tg_id: tgId,
+                last_seen: new Date().toISOString(),
+                likes: action === 'like' ? [payload.rId] : [],
+                invites: action === 'invite' ? 1 : 0,
+                profile_views: action === 'profile_view' ? 1 : 0,
+                follows: action === 'follow' ? payload.orgName : null
+              }]).select().single();
+              userId = created ? created.id : null;
+            }
+          } else {
+            // Анонимный пользователь — используем localStorage ID
+            let anonId = null;
+            try { anonId = localStorage.getItem('vetka_anon_id'); } catch(e){}
+            if (!anonId) {
+              anonId = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now());
+              try { localStorage.setItem('vetka_anon_id', anonId); } catch(e){}
+            }
+            // Можно добавить отдельную таблицу для анонимов, но пока пропустим
+          }
+        } catch (e) {
+          console.warn('Track error:', e);
+        }
+      }
+
+      // --- Отслеживание открытия сайта ---
+      trackUser('visit');
+
+      // ============ ОСНОВНАЯ ЛОГИКА ============
       var feed = document.getElementById('feed');
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var videos = feed.querySelectorAll('video');
@@ -981,16 +1052,14 @@
       var closeBtn = document.getElementById('closeProfile');
       var toast = document.getElementById('toast');
 
-      /* Флаг, чтобы цель «дошёл до конца» не срабатывала много раз */
       var scrollEndTracked = false;
 
       /* ─── ЛАЙКИ ─── */
       document.querySelectorAll('[data-like]').forEach(function(btn){
         btn.addEventListener('click', function(e){
           e.stopPropagation();
-
-          /* Цель: нажал «Хочу пойти» */
           if (window.ym) { try { ym(113067752, 'reachGoal', 'want_go'); } catch(err){} }
+          trackUser('like', { rId: btn.closest('.slide').dataset.id });
 
           var count = btn.querySelector('[data-count]');
           var ico = btn.querySelector('.ico');
@@ -1015,18 +1084,15 @@
         toast.textContent = text;
         toast.classList.add('show');
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){
-          toast.classList.remove('show');
-        }, 2000);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
       }
 
       /* ─── ШАРИНГ ─── */
       document.querySelectorAll('[data-share]').forEach(function(btn){
         btn.addEventListener('click', function(e){
           e.stopPropagation();
-
-          /* Цель: нажал «Пригласить» */
           if (window.ym) { try { ym(113067752, 'reachGoal', 'invite'); } catch(err){} }
+          trackUser('invite', { rId: btn.closest('.slide').dataset.id });
 
           var slide = btn.closest('.slide');
           var id = slide ? slide.dataset.id : '';
@@ -1044,28 +1110,16 @@
           }
 
           if (navigator.share) {
-            copyToClipboard(url).then(function(){
-              showToast('Ссылка скопирована');
-            });
-            navigator.share({
-              title: 'VETKA',
-              text: 'Пойдём вместе?',
-              url: url
-            }).catch(function(){});
+            copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
+            navigator.share({ title: 'VETKA', text: 'Пойдём вместе?', url: url }).catch(function(){});
           } else {
-            copyToClipboard(url).then(function(){
-              showToast('Ссылка скопирована');
-            }).catch(function(){
-              showToast('Не удалось скопировать');
-            });
+            copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }).catch(function(){ showToast('Не удалось скопировать'); });
           }
         });
       });
 
       function copyToClipboard(text){
-        if (navigator.clipboard && window.isSecureContext) {
-          return navigator.clipboard.writeText(text);
-        }
+        if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
         return new Promise(function(resolve, reject){
           try {
             var ta = document.createElement('textarea');
@@ -1078,19 +1132,14 @@
             document.execCommand('copy');
             document.body.removeChild(ta);
             resolve();
-          } catch(e){
-            reject(e);
-          }
+          } catch(e){ reject(e); }
         });
       }
 
       /* ─── ВИДЕО ─── */
       function loadVideo(v){
         if (v._loaded) return;
-        if (v.dataset.src) {
-          v.src = v.dataset.src;
-          v._loaded = true;
-        }
+        if (v.dataset.src) { v.src = v.dataset.src; v._loaded = true; }
       }
 
       function activateRange(idx){
@@ -1105,7 +1154,6 @@
       function playOnlyInView(entry){
         var idx = slides.indexOf(entry);
 
-        /* Цель: дошёл до последнего рилса */
         if (idx === slides.length - 1 && !scrollEndTracked) {
           scrollEndTracked = true;
           if (window.ym) { try { ym(113067752, 'reachGoal', 'scroll_end'); } catch(err){} }
@@ -1113,13 +1161,8 @@
 
         videos.forEach(function(v){
           var s = v.closest('.slide');
-          if (s === entry) {
-            v.muted = !soundEnabled;
-            v.play().catch(function(){});
-          } else {
-            v.pause();
-            try { v.currentTime = 0; } catch(e){}
-          }
+          if (s === entry) { v.muted = !soundEnabled; v.play().catch(function(){}); }
+          else { v.pause(); try { v.currentTime = 0; } catch(e){} }
         });
       }
 
@@ -1128,11 +1171,7 @@
         entries.forEach(function(e){
           if (e.isIntersecting && e.intersectionRatio > 0.55) {
             var idx = slides.indexOf(e.target);
-            if (idx !== -1) {
-              currentIndex = idx;
-              activateRange(idx);
-              playOnlyInView(e.target);
-            }
+            if (idx !== -1) { currentIndex = idx; activateRange(idx); playOnlyInView(e.target); }
           }
         });
       }, { root: feed, threshold: [0, 0.55, 0.9] });
@@ -1144,17 +1183,12 @@
         if (!hash) return false;
         var target = document.getElementById(hash);
         if (!target) return false;
-        setTimeout(function(){
-          target.scrollIntoView({behavior:'auto', block:'start'});
-        }, 50);
+        setTimeout(function(){ target.scrollIntoView({behavior:'auto', block:'start'}); }, 50);
         return true;
       }
 
       activateRange(0);
-      if (videos[0] && !location.hash) {
-        videos[0].muted = true;
-        videos[0].play().catch(function(){});
-      }
+      if (videos[0] && !location.hash) { videos[0].muted = true; videos[0].play().catch(function(){}); }
 
       openByHash();
       window.addEventListener('hashchange', openByHash);
@@ -1166,16 +1200,10 @@
           if (!svg) return;
           if (soundEnabled) {
             btn.classList.add('on');
-            svg.innerHTML =
-              '<path d="M11 5L6 9H3v6h3l5 4V5z"/>' +
-              '<path d="M16 9a4 4 0 0 1 0 6"/>' +
-              '<path d="M19 7a7 7 0 0 1 0 10"/>';
+            svg.innerHTML = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 7a7 7 0 0 1 0 10"/>';
           } else {
             btn.classList.remove('on');
-            svg.innerHTML =
-              '<path d="M11 5L6 9H3v6h3l5 4V5z"/>' +
-              '<path d="M22 9l-6 6"/>' +
-              '<path d="M16 9l6 6"/>';
+            svg.innerHTML = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>';
           }
         });
       }
@@ -1184,15 +1212,9 @@
         if (soundEnabled) return;
         soundEnabled = true;
         updateIcons();
-        videos.forEach(function(v){
-          v.muted = false;
-          v.volume = 1;
-        });
+        videos.forEach(function(v){ v.muted = false; v.volume = 1; });
         var current = slides[currentIndex];
-        if (current) {
-          var v = current.querySelector('video');
-          if (v) v.play().catch(function(){});
-        }
+        if (current) { var v = current.querySelector('video'); if (v) v.play().catch(function(){}); }
       }
 
       function disableSound(){
@@ -1205,8 +1227,7 @@
       soundBtns.forEach(function(btn){
         btn.addEventListener('click', function(e){
           e.stopPropagation();
-          if (soundEnabled) disableSound();
-          else enableSound();
+          if (soundEnabled) disableSound(); else enableSound();
         });
       });
 
@@ -1215,6 +1236,7 @@
       /* ─── ПРОФИЛЬ ─── */
       function openProfile(){
         if (window.ym) { try { ym(113067752, 'reachGoal', 'open_profile'); } catch(err){} }
+        trackUser('profile_view');
         profile.classList.add('open');
         videos.forEach(function(v){ v.pause(); });
       }
@@ -1222,26 +1244,14 @@
       function closeProfile(){
         profile.classList.remove('open');
         var current = slides[currentIndex];
-        if (current) {
-          var v = current.querySelector('video');
-          if (v) {
-            v.muted = !soundEnabled;
-            v.play().catch(function(){});
-          }
-        }
+        if (current) { var v = current.querySelector('video'); if (v) { v.muted = !soundEnabled; v.play().catch(function(){}); } }
       }
 
       openBtns.forEach(function(btn){
-        btn.addEventListener('click', function(e){
-          e.stopPropagation();
-          openProfile();
-        });
+        btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); });
       });
 
-      closeBtn.addEventListener('click', function(e){
-        e.stopPropagation();
-        closeProfile();
-      });
+      closeBtn.addEventListener('click', function(e){ e.stopPropagation(); closeProfile(); });
 
       /* ─── ПОДПИСКА ─── */
       var followBtn = document.getElementById('followBtn');
@@ -1249,6 +1259,7 @@
       followBtn.addEventListener('click', function(){
         followed = !followed;
         if (window.ym) { try { ym(113067752, 'reachGoal', 'follow'); } catch(err){} }
+        trackUser('follow', { orgName: 'БАЗА' });
         if (followed) {
           followBtn.classList.add('followed');
           followBtn.querySelector('span').textContent = 'Вы подписаны';

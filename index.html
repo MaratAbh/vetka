@@ -867,26 +867,53 @@
         auth: {
           detectSessionInUrl: false,
           persistSession: true,
-          autoRefreshToken: true
+          autoRefreshToken: true,
+          storageKey: 'sb-rlkjsjgktyltvxnfyski-auth-token'
         }
       });
+      window.__sb = supabaseClient;
 
-      // АВТОРИЗАЦИЯ: даём юзеру аккаунт при первом заходе
-      var authReady = (async function(){
-        try {
-          var s = await supabaseClient.auth.getSession();
-          if (s.data.session && s.data.session.user) return s.data.session.user;
-          var r = await supabaseClient.auth.signInAnonymously();
-          if (r.error) { console.warn('Auth error:', r.error); return null; }
-          return r.data.user;
-        } catch(e){ console.warn('Auth error:', e); return null; }
-      })();
+      // АВТОРИЗАЦИЯ: используем INITIAL_SESSION — надёжный способ узнать, что клиент прочитал сессию
+      var authReady = new Promise(function(resolve){
+        var done = false;
+        function finish(user){
+          if (done) return;
+          done = true;
+          console.log('[auth] resolved with user:', user ? user.id : 'NULL');
+          resolve(user);
+        }
+
+        var fallbackTimer = setTimeout(function(){
+          if (done) return;
+          console.warn('[auth] INITIAL_SESSION timeout, fallback');
+          supabaseClient.auth.signInAnonymously().then(function(r){
+            if (r.error) { console.warn('[auth] fallback error:', r.error); finish(null); return; }
+            finish(r.data.user);
+          });
+        }, 5000);
+
+        supabaseClient.auth.onAuthStateChange(function(event, session){
+          console.log('[auth] event:', event, 'session:', session ? session.user.id : 'null');
+          if (done) return;
+          if (event === 'INITIAL_SESSION') {
+            clearTimeout(fallbackTimer);
+            if (session && session.user) {
+              finish(session.user);
+            } else {
+              supabaseClient.auth.signInAnonymously().then(function(r){
+                if (r.error) { console.warn('[auth] error:', r.error); finish(null); return; }
+                finish(r.data.user);
+              });
+            }
+          }
+        });
+      });
 
       async function trackUser(action, payload){
         payload = payload || {};
         try {
           var user = await authReady;
-          if (!user) return;
+          if (!user) { console.warn('[track] no user'); return; }
           var userId = user.id;
 
           var tgId = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user)
@@ -894,6 +921,7 @@
 
           var res = await supabaseClient.from('users').select('*').eq('id', userId).maybeSingle();
           var existing = res.data;
+          console.log('[track]', action, 'userId:', userId, 'existing:', !!existing);
 
           if (existing) {
             var updates = { last_seen: new Date().toISOString() };
@@ -907,7 +935,8 @@
             } else if (action === 'follow') {
               updates.follows = payload.orgName || 'БАЗА';
             }
-            await supabaseClient.from('users').update(updates).eq('id', userId);
+            var upRes = await supabaseClient.from('users').update(updates).eq('id', userId);
+            if (upRes.error) console.warn('[track] update error:', upRes.error);
           } else {
             var insertData = {
               id: userId,
@@ -918,12 +947,13 @@
               follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null
             };
             if (tgId) insertData.tg_id = tgId;
-            await supabaseClient.from('users').insert([insertData]);
+            var inRes = await supabaseClient.from('users').insert([insertData]);
+            if (inRes.error) console.warn('[track] insert error:', inRes.error);
           }
-        } catch(e){ console.warn('Track error:', e); }
+        } catch(e){ console.warn('[track] error:', e); }
       }
 
-      authReady.then(function(){ trackUser('visit'); });
+      authReady.then(function(u){ if (u) trackUser('visit'); });
 
       // ЛОГИКА
       var feed = document.getElementById('feed');

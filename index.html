@@ -28,7 +28,7 @@
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Telegram WebApp (загружается асинхронно, не блокирует страницу) -->
+<!-- Telegram WebApp (асинхронно, не блокирует загрузку) -->
 <script>
   (function(){
     var s = document.createElement('script');
@@ -873,76 +873,40 @@
       // SUPABASE
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
-      var AUTH_FUNCTION_URL = SUPABASE_URL + '/functions/v1/dynamic-endpoint';
-      var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
-      var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        auth: {
-          detectSessionInUrl: false,
-          persistSession: true,
-          autoRefreshToken: true,
-          storageKey: STORAGE_KEY
-        }
-      });
+      var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // Ждём Telegram-скрипт (максимум 3 секунды)
-      async function waitForTelegram(maxMs){
-        var start = Date.now();
-        while (Date.now() - start < maxMs) {
-          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) return true;
-          await new Promise(function(r){ setTimeout(r, 100); });
+      function getAnonId(){
+        var id = null;
+        try { id = localStorage.getItem('vetka_anon_id'); } catch(e){}
+        if (!id) {
+          id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+          try { localStorage.setItem('vetka_anon_id', id); } catch(e){}
         }
-        return false;
+        return id;
       }
 
-      // АВТОРИЗАЦИЯ через Telegram
-      var authReady = (async function(){
-        await waitForTelegram(3000);
-
+      function getTgId(){
         try {
-          var existing = await supabaseClient.auth.getSession();
-          if (existing.data && existing.data.session && existing.data.session.user) {
-            return existing.data.session.user;
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
+            return tg.initDataUnsafe.user.id;
           }
         } catch(e){}
-
-        var tg = window.Telegram && window.Telegram.WebApp;
-        var initData = tg && tg.initData ? tg.initData : '';
-
-        if (!initData) return null;
-
-        try {
-          var resp = await fetch(AUTH_FUNCTION_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ initData: initData })
-          });
-          if (!resp.ok) return null;
-          var data = await resp.json();
-          if (!data.email || !data.password) return null;
-
-          var sign = await supabaseClient.auth.signInWithPassword({
-            email: data.email,
-            password: data.password
-          });
-          if (sign.error) return null;
-          return sign.data.user;
-        } catch(e) {
-          return null;
-        }
-      })();
+        return null;
+      }
 
       async function trackUser(action, payload){
         payload = payload || {};
         try {
-          var user = await authReady;
-          if (!user) return;
-          var userId = user.id;
+          var tgId = getTgId();
+          var anonId = getAnonId();
 
-          var tgId = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user)
-            ? window.Telegram.WebApp.initDataUnsafe.user.id : null;
+          var query = supabaseClient.from('users').select('*');
+          if (tgId) query = query.eq('tg_id', tgId);
+          else query = query.eq('anon_id', anonId);
 
-          var res = await supabaseClient.from('users').select('*').eq('id', userId).maybeSingle();
-          var existing = res.data;
+          var result = await query.maybeSingle();
+          var existing = result.data;
 
           if (existing) {
             var updates = { last_seen: new Date().toISOString() };
@@ -956,10 +920,9 @@
             } else if (action === 'follow') {
               updates.follows = payload.orgName || 'БАЗА';
             }
-            await supabaseClient.from('users').update(updates).eq('id', userId);
+            await supabaseClient.from('users').update(updates).eq('id', existing.id);
           } else {
             var insertData = {
-              id: userId,
               last_seen: new Date().toISOString(),
               likes: action === 'like' ? [payload.rId] : [],
               invites: action === 'invite' ? 1 : 0,
@@ -967,12 +930,22 @@
               follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null
             };
             if (tgId) insertData.tg_id = tgId;
+            else insertData.anon_id = anonId;
             await supabaseClient.from('users').insert([insertData]);
           }
         } catch(e){ console.warn('Track error:', e); }
       }
 
-      authReady.then(function(u){ if (u) trackUser('visit'); });
+      // Ждём Telegram-скрипт (макс 2 сек) — потом трекаем
+      var tgWaitStart = Date.now();
+      (function waitAndTrack(){
+        var tgReady = window.Telegram && window.Telegram.WebApp;
+        if (tgReady || Date.now() - tgWaitStart > 2000) {
+          trackUser('visit');
+          return;
+        }
+        setTimeout(waitAndTrack, 150);
+      })();
 
       // ЛОГИКА
       var feed = document.getElementById('feed');

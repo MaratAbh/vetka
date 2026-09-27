@@ -519,11 +519,12 @@
     background:rgba(0,0,0,.88);
     border:1px solid rgba(205,255,74,.35);
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-    color:#fff;font-size:13px;font-weight:500;white-space:nowrap;
+    color:#fff;font-size:13px;font-weight:500;
     opacity:0;pointer-events:none;
     transition:opacity .3s ease, transform .3s ease;
     box-shadow:0 0 24px rgba(205,255,74,.2);
     display:flex;align-items:center;gap:8px;
+    max-width:90vw;text-align:left;
   }
   .toast::before{
     content:'';width:6px;height:6px;border-radius:50%;
@@ -862,6 +863,16 @@
       try { onboarded = localStorage.getItem(ONBOARD_KEY) === '1'; } catch(e){}
       if (onboarded && introEl) { introEl.parentNode.removeChild(introEl); introEl = null; }
 
+      // ТОСТ (нужен для диагностики)
+      var toast = document.getElementById('toast');
+      var toastTimer;
+      function showToast(text){
+        toast.textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 5000);
+      }
+
       // SUPABASE
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
@@ -876,9 +887,7 @@
         }
       });
 
-      // АВТОРИЗАЦИЯ
-      // 1. Если уже есть сессия — используем её
-      // 2. Если нет — берём initData из Telegram, отправляем в Edge Function, получаем email+пароль, логинимся
+      // АВТОРИЗАЦИЯ с диагностикой
       var authReady = (async function(){
         try {
           var existing = await supabaseClient.auth.getSession();
@@ -891,7 +900,7 @@
         var initData = tg && tg.initData ? tg.initData : '';
 
         if (!initData) {
-          console.warn('Нет initData — приложение открыто не через Telegram.');
+          showToast('Авторизация: нет initData. Открой через кнопку в боте.');
           return null;
         }
 
@@ -903,12 +912,12 @@
           });
           if (!resp.ok) {
             var errText = await resp.text();
-            console.warn('Auth function error:', resp.status, errText);
+            showToast('Ошибка функции ' + resp.status + ': ' + errText.slice(0, 100));
             return null;
           }
           var data = await resp.json();
           if (!data.email || !data.password) {
-            console.warn('Auth function вернула пустоту');
+            showToast('Функция вернула пусто: ' + JSON.stringify(data).slice(0, 100));
             return null;
           }
 
@@ -917,12 +926,12 @@
             password: data.password
           });
           if (sign.error) {
-            console.warn('signInWithPassword error:', sign.error);
+            showToast('Ошибка входа: ' + sign.error.message);
             return null;
           }
           return sign.data.user;
         } catch(e) {
-          console.warn('Auth error:', e);
+          showToast('Ошибка запроса: ' + String(e).slice(0, 100));
           return null;
         }
       })();
@@ -979,7 +988,6 @@
       var profile = document.getElementById('profile');
       var openBtns = document.querySelectorAll('[data-open-profile]');
       var closeBtn = document.getElementById('closeProfile');
-      var toast = document.getElementById('toast');
       var scrollEndTracked = false;
 
       if (introEl) {
@@ -1013,14 +1021,6 @@
           }
         });
       });
-
-      var toastTimer;
-      function showToast(text){
-        toast.textContent = text;
-        toast.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
-      }
 
       document.querySelectorAll('[data-share]').forEach(function(btn){
         btn.addEventListener('click', function(e){

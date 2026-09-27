@@ -885,20 +885,26 @@
         return id;
       }
 
-      function getTgId(){
-        try {
-          var tg = window.Telegram && window.Telegram.WebApp;
-          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
-            return tg.initDataUnsafe.user.id;
-          }
-        } catch(e){}
-        return null;
-      }
+      // Ждём, пока Telegram-скрипт инициализируется и отдаст user.id (до 5 секунд)
+      var tgIdReady = new Promise(function(resolve){
+        var start = Date.now();
+        function check(){
+          try {
+            var tg = window.Telegram && window.Telegram.WebApp;
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
+              return resolve(tg.initDataUnsafe.user.id);
+            }
+          } catch(e){}
+          if (Date.now() - start > 5000) return resolve(null);
+          setTimeout(check, 150);
+        }
+        check();
+      });
 
       async function trackUser(action, payload){
         payload = payload || {};
         try {
-          var tgId = getTgId();
+          var tgId = await tgIdReady;
           var anonId = getAnonId();
 
           var query = supabaseClient.from('users').select('*');
@@ -936,16 +942,7 @@
         } catch(e){ console.warn('Track error:', e); }
       }
 
-      // Ждём Telegram-скрипт (макс 2 сек) — потом трекаем
-      var tgWaitStart = Date.now();
-      (function waitAndTrack(){
-        var tgReady = window.Telegram && window.Telegram.WebApp;
-        if (tgReady || Date.now() - tgWaitStart > 2000) {
-          trackUser('visit');
-          return;
-        }
-        setTimeout(waitAndTrack, 150);
-      })();
+      trackUser('visit');
 
       // ЛОГИКА
       var feed = document.getElementById('feed');

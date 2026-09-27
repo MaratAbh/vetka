@@ -27,8 +27,16 @@
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Telegram WebApp -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!-- Telegram WebApp (загружается асинхронно, не блокирует страницу) -->
+<script>
+  (function(){
+    var s = document.createElement('script');
+    s.src = 'https://telegram.org/js/telegram-web-app.js';
+    s.async = true;
+    document.head.appendChild(s);
+  })();
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -876,8 +884,20 @@
         }
       });
 
+      // Ждём Telegram-скрипт (максимум 3 секунды)
+      async function waitForTelegram(maxMs){
+        var start = Date.now();
+        while (Date.now() - start < maxMs) {
+          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) return true;
+          await new Promise(function(r){ setTimeout(r, 100); });
+        }
+        return false;
+      }
+
       // АВТОРИЗАЦИЯ через Telegram
       var authReady = (async function(){
+        await waitForTelegram(3000);
+
         try {
           var existing = await supabaseClient.auth.getSession();
           if (existing.data && existing.data.session && existing.data.session.user) {

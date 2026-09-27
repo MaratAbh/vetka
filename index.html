@@ -863,57 +863,53 @@
       // SUPABASE
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
+      var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
       var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
           detectSessionInUrl: false,
           persistSession: true,
           autoRefreshToken: true,
-          storageKey: 'sb-rlkjsjgktyltvxnfyski-auth-token'
+          storageKey: STORAGE_KEY
         }
       });
-      window.__sb = supabaseClient;
 
-      // АВТОРИЗАЦИЯ: используем INITIAL_SESSION — надёжный способ узнать, что клиент прочитал сессию
-      var authReady = new Promise(function(resolve){
-        var done = false;
-        function finish(user){
-          if (done) return;
-          done = true;
-          console.log('[auth] resolved with user:', user ? user.id : 'NULL');
-          resolve(user);
-        }
+      // ПОЛУЧАЕМ ИЛИ СОЗДАЁМ ЮЗЕРА
+      var authReady = (async function(){
+        var hasStored = false;
+        try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
 
-        var fallbackTimer = setTimeout(function(){
-          if (done) return;
-          console.warn('[auth] INITIAL_SESSION timeout, fallback');
-          supabaseClient.auth.signInAnonymously().then(function(r){
-            if (r.error) { console.warn('[auth] fallback error:', r.error); finish(null); return; }
-            finish(r.data.user);
-          });
-        }, 5000);
-
-        supabaseClient.auth.onAuthStateChange(function(event, session){
-          console.log('[auth] event:', event, 'session:', session ? session.user.id : 'null');
-          if (done) return;
-          if (event === 'INITIAL_SESSION') {
-            clearTimeout(fallbackTimer);
-            if (session && session.user) {
-              finish(session.user);
-            } else {
-              supabaseClient.auth.signInAnonymously().then(function(r){
-                if (r.error) { console.warn('[auth] error:', r.error); finish(null); return; }
-                finish(r.data.user);
-              });
-            }
+        if (hasStored) {
+          // Сессия есть в localStorage — ждём, пока клиент её прочитает
+          for (var i = 0; i < 15; i++) {
+            try {
+              var s = await supabaseClient.auth.getSession();
+              if (s.data && s.data.session && s.data.session.user) {
+                console.log('[auth] существующая сессия:', s.data.session.user.id);
+                return s.data.session.user;
+              }
+            } catch(e){}
+            await new Promise(function(r){ setTimeout(r, 200); });
           }
-        });
-      });
+          console.warn('[auth] сессия в хранилище есть, но getSession не отдаёт — создаём новую');
+        }
+
+        // Нет сессии — создаём анонимную
+        try {
+          var r = await supabaseClient.auth.signInAnonymously();
+          if (r.error) { console.warn('[auth] ошибка:', r.error); return null; }
+          console.log('[auth] новый юзер:', r.data.user.id);
+          return r.data.user;
+        } catch(e) {
+          console.warn('[auth] ошибка:', e);
+          return null;
+        }
+      })();
 
       async function trackUser(action, payload){
         payload = payload || {};
         try {
           var user = await authReady;
-          if (!user) { console.warn('[track] no user'); return; }
+          if (!user) return;
           var userId = user.id;
 
           var tgId = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user)
@@ -921,7 +917,6 @@
 
           var res = await supabaseClient.from('users').select('*').eq('id', userId).maybeSingle();
           var existing = res.data;
-          console.log('[track]', action, 'userId:', userId, 'existing:', !!existing);
 
           if (existing) {
             var updates = { last_seen: new Date().toISOString() };
@@ -935,8 +930,7 @@
             } else if (action === 'follow') {
               updates.follows = payload.orgName || 'БАЗА';
             }
-            var upRes = await supabaseClient.from('users').update(updates).eq('id', userId);
-            if (upRes.error) console.warn('[track] update error:', upRes.error);
+            await supabaseClient.from('users').update(updates).eq('id', userId);
           } else {
             var insertData = {
               id: userId,
@@ -947,8 +941,7 @@
               follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null
             };
             if (tgId) insertData.tg_id = tgId;
-            var inRes = await supabaseClient.from('users').insert([insertData]);
-            if (inRes.error) console.warn('[track] insert error:', inRes.error);
+            await supabaseClient.from('users').insert([insertData]);
           }
         } catch(e){ console.warn('[track] error:', e); }
       }

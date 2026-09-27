@@ -865,7 +865,7 @@
       // SUPABASE
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
-      var AUTH_FUNCTION_URL = SUPABASE_URL + '/functions/v1/telegram-auth';
+      var AUTH_FUNCTION_URL = SUPABASE_URL + '/functions/v1/dynamic-endpoint';
       var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
       var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
@@ -891,7 +891,7 @@
         var initData = tg && tg.initData ? tg.initData : '';
 
         if (!initData) {
-          console.warn('Нет initData — приложение открыто не через Telegram. Авторизация невозможна.');
+          console.warn('Нет initData — приложение открыто не через Telegram.');
           return null;
         }
 

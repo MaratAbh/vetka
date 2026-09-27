@@ -865,6 +865,7 @@
       // SUPABASE
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
+      var AUTH_FUNCTION_URL = SUPABASE_URL + '/functions/v1/telegram-auth';
       var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
       var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
@@ -875,27 +876,51 @@
         }
       });
 
-      // ПОЛУЧАЕМ ИЛИ СОЗДАЁМ ЮЗЕРА
+      // АВТОРИЗАЦИЯ
+      // 1. Если уже есть сессия — используем её
+      // 2. Если нет — берём initData из Telegram, отправляем в Edge Function, получаем email+пароль, логинимся
       var authReady = (async function(){
-        var hasStored = false;
-        try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
-
-        if (hasStored) {
-          for (var i = 0; i < 15; i++) {
-            try {
-              var s = await supabaseClient.auth.getSession();
-              if (s.data && s.data.session && s.data.session.user) {
-                return s.data.session.user;
-              }
-            } catch(e){}
-            await new Promise(function(r){ setTimeout(r, 200); });
+        try {
+          var existing = await supabaseClient.auth.getSession();
+          if (existing.data && existing.data.session && existing.data.session.user) {
+            return existing.data.session.user;
           }
+        } catch(e){}
+
+        var tg = window.Telegram && window.Telegram.WebApp;
+        var initData = tg && tg.initData ? tg.initData : '';
+
+        if (!initData) {
+          console.warn('Нет initData — приложение открыто не через Telegram. Авторизация невозможна.');
+          return null;
         }
 
         try {
-          var r = await supabaseClient.auth.signInAnonymously();
-          if (r.error) { console.warn('Auth error:', r.error); return null; }
-          return r.data.user;
+          var resp = await fetch(AUTH_FUNCTION_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ initData: initData })
+          });
+          if (!resp.ok) {
+            var errText = await resp.text();
+            console.warn('Auth function error:', resp.status, errText);
+            return null;
+          }
+          var data = await resp.json();
+          if (!data.email || !data.password) {
+            console.warn('Auth function вернула пустоту');
+            return null;
+          }
+
+          var sign = await supabaseClient.auth.signInWithPassword({
+            email: data.email,
+            password: data.password
+          });
+          if (sign.error) {
+            console.warn('signInWithPassword error:', sign.error);
+            return null;
+          }
+          return sign.data.user;
         } catch(e) {
           console.warn('Auth error:', e);
           return null;

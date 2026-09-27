@@ -51,26 +51,6 @@
     color-scheme:dark;
   }
 
-  #debug {
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-    background: #07070a;
-    color: #fff;
-    padding: 20px;
-    font-family: monospace;
-    font-size: 14px;
-    line-height: 1.5;
-    overflow-y: auto;
-    display: none;
-  }
-  #debug.show { display: block; }
-  #debug .row { margin-bottom: 12px; padding: 10px; border-radius: 8px; background: rgba(255,255,255,.05); }
-  #debug .ok { color: #7dff8f; }
-  #debug .err { color: #ff6b6b; background: rgba(255,60,60,.15); }
-  #debug .info { color: #CDFF4A; }
-  #debug pre { white-space: pre-wrap; word-break: break-all; font-size: 12px; color: #aaa; }
-
   .feed{
     position:fixed;
     inset:0;
@@ -554,8 +534,6 @@
 </head>
 <body>
 
-  <div id="debug"></div>
-
   <div class="feed" id="feed">
 
     <!-- ═══ ИНТРО (онбординг) — только для новых ═══ -->
@@ -877,19 +855,6 @@
 
   <script>
     (function(){
-      // ДИАГНОСТИКА
-      var debugEl = document.getElementById('debug');
-      function dbg(html, cls){
-        debugEl.classList.add('show');
-        var div = document.createElement('div');
-        div.className = 'row ' + (cls || '');
-        div.innerHTML = html;
-        debugEl.appendChild(div);
-      }
-      window.addEventListener('error', function(ev){
-        dbg('<b>JS ОШИБКА:</b><br>' + (ev.message || 'unknown') + '<br><pre>' + (ev.filename || '') + ':' + (ev.lineno || '') + '</pre>', 'err');
-      });
-
       // ИНТРО
       var introEl = document.getElementById('intro');
       var ONBOARD_KEY = 'vetka_onboarded';
@@ -902,84 +867,54 @@
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
       var AUTH_FUNCTION_URL = SUPABASE_URL + '/functions/v1/dynamic-endpoint';
       var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
-
-      dbg('Скрипт запустился', 'info');
-      dbg('Telegram.WebApp: ' + (window.Telegram && window.Telegram.WebApp ? 'ЕСТЬ' : 'НЕТ'), window.Telegram && window.Telegram.WebApp ? 'ok' : 'err');
-      dbg('initData длина: ' + ((window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) || '').length);
-
-      var supabaseClient;
-      try {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-          auth: {
-            detectSessionInUrl: false,
-            persistSession: true,
-            autoRefreshToken: true,
-            storageKey: STORAGE_KEY
-          }
-        });
-        dbg('Supabase клиент создан', 'ok');
-      } catch(e) {
-        dbg('Ошибка создания Supabase: ' + e, 'err');
-      }
+      var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+          detectSessionInUrl: false,
+          persistSession: true,
+          autoRefreshToken: true,
+          storageKey: STORAGE_KEY
+        }
+      });
 
       // АВТОРИЗАЦИЯ
       var authReady = (async function(){
         try {
           var existing = await supabaseClient.auth.getSession();
           if (existing.data && existing.data.session && existing.data.session.user) {
-            dbg('Уже есть сессия: ' + existing.data.session.user.id, 'ok');
             return existing.data.session.user;
           }
-          dbg('Сессии нет, идём в Telegram');
-        } catch(e){
-          dbg('getSession ошибка: ' + e, 'err');
-        }
+        } catch(e){}
 
         var tg = window.Telegram && window.Telegram.WebApp;
         var initData = tg && tg.initData ? tg.initData : '';
 
         if (!initData) {
-          dbg('НЕТ initData — приложение открыто не через кнопку в боте', 'err');
           return null;
         }
-        dbg('initData получен, длина ' + initData.length, 'ok');
 
         try {
-          dbg('Отправляю в Edge Function...', 'info');
           var resp = await fetch(AUTH_FUNCTION_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ initData: initData })
           });
-          dbg('Функция ответила статусом: ' + resp.status, resp.ok ? 'ok' : 'err');
-
-          var respText = await resp.text();
-          dbg('Ответ функции: <pre>' + respText.slice(0, 500) + '</pre>');
-
           if (!resp.ok) {
             return null;
           }
-
-          var data = JSON.parse(respText);
+          var data = await resp.json();
           if (!data.email || !data.password) {
-            dbg('Функция не вернула email/password', 'err');
             return null;
           }
-          dbg('Получен email: ' + data.email, 'ok');
 
-          dbg('Логинюсь через Supabase...', 'info');
           var sign = await supabaseClient.auth.signInWithPassword({
             email: data.email,
             password: data.password
           });
           if (sign.error) {
-            dbg('signInWithPassword ошибка: ' + sign.error.message, 'err');
             return null;
           }
-          dbg('ЗАЛОГИНЕН! user.id: ' + sign.data.user.id, 'ok');
           return sign.data.user;
         } catch(e) {
-          dbg('Ошибка в auth-блоке: ' + e + '<br>' + (e.stack || ''), 'err');
           return null;
         }
       })();
@@ -1025,12 +960,9 @@
         } catch(e){ console.warn('Track error:', e); }
       }
 
-      authReady.then(function(u){
-        if (u) { trackUser('visit'); }
-        else { dbg('Авторизация не удалась — юзер null', 'err'); }
-      });
+      authReady.then(function(u){ if (u) trackUser('visit'); });
 
-      // ЛОГИКА (остальное как было)
+      // ЛОГИКА
       var feed = document.getElementById('feed');
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var videos = feed.querySelectorAll('video');

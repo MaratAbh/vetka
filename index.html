@@ -853,6 +853,8 @@
 
   <script>
     (function(){
+      alert('initData длина: ' + ((window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) || '').length);
+
       // ИНТРО
       var introEl = document.getElementById('intro');
       var ONBOARD_KEY = 'vetka_onboarded';
@@ -879,7 +881,6 @@
         try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
 
         if (hasStored) {
-          // Сессия есть в localStorage — ждём, пока клиент её прочитает
           for (var i = 0; i < 15; i++) {
             try {
               var s = await supabaseClient.auth.getSession();
@@ -893,7 +894,6 @@
           console.warn('[auth] сессия в хранилище есть, но getSession не отдаёт — создаём новую');
         }
 
-        // Нет сессии — создаём анонимную
         try {
           var r = await supabaseClient.auth.signInAnonymously();
           if (r.error) { console.warn('[auth] ошибка:', r.error); return null; }

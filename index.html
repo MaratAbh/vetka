@@ -876,7 +876,7 @@
         }
       });
 
-      // АВТОРИЗАЦИЯ
+      // АВТОРИЗАЦИЯ через Telegram
       var authReady = (async function(){
         try {
           var existing = await supabaseClient.auth.getSession();
@@ -888,9 +888,7 @@
         var tg = window.Telegram && window.Telegram.WebApp;
         var initData = tg && tg.initData ? tg.initData : '';
 
-        if (!initData) {
-          return null;
-        }
+        if (!initData) return null;
 
         try {
           var resp = await fetch(AUTH_FUNCTION_URL, {
@@ -898,21 +896,15 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ initData: initData })
           });
-          if (!resp.ok) {
-            return null;
-          }
+          if (!resp.ok) return null;
           var data = await resp.json();
-          if (!data.email || !data.password) {
-            return null;
-          }
+          if (!data.email || !data.password) return null;
 
           var sign = await supabaseClient.auth.signInWithPassword({
             email: data.email,
             password: data.password
           });
-          if (sign.error) {
-            return null;
-          }
+          if (sign.error) return null;
           return sign.data.user;
         } catch(e) {
           return null;

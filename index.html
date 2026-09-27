@@ -27,6 +27,8 @@
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Telegram WebApp -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -853,8 +855,6 @@
 
   <script>
     (function(){
-      alert('initData длина: ' + ((window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) || '').length);
-
       // ИНТРО
       var introEl = document.getElementById('intro');
       var ONBOARD_KEY = 'vetka_onboarded';
@@ -885,22 +885,19 @@
             try {
               var s = await supabaseClient.auth.getSession();
               if (s.data && s.data.session && s.data.session.user) {
-                console.log('[auth] существующая сессия:', s.data.session.user.id);
                 return s.data.session.user;
               }
             } catch(e){}
             await new Promise(function(r){ setTimeout(r, 200); });
           }
-          console.warn('[auth] сессия в хранилище есть, но getSession не отдаёт — создаём новую');
         }
 
         try {
           var r = await supabaseClient.auth.signInAnonymously();
-          if (r.error) { console.warn('[auth] ошибка:', r.error); return null; }
-          console.log('[auth] новый юзер:', r.data.user.id);
+          if (r.error) { console.warn('Auth error:', r.error); return null; }
           return r.data.user;
         } catch(e) {
-          console.warn('[auth] ошибка:', e);
+          console.warn('Auth error:', e);
           return null;
         }
       })();
@@ -943,7 +940,7 @@
             if (tgId) insertData.tg_id = tgId;
             await supabaseClient.from('users').insert([insertData]);
           }
-        } catch(e){ console.warn('[track] error:', e); }
+        } catch(e){ console.warn('Track error:', e); }
       }
 
       authReady.then(function(u){ if (u) trackUser('visit'); });

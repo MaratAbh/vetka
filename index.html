@@ -209,28 +209,39 @@
 
   .app-nav{
     position:fixed;left:0;right:0;bottom:0;z-index:400;
-    display:flex;align-items:center;justify-content:space-around;
-    padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));
-    background:rgba(7,7,10,.92);
-    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-    border-top:1px solid rgba(255,255,255,.07);
+    display:flex;align-items:center;justify-content:center;gap:28px;
+    padding:10px 0 calc(12px + env(safe-area-inset-bottom,0px));
+    background:rgba(7,7,10,.88);
+    backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    border-top:1px solid rgba(255,255,255,.06);
   }
   .nav-item{
-    flex:1;
-    display:flex;flex-direction:column;align-items:center;gap:3px;
-    padding:6px 8px;background:transparent;border:0;
-    color:rgba(255,255,255,.45);
-    font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;
-    letter-spacing:.02em;cursor:pointer;
-    transition:color .2s ease;
+    position:relative;
+    display:flex;align-items:center;justify-content:center;
+    width:64px;height:44px;
+    background:transparent;border:0;
+    color:rgba(255,255,255,.32);
+    cursor:pointer;
+    transition:color .25s ease;
   }
   .nav-item svg{
-    width:23px;height:23px;
-    transition:transform .15s ease;
+    width:26px;height:26px;
+    transition:transform .2s ease, filter .25s ease;
   }
   .nav-item.active{color:#CDFF4A;}
+  .nav-item.active svg{
+    transform:scale(1.08);
+    filter:drop-shadow(0 0 8px rgba(205,255,74,.55));
+  }
   .nav-item:active svg{transform:scale(.9);}
-  .nav-item:not(.active):active{color:rgba(255,255,255,.85);}
+  .nav-item.active::after{
+    content:'';
+    position:absolute;
+    bottom:0;left:50%;transform:translateX(-50%);
+    width:4px;height:4px;border-radius:50%;
+    background:#CDFF4A;
+    box-shadow:0 0 8px rgba(205,255,74,.9);
+  }
 
   .feed{
     position:fixed;inset:0;height:100vh;height:100dvh;
@@ -304,12 +315,40 @@
   }
   .bottom{
     position:absolute;left:0;right:0;
-    bottom:calc(78px + env(safe-area-inset-bottom,0px));
+    bottom:calc(84px + env(safe-area-inset-bottom,0px));
     z-index:5;
     padding:0 16px 14px;
     display:flex;flex-direction:column;gap:9px;pointer-events:none;
   }
   .bottom .actions-row{pointer-events:auto;}
+
+  .org-badge{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:6px 14px 6px 6px;border-radius:100px;
+    background:rgba(0,0,0,.5);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    cursor:pointer;align-self:flex-start;
+    pointer-events:auto;
+    transition:transform .15s ease, border-color .2s ease;
+  }
+  .org-badge:active{transform:scale(.97);}
+  .org-avatar{
+    width:32px;height:32px;border-radius:50%;padding:2px;
+    background:linear-gradient(135deg,#CDFF4A 0%,#7a6cff 100%);
+    flex:none;
+  }
+  .org-avatar .inner{
+    width:100%;height:100%;border-radius:50%;
+    background:#07070a;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Unbounded',sans-serif;font-weight:600;
+    font-size:13px;color:#CDFF4A;
+  }
+  .org-info{text-align:left;padding-right:6px;}
+  .org-name{font-size:12.5px;font-weight:600;color:#fff;line-height:1.1;}
+  .org-sub{font-size:10px;font-weight:500;color:rgba(255,255,255,.5);margin-top:1px;}
+
   .live{
     display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;
     color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;
@@ -338,45 +377,14 @@
   .actions-row{display:flex;gap:8px;align-items:center;}
   .cta{
     display:flex;align-items:center;justify-content:center;gap:7px;
-    padding:12px 16px;border-radius:100px;
+    padding:12px 20px;border-radius:100px;
     background:#CDFF4A;color:#07070a;
     font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
     cursor:pointer;text-decoration:none;
     box-shadow:0 0 24px rgba(205,255,74,.35);white-space:nowrap;
+    flex:1;
   }
   .cta svg{width:14px;height:14px;flex:none;}
-  .btn-ghost{
-    position:relative;display:flex;align-items:center;justify-content:center;gap:8px;
-    padding:12px 18px 12px 20px;border-radius:100px;
-    background:
-      radial-gradient(120% 180% at 0% 0%, rgba(205,255,74,.30) 0%, rgba(205,255,74,.08) 45%, transparent 72%),
-      linear-gradient(135deg, rgba(205,255,74,.12) 0%, rgba(122,108,255,.10) 100%);
-    color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
-    letter-spacing:.005em;
-    border:1px solid rgba(205,255,74,.38);
-    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-    cursor:pointer;text-decoration:none;white-space:nowrap;overflow:hidden;
-    box-shadow:0 0 22px rgba(205,255,74,.18), 0 4px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.10);
-    transition:transform .15s ease, border-color .2s ease, box-shadow .25s ease;
-  }
-  .btn-ghost::before{
-    content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
-    background:linear-gradient(180deg,#CDFF4A 0%,rgba(205,255,74,.35) 100%);
-    border-radius:100px 0 0 100px;
-    box-shadow:0 0 12px rgba(205,255,74,.7);
-  }
-  .btn-ghost::after{
-    content:'';position:absolute;inset:0;border-radius:100px;
-    background:radial-gradient(80% 100% at 100% 100%, rgba(122,108,255,.14), transparent 60%);
-    pointer-events:none;
-  }
-  .btn-ghost:active{transform:scale(.98);}
-  .btn-ghost svg{
-    width:15px;height:15px;flex:none;color:#CDFF4A;
-    position:relative;z-index:2;
-    filter:drop-shadow(0 0 6px rgba(205,255,74,.5));
-  }
-  .btn-ghost span{position:relative;z-index:2;}
 
   .profile-screen{
     position:fixed;inset:0;z-index:500;background:#07070a;
@@ -693,6 +701,13 @@
       </div>
       <div class="bottom">
         <div class="live"><span class="dot"></span>84 смотрят прямо сейчас</div>
+        <button class="org-badge" data-open-profile>
+          <div class="org-avatar"><div class="inner">Б</div></div>
+          <div class="org-info">
+            <div class="org-name">антресоль&перец</div>
+            <div class="org-sub">Организатор</div>
+          </div>
+        </button>
         <div class="title">Проверка материала</div>
         <div class="meta">
           <span class="item">Сегодня · 20:30</span><i></i>
@@ -704,13 +719,6 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
             Купить билет
           </a>
-          <button class="btn-ghost" data-open-profile>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0"/>
-              <path d="M3 15c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0"/>
-            </svg>
-            <span>Перейти в поток</span>
-          </button>
         </div>
       </div>
     </div>
@@ -742,6 +750,13 @@
       </div>
       <div class="bottom">
         <div class="live"><span class="dot"></span>61 смотрят прямо сейчас</div>
+        <button class="org-badge" data-open-profile>
+          <div class="org-avatar"><div class="inner">Б</div></div>
+          <div class="org-info">
+            <div class="org-name">антресоль&перец</div>
+            <div class="org-sub">Организатор</div>
+          </div>
+        </button>
         <div class="title">Комедия и Таро</div>
         <div class="meta">
           <span class="item">Чт · 21:00</span><i></i>
@@ -753,13 +768,6 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
             Купить билет
           </a>
-          <button class="btn-ghost" data-open-profile>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0"/>
-              <path d="M3 15c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0"/>
-            </svg>
-            <span>Перейти в поток</span>
-          </button>
         </div>
       </div>
     </div>
@@ -791,6 +799,13 @@
       </div>
       <div class="bottom">
         <div class="live"><span class="dot"></span>112 смотрят прямо сейчас</div>
+        <button class="org-badge" data-open-profile>
+          <div class="org-avatar"><div class="inner">Б</div></div>
+          <div class="org-info">
+            <div class="org-name">антресоль&перец</div>
+            <div class="org-sub">Организатор</div>
+          </div>
+        </button>
         <div class="title">Музыкальное лото</div>
         <div class="meta">
           <span class="item">Сб · 19:00</span><i></i>
@@ -802,13 +817,6 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
             Купить билет
           </a>
-          <button class="btn-ghost" data-open-profile>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0"/>
-              <path d="M3 15c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0"/>
-            </svg>
-            <span>Перейти в поток</span>
-          </button>
         </div>
       </div>
     </div>
@@ -897,20 +905,18 @@
   </div>
 
   <nav class="app-nav">
-    <button class="nav-item active" data-goto="insta">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="5"/>
-        <circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+    <button class="nav-item active" data-goto="insta" aria-label="Лента">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3.5" y="5" width="17" height="13" rx="2.5"/>
+        <path d="M10.5 9.2l4.2 2.8-4.2 2.8z" fill="currentColor" stroke="none"/>
+        <path d="M8.5 21h7"/>
       </svg>
-      <span>Лента</span>
     </button>
-    <button class="nav-item" data-goto="reels">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="4" width="20" height="16" rx="4"/>
-        <path d="M10 9l5 3-5 3z" fill="currentColor"/>
+    <button class="nav-item" data-goto="reels" aria-label="События">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1.5a2 2 0 0 0 0 4V15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2.5a2 2 0 0 0 0-4V7z"/>
+        <path d="M14 6v12" stroke-dasharray="2 2.2"/>
       </svg>
-      <span>События</span>
     </button>
   </nav>
 
@@ -922,7 +928,6 @@
       var feed = document.getElementById('feed');
       var navItems = document.querySelectorAll('.nav-item');
 
-      // ==== ЗВУК В ЛЕНТЕ (тап по видео) ====
       var feedSound = false;
       var feedSoundIconOn  = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 7a7 7 0 0 1 0 10"/>';
       var feedSoundIconOff = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>';
@@ -1028,7 +1033,6 @@
         instaVideos.forEach(function(v){ vIo.observe(v); });
       }
 
-      // ===== SUPABASE =====
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
       var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
@@ -1141,7 +1145,6 @@
         setTimeout(function(){ trackUser('visit'); }, 15000);
       });
 
-      // ===== REELS =====
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var videos = feed.querySelectorAll('video');
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');

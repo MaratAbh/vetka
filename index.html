@@ -28,6 +28,9 @@
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- Telegram WebApp -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -929,6 +932,14 @@
       var toast = document.getElementById('toast');
       var scrollEndTracked = false;
 
+      var toastTimer;
+      function showToast(text){
+        toast.textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
+      }
+
       if (introEl) {
         var introIo = new IntersectionObserver(function(entries){
           entries.forEach(function(e){
@@ -960,14 +971,6 @@
           }
         });
       });
-
-      var toastTimer;
-      function showToast(text){
-        toast.textContent = text;
-        toast.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
-      }
 
       document.querySelectorAll('[data-share]').forEach(function(btn){
         btn.addEventListener('click', function(e){

@@ -1122,7 +1122,7 @@
       var navItems = document.querySelectorAll('.nav-item');
       var onboarding = document.getElementById('onboarding');
 
-      var ONB_KEY = 'vetka_onboarded_v2';
+      var ONB_KEY = 'vetka_onboarded_v3';
       var seen = false;
       try { seen = localStorage.getItem(ONB_KEY) === '1'; } catch(e){}
 
@@ -1135,7 +1135,6 @@
       }
 
       if (seen && onboarding) {
-        // Убиваем видео чтобы не грузились
         onboarding.querySelectorAll('video').forEach(function(v){
           try {
             v.pause();
@@ -1299,7 +1298,6 @@
         });
       });
 
-      // ===== ВИДЕО В ЛЕНТЕ =====
       var instaVideos = insta.querySelectorAll('video');
 
       var isTelegram = !!(window.Telegram && window.Telegram.WebApp);

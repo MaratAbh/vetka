@@ -1104,29 +1104,33 @@
       var navItems = document.querySelectorAll('.nav-item');
       var onboarding = document.getElementById('onboarding');
 
-      var ONB_KEY = 'vetka_onboarded_v3';
-      var seen = false;
-      try { seen = localStorage.getItem(ONB_KEY) === '1'; } catch(e){}
+      // ===== ОНБОРДИНГ ВСЕГДА =====
+      // Больше не проверяем localStorage — показываем каждый раз.
 
-      function finishOnboarding(){
-        try { localStorage.setItem(ONB_KEY, '1'); } catch(e){}
-        onboarding.classList.add('gone');
-        setTimeout(function(){
-          if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-        }, 600);
-      }
+      var instaVideos = insta.querySelectorAll('video');
 
-      if (seen && onboarding) {
-        onboarding.querySelectorAll('video').forEach(function(v){
+      // Разблокировка автоплея — вызывается СИНХРОННО внутри user gesture
+      function unlockVideos(){
+        instaVideos.forEach(function(v){
           try {
-            v.pause();
-            v.removeAttribute('src');
-            v.load();
+            v.muted = true;
+            var p = v.play();
+            if (p && p.catch) p.catch(function(){});
           } catch(e){}
         });
-        onboarding.parentNode.removeChild(onboarding);
-        onboarding = null;
-      } else if (onboarding) {
+        // Через 150мс паузим те, что вне кадра
+        setTimeout(function(){
+          instaVideos.forEach(function(v){
+            try {
+              var r = v.getBoundingClientRect();
+              var inView = r.top < window.innerHeight && r.bottom > 0;
+              if (!inView) v.pause();
+            } catch(e){}
+          });
+        }, 150);
+      }
+
+      if (onboarding) {
         var startY = 0, currentY = 0, dragging = false;
         var THRESHOLD = 70;
 
@@ -1136,6 +1140,8 @@
           currentY = startY;
           dragging = true;
           onboarding.classList.add('dragging');
+          // КАЖДОЕ КАСАНИЕ онбординга = разблокировка видео ленты
+          unlockVideos();
         }
         function onMove(e){
           if (!dragging) return;
@@ -1146,6 +1152,8 @@
             onboarding.style.transform = 'translateY(' + delta + 'px)';
             if (e.cancelable) e.preventDefault();
           }
+          // На каждом движении пальца тоже будим
+          unlockVideos();
         }
         function onEnd(){
           if (!dragging) return;
@@ -1154,7 +1162,12 @@
           var delta = currentY - startY;
           if (delta < -THRESHOLD) {
             onboarding.style.transform = '';
-            finishOnboarding();
+            onboarding.classList.add('gone');
+            unlockVideos();
+            setTimeout(function(){
+              if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
+              onboarding = null;
+            }, 600);
           } else {
             onboarding.style.transform = '';
           }
@@ -1169,6 +1182,7 @@
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
 
+        // Автозапуск превью-видео онбординга
         onboarding.querySelectorAll('video').forEach(function(v){
           var revealed = false;
           function reveal(){
@@ -1184,6 +1198,7 @@
         });
       }
 
+      // ===== ЗВУК В ЛЕНТЕ =====
       var feedSound = false;
       var feedSoundIconOn  = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 7a7 7 0 0 1 0 10"/>';
       var feedSoundIconOff = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>';
@@ -1280,61 +1295,36 @@
         });
       });
 
-      var instaVideos = insta.querySelectorAll('video');
-
+      // ===== ЛЕНТА: КАЖДОЕ КАСАНИЕ/СКРОЛЛ = БУДИМ ВИДЕО =====
       var isTelegram = !!(window.Telegram && window.Telegram.WebApp);
 
-      // ===== РАЗБЛОКИРОВКА АВТОПЛЕЯ В TELEGRAM =====
-      // WebView не даёт play() без user gesture. Особенность: touchstart
-      // из .insta-scroll (там -webkit-overflow-scrolling: touch) НЕ всплывает
-      // до document. Поэтому навешиваем обработчик на несколько целей сразу.
-      var unlocked = false;
-
-      function unlockOnce(){
-        if (unlocked) return;
-        unlocked = true;
-
+      function wakeVisible(){
+        if (insta.classList.contains('hidden')) return;
         instaVideos.forEach(function(v){
           try {
-            v.muted = true;
-            v.play().then(function(){
-              setTimeout(function(){
-                try {
-                  var rect = v.getBoundingClientRect();
-                  var inView = rect.top < window.innerHeight && rect.bottom > 0;
-                  if (!inView) v.pause();
-                } catch(e){}
-              }, 80);
-            }).catch(function(){});
+            var r = v.getBoundingClientRect();
+            var inView = r.top < window.innerHeight && r.bottom > 0;
+            if (inView && v.paused) {
+              v.muted = !feedSound;
+              var p = v.play();
+              if (p && p.catch) p.catch(function(){});
+            }
           } catch(e){}
         });
       }
 
       if (isTelegram) {
-        var unlockTargets = [
-          document,
-          window,
-          document.body,
-          insta,
-          document.getElementById('instaScroll')
-        ];
-        unlockTargets.forEach(function(t){
-          if (!t) return;
-          t.addEventListener('touchstart', unlockOnce, {passive:true, capture:true});
-          t.addEventListener('touchend',   unlockOnce, {passive:true, capture:true});
-          t.addEventListener('click',      unlockOnce, {capture:true});
-          t.addEventListener('pointerdown',unlockOnce, {passive:true, capture:true});
+        // На каждый жест в приложении — будим видимые видео
+        ['touchstart','touchmove','touchend','click','pointerdown'].forEach(function(evt){
+          document.addEventListener(evt, wakeVisible, {passive:true, capture:true});
         });
-
-        insta.querySelectorAll('.post-media').forEach(function(el){
-          el.addEventListener('touchstart', unlockOnce, {passive:true});
-          el.addEventListener('click',      unlockOnce);
-        });
-
+        // На скролл ленты — тоже
         var instaScrollEl = document.getElementById('instaScroll');
         if (instaScrollEl) {
-          instaScrollEl.addEventListener('scroll', unlockOnce, {passive:true});
+          instaScrollEl.addEventListener('scroll', wakeVisible, {passive:true});
         }
+        // Каждые 700 мс проверяем
+        setInterval(wakeVisible, 700);
       } else {
         instaVideos.forEach(function(v){
           v.muted = !feedSound;
@@ -1342,6 +1332,7 @@
         });
       }
 
+      // ===== IntersectionObserver в ленте =====
       if ('IntersectionObserver' in window) {
         var vIo = new IntersectionObserver(function(entries){
           entries.forEach(function(e){
@@ -1369,6 +1360,7 @@
         instaVideos.forEach(function(v){ vIo.observe(v); });
       }
 
+      // ===== SUPABASE =====
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
       var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
@@ -1481,6 +1473,7 @@
         setTimeout(function(){ trackUser('visit'); }, 15000);
       });
 
+      // ===== РИЛСЫ =====
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var videos = feed.querySelectorAll('video');
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');

@@ -1241,12 +1241,23 @@
           insta.classList.add('hidden');
           feed.classList.add('visible');
           setActive('reels');
-          // Сбрасываем snap-контейнер в самый верх
+
+          // Отключаем snap, чтобы WebView не "подтянул" скролл к неправильной точке
+          feed.style.scrollSnapType = 'none';
           feed.scrollTop = 0;
-          setTimeout(function(){ feed.scrollTop = 0; }, 50);
-          setTimeout(function(){ feed.scrollTop = 0; }, 200);
-          setTimeout(function(){
+          feed.scrollTo(0, 0);
+
+          requestAnimationFrame(function(){
             feed.scrollTop = 0;
+            feed.scrollTo(0, 0);
+            setTimeout(function(){
+              feed.scrollTop = 0;
+              feed.scrollTo(0, 0);
+              feed.style.scrollSnapType = '';
+            }, 100);
+          });
+
+          setTimeout(function(){
             var firstVideo = document.querySelector('#r1 video');
             if (firstVideo) {
               if (!firstVideo._loaded) {

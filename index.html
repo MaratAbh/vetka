@@ -1285,7 +1285,9 @@
       var isTelegram = !!(window.Telegram && window.Telegram.WebApp);
 
       // ===== РАЗБЛОКИРОВКА АВТОПЛЕЯ В TELEGRAM =====
-      // Один раз при первом касании — просим разрешение на все видео ленты.
+      // WebView не даёт play() без user gesture. Особенность: touchstart
+      // из .insta-scroll (там -webkit-overflow-scrolling: touch) НЕ всплывает
+      // до document. Поэтому навешиваем обработчик на несколько целей сразу.
       var unlocked = false;
 
       function unlockOnce(){
@@ -1309,9 +1311,30 @@
       }
 
       if (isTelegram) {
-        document.addEventListener('touchstart', unlockOnce, {passive:true, once:true, capture:true});
-        document.addEventListener('click', unlockOnce, {once:true, capture:true});
-        document.addEventListener('pointerdown', unlockOnce, {passive:true, once:true, capture:true});
+        var unlockTargets = [
+          document,
+          window,
+          document.body,
+          insta,
+          document.getElementById('instaScroll')
+        ];
+        unlockTargets.forEach(function(t){
+          if (!t) return;
+          t.addEventListener('touchstart', unlockOnce, {passive:true, capture:true});
+          t.addEventListener('touchend',   unlockOnce, {passive:true, capture:true});
+          t.addEventListener('click',      unlockOnce, {capture:true});
+          t.addEventListener('pointerdown',unlockOnce, {passive:true, capture:true});
+        });
+
+        insta.querySelectorAll('.post-media').forEach(function(el){
+          el.addEventListener('touchstart', unlockOnce, {passive:true});
+          el.addEventListener('click',      unlockOnce);
+        });
+
+        var instaScrollEl = document.getElementById('instaScroll');
+        if (instaScrollEl) {
+          instaScrollEl.addEventListener('scroll', unlockOnce, {passive:true});
+        }
       } else {
         instaVideos.forEach(function(v){
           v.muted = !feedSound;

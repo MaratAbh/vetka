@@ -234,14 +234,6 @@
     filter:drop-shadow(0 0 8px rgba(205,255,74,.55));
   }
   .nav-item:active svg{transform:scale(.9);}
-  .nav-item.active::after{
-    content:'';
-    position:absolute;
-    bottom:0;left:50%;transform:translateX(-50%);
-    width:4px;height:4px;border-radius:50%;
-    background:#CDFF4A;
-    box-shadow:0 0 8px rgba(205,255,74,.9);
-  }
 
   .feed{
     position:fixed;inset:0;height:100vh;height:100dvh;
@@ -323,8 +315,8 @@
   .bottom .actions-row{pointer-events:auto;}
 
   .org-badge{
-    display:inline-flex;align-items:center;gap:10px;
-    padding:6px 14px 6px 6px;border-radius:100px;
+    display:inline-flex;align-items:center;gap:7px;
+    padding:4px 12px 4px 4px;border-radius:100px;
     background:rgba(0,0,0,.5);
     border:1px solid rgba(255,255,255,.12);
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
@@ -334,7 +326,7 @@
   }
   .org-badge:active{transform:scale(.97);}
   .org-avatar{
-    width:32px;height:32px;border-radius:50%;padding:2px;
+    width:22px;height:22px;border-radius:50%;padding:1.5px;
     background:linear-gradient(135deg,#CDFF4A 0%,#7a6cff 100%);
     flex:none;
   }
@@ -343,11 +335,10 @@
     background:#07070a;
     display:flex;align-items:center;justify-content:center;
     font-family:'Unbounded',sans-serif;font-weight:600;
-    font-size:13px;color:#CDFF4A;
+    font-size:10px;color:#CDFF4A;
   }
-  .org-info{text-align:left;padding-right:6px;}
-  .org-name{font-size:12.5px;font-weight:600;color:#fff;line-height:1.1;}
-  .org-sub{font-size:10px;font-weight:500;color:rgba(255,255,255,.5);margin-top:1px;}
+  .org-info{text-align:left;padding-right:2px;}
+  .org-name{font-size:11px;font-weight:600;color:#fff;line-height:1.1;}
 
   .live{
     display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;
@@ -701,14 +692,13 @@
       </div>
       <div class="bottom">
         <div class="live"><span class="dot"></span>84 смотрят прямо сейчас</div>
+        <div class="title">Проверка материала</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">Б</div></div>
           <div class="org-info">
             <div class="org-name">антресоль&перец</div>
-            <div class="org-sub">Организатор</div>
           </div>
         </button>
-        <div class="title">Проверка материала</div>
         <div class="meta">
           <span class="item">Сегодня · 20:30</span><i></i>
           <span class="item">Антресоль&Перец</span><i></i>
@@ -750,14 +740,13 @@
       </div>
       <div class="bottom">
         <div class="live"><span class="dot"></span>61 смотрят прямо сейчас</div>
+        <div class="title">Комедия и Таро</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">Б</div></div>
           <div class="org-info">
             <div class="org-name">антресоль&перец</div>
-            <div class="org-sub">Организатор</div>
           </div>
         </button>
-        <div class="title">Комедия и Таро</div>
         <div class="meta">
           <span class="item">Чт · 21:00</span><i></i>
           <span class="item">Антресоль&Перец</span><i></i>
@@ -799,14 +788,13 @@
       </div>
       <div class="bottom">
         <div class="live"><span class="dot"></span>112 смотрят прямо сейчас</div>
+        <div class="title">Музыкальное лото</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">Б</div></div>
           <div class="org-info">
             <div class="org-name">антресоль&перец</div>
-            <div class="org-sub">Организатор</div>
           </div>
         </button>
-        <div class="title">Музыкальное лото</div>
         <div class="meta">
           <span class="item">Сб · 19:00</span><i></i>
           <span class="item">Антресоль&Перец</span><i></i>
@@ -969,6 +957,11 @@
 
       function goTo(view){
         if (view === 'reels') {
+          // Паузим и мутим все видео ленты
+          insta.querySelectorAll('video').forEach(function(v){
+            v.pause();
+            v.muted = true;
+          });
           insta.classList.add('hidden');
           feed.classList.add('visible');
           setActive('reels');
@@ -984,10 +977,14 @@
             }
           }, 400);
         } else {
+          // Паузим и мутим все видео релсов
+          document.querySelectorAll('.feed video').forEach(function(v){
+            v.pause();
+            v.muted = true;
+          });
           feed.classList.remove('visible');
           insta.classList.remove('hidden');
           setActive('insta');
-          document.querySelectorAll('.feed video').forEach(function(v){ v.pause(); });
           insta.querySelectorAll('video').forEach(function(v){
             var rect = v.getBoundingClientRect();
             if (rect.top < window.innerHeight && rect.bottom > 0) {
@@ -1023,8 +1020,10 @@
           entries.forEach(function(e){
             var v = e.target;
             if (e.isIntersecting && e.intersectionRatio > 0.4) {
-              v.muted = !feedSound;
-              v.play().catch(function(){});
+              if (!insta.classList.contains('hidden')) {
+                v.muted = !feedSound;
+                v.play().catch(function(){});
+              }
             } else {
               v.pause();
             }

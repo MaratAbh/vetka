@@ -1158,6 +1158,9 @@
 
       function finishOnboarding(){
         try { localStorage.setItem(ONB_KEY, '1'); } catch(e){}
+        // Помечаем видео как разблокированные в этой сессии,
+        // чтобы оверлей "Тапни, чтобы смотреть" не появлялся после онбординга
+        try { sessionStorage.setItem('tg_video_unlocked', '1'); } catch(e){}
         onboarding.classList.add('gone');
         setTimeout(function(){
           if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);

@@ -7,28 +7,17 @@
 <meta name="color-scheme" content="dark">
 <title>VETKA</title>
 
-<!-- Yandex.Metrika counter -->
 <script type="text/javascript" >
    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
    m[i].l=1*new Date();
    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-   ym(113067752, "init", {
-        clickmap:true,
-        trackLinks:true,
-        accurateTrackBounce:true,
-        webvisor:true
-   });
+   ym(113067752, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/113067752" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- Telegram WebApp (асинхронно — не блокирует загрузку) -->
 <script>
   (function(){
     var s = document.createElement('script');
@@ -48,171 +37,242 @@
     -webkit-tap-highlight-color:transparent;
     -webkit-appearance:none;appearance:none;outline:none;border:0;
   }
-
   html,body{
-    background:#07070a;
-    color:#fff;
+    background:#07070a;color:#fff;
     font-family:'Inter',system-ui,-apple-system,sans-serif;
-    overflow:hidden;
-    height:100%;
-    -webkit-font-smoothing:antialiased;
-    color-scheme:dark;
+    overflow:hidden;height:100%;
+    -webkit-font-smoothing:antialiased;color-scheme:dark;
   }
 
+  /* ============ INSTAGRAM FEED ============ */
+  .insta{
+    position:fixed;inset:0;z-index:200;
+    background:#07070a;
+    display:flex;flex-direction:column;
+    transition:opacity .25s ease, transform .35s ease;
+  }
+  .insta.hidden{opacity:0;pointer-events:none;transform:translateY(-8px);}
+  .insta::before{
+    content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(80% 40% at 15% 0%, rgba(205,255,74,.08), transparent 60%),
+      radial-gradient(60% 40% at 90% 100%, rgba(122,108,255,.10), transparent 60%);
+  }
+
+  .insta-head{
+    position:relative;z-index:2;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:calc(12px + env(safe-area-inset-top,0px)) 18px 12px;
+    background:linear-gradient(180deg, #07070a 70%, rgba(7,7,10,0) 100%);
+    border-bottom:1px solid rgba(255,255,255,.05);
+  }
+  .insta-logo{
+    font-family:'Unbounded',sans-serif;font-weight:500;
+    font-size:19px;letter-spacing:-.03em;color:#fff;
+  }
+  .insta-logo em{font-style:normal;color:#CDFF4A;}
+  .insta-handle{
+    font-size:11px;font-weight:500;
+    color:rgba(255,255,255,.4);letter-spacing:.05em;
+  }
+
+  .insta-scroll{
+    position:relative;z-index:1;
+    flex:1;overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    scrollbar-width:none;
+    padding-bottom:calc(100px + env(safe-area-inset-bottom,0px));
+  }
+  .insta-scroll::-webkit-scrollbar{display:none;}
+
+  /* POST */
+  .post{
+    background:#07070a;
+    border-bottom:1px solid rgba(255,255,255,.05);
+    padding-bottom:14px;
+    margin-bottom:4px;
+  }
+  .post-head{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 16px 10px;
+  }
+  .post-avatar{
+    width:34px;height:34px;border-radius:50%;padding:2px;
+    background:linear-gradient(135deg, #CDFF4A 0%, #7a6cff 100%);
+    flex:none;
+  }
+  .post-avatar .inner{
+    width:100%;height:100%;border-radius:50%;
+    background:#07070a;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Unbounded',sans-serif;font-weight:600;
+    font-size:14px;color:#CDFF4A;
+  }
+  .post-user{font-size:13px;font-weight:600;color:#fff;line-height:1.2;}
+  .post-user span{
+    display:block;font-size:11px;font-weight:500;
+    color:rgba(255,255,255,.45);margin-top:1px;
+  }
+
+  .post-media{
+    position:relative;
+    background:#000;
+    aspect-ratio:4/5;
+    overflow:hidden;
+  }
+  .post-media video,
+  .post-media img{
+    width:100%;height:100%;
+    object-fit:cover;display:block;
+  }
+
+  .post-carousel{
+    display:flex;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .post-carousel::-webkit-scrollbar{display:none;}
+  .post-carousel img{
+    flex:0 0 100%;width:100%;height:100%;
+    scroll-snap-align:start;
+    object-fit:cover;
+  }
+  .carousel-dots{
+    position:absolute;left:0;right:0;bottom:12px;
+    display:flex;justify-content:center;gap:5px;
+    z-index:3;pointer-events:none;
+  }
+  .carousel-dots i{
+    width:5px;height:5px;border-radius:50%;
+    background:rgba(255,255,255,.4);
+    transition:background .2s ease;
+  }
+  .carousel-dots i.on{background:#CDFF4A;}
+
+  .post-caption{padding:12px 16px 0;}
+  .post-title{
+    font-size:14.5px;font-weight:600;color:#fff;
+    line-height:1.4;letter-spacing:-.005em;
+  }
+
+  .post-text{padding:32px 24px 28px;}
+  .post-text .quote{
+    font-family:'Unbounded',sans-serif;font-weight:500;
+    font-size:clamp(20px,6vw,26px);
+    line-height:1.25;letter-spacing:-.025em;
+    color:#fff;
+  }
+  .post-text .quote em{font-style:normal;color:#CDFF4A;}
+  .post-text .by{
+    margin-top:18px;
+    font-size:11.5px;font-weight:500;letter-spacing:.16em;
+    text-transform:uppercase;color:rgba(255,255,255,.35);
+  }
+
+  .insta-intro{padding:20px 20px 14px;}
+  .insta-intro h1{
+    font-family:'Unbounded',sans-serif;font-weight:500;
+    font-size:clamp(22px,6.4vw,28px);
+    line-height:1.08;letter-spacing:-.03em;
+    color:#fff;
+  }
+  .insta-intro h1 em{font-style:normal;color:#CDFF4A;}
+  .insta-intro p{
+    margin-top:8px;
+    font-size:13.5px;line-height:1.5;
+    color:rgba(255,255,255,.55);
+    max-width:34ch;
+  }
+
+  .insta-end{
+    padding:30px 20px 20px;
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+    text-align:center;
+  }
+  .insta-end-hint{
+    font-size:12px;font-weight:500;letter-spacing:.18em;
+    text-transform:uppercase;color:rgba(255,255,255,.35);
+  }
+  .insta-end-btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    padding:15px 26px;border-radius:100px;
+    background:#CDFF4A;color:#07070a;
+    font-family:'Inter',sans-serif;font-size:14.5px;font-weight:600;
+    cursor:pointer;
+    box-shadow:0 0 30px rgba(205,255,74,.35);
+    transition:transform .12s ease;
+  }
+  .insta-end-btn:active{transform:scale(.98);}
+  .insta-end-btn svg{width:16px;height:16px;flex:none;}
+
+  /* ============ НИЖНЕЕ МЕНЮ ============ */
+  .app-nav{
+    position:fixed;left:0;right:0;bottom:0;z-index:400;
+    display:flex;align-items:center;justify-content:space-around;
+    padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));
+    background:rgba(7,7,10,.92);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-top:1px solid rgba(255,255,255,.07);
+  }
+  .nav-item{
+    flex:1;
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    padding:6px 8px;background:transparent;border:0;
+    color:rgba(255,255,255,.45);
+    font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;
+    letter-spacing:.02em;cursor:pointer;
+    transition:color .2s ease;
+  }
+  .nav-item svg{
+    width:23px;height:23px;
+    transition:transform .15s ease;
+  }
+  .nav-item.active{color:#CDFF4A;}
+  .nav-item:active svg{transform:scale(.9);}
+  .nav-item:not(.active):active{color:rgba(255,255,255,.85);}
+
+  /* ============ REELS ============ */
   .feed{
-    position:fixed;
-    inset:0;
-    height:100vh;
-    height:100dvh;
-    overflow-y:scroll;
-    overflow-x:hidden;
+    position:fixed;inset:0;height:100vh;height:100dvh;
+    overflow-y:scroll;overflow-x:hidden;
     scroll-snap-type:y mandatory;
     -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-    z-index:1;
+    scrollbar-width:none;z-index:1;
+    opacity:0;pointer-events:none;
+    transition:opacity .25s ease;
   }
+  .feed.visible{opacity:1;pointer-events:auto;}
   .feed::-webkit-scrollbar{display:none;}
 
   .slide{
-    position:relative;
-    height:100vh;
-    height:100dvh;
-    width:100%;
-    scroll-snap-align:start;
-    scroll-snap-stop:always;
-    overflow:hidden;
-    background:#000;
+    position:relative;height:100vh;height:100dvh;width:100%;
+    scroll-snap-align:start;scroll-snap-stop:always;
+    overflow:hidden;background:#000;
   }
-
-  /* ИНТРО */
-  .intro{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(40px + env(safe-area-inset-bottom,0px));
-    background:#07070a;
-  }
-  .intro::before{
-    content:'';
-    position:absolute;
-    inset:0;
-    background:
-      radial-gradient(110% 70% at 82% 12%, rgba(205,255,74,.14), transparent 62%),
-      radial-gradient(90% 60% at 6% 92%, rgba(122,108,255,.13), transparent 60%);
-    pointer-events:none;
-  }
-  .intro .mark{
-    width:38px;height:38px;
-    color:rgba(255,255,255,.75);
-    margin-bottom:26px;
-    opacity:0;
-    animation:rise .9s .1s cubic-bezier(.2,.7,.2,1) forwards;
-  }
-  .intro .wordmark{
-    font-family:'Unbounded',sans-serif;
-    font-weight:500;
-    font-size:clamp(44px,14vw,72px);
-    line-height:.94;
-    letter-spacing:-.04em;
-    color:#fff;
-    opacity:0;
-    animation:rise .9s .2s cubic-bezier(.2,.7,.2,1) forwards;
-  }
-  .intro .wordmark em{font-style:normal;color:#CDFF4A;}
-  .intro .lead{
-    margin-top:22px;
-    font-size:clamp(17px,4.6vw,20px);
-    font-weight:400;
-    line-height:1.4;
-    letter-spacing:-.012em;
-    max-width:24ch;
-    color:#fff;
-    opacity:0;
-    animation:rise .9s .34s cubic-bezier(.2,.7,.2,1) forwards;
-  }
-  .intro .lead .place{color:#CDFF4A;font-weight:500;white-space:nowrap;}
-  .intro .sub{
-    margin-top:18px;
-    font-size:14.5px;
-    font-weight:500;
-    line-height:1.55;
-    color:rgba(255,255,255,.75);
-    max-width:34ch;
-    opacity:0;
-    animation:rise .9s .46s cubic-bezier(.2,.7,.2,1) forwards;
-  }
-  .intro .hint{
-    position:absolute;
-    left:26px;
-    bottom:calc(34px + env(safe-area-inset-bottom,0px));
-    display:flex;
-    align-items:center;
-    gap:12px;
-    font-size:10.5px;
-    font-weight:500;
-    letter-spacing:.24em;
-    text-transform:uppercase;
-    color:rgba(255,255,255,.4);
-    opacity:0;
-    animation:rise .9s .7s ease forwards;
-  }
-  .intro .hint i{
-    display:block;
-    width:1px;height:30px;
-    background:linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0));
-    animation:drop 2s ease-in-out infinite;
-  }
-  @keyframes rise{
-    from{opacity:0; transform:translateY(14px);}
-    to{opacity:1; transform:translateY(0);}
-  }
-  @keyframes drop{
-    0%{transform:translateY(-9px) scaleY(.4); opacity:0;}
-    45%{opacity:1;}
-    100%{transform:translateY(9px) scaleY(1); opacity:0;}
-  }
-
-  /* РИЛСЫ */
   .video{
-    position:absolute;
-    inset:0;
-    overflow:hidden;
-    background:#05050a;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    position:absolute;inset:0;overflow:hidden;
+    background:#05050a;display:flex;align-items:center;justify-content:center;
   }
   .video video{
-    position:relative;
-    width:100%;
-    height:100%;
-    object-fit:contain;
-    display:block;
+    position:relative;width:100%;height:100%;
+    object-fit:contain;display:block;
   }
   .veil{
-    position:absolute;
-    inset:0;
-    z-index:2;
-    pointer-events:none;
-    background:
-      linear-gradient(180deg,
-        rgba(0,0,0,.55) 0%,
-        rgba(0,0,0,.05) 22%,
-        rgba(0,0,0,.05) 45%,
-        rgba(0,0,0,.55) 72%,
-        rgba(0,0,0,.92) 100%);
+    position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(180deg,
+      rgba(0,0,0,.55) 0%,rgba(0,0,0,.05) 22%,
+      rgba(0,0,0,.05) 45%,rgba(0,0,0,.55) 72%,
+      rgba(0,0,0,.92) 100%);
   }
-
   .sound-btn{
-    position:absolute;
-    top:calc(16px + env(safe-area-inset-top,0px));
-    right:16px;
-    z-index:10;
-    width:32px;height:32px;
+    position:absolute;top:calc(16px + env(safe-area-inset-top,0px));
+    right:16px;z-index:10;width:32px;height:32px;
     background:transparent;border:0;
     display:flex;align-items:center;justify-content:center;
-    color:rgba(255,255,255,.4);
-    cursor:pointer;padding:0;
+    color:rgba(255,255,255,.4);cursor:pointer;padding:0;
     transition:color .2s ease;
   }
   .sound-btn:active{color:rgba(255,255,255,.7);}
@@ -220,15 +280,10 @@
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
   .side{
-    position:absolute;
-    right:12px;
-    bottom:calc(200px + env(safe-area-inset-bottom,0px));
-    z-index:5;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:18px;
-    pointer-events:none;
+    position:absolute;right:12px;
+    bottom:calc(280px + env(safe-area-inset-bottom,0px));
+    z-index:5;display:flex;flex-direction:column;
+    align-items:center;gap:18px;pointer-events:none;
   }
   .metric{
     display:flex;flex-direction:column;align-items:center;gap:4px;
@@ -247,23 +302,22 @@
   .metric .num{font-size:11px;font-weight:600;color:#CDFF4A;text-shadow:0 1px 4px rgba(0,0,0,.6);}
   .metric .lbl{font-size:8.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
   .metric.invite:active .ico{
-    background:rgba(205,255,74,.9);
-    color:#07070a;
+    background:rgba(205,255,74,.9);color:#07070a;
     border-color:rgba(205,255,74,.9);
   }
 
   .bottom{
-    position:absolute;left:0;right:0;bottom:0;z-index:5;
-    padding:0 16px calc(14px + env(safe-area-inset-bottom,0px));
+    position:absolute;left:0;right:0;
+    bottom:calc(78px + env(safe-area-inset-bottom,0px));
+    z-index:5;
+    padding:0 16px 14px;
     display:flex;flex-direction:column;gap:9px;pointer-events:none;
   }
   .bottom .actions-row{pointer-events:auto;}
-
   .live{
     display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;
     color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;
-    background:rgba(0,0,0,.4);
-    border:1px solid rgba(255,255,255,.1);
+    background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);
     backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
     align-self:flex-start;
   }
@@ -273,13 +327,11 @@
     animation:pulse 1.8s ease-in-out infinite;
   }
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
-
   .title{
     font-family:'Unbounded',sans-serif;font-weight:500;
-    font-size:clamp(18px, 5.6vw, 22px);line-height:1.1;letter-spacing:-.02em;
-    color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);
+    font-size:clamp(18px,5.6vw,22px);line-height:1.1;
+    letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);
   }
-
   .meta{
     display:flex;align-items:center;flex-wrap:wrap;gap:8px;
     font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);
@@ -287,73 +339,44 @@
   .meta .item{display:inline-flex;align-items:center;gap:5px;}
   .meta i{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.35);}
   .meta .price{color:#CDFF4A;font-weight:600;}
-
   .actions-row{display:flex;gap:8px;align-items:center;}
-
   .cta{
     display:flex;align-items:center;justify-content:center;gap:7px;
     padding:12px 16px;border-radius:100px;
     background:#CDFF4A;color:#07070a;
     font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
     cursor:pointer;text-decoration:none;
-    box-shadow:0 0 24px rgba(205,255,74,.35);
-    white-space:nowrap;
+    box-shadow:0 0 24px rgba(205,255,74,.35);white-space:nowrap;
   }
   .cta svg{width:14px;height:14px;flex:none;}
-
   .btn-ghost{
-    position:relative;
-    display:flex;align-items:center;justify-content:center;gap:8px;
-    padding:12px 18px 12px 20px;
-    border-radius:100px;
+    position:relative;display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:12px 18px 12px 20px;border-radius:100px;
     background:
       radial-gradient(120% 180% at 0% 0%, rgba(205,255,74,.30) 0%, rgba(205,255,74,.08) 45%, transparent 72%),
       linear-gradient(135deg, rgba(205,255,74,.12) 0%, rgba(122,108,255,.10) 100%);
-    color:#fff;
-    font-family:'Inter',sans-serif;
-    font-size:13px;
-    font-weight:600;
+    color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
     letter-spacing:.005em;
     border:1px solid rgba(205,255,74,.38);
-    backdrop-filter:blur(12px);
-    -webkit-backdrop-filter:blur(12px);
-    cursor:pointer;text-decoration:none;
-    white-space:nowrap;
-    overflow:hidden;
-    box-shadow:
-      0 0 22px rgba(205,255,74,.18),
-      0 4px 18px rgba(0,0,0,.35),
-      inset 0 1px 0 rgba(255,255,255,.10);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    cursor:pointer;text-decoration:none;white-space:nowrap;overflow:hidden;
+    box-shadow:0 0 22px rgba(205,255,74,.18), 0 4px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.10);
     transition:transform .15s ease, border-color .2s ease, box-shadow .25s ease;
   }
   .btn-ghost::before{
-    content:'';
-    position:absolute;
-    left:0; top:0; bottom:0;
-    width:3px;
-    background:linear-gradient(180deg, #CDFF4A 0%, rgba(205,255,74,.35) 100%);
+    content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+    background:linear-gradient(180deg,#CDFF4A 0%,rgba(205,255,74,.35) 100%);
     border-radius:100px 0 0 100px;
     box-shadow:0 0 12px rgba(205,255,74,.7);
   }
   .btn-ghost::after{
-    content:'';
-    position:absolute;
-    inset:0;
-    border-radius:100px;
+    content:'';position:absolute;inset:0;border-radius:100px;
     background:radial-gradient(80% 100% at 100% 100%, rgba(122,108,255,.14), transparent 60%);
     pointer-events:none;
   }
-  .btn-ghost:hover{
-    border-color:rgba(205,255,74,.65);
-    box-shadow:
-      0 0 30px rgba(205,255,74,.30),
-      0 4px 18px rgba(0,0,0,.35),
-      inset 0 1px 0 rgba(255,255,255,.14);
-  }
   .btn-ghost:active{transform:scale(.98);}
   .btn-ghost svg{
-    width:15px;height:15px;flex:none;
-    color:#CDFF4A;
+    width:15px;height:15px;flex:none;color:#CDFF4A;
     position:relative;z-index:2;
     filter:drop-shadow(0 0 6px rgba(205,255,74,.5));
   }
@@ -361,12 +384,10 @@
 
   /* ПРОФИЛЬ */
   .profile-screen{
-    position:fixed;inset:0;z-index:100;
-    background:#07070a;
+    position:fixed;inset:0;z-index:500;background:#07070a;
     transform:translateY(100%);
     transition:transform .4s cubic-bezier(.32,.72,.24,1);
-    overflow:hidden;
-    pointer-events:none;
+    overflow:hidden;pointer-events:none;
   }
   .profile-screen.open{transform:translateY(0);pointer-events:auto;}
   .profile-screen::before{
@@ -376,7 +397,6 @@
   }
   .profile-scroll{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
   .profile-scroll::-webkit-scrollbar{display:none;}
-
   .cover{position:relative;height:36vh;min-height:200px;max-height:260px;overflow:hidden;flex:none;}
   .cover-bg{
     position:absolute;inset:0;
@@ -384,7 +404,7 @@
       radial-gradient(60% 80% at 30% 30%, rgba(205,255,74,.28), transparent 65%),
       radial-gradient(70% 70% at 80% 80%, rgba(122,108,255,.35), transparent 65%),
       radial-gradient(50% 60% at 60% 40%, rgba(255,138,108,.20), transparent 60%),
-      linear-gradient(160deg, #16161e 0%, #08080c 100%);
+      linear-gradient(160deg,#16161e 0%,#08080c 100%);
   }
   .cover-bg::after{
     content:'';position:absolute;inset:0;
@@ -394,13 +414,10 @@
   .cover-veil{
     position:absolute;inset:0;
     background:linear-gradient(180deg,
-      rgba(7,7,10,.55) 0%,
-      rgba(7,7,10,.10) 45%,
-      rgba(7,7,10,.75) 82%,
-      rgba(7,7,10,.98) 100%);
+      rgba(7,7,10,.55) 0%,rgba(7,7,10,.10) 45%,
+      rgba(7,7,10,.75) 82%,rgba(7,7,10,.98) 100%);
     pointer-events:none;
   }
-
   .profile-topnav{
     position:absolute;top:0;left:0;right:0;z-index:10;
     display:flex;align-items:center;justify-content:space-between;
@@ -408,53 +425,44 @@
   }
   .back,.menu{
     width:36px;height:36px;flex:none;border-radius:50%;
-    background:rgba(0,0,0,.5);
-    border:1px solid rgba(255,255,255,.16);
+    background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.16);
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-    display:flex;align-items:center;justify-content:center;
-    color:#fff;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;
   }
   .back svg,.menu svg{width:18px;height:18px;}
-
   .avatar-abs{
     position:absolute;left:20px;bottom:-38px;z-index:5;
     width:92px;height:92px;border-radius:50%;padding:3px;
-    background:linear-gradient(135deg, #CDFF4A 0%, #a8d92e 100%);
+    background:linear-gradient(135deg,#CDFF4A 0%,#a8d92e 100%);
     box-shadow:0 0 40px rgba(205,255,74,.35), 0 8px 24px rgba(0,0,0,.5);
   }
   .avatar-abs .inner{
     width:100%;height:100%;border-radius:50%;
-    background:linear-gradient(160deg, #15151c 0%, #06060a 100%);
+    background:linear-gradient(160deg,#15151c 0%,#06060a 100%);
     display:flex;align-items:center;justify-content:center;
     font-family:'Unbounded',sans-serif;font-weight:600;font-size:32px;
     color:#CDFF4A;border:2px solid #07070a;
   }
-
   .profile-info{position:relative;z-index:2;padding:52px 20px 24px;}
-
   .name-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
   .name{
-    font-family:'Unbounded',sans-serif;font-weight:600;
-    font-size:22px;line-height:1.1;letter-spacing:-.02em;
-    color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-family:'Unbounded',sans-serif;font-weight:600;font-size:22px;
+    line-height:1.1;letter-spacing:-.02em;color:#fff;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   }
   .verified{width:18px;height:18px;flex:none;}
   .verified svg{width:18px;height:18px;display:block;}
-
   .handle{font-size:12.5px;font-weight:500;color:rgba(255,255,255,.55);margin-bottom:12px;}
-
   .bio{
     font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.75);
     margin-bottom:18px;max-width:38ch;
     overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
   }
-
   .stats{display:flex;gap:24px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.06);}
   .stat{display:flex;flex-direction:column;gap:2px;}
   .stat .n{font-family:'Unbounded',sans-serif;font-weight:500;font-size:18px;letter-spacing:-.01em;color:#fff;line-height:1;}
   .stat .l{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);}
   .stat.hi .n{color:#CDFF4A;}
-
   .follow-btn{
     display:flex;align-items:center;justify-content:center;gap:8px;
     width:100%;padding:14px 22px;border-radius:100px;
@@ -467,16 +475,12 @@
   .follow-btn:active{transform:scale(.98);}
   .follow-btn svg{width:16px;height:16px;flex:none;}
   .follow-btn.followed{
-    background:rgba(205,255,74,.12);
-    color:#CDFF4A;
-    border:1px solid rgba(205,255,74,.4);
-    box-shadow:none;
+    background:rgba(205,255,74,.12);color:#CDFF4A;
+    border:1px solid rgba(205,255,74,.4);box-shadow:none;
   }
-
   .events-head{
-    padding:8px 20px 12px;
-    font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
-    color:rgba(255,255,255,.4);
+    padding:8px 20px 12px;font-size:11px;font-weight:500;
+    letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.4);
   }
   .events-list{
     padding:0 16px calc(30px + env(safe-area-inset-bottom,0px));
@@ -494,7 +498,7 @@
   .event:active{background:rgba(255,255,255,.05);}
   .event .date-box{
     width:64px;height:64px;flex:none;border-radius:12px;
-    background:linear-gradient(135deg, #14141b 0%, #0a0a0f 100%);
+    background:linear-gradient(135deg,#14141b 0%,#0a0a0f 100%);
     border:1px solid rgba(205,255,74,.25);
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
   }
@@ -520,9 +524,8 @@
 
   .toast{
     position:fixed;left:50%;
-    bottom:calc(100px + env(safe-area-inset-bottom,0px));
-    transform:translate(-50%, 20px);
-    z-index:200;
+    bottom:calc(120px + env(safe-area-inset-bottom,0px));
+    transform:translate(-50%, 20px);z-index:600;
     padding:12px 20px;border-radius:100px;
     background:rgba(0,0,0,.88);
     border:1px solid rgba(205,255,74,.35);
@@ -542,77 +545,150 @@
 </head>
 <body>
 
-  <div class="feed" id="feed">
+  <!-- ═══════════ INSTAGRAM-ЛЕНТА ═══════════ -->
+  <div class="insta" id="insta">
+    <header class="insta-head">
+      <div class="insta-logo">VETKA<em>.</em></div>
+      <div class="insta-handle">@baza</div>
+    </header>
 
-    <!-- ═══ ИНТРО (онбординг) — только для новых ═══ -->
-    <section class="slide intro" id="intro">
-      <div class="mark">
-        <svg viewBox="0 0 40 40" fill="none">
-          <path d="M20 39V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 27C12.5 25.2 8 19.4 8 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 21C27.5 19.2 32 13.4 32 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <circle cx="8" cy="11" r="2.1" fill="#CDFF4A"/>
-          <circle cx="32" cy="5" r="2.1" fill="#CDFF4A"/>
-          <circle cx="20" cy="13" r="2.1" fill="#CDFF4A"/>
-        </svg>
+    <div class="insta-scroll" id="instaScroll">
+
+      <div class="insta-intro">
+        <h1>Что происходит <em>в Антресоли</em> прямо сейчас</h1>
+        <p>Смотри, читай, листай. А потом заходи на ближайшее событие.</p>
       </div>
 
-      <h1 class="wordmark">VETKA<em>.</em></h1>
+      <article class="post">
+        <div class="post-head">
+          <div class="post-avatar"><div class="inner">Б</div></div>
+          <div class="post-user">антресоль&перец<span>3 часа назад</span></div>
+        </div>
+        <div class="post-media">
+          <video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4"
+                 muted loop playsinline preload="metadata"></video>
+        </div>
+        <div class="post-caption">
+          <div class="post-title">Пятница выдалась громкой</div>
+        </div>
+      </article>
 
-      <p class="lead">
-        Объединили форматы, гостей и ритм событий
-        <span class="place">Антресоль&Перец</span>
-        в единый поток
-      </p>
+      <article class="post post-text">
+        <div class="quote">«Мы не знали что сказать — просто <em>орали со сцены</em>. И зал орал вместе с нами.»</div>
+        <div class="by">— гость вечера</div>
+      </article>
 
-      <p class="sub">Выбери свой — а мы подскажем, куда пойти</p>
+      <article class="post">
+        <div class="post-head">
+          <div class="post-avatar"><div class="inner">Б</div></div>
+          <div class="post-user">антресоль&перец<span>вчера</span></div>
+        </div>
+        <div class="post-media">
+          <div class="post-carousel" data-carousel>
+            <img src="https://picsum.photos/id/1080/800/1000" alt="">
+            <img src="https://picsum.photos/id/1074/800/1000" alt="">
+            <img src="https://picsum.photos/id/1062/800/1000" alt="">
+          </div>
+          <div class="carousel-dots"><i class="on"></i><i></i><i></i></div>
+        </div>
+        <div class="post-caption">
+          <div class="post-title">Нас не остановить</div>
+        </div>
+      </article>
 
-      <div class="hint"><i></i>листай вниз</div>
-    </section>
+      <article class="post">
+        <div class="post-head">
+          <div class="post-avatar"><div class="inner">Б</div></div>
+          <div class="post-user">антресоль&перец<span>2 дня назад</span></div>
+        </div>
+        <div class="post-media">
+          <video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4"
+                 muted loop playsinline preload="metadata"></video>
+        </div>
+        <div class="post-caption">
+          <div class="post-title">Музыкальное лото — тот самый момент</div>
+        </div>
+      </article>
 
-    <!-- РИЛС 1 -->
+      <article class="post post-text">
+        <div class="quote">Пришёл один, ушёл с <em>компанией</em>. Тут это как-то само.</div>
+        <div class="by">— гость вечера</div>
+      </article>
+
+      <article class="post">
+        <div class="post-head">
+          <div class="post-avatar"><div class="inner">Б</div></div>
+          <div class="post-user">антресоль&перец<span>3 дня назад</span></div>
+        </div>
+        <div class="post-media">
+          <video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4"
+                 muted loop playsinline preload="metadata"></video>
+        </div>
+        <div class="post-caption">
+          <div class="post-title">Проверка материала. Каждый вечер — новое</div>
+        </div>
+      </article>
+
+      <article class="post">
+        <div class="post-head">
+          <div class="post-avatar"><div class="inner">Б</div></div>
+          <div class="post-user">антресоль&перец<span>неделю назад</span></div>
+        </div>
+        <div class="post-media">
+          <img src="https://picsum.photos/id/1057/800/1000" alt="">
+        </div>
+        <div class="post-caption">
+          <div class="post-title">Атмосфера, которая не отпускает</div>
+        </div>
+      </article>
+
+      <div class="insta-end">
+        <div class="insta-end-hint">Дальше — билеты</div>
+        <button class="insta-end-btn" data-goto="reels">
+          <span>Смотреть ближайшие события</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════ REELS ═══════════ -->
+  <div class="feed" id="feed">
+
     <div class="slide" id="r1" data-id="r1">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
-
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/>
-          <path d="M22 9l-6 6"/>
-          <path d="M16 9l6 6"/>
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-
       <div class="side">
         <button class="metric" data-like>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div class="num" data-count>247</div>
           <div class="lbl">хочу пойти</div>
         </button>
-
         <button class="metric invite" data-share>
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M19 8v6"/>
-              <path d="M22 11h-6"/>
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>
             </svg>
           </div>
           <div class="lbl">пригласить</div>
         </button>
       </div>
-
       <div class="bottom">
         <div class="live"><span class="dot"></span>84 смотрят прямо сейчас</div>
         <div class="title">Проверка материала</div>
         <div class="meta">
-          <span class="item">Сегодня · 20:30</span>
-          <i></i>
-          <span class="item">Антресоль&Перец</span>
-          <i></i>
+          <span class="item">Сегодня · 20:30</span><i></i>
+          <span class="item">Антресоль&Перец</span><i></i>
           <span class="item price">от 500 ₽</span>
         </div>
         <div class="actions-row">
@@ -631,49 +707,37 @@
       </div>
     </div>
 
-    <!-- РИЛС 2 -->
     <div class="slide" id="r2" data-id="r2">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
-
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/>
-          <path d="M22 9l-6 6"/>
-          <path d="M16 9l6 6"/>
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-
       <div class="side">
         <button class="metric" data-like>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div class="num" data-count>156</div>
           <div class="lbl">хочу пойти</div>
         </button>
-
         <button class="metric invite" data-share>
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M19 8v6"/>
-              <path d="M22 11h-6"/>
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>
             </svg>
           </div>
           <div class="lbl">пригласить</div>
         </button>
       </div>
-
       <div class="bottom">
         <div class="live"><span class="dot"></span>61 смотрят прямо сейчас</div>
         <div class="title">Комедия и Таро</div>
         <div class="meta">
-          <span class="item">Чт · 21:00</span>
-          <i></i>
-          <span class="item">Антресоль&Перец</span>
-          <i></i>
+          <span class="item">Чт · 21:00</span><i></i>
+          <span class="item">Антресоль&Перец</span><i></i>
           <span class="item price">от 700 ₽</span>
         </div>
         <div class="actions-row">
@@ -692,49 +756,37 @@
       </div>
     </div>
 
-    <!-- РИЛС 3 -->
     <div class="slide" id="r3" data-id="r3">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
-
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/>
-          <path d="M22 9l-6 6"/>
-          <path d="M16 9l6 6"/>
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-
       <div class="side">
         <button class="metric" data-like>
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div class="num" data-count>312</div>
           <div class="lbl">хочу пойти</div>
         </button>
-
         <button class="metric invite" data-share>
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M19 8v6"/>
-              <path d="M22 11h-6"/>
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>
             </svg>
           </div>
           <div class="lbl">пригласить</div>
         </button>
       </div>
-
       <div class="bottom">
         <div class="live"><span class="dot"></span>112 смотрят прямо сейчас</div>
         <div class="title">Музыкальное лото</div>
         <div class="meta">
-          <span class="item">Сб · 19:00</span>
-          <i></i>
-          <span class="item">Антресоль&Перец</span>
-          <i></i>
+          <span class="item">Сб · 19:00</span><i></i>
+          <span class="item">Антресоль&Перец</span><i></i>
           <span class="item price">от 600 ₽</span>
         </div>
         <div class="actions-row">
@@ -755,32 +807,24 @@
 
   </div>
 
-  <!-- ЭКРАН ПРОФИЛЯ -->
+  <!-- ПРОФИЛЬ -->
   <div class="profile-screen" id="profile">
     <div class="profile-scroll">
-
       <div class="cover">
         <div class="cover-bg"></div>
         <div class="cover-veil"></div>
-
         <div class="profile-topnav">
           <div class="back" id="closeProfile">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M15 18l-6-6 6-6"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </div>
           <div class="menu">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="1"/>
-              <circle cx="12" cy="5" r="1"/>
-              <circle cx="12" cy="19" r="1"/>
+              <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
             </svg>
           </div>
         </div>
-
         <div class="avatar-abs"><div class="inner">Б</div></div>
       </div>
-
       <div class="profile-info">
         <div class="name-row">
           <div class="name">БАЗА</div>
@@ -791,29 +835,19 @@
             </svg>
           </div>
         </div>
-
         <div class="handle">@baza · Организатор</div>
-
-        <div class="bio">
-          Стендап на БАЗЕ — каждый вечер. Проверенные комики, неформаты, музыкальное лото. Каждый вечер — новое событие.
-        </div>
-
+        <div class="bio">Стендап на БАЗЕ — каждый вечер. Проверенные комики, неформаты, музыкальное лото. Каждый вечер — новое событие.</div>
         <div class="stats">
           <div class="stat hi"><div class="n">1.4K</div><div class="l">подписчиков</div></div>
           <div class="stat"><div class="n">128</div><div class="l">мероприятий</div></div>
           <div class="stat"><div class="n">24.8K</div><div class="l">просмотров</div></div>
         </div>
-
         <button class="follow-btn" id="followBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 5v14"/><path d="M5 12h14"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
           <span>Подписаться</span>
         </button>
       </div>
-
       <div class="events-head">Ближайшие события</div>
-
       <div class="events-list">
         <div class="event">
           <div class="date-box"><div class="d">25</div><div class="m">сент</div></div>
@@ -824,7 +858,6 @@
           </div>
           <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
         </div>
-
         <div class="event">
           <div class="date-box"><div class="d">26</div><div class="m">сент</div></div>
           <div class="event-info">
@@ -834,7 +867,6 @@
           </div>
           <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
         </div>
-
         <div class="event">
           <div class="date-box"><div class="d">28</div><div class="m">сент</div></div>
           <div class="event-info">
@@ -844,7 +876,6 @@
           </div>
           <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
         </div>
-
         <div class="event">
           <div class="date-box"><div class="d">30</div><div class="m">сент</div></div>
           <div class="event-info">
@@ -855,22 +886,112 @@
           <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
         </div>
       </div>
-
     </div>
   </div>
+
+  <!-- НИЖНЕЕ МЕНЮ -->
+  <nav class="app-nav">
+    <button class="nav-item active" data-goto="insta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+      </svg>
+      <span>Лента</span>
+    </button>
+    <button class="nav-item" data-goto="reels">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="4"/>
+        <path d="M10 9l5 3-5 3z" fill="currentColor"/>
+      </svg>
+      <span>События</span>
+    </button>
+  </nav>
 
   <div class="toast" id="toast">Ссылка скопирована</div>
 
   <script>
     (function(){
-      // ИНТРО
-      var introEl = document.getElementById('intro');
-      var ONBOARD_KEY = 'vetka_onboarded';
-      var onboarded = false;
-      try { onboarded = localStorage.getItem(ONBOARD_KEY) === '1'; } catch(e){}
-      if (onboarded && introEl) { introEl.parentNode.removeChild(introEl); introEl = null; }
+      var insta = document.getElementById('insta');
+      var feed = document.getElementById('feed');
+      var navItems = document.querySelectorAll('.nav-item');
 
-      // SUPABASE
+      function setActive(view){
+        navItems.forEach(function(n){
+          n.classList.toggle('active', n.getAttribute('data-goto') === view);
+        });
+      }
+
+      function goTo(view){
+        if (view === 'reels') {
+          insta.classList.add('hidden');
+          feed.classList.add('visible');
+          setActive('reels');
+          setTimeout(function(){
+            var firstVideo = document.querySelector('#r1 video');
+            if (firstVideo) {
+              if (!firstVideo._loaded) {
+                firstVideo.src = firstVideo.dataset.src;
+                firstVideo._loaded = true;
+              }
+              firstVideo.muted = true;
+              firstVideo.play().catch(function(){});
+            }
+          }, 400);
+        } else {
+          feed.classList.remove('visible');
+          insta.classList.remove('hidden');
+          setActive('insta');
+          // паузим все рилсы
+          document.querySelectorAll('.feed video').forEach(function(v){ v.pause(); });
+          // запускаем видео в ленте
+          var instaScroll = document.getElementById('instaScroll');
+          insta.querySelectorAll('video').forEach(function(v){
+            var rect = v.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+              v.play().catch(function(){});
+            }
+          });
+        }
+      }
+
+      navItems.forEach(function(n){
+        n.addEventListener('click', function(){
+          goTo(n.getAttribute('data-goto'));
+        });
+      });
+
+      document.querySelectorAll('[data-goto="reels"]').forEach(function(btn){
+        btn.addEventListener('click', function(){ goTo('reels'); });
+      });
+
+      // Карусель
+      document.querySelectorAll('[data-carousel]').forEach(function(car){
+        var dots = car.parentNode.querySelectorAll('.carousel-dots i');
+        car.addEventListener('scroll', function(){
+          var w = car.clientWidth;
+          var idx = Math.round(car.scrollLeft / w);
+          dots.forEach(function(d, i){ d.classList.toggle('on', i === idx); });
+        });
+      });
+
+      // Автоплей видео в ленте
+      var instaVideos = insta.querySelectorAll('video');
+      if ('IntersectionObserver' in window) {
+        var vIo = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            var v = e.target;
+            if (e.isIntersecting && e.intersectionRatio > 0.4) {
+              v.play().catch(function(){});
+            } else {
+              v.pause();
+            }
+          });
+        }, { root: document.getElementById('instaScroll'), threshold: [0, 0.4, 0.8] });
+        instaVideos.forEach(function(v){ vIo.observe(v); });
+      }
+
+      // ══════ SUPABASE ══════
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
       var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
@@ -883,34 +1004,25 @@
         }
       });
 
-      // ПОЛУЧАЕМ ИЛИ СОЗДАЁМ ЮЗЕРА
       var authReady = (async function(){
         var hasStored = false;
         try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
-
         if (hasStored) {
           for (var i = 0; i < 15; i++) {
             try {
               var s = await supabaseClient.auth.getSession();
-              if (s.data && s.data.session && s.data.session.user) {
-                return s.data.session.user;
-              }
+              if (s.data && s.data.session && s.data.session.user) return s.data.session.user;
             } catch(e){}
             await new Promise(function(r){ setTimeout(r, 200); });
           }
         }
-
         try {
           var r = await supabaseClient.auth.signInAnonymously();
           if (r.error) { console.warn('Auth error:', r.error); return null; }
           return r.data.user;
-        } catch(e) {
-          console.warn('Auth error:', e);
-          return null;
-        }
+        } catch(e) { console.warn('Auth error:', e); return null; }
       })();
 
-      // Ждём Telegram-скрипт максимум 3 секунды (чтобы initDataUnsafe успел появиться)
       function waitTgId(maxMs){
         return new Promise(function(resolve){
           var start = Date.now();
@@ -934,7 +1046,6 @@
           var user = await authReady;
           if (!user) return;
           var userId = user.id;
-
           var tgId = await waitTgId(3000);
 
           var res = await supabaseClient.from('users').select('*').eq('id', userId).maybeSingle();
@@ -971,8 +1082,7 @@
 
       authReady.then(function(u){ if (u) trackUser('visit'); });
 
-      // ЛОГИКА
-      var feed = document.getElementById('feed');
+      // ══════ REELS ══════
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var videos = feed.querySelectorAll('video');
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -983,16 +1093,12 @@
       var toast = document.getElementById('toast');
       var scrollEndTracked = false;
 
-      if (introEl) {
-        var introIo = new IntersectionObserver(function(entries){
-          entries.forEach(function(e){
-            if (!e.isIntersecting && e.intersectionRatio < 0.3) {
-              try { localStorage.setItem(ONBOARD_KEY, '1'); } catch(err){}
-              introIo.disconnect();
-            }
-          });
-        }, { root: feed, threshold: [0, 0.3, 0.6] });
-        introIo.observe(introEl);
+      var toastTimer;
+      function showToast(text){
+        toast.textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
       }
 
       document.querySelectorAll('[data-like]').forEach(function(btn){
@@ -1014,14 +1120,6 @@
           }
         });
       });
-
-      var toastTimer;
-      function showToast(text){
-        toast.textContent = text;
-        toast.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
-      }
 
       document.querySelectorAll('[data-share]').forEach(function(btn){
         btn.addEventListener('click', function(e){
@@ -1098,19 +1196,6 @@
         });
       }, { root: feed, threshold: [0, 0.55, 0.9] });
       slides.forEach(function(s){ io.observe(s); });
-
-      function openByHash(){
-        var hash = location.hash.replace('#', '');
-        if (!hash) return false;
-        var target = document.getElementById(hash);
-        if (!target) return false;
-        setTimeout(function(){ target.scrollIntoView({behavior:'auto', block:'start'}); }, 50);
-        return true;
-      }
-      activateRange(0);
-      if (videos[0] && !location.hash) { videos[0].muted = true; videos[0].play().catch(function(){}); }
-      openByHash();
-      window.addEventListener('hashchange', openByHash);
 
       function updateIcons(){
         soundBtns.forEach(function(btn){

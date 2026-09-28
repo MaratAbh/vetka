@@ -180,43 +180,6 @@
     to{opacity:1;transform:translateY(0);}
   }
 
-  /* Оверлей "Тапни, чтобы смотреть" */
-  .tap-to-play{
-    position:fixed;inset:0;z-index:250;
-    background:rgba(7,7,10,.55);
-    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-    display:none;
-    align-items:center;justify-content:center;
-    cursor:pointer;
-    transition:opacity .3s ease;
-  }
-  .tap-to-play.visible{display:flex;}
-  .tap-to-play-inner{
-    display:flex;flex-direction:column;
-    align-items:center;gap:16px;
-    padding:24px 32px;border-radius:24px;
-    background:rgba(0,0,0,.55);
-    border:1px solid rgba(205,255,74,.35);
-    box-shadow:0 0 40px rgba(205,255,74,.25);
-    animation:tapPulse 2.2s ease-in-out infinite;
-  }
-  .tap-to-play-icon{
-    width:64px;height:64px;border-radius:50%;
-    background:#CDFF4A;color:#07070a;
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 0 30px rgba(205,255,74,.5);
-  }
-  .tap-to-play-icon svg{width:28px;height:28px;margin-left:4px;}
-  .tap-to-play-text{
-    font-family:'Unbounded',sans-serif;font-weight:500;
-    font-size:15px;letter-spacing:-.01em;
-    color:#fff;text-align:center;
-  }
-  @keyframes tapPulse{
-    0%,100%{transform:scale(1);}
-    50%{transform:scale(1.04);}
-  }
-
   .insta{
     position:fixed;inset:0;z-index:200;
     background:#07070a;
@@ -751,17 +714,6 @@
     </div>
   </div>
 
-  <div class="tap-to-play" id="tapToPlay">
-    <div class="tap-to-play-inner">
-      <div class="tap-to-play-icon">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M8 5v14l11-7z"/>
-        </svg>
-      </div>
-      <div class="tap-to-play-text">Тапни, чтобы смотреть</div>
-    </div>
-  </div>
-
   <div class="insta" id="insta">
     <header class="insta-head">
       <div class="insta-logo">
@@ -1158,9 +1110,6 @@
 
       function finishOnboarding(){
         try { localStorage.setItem(ONB_KEY, '1'); } catch(e){}
-        // Помечаем видео как разблокированные в этой сессии,
-        // чтобы оверлей "Тапни, чтобы смотреть" не появлялся после онбординга
-        try { sessionStorage.setItem('tg_video_unlocked', '1'); } catch(e){}
         onboarding.classList.add('gone');
         setTimeout(function(){
           if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
@@ -1342,35 +1291,45 @@
         });
       }
 
-      var tapOverlay = document.getElementById('tapToPlay');
+      // ===== РАЗБЛОКИРОВКА АВТОПЛЕЯ В TELEGRAM =====
+      // WebView даёт разрешение только на первое видео при загрузке.
+      // При первом касании в ленте — разблокируем ВСЕ видео (play + сразу pause).
+      var globalUnlocked = false;
 
-      var videoUnlocked = false;
-      try { videoUnlocked = sessionStorage.getItem('tg_video_unlocked') === '1'; } catch(e){}
-
-      function unlockAllVideos(){
-        videoUnlocked = true;
-        try { sessionStorage.setItem('tg_video_unlocked', '1'); } catch(e){}
-        if (tapOverlay) tapOverlay.classList.remove('visible');
+      function globalUnlock(){
+        if (globalUnlocked) return;
+        globalUnlocked = true;
 
         instaVideos.forEach(function(v){
           v.muted = !feedSound;
           if (v.preload !== 'auto') v.preload = 'auto';
           var p = v.play();
-          if (p && p.catch) p.catch(function(){});
+          if (p && p.then) {
+            p.then(function(){
+              setTimeout(function(){
+                instaVideos.forEach(function(v2){
+                  var rect = v2.getBoundingClientRect();
+                  var inView = rect.top < window.innerHeight && rect.bottom > 0;
+                  if (!inView) {
+                    try { v2.pause(); } catch(e){}
+                  }
+                });
+              }, 100);
+            }).catch(function(){});
+          }
         });
+
         document.querySelectorAll('.feed video').forEach(function(v){
           v.muted = true;
+          var p2 = v.play();
+          if (p2 && p2.catch) p2.catch(function(){});
         });
       }
 
-      if (isTelegram && !videoUnlocked && tapOverlay) {
-        tapOverlay.classList.add('visible');
-        tapOverlay.addEventListener('click', unlockAllVideos, {once:true});
-        tapOverlay.addEventListener('touchend', function(e){
-          e.preventDefault();
-          unlockAllVideos();
-        }, {once:true, passive:false});
-      } else if (!isTelegram) {
+      if (isTelegram) {
+        insta.addEventListener('touchstart', globalUnlock, {once:true, passive:true});
+        insta.addEventListener('click', globalUnlock, {once:true});
+      } else {
         instaVideos.forEach(function(v){
           v.muted = !feedSound;
           v.play().catch(function(){});

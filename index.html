@@ -49,7 +49,7 @@
 
   /* ====== ОНБОРДИНГ ====== */
   .onboarding{
-    position:fixed;inset:0;z-index:300;
+    position:fixed;inset:0;z-index:600;
     background:#07070a;
     overflow:hidden;
     transition:transform .45s cubic-bezier(.32,.72,.24,1), opacity .45s ease;
@@ -84,14 +84,28 @@
     position:relative;
     width:100%;
     aspect-ratio:9/16;
-    background:#0a0a0f;
+    background:linear-gradient(160deg, #1a1a26 0%, #0a0a12 100%);
     border-radius:10px;
     overflow:hidden;
     flex:none;
   }
+  .onb-col .tile::before{
+    content:'';
+    position:absolute;inset:0;
+    background:
+      radial-gradient(60% 40% at 30% 30%, rgba(205,255,74,.06), transparent 60%),
+      radial-gradient(50% 40% at 70% 70%, rgba(122,108,255,.08), transparent 60%);
+    pointer-events:none;
+  }
   .onb-col .tile video{
+    position:relative;
     width:100%;height:100%;
     object-fit:cover;display:block;
+    opacity:0;
+    transition:opacity .8s ease;
+  }
+  .onb-col .tile video.loaded{
+    opacity:1;
   }
 
   .onb-col-up{animation:colUp 60s linear infinite;}
@@ -120,7 +134,7 @@
     position:absolute;inset:0;
     display:flex;flex-direction:column;
     justify-content:flex-end;
-    padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(52px + env(safe-area-inset-bottom,0px));
+    padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(42px + env(safe-area-inset-bottom,0px));
     z-index:2;
     pointer-events:none;
   }
@@ -670,20 +684,20 @@
   <div class="onboarding" id="onboarding">
     <div class="onb-bg">
       <div class="onb-col onb-col-up">
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="auto"></video></div>
       </div>
       <div class="onb-col onb-col-down">
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="auto"></video></div>
       </div>
     </div>
 
@@ -692,7 +706,7 @@
     <div class="onb-content">
       <div class="onb-logo">VETKA<em>.</em></div>
       <div class="onb-tag">Поток событий, мест и гостей — <em>под твой вайб</em></div>
-      <div class="onb-hint"><i></i>Листай вниз</div>
+      <div class="onb-hint"><i></i>Листай вверх</div>
     </div>
   </div>
 
@@ -1076,7 +1090,7 @@
       var onboarding = document.getElementById('onboarding');
 
       // ====== ОНБОРДИНГ ======
-      var ONB_KEY = 'vetka_onboarded_v1';
+      var ONB_KEY = 'vetka_onboarded_v2';
       var seen = false;
       try { seen = localStorage.getItem(ONB_KEY) === '1'; } catch(e){}
 
@@ -1107,7 +1121,6 @@
           var t = e.touches ? e.touches[0] : e;
           currentY = t.clientY;
           var delta = currentY - startY;
-          // Свайп вверх (delta < 0) — тянем онбординг вверх, показывая следующий экран (ленту)
           if (delta < 0) {
             onboarding.style.transform = 'translateY(' + delta + 'px)';
             if (e.cancelable) e.preventDefault();
@@ -1131,13 +1144,19 @@
         onboarding.addEventListener('touchend', onEnd);
         onboarding.addEventListener('touchcancel', onEnd);
 
-        // для десктопа
         onboarding.addEventListener('mousedown', onStart);
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
 
-        // автозапуск превью-видео
+        // Плавное появление видео + автоплей
         onboarding.querySelectorAll('video').forEach(function(v){
+          if (v.readyState >= 2) {
+            v.classList.add('loaded');
+          } else {
+            v.addEventListener('loadeddata', function(){
+              v.classList.add('loaded');
+            }, {once:true});
+          }
           v.play().catch(function(){});
         });
       }

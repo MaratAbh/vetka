@@ -1105,11 +1105,9 @@
       var onboarding = document.getElementById('onboarding');
 
       // ===== ОНБОРДИНГ ВСЕГДА =====
-      // Больше не проверяем localStorage — показываем каждый раз.
 
       var instaVideos = insta.querySelectorAll('video');
 
-      // Разблокировка автоплея — вызывается СИНХРОННО внутри user gesture
       function unlockVideos(){
         instaVideos.forEach(function(v){
           try {
@@ -1118,7 +1116,6 @@
             if (p && p.catch) p.catch(function(){});
           } catch(e){}
         });
-        // Через 150мс паузим те, что вне кадра
         setTimeout(function(){
           instaVideos.forEach(function(v){
             try {
@@ -1140,7 +1137,6 @@
           currentY = startY;
           dragging = true;
           onboarding.classList.add('dragging');
-          // КАЖДОЕ КАСАНИЕ онбординга = разблокировка видео ленты
           unlockVideos();
         }
         function onMove(e){
@@ -1152,7 +1148,6 @@
             onboarding.style.transform = 'translateY(' + delta + 'px)';
             if (e.cancelable) e.preventDefault();
           }
-          // На каждом движении пальца тоже будим
           unlockVideos();
         }
         function onEnd(){
@@ -1182,7 +1177,6 @@
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
 
-        // Автозапуск превью-видео онбординга
         onboarding.querySelectorAll('video').forEach(function(v){
           var revealed = false;
           function reveal(){
@@ -1247,7 +1241,12 @@
           insta.classList.add('hidden');
           feed.classList.add('visible');
           setActive('reels');
+          // Сбрасываем snap-контейнер в самый верх
+          feed.scrollTop = 0;
+          setTimeout(function(){ feed.scrollTop = 0; }, 50);
+          setTimeout(function(){ feed.scrollTop = 0; }, 200);
           setTimeout(function(){
+            feed.scrollTop = 0;
             var firstVideo = document.querySelector('#r1 video');
             if (firstVideo) {
               if (!firstVideo._loaded) {
@@ -1295,7 +1294,7 @@
         });
       });
 
-      // ===== ЛЕНТА: КАЖДОЕ КАСАНИЕ/СКРОЛЛ = БУДИМ ВИДЕО =====
+      // ===== ЛЕНТА: БУДИМ ВИДЕО =====
       var isTelegram = !!(window.Telegram && window.Telegram.WebApp);
 
       function wakeVisible(){
@@ -1314,16 +1313,13 @@
       }
 
       if (isTelegram) {
-        // На каждый жест в приложении — будим видимые видео
         ['touchstart','touchmove','touchend','click','pointerdown'].forEach(function(evt){
           document.addEventListener(evt, wakeVisible, {passive:true, capture:true});
         });
-        // На скролл ленты — тоже
         var instaScrollEl = document.getElementById('instaScroll');
         if (instaScrollEl) {
           instaScrollEl.addEventListener('scroll', wakeVisible, {passive:true});
         }
-        // Каждые 700 мс проверяем
         setInterval(wakeVisible, 700);
       } else {
         instaVideos.forEach(function(v){

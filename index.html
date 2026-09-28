@@ -1292,43 +1292,59 @@
       }
 
       // ===== РАЗБЛОКИРОВКА АВТОПЛЕЯ В TELEGRAM =====
-      // WebView даёт разрешение только на первое видео при загрузке.
-      // При первом касании в ленте — разблокируем ВСЕ видео (play + сразу pause).
-      var globalUnlocked = false;
+      function isVisible(v){
+        var rect = v.getBoundingClientRect();
+        return rect.top < window.innerHeight && rect.bottom > 0 && rect.width > 0;
+      }
 
-      function globalUnlock(){
-        if (globalUnlocked) return;
-        globalUnlocked = true;
+      function forcePlay(v){
+        if (!v || !isVisible(v)) return;
+        if (!v.paused) return;
+        v.muted = !feedSound;
+        if (v.preload !== 'auto') v.preload = 'auto';
+        var p = v.play();
+        if (p && p.catch) p.catch(function(){});
+      }
 
+      function forcePlayAllVisible(){
+        if (insta.classList.contains('hidden')) return;
         instaVideos.forEach(function(v){
-          v.muted = !feedSound;
-          if (v.preload !== 'auto') v.preload = 'auto';
-          var p = v.play();
-          if (p && p.then) {
-            p.then(function(){
-              setTimeout(function(){
-                instaVideos.forEach(function(v2){
-                  var rect = v2.getBoundingClientRect();
-                  var inView = rect.top < window.innerHeight && rect.bottom > 0;
-                  if (!inView) {
-                    try { v2.pause(); } catch(e){}
-                  }
-                });
-              }, 100);
-            }).catch(function(){});
-          }
-        });
-
-        document.querySelectorAll('.feed video').forEach(function(v){
-          v.muted = true;
-          var p2 = v.play();
-          if (p2 && p2.catch) p2.catch(function(){});
+          forcePlay(v);
         });
       }
 
+      function nudgeAll(){
+        forcePlayAllVisible();
+        setTimeout(forcePlayAllVisible, 100);
+        setTimeout(forcePlayAllVisible, 400);
+        setTimeout(forcePlayAllVisible, 1000);
+      }
+
       if (isTelegram) {
-        insta.addEventListener('touchstart', globalUnlock, {once:true, passive:true});
-        insta.addEventListener('click', globalUnlock, {once:true});
+        document.addEventListener('touchstart', nudgeAll, {passive:true, capture:true});
+        document.addEventListener('touchend',   nudgeAll, {passive:true, capture:true});
+        document.addEventListener('click',      nudgeAll, {capture:true});
+
+        var scrollThrottle = null;
+        var instaScrollEl = document.getElementById('instaScroll');
+        if (instaScrollEl) {
+          instaScrollEl.addEventListener('scroll', function(){
+            if (scrollThrottle) return;
+            scrollThrottle = setTimeout(function(){ scrollThrottle = null; }, 250);
+            forcePlayAllVisible();
+          }, {passive:true});
+        }
+
+        instaVideos.forEach(function(v){
+          v.addEventListener('canplay', function(){
+            if (isVisible(v)) forcePlay(v);
+          });
+          v.addEventListener('loadeddata', function(){
+            if (isVisible(v)) forcePlay(v);
+          });
+        });
+
+        nudgeAll();
       } else {
         instaVideos.forEach(function(v){
           v.muted = !feedSound;

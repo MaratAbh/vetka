@@ -7,6 +7,9 @@
 <meta name="color-scheme" content="dark">
 <title>VETKA</title>
 
+<link rel="preconnect" href="https://telegram.org" crossorigin>
+<link rel="dns-prefetch" href="https://telegram.org">
+
 <script type="text/javascript" >
    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
    m[i].l=1*new Date();
@@ -44,7 +47,6 @@
     -webkit-font-smoothing:antialiased;color-scheme:dark;
   }
 
-  /* ============ INSTAGRAM FEED ============ */
   .insta{
     position:fixed;inset:0;z-index:200;
     background:#07070a;
@@ -86,7 +88,6 @@
   }
   .insta-scroll::-webkit-scrollbar{display:none;}
 
-  /* POST */
   .post{
     background:#07070a;
     border-bottom:1px solid rgba(255,255,255,.05);
@@ -114,7 +115,6 @@
     display:block;font-size:11px;font-weight:500;
     color:rgba(255,255,255,.45);margin-top:1px;
   }
-
   .post-media{
     position:relative;
     background:#000;
@@ -126,7 +126,6 @@
     width:100%;height:100%;
     object-fit:cover;display:block;
   }
-
   .post-carousel{
     display:flex;
     overflow-x:auto;
@@ -151,13 +150,11 @@
     transition:background .2s ease;
   }
   .carousel-dots i.on{background:#CDFF4A;}
-
   .post-caption{padding:12px 16px 0;}
   .post-title{
     font-size:14.5px;font-weight:600;color:#fff;
     line-height:1.4;letter-spacing:-.005em;
   }
-
   .post-text{padding:32px 24px 28px;}
   .post-text .quote{
     font-family:'Unbounded',sans-serif;font-weight:500;
@@ -171,7 +168,6 @@
     font-size:11.5px;font-weight:500;letter-spacing:.16em;
     text-transform:uppercase;color:rgba(255,255,255,.35);
   }
-
   .insta-intro{padding:20px 20px 14px;}
   .insta-intro h1{
     font-family:'Unbounded',sans-serif;font-weight:500;
@@ -186,7 +182,6 @@
     color:rgba(255,255,255,.55);
     max-width:34ch;
   }
-
   .insta-end{
     padding:30px 20px 20px;
     display:flex;flex-direction:column;align-items:center;gap:14px;
@@ -208,7 +203,6 @@
   .insta-end-btn:active{transform:scale(.98);}
   .insta-end-btn svg{width:16px;height:16px;flex:none;}
 
-  /* ============ НИЖНЕЕ МЕНЮ ============ */
   .app-nav{
     position:fixed;left:0;right:0;bottom:0;z-index:400;
     display:flex;align-items:center;justify-content:space-around;
@@ -234,7 +228,6 @@
   .nav-item:active svg{transform:scale(.9);}
   .nav-item:not(.active):active{color:rgba(255,255,255,.85);}
 
-  /* ============ REELS ============ */
   .feed{
     position:fixed;inset:0;height:100vh;height:100dvh;
     overflow-y:scroll;overflow-x:hidden;
@@ -305,7 +298,6 @@
     background:rgba(205,255,74,.9);color:#07070a;
     border-color:rgba(205,255,74,.9);
   }
-
   .bottom{
     position:absolute;left:0;right:0;
     bottom:calc(78px + env(safe-area-inset-bottom,0px));
@@ -382,7 +374,6 @@
   }
   .btn-ghost span{position:relative;z-index:2;}
 
-  /* ПРОФИЛЬ */
   .profile-screen{
     position:fixed;inset:0;z-index:500;background:#07070a;
     transform:translateY(100%);
@@ -545,7 +536,6 @@
 </head>
 <body>
 
-  <!-- ═══════════ INSTAGRAM-ЛЕНТА ═══════════ -->
   <div class="insta" id="insta">
     <header class="insta-head">
       <div class="insta-logo">VETKA<em>.</em></div>
@@ -655,7 +645,6 @@
     </div>
   </div>
 
-  <!-- ═══════════ REELS ═══════════ -->
   <div class="feed" id="feed">
 
     <div class="slide" id="r1" data-id="r1">
@@ -807,7 +796,6 @@
 
   </div>
 
-  <!-- ПРОФИЛЬ -->
   <div class="profile-screen" id="profile">
     <div class="profile-scroll">
       <div class="cover">
@@ -889,7 +877,6 @@
     </div>
   </div>
 
-  <!-- НИЖНЕЕ МЕНЮ -->
   <nav class="app-nav">
     <button class="nav-item active" data-goto="insta">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -942,10 +929,7 @@
           feed.classList.remove('visible');
           insta.classList.remove('hidden');
           setActive('insta');
-          // паузим все рилсы
           document.querySelectorAll('.feed video').forEach(function(v){ v.pause(); });
-          // запускаем видео в ленте
-          var instaScroll = document.getElementById('instaScroll');
           insta.querySelectorAll('video').forEach(function(v){
             var rect = v.getBoundingClientRect();
             if (rect.top < window.innerHeight && rect.bottom > 0) {
@@ -960,12 +944,11 @@
           goTo(n.getAttribute('data-goto'));
         });
       });
-
       document.querySelectorAll('[data-goto="reels"]').forEach(function(btn){
+        if (btn.classList.contains('nav-item')) return;
         btn.addEventListener('click', function(){ goTo('reels'); });
       });
 
-      // Карусель
       document.querySelectorAll('[data-carousel]').forEach(function(car){
         var dots = car.parentNode.querySelectorAll('.carousel-dots i');
         car.addEventListener('scroll', function(){
@@ -975,7 +958,6 @@
         });
       });
 
-      // Автоплей видео в ленте
       var instaVideos = insta.querySelectorAll('video');
       if ('IntersectionObserver' in window) {
         var vIo = new IntersectionObserver(function(entries){
@@ -991,7 +973,7 @@
         instaVideos.forEach(function(v){ vIo.observe(v); });
       }
 
-      // ══════ SUPABASE ══════
+      // ===== SUPABASE =====
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
       var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
@@ -1003,6 +985,26 @@
           storageKey: STORAGE_KEY
         }
       });
+
+      function readTgId(){
+        try {
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
+            return tg.initDataUnsafe.user.id;
+          }
+        } catch(e){}
+        return null;
+      }
+
+      function getAnonId(){
+        var id = null;
+        try { id = localStorage.getItem('vetka_anon_id'); } catch(e){}
+        if (!id) {
+          id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+          try { localStorage.setItem('vetka_anon_id', id); } catch(e){}
+        }
+        return id;
+      }
 
       var authReady = (async function(){
         var hasStored = false;
@@ -1023,33 +1025,29 @@
         } catch(e) { console.warn('Auth error:', e); return null; }
       })();
 
-      function waitTgId(maxMs){
-        return new Promise(function(resolve){
-          var start = Date.now();
-          function check(){
-            try {
-              var tg = window.Telegram && window.Telegram.WebApp;
-              if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
-                return resolve(tg.initDataUnsafe.user.id);
-              }
-            } catch(e){}
-            if (Date.now() - start > maxMs) return resolve(null);
-            setTimeout(check, 200);
-          }
-          check();
-        });
-      }
-
       async function trackUser(action, payload){
         payload = payload || {};
         try {
           var user = await authReady;
           if (!user) return;
           var userId = user.id;
-          var tgId = await waitTgId(3000);
+          var tgId = readTgId();
+          var anonId = getAnonId();
 
-          var res = await supabaseClient.from('users').select('*').eq('id', userId).maybeSingle();
-          var existing = res.data;
+          // Ищем строку: сначала по tg_id, потом по anon_id, потом по id
+          var existing = null;
+          if (tgId) {
+            var r1 = await supabaseClient.from('users').select('*').eq('tg_id', tgId).maybeSingle();
+            existing = r1.data;
+          }
+          if (!existing) {
+            var r2 = await supabaseClient.from('users').select('*').eq('anon_id', anonId).maybeSingle();
+            existing = r2.data;
+          }
+          if (!existing) {
+            var r3 = await supabaseClient.from('users').select('*').eq('id', userId).maybeSingle();
+            existing = r3.data;
+          }
 
           if (existing) {
             var updates = { last_seen: new Date().toISOString() };
@@ -1064,7 +1062,8 @@
               updates.follows = payload.orgName || 'БАЗА';
             }
             if (tgId && !existing.tg_id) updates.tg_id = tgId;
-            await supabaseClient.from('users').update(updates).eq('id', userId);
+            if (anonId && !existing.anon_id) updates.anon_id = anonId;
+            await supabaseClient.from('users').update(updates).eq('id', existing.id);
           } else {
             var insertData = {
               id: userId,
@@ -1075,14 +1074,21 @@
               follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null
             };
             if (tgId) insertData.tg_id = tgId;
+            if (anonId) insertData.anon_id = anonId;
             await supabaseClient.from('users').insert([insertData]);
           }
         } catch(e){ console.warn('Track error:', e); }
       }
 
-      authReady.then(function(u){ if (u) trackUser('visit'); });
+      // Первый вызов + повторные через 5 и 15 секунд (чтобы tg_id точно появился)
+      authReady.then(function(u){
+        if (!u) return;
+        trackUser('visit');
+        setTimeout(function(){ trackUser('visit'); }, 5000);
+        setTimeout(function(){ trackUser('visit'); }, 15000);
+      });
 
-      // ══════ REELS ══════
+      // ===== REELS =====
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var videos = feed.querySelectorAll('video');
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');

@@ -47,7 +47,6 @@
     -webkit-font-smoothing:antialiased;color-scheme:dark;
   }
 
-  /* ====== ОНБОРДИНГ ====== */
   .onboarding{
     position:fixed;inset:0;z-index:600;
     background:#07070a;
@@ -196,7 +195,6 @@
     to{opacity:1;transform:translateY(0);}
   }
 
-  /* ====== ЛЕНТА ====== */
   .insta{
     position:fixed;inset:0;z-index:200;
     background:#07070a;
@@ -695,24 +693,23 @@
 </head>
 <body>
 
-  <!-- ====== ОНБОРДИНГ ====== -->
   <div class="onboarding" id="onboarding">
     <div class="onb-bg">
       <div class="onb-col onb-col-up">
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
       </div>
       <div class="onb-col onb-col-down">
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
       </div>
     </div>
 
@@ -735,7 +732,6 @@
     </div>
   </div>
 
-  <!-- ====== ЛЕНТА ====== -->
   <div class="insta" id="insta">
     <header class="insta-head">
       <div class="insta-logo">
@@ -1139,6 +1135,14 @@
       }
 
       if (seen && onboarding) {
+        // Убиваем видео чтобы не грузились
+        onboarding.querySelectorAll('video').forEach(function(v){
+          try {
+            v.pause();
+            v.removeAttribute('src');
+            v.load();
+          } catch(e){}
+        });
         onboarding.parentNode.removeChild(onboarding);
         onboarding = null;
       } else if (onboarding) {
@@ -1185,13 +1189,16 @@
         document.addEventListener('mouseup', onEnd);
 
         onboarding.querySelectorAll('video').forEach(function(v){
-          if (v.readyState >= 2) {
+          var revealed = false;
+          function reveal(){
+            if (revealed) return;
+            revealed = true;
             v.classList.add('loaded');
-          } else {
-            v.addEventListener('loadeddata', function(){
-              v.classList.add('loaded');
-            }, {once:true});
           }
+          v.addEventListener('loadeddata', reveal);
+          v.addEventListener('canplay', reveal);
+          v.addEventListener('playing', reveal);
+          setTimeout(reveal, 4000);
           v.play().catch(function(){});
         });
       }
@@ -1292,21 +1299,57 @@
         });
       });
 
+      // ===== ВИДЕО В ЛЕНТЕ =====
       var instaVideos = insta.querySelectorAll('video');
+
+      var isTelegram = !!(window.Telegram && window.Telegram.WebApp);
+      if (isTelegram) {
+        instaVideos.forEach(function(v){
+          v.preload = 'auto';
+          v.setAttribute('playsinline', '');
+          v.setAttribute('webkit-playsinline', '');
+        });
+      }
+
+      var tgUnlocked = false;
+      function unlockVideos(){
+        if (tgUnlocked) return;
+        tgUnlocked = true;
+        instaVideos.forEach(function(v){
+          v.muted = !feedSound;
+          var p = v.play();
+          if (p && p.catch) p.catch(function(){});
+        });
+      }
+      if (isTelegram) {
+        document.addEventListener('touchstart', unlockVideos, {passive:true, once:true});
+        document.addEventListener('click', unlockVideos, {once:true});
+      }
+
       if ('IntersectionObserver' in window) {
         var vIo = new IntersectionObserver(function(entries){
           entries.forEach(function(e){
             var v = e.target;
-            if (e.isIntersecting && e.intersectionRatio > 0.4) {
+            if (e.isIntersecting && e.intersectionRatio > 0.2) {
               if (!insta.classList.contains('hidden')) {
                 v.muted = !feedSound;
-                v.play().catch(function(){});
+                if (v.preload !== 'auto') v.preload = 'auto';
+                var p = v.play();
+                if (p && p.catch) {
+                  p.catch(function(){
+                    setTimeout(function(){
+                      v.muted = !feedSound;
+                      var p2 = v.play();
+                      if (p2 && p2.catch) p2.catch(function(){});
+                    }, 500);
+                  });
+                }
               }
-            } else {
+            } else if (e.intersectionRatio < 0.05) {
               v.pause();
             }
           });
-        }, { root: document.getElementById('instaScroll'), threshold: [0, 0.4, 0.8] });
+        }, { root: document.getElementById('instaScroll'), threshold: [0, 0.2, 0.4, 0.6, 0.8] });
         instaVideos.forEach(function(v){ vIo.observe(v); });
       }
 

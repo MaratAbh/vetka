@@ -73,10 +73,6 @@
     font-size:19px;letter-spacing:-.03em;color:#fff;
   }
   .insta-logo em{font-style:normal;color:#CDFF4A;}
-  .insta-handle{
-    font-size:11px;font-weight:500;
-    color:rgba(255,255,255,.4);letter-spacing:.05em;
-  }
 
   .insta-scroll{
     position:relative;z-index:1;
@@ -85,6 +81,7 @@
     overscroll-behavior:contain;
     scrollbar-width:none;
     padding-bottom:calc(100px + env(safe-area-inset-bottom,0px));
+    padding-top:8px;
   }
   .insta-scroll::-webkit-scrollbar{display:none;}
 
@@ -121,11 +118,32 @@
     aspect-ratio:4/5;
     overflow:hidden;
   }
+  .post-media.video-tappable{cursor:pointer;}
   .post-media video,
   .post-media img{
     width:100%;height:100%;
     object-fit:cover;display:block;
   }
+
+  .post-sound{
+    position:absolute;
+    top:12px;right:12px;
+    width:32px;height:32px;border-radius:50%;
+    background:rgba(0,0,0,.55);
+    border:1px solid rgba(255,255,255,.15);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    display:flex;align-items:center;justify-content:center;
+    color:rgba(255,255,255,.7);
+    z-index:4;pointer-events:none;
+    transition:color .2s ease, background .2s ease, border-color .2s ease;
+  }
+  .post-sound.on{
+    color:#CDFF4A;
+    background:rgba(205,255,74,.15);
+    border-color:rgba(205,255,74,.4);
+  }
+  .post-sound svg{width:16px;height:16px;}
+
   .post-carousel{
     display:flex;
     overflow-x:auto;
@@ -167,20 +185,6 @@
     margin-top:18px;
     font-size:11.5px;font-weight:500;letter-spacing:.16em;
     text-transform:uppercase;color:rgba(255,255,255,.35);
-  }
-  .insta-intro{padding:20px 20px 14px;}
-  .insta-intro h1{
-    font-family:'Unbounded',sans-serif;font-weight:500;
-    font-size:clamp(22px,6.4vw,28px);
-    line-height:1.08;letter-spacing:-.03em;
-    color:#fff;
-  }
-  .insta-intro h1 em{font-style:normal;color:#CDFF4A;}
-  .insta-intro p{
-    margin-top:8px;
-    font-size:13.5px;line-height:1.5;
-    color:rgba(255,255,255,.55);
-    max-width:34ch;
   }
   .insta-end{
     padding:30px 20px 20px;
@@ -539,24 +543,25 @@
   <div class="insta" id="insta">
     <header class="insta-head">
       <div class="insta-logo">VETKA<em>.</em></div>
-      <div class="insta-handle">@baza</div>
     </header>
 
     <div class="insta-scroll" id="instaScroll">
-
-      <div class="insta-intro">
-        <h1>Что происходит <em>в Антресоли</em> прямо сейчас</h1>
-        <p>Смотри, читай, листай. А потом заходи на ближайшее событие.</p>
-      </div>
 
       <article class="post">
         <div class="post-head">
           <div class="post-avatar"><div class="inner">Б</div></div>
           <div class="post-user">антресоль&перец<span>3 часа назад</span></div>
         </div>
-        <div class="post-media">
+        <div class="post-media video-tappable">
           <video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4"
                  muted loop playsinline preload="metadata"></video>
+          <div class="post-sound">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 5L6 9H3v6h3l5 4V5z"/>
+              <path d="M22 9l-6 6"/>
+              <path d="M16 9l6 6"/>
+            </svg>
+          </div>
         </div>
         <div class="post-caption">
           <div class="post-title">Пятница выдалась громкой</div>
@@ -591,9 +596,16 @@
           <div class="post-avatar"><div class="inner">Б</div></div>
           <div class="post-user">антресоль&перец<span>2 дня назад</span></div>
         </div>
-        <div class="post-media">
+        <div class="post-media video-tappable">
           <video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4"
                  muted loop playsinline preload="metadata"></video>
+          <div class="post-sound">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 5L6 9H3v6h3l5 4V5z"/>
+              <path d="M22 9l-6 6"/>
+              <path d="M16 9l6 6"/>
+            </svg>
+          </div>
         </div>
         <div class="post-caption">
           <div class="post-title">Музыкальное лото — тот самый момент</div>
@@ -610,9 +622,16 @@
           <div class="post-avatar"><div class="inner">Б</div></div>
           <div class="post-user">антресоль&перец<span>3 дня назад</span></div>
         </div>
-        <div class="post-media">
+        <div class="post-media video-tappable">
           <video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4"
                  muted loop playsinline preload="metadata"></video>
+          <div class="post-sound">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 5L6 9H3v6h3l5 4V5z"/>
+              <path d="M22 9l-6 6"/>
+              <path d="M16 9l6 6"/>
+            </svg>
+          </div>
         </div>
         <div class="post-caption">
           <div class="post-title">Проверка материала. Каждый вечер — новое</div>
@@ -903,6 +922,40 @@
       var feed = document.getElementById('feed');
       var navItems = document.querySelectorAll('.nav-item');
 
+      // ==== ЗВУК В ЛЕНТЕ (тап по видео) ====
+      var feedSound = false;
+      var feedSoundIconOn  = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 7a7 7 0 0 1 0 10"/>';
+      var feedSoundIconOff = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>';
+
+      function syncFeedSoundUI(){
+        insta.querySelectorAll('.post-sound').forEach(function(el){
+          el.classList.toggle('on', feedSound);
+          var svg = el.querySelector('svg');
+          if (svg) svg.innerHTML = feedSound ? feedSoundIconOn : feedSoundIconOff;
+        });
+      }
+
+      function toggleFeedSound(){
+        feedSound = !feedSound;
+        insta.querySelectorAll('video').forEach(function(v){
+          v.muted = !feedSound;
+          if (feedSound) {
+            v.volume = 1;
+            var rect = v.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) v.play().catch(function(){});
+          }
+        });
+        syncFeedSoundUI();
+      }
+
+      insta.querySelectorAll('.post-media.video-tappable').forEach(function(m){
+        m.addEventListener('click', function(){
+          toggleFeedSound();
+        });
+      });
+
+      syncFeedSoundUI();
+
       function setActive(view){
         navItems.forEach(function(n){
           n.classList.toggle('active', n.getAttribute('data-goto') === view);
@@ -933,6 +986,7 @@
           insta.querySelectorAll('video').forEach(function(v){
             var rect = v.getBoundingClientRect();
             if (rect.top < window.innerHeight && rect.bottom > 0) {
+              v.muted = !feedSound;
               v.play().catch(function(){});
             }
           });
@@ -964,6 +1018,7 @@
           entries.forEach(function(e){
             var v = e.target;
             if (e.isIntersecting && e.intersectionRatio > 0.4) {
+              v.muted = !feedSound;
               v.play().catch(function(){});
             } else {
               v.pause();
@@ -1034,7 +1089,6 @@
           var tgId = readTgId();
           var anonId = getAnonId();
 
-          // Ищем строку: сначала по tg_id, потом по anon_id, потом по id
           var existing = null;
           if (tgId) {
             var r1 = await supabaseClient.from('users').select('*').eq('tg_id', tgId).maybeSingle();
@@ -1080,7 +1134,6 @@
         } catch(e){ console.warn('Track error:', e); }
       }
 
-      // Первый вызов + повторные через 5 и 15 секунд (чтобы tg_id точно появился)
       authReady.then(function(u){
         if (!u) return;
         trackUser('visit');

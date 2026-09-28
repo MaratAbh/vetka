@@ -28,16 +28,6 @@
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Telegram WebApp (асинхронно, не блокирует загрузку) -->
-<script>
-  (function(){
-    var s = document.createElement('script');
-    s.src = 'https://telegram.org/js/telegram-web-app.js';
-    s.async = true;
-    document.head.appendChild(s);
-  })();
-</script>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -885,26 +875,11 @@
         return id;
       }
 
-      // Ждём, пока Telegram-скрипт инициализируется и отдаст user.id (до 5 секунд)
-      var tgIdReady = new Promise(function(resolve){
-        var start = Date.now();
-        function check(){
-          try {
-            var tg = window.Telegram && window.Telegram.WebApp;
-            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
-              return resolve(tg.initDataUnsafe.user.id);
-            }
-          } catch(e){}
-          if (Date.now() - start > 5000) return resolve(null);
-          setTimeout(check, 150);
-        }
-        check();
-      });
-
       async function trackUser(action, payload){
         payload = payload || {};
         try {
-          var tgId = await tgIdReady;
+          var tgId = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user)
+            ? window.Telegram.WebApp.initDataUnsafe.user.id : null;
           var anonId = getAnonId();
 
           var query = supabaseClient.from('users').select('*');
@@ -935,13 +910,11 @@
               profile_views: action === 'profile_view' ? 1 : 0,
               follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null
             };
-            if (tgId) insertData.tg_id = tgId;
-            else insertData.anon_id = anonId;
+            if (tgId) insertData.tg_id = tgId; else insertData.anon_id = anonId;
             await supabaseClient.from('users').insert([insertData]);
           }
         } catch(e){ console.warn('Track error:', e); }
       }
-
       trackUser('visit');
 
       // ЛОГИКА
@@ -955,14 +928,6 @@
       var closeBtn = document.getElementById('closeProfile');
       var toast = document.getElementById('toast');
       var scrollEndTracked = false;
-
-      var toastTimer;
-      function showToast(text){
-        toast.textContent = text;
-        toast.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
-      }
 
       if (introEl) {
         var introIo = new IntersectionObserver(function(entries){
@@ -995,6 +960,14 @@
           }
         });
       });
+
+      var toastTimer;
+      function showToast(text){
+        toast.textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
+      }
 
       document.querySelectorAll('[data-share]').forEach(function(btn){
         btn.addEventListener('click', function(e){

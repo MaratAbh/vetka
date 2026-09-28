@@ -27,8 +27,16 @@
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Telegram WebApp -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!-- Telegram WebApp (асинхронно — не блокирует загрузку) -->
+<script>
+  (function(){
+    var s = document.createElement('script');
+    s.src = 'https://telegram.org/js/telegram-web-app.js';
+    s.async = true;
+    document.head.appendChild(s);
+  })();
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -902,6 +910,24 @@
         }
       })();
 
+      // Ждём Telegram-скрипт максимум 3 секунды (чтобы initDataUnsafe успел появиться)
+      function waitTgId(maxMs){
+        return new Promise(function(resolve){
+          var start = Date.now();
+          function check(){
+            try {
+              var tg = window.Telegram && window.Telegram.WebApp;
+              if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
+                return resolve(tg.initDataUnsafe.user.id);
+              }
+            } catch(e){}
+            if (Date.now() - start > maxMs) return resolve(null);
+            setTimeout(check, 200);
+          }
+          check();
+        });
+      }
+
       async function trackUser(action, payload){
         payload = payload || {};
         try {
@@ -909,8 +935,7 @@
           if (!user) return;
           var userId = user.id;
 
-          var tgId = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user)
-            ? window.Telegram.WebApp.initDataUnsafe.user.id : null;
+          var tgId = await waitTgId(3000);
 
           var res = await supabaseClient.from('users').select('*').eq('id', userId).maybeSingle();
           var existing = res.data;
@@ -927,6 +952,7 @@
             } else if (action === 'follow') {
               updates.follows = payload.orgName || 'БАЗА';
             }
+            if (tgId && !existing.tg_id) updates.tg_id = tgId;
             await supabaseClient.from('users').update(updates).eq('id', userId);
           } else {
             var insertData = {

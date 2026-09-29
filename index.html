@@ -800,6 +800,7 @@
         videos.forEach(function(v){ v.muted = false; v.volume = 1; });
         var current = slides[currentIndex];
         if (current) { var v = current.querySelector('video'); if (v) v.play().catch(function(){}); }
+        trackEvent('sound_on', {});
       }
       function disableSound(){
         if (!soundEnabled) return;
@@ -817,6 +818,7 @@
       function openProfile(){
         if (window.ym) { try { ym(113067752, 'reachGoal', 'open_profile'); } catch(err){} }
         trackUser('profile_view');
+        trackEvent('profile_open', {});
         profile.classList.add('open');
         videos.forEach(function(v){ v.pause(); });
       }
@@ -836,6 +838,7 @@
         followed = !followed;
         if (window.ym) { try { ym(113067752, 'reachGoal', 'follow'); } catch(err){} }
         trackUser('follow', { orgName: 'БАЗА' });
+        trackEvent('follow', { following: followed });
         if (followed) {
           followBtn.classList.add('followed');
           followBtn.querySelector('span').textContent = 'Вы подписаны';
@@ -880,6 +883,10 @@
         return id;
       }
 
+      // ===== АНАЛИТИКА =====
+      var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+      var trackedSlideViews = {};
+
       var authReady = (async function(){
         var hasStored = false;
         try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
@@ -898,6 +905,21 @@
           return r.data.user;
         } catch(e) { console.warn('Auth error:', e); return null; }
       })();
+
+      async function trackEvent(type, data){
+        try {
+          var user = await authReady;
+          if (!user) return;
+          await supabaseClient.from('events').insert([{
+            user_id: user.id,
+            tg_id: readTgId(),
+            anon_id: getAnonId(),
+            event_type: type,
+            event_data: data || {},
+            session_id: SESSION_ID
+          }]);
+        } catch(e){ console.warn('Event error:', e); }
+      }
 
       async function trackUser(action, payload){
         payload = payload || {};
@@ -951,6 +973,10 @@
       authReady.then(function(u){
         if (!u) return;
         trackUser('visit');
+        trackEvent('visit', {
+          ref: document.referrer || null,
+          ua: navigator.userAgent
+        });
         setTimeout(function(){ trackUser('visit'); }, 5000);
         setTimeout(function(){ trackUser('visit'); }, 15000);
       });
@@ -985,6 +1011,20 @@
         setTimeout(function(){ preloadSlide('r2', false); }, 300);
         setTimeout(function(){ preloadSlide('r3', false); }, 900);
       })();
+
+      // ===== ТРЕК ПРОСМОТРОВ СЛАЙДОВ =====
+      var slideIO = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (e.isIntersecting && e.intersectionRatio > 0.55) {
+            var slideId = e.target.dataset.id;
+            if (slideId && !trackedSlideViews[slideId]) {
+              trackedSlideViews[slideId] = true;
+              trackEvent('slide_view', { slide_id: slideId });
+            }
+          }
+        });
+      }, { root: feed, threshold: [0, 0.55, 0.9] });
+      slides.forEach(function(s){ slideIO.observe(s); });
     })();
   </script>
 

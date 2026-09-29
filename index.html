@@ -655,7 +655,7 @@
     </div>
   </div>
 
-  <div class="insta" id="insta">
+  <div class="insta hidden" id="insta">
     <header class="insta-head">
       <div class="insta-logo">
         <span class="mark">
@@ -791,7 +791,7 @@
     </div>
   </div>
 
-  <div class="feed" id="feed">
+  <div class="feed visible" id="feed">
 
     <div class="slide" id="r1" data-id="r1">
       <div class="video">
@@ -973,14 +973,14 @@
   </div>
 
   <nav class="app-nav">
-    <button class="nav-item active" data-goto="insta" aria-label="Лента">
+    <button class="nav-item" data-goto="insta" aria-label="Лента">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3.5" y="5" width="17" height="13" rx="2.5"/>
         <path d="M10.5 9.2l4.2 2.8-4.2 2.8z" fill="currentColor" stroke="none"/>
         <path d="M8.5 21h7"/>
       </svg>
     </button>
-    <button class="nav-item" data-goto="reels" aria-label="События">
+    <button class="nav-item active" data-goto="reels" aria-label="События">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1.5a2 2 0 0 0 0 4V15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2.5a2 2 0 0 0 0-4V7z"/>
         <path d="M14 6v12" stroke-dasharray="2 2.2"/>
@@ -1061,6 +1061,8 @@
           if (delta < -THRESHOLD) {
             onboarding.style.transform = '';
             onboarding.classList.add('gone');
+            unlockVideos();
+            layoutReels();
             setTimeout(function(){
               if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
               onboarding = null;
@@ -1499,6 +1501,9 @@
           followBtn.querySelector('svg').innerHTML = '<path d="M12 5v14"/><path d="M5 12h14"/>';
         }
       });
+
+      // ===== ФИКС: первой страницей открываем рилсы =====
+      goTo('reels');
     })();
   </script>
 

@@ -893,9 +893,12 @@
         return id;
       }
 
-      // ===== АНАЛИТИКА =====
+      // ===== АНАЛИТИКА (буферизация + flush с правильным tg_id) =====
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now() + '-' + Math.random().toString(36).slice(2));
       var trackedSlideViews = {};
+      var pendingEvents = [];
+      var flushing = false;
+      var tgIdWatchStarted = false;
 
       var authReady = (async function(){
         var hasStored = false;
@@ -916,30 +919,70 @@
         } catch(e) { console.warn('Auth error:', e); return null; }
       })();
 
-      async function trackEvent(type, data){
+      function startTgIdWatch(){
+        if (tgIdWatchStarted) return;
+        tgIdWatchStarted = true;
+        var tries = 0;
+        var iv = setInterval(function(){
+          tries++;
+          if (readTgId()) {
+            clearInterval(iv);
+            flushEvents();
+          } else if (tries >= 25) {
+            clearInterval(iv);
+            flushEvents();
+          }
+        }, 200);
+        // Принудительный flush через 5 секунд, даже если tg_id так и не пришёл
+        setTimeout(flushEvents, 5200);
+      }
+
+      async function flushEvents(){
+        if (flushing) return;
+        if (pendingEvents.length === 0) return;
+        flushing = true;
+        var batch = pendingEvents.slice();
+        pendingEvents = [];
         try {
           var user = await authReady;
-          if (!user) return;
-          var tgId = readTgId();
-
-          if (!tgId && window.Telegram && window.Telegram.WebApp) {
-            for (var i = 0; i < 15; i++) {
-              await new Promise(function(r){ setTimeout(r, 200); });
-              tgId = readTgId();
-              if (tgId) break;
-            }
+          if (!user) {
+            flushing = false;
+            return;
           }
-
-          await supabaseClient.from('events').insert([{
-            user_id: user.id,
-            tg_id: tgId,
-            anon_id: getAnonId(),
-            event_type: type,
-            event_data: data || {},
-            session_id: SESSION_ID
-          }]);
-        } catch(e){ console.warn('Event error:', e); }
+          var tgId = readTgId();
+          var anonId = getAnonId();
+          var rows = batch.map(function(e){
+            return {
+              user_id: user.id,
+              tg_id: tgId,
+              anon_id: anonId,
+              event_type: e.type,
+              event_data: e.data,
+              session_id: SESSION_ID
+            };
+          });
+          await supabaseClient.from('events').insert(rows);
+        } catch(e){ console.warn('Event flush error:', e); }
+        flushing = false;
+        if (pendingEvents.length > 0) flushEvents();
       }
+
+      function trackEvent(type, data){
+        pendingEvents.push({ type: type, data: data || {} });
+        if (readTgId()) {
+          flushEvents();
+        } else if (window.Telegram && window.Telegram.WebApp) {
+          startTgIdWatch();
+        } else {
+          flushEvents();
+        }
+      }
+
+      // Срочный flush при уходе в фон / закрытии
+      document.addEventListener('visibilitychange', function(){
+        if (document.hidden) flushEvents();
+      });
+      window.addEventListener('pagehide', function(){ flushEvents(); });
 
       async function trackUser(action, payload){
         payload = payload || {};

@@ -1133,18 +1133,18 @@
           feed.classList.add('visible');
           setActive('reels');
 
-          // Отключаем snap, чтобы WebView не "подтянул" скролл к неправильной точке
           feed.style.scrollSnapType = 'none';
           feed.scrollTop = 0;
           feed.scrollTo(0, 0);
 
-          // Ждём два кадра, чтобы WebView пересчитал размеры после смены экрана, потом снова наверх и включаем snap
           requestAnimationFrame(function(){
-            requestAnimationFrame(function(){
+            feed.scrollTop = 0;
+            feed.scrollTo(0, 0);
+            setTimeout(function(){
               feed.scrollTop = 0;
               feed.scrollTo(0, 0);
               feed.style.scrollSnapType = '';
-            });
+            }, 100);
           });
 
           setTimeout(function(){
@@ -1363,34 +1363,6 @@
         trackUser('visit');
         setTimeout(function(){ trackUser('visit'); }, 5000);
         setTimeout(function(){ trackUser('visit'); }, 15000);
-      });
-
-      // ===== ФИКС: если WebView меняет высоту, а мы в самом верху рилсов — возвращаем скролл на 0 =====
-      function reanchorFirstSlide(){
-        if (!feed.classList.contains('visible')) return;
-        if (feed.scrollTop > 4) return;
-        var snap = feed.style.scrollSnapType;
-        feed.style.scrollSnapType = 'none';
-        feed.scrollTop = 0;
-        feed.scrollTo(0, 0);
-        requestAnimationFrame(function(){
-          feed.scrollTop = 0;
-          feed.scrollTo(0, 0);
-          feed.style.scrollSnapType = snap;
-        });
-      }
-      if (window.visualViewport) {
-        var _lastVH = window.visualViewport.height;
-        window.visualViewport.addEventListener('resize', function(){
-          var h = window.visualViewport.height;
-          if (Math.abs(h - _lastVH) < 2) return;
-          _lastVH = h;
-          reanchorFirstSlide();
-        });
-      }
-      window.addEventListener('resize', reanchorFirstSlide);
-      window.addEventListener('orientationchange', function(){
-        setTimeout(reanchorFirstSlide, 150);
       });
 
       // ===== РИЛСЫ =====

@@ -490,7 +490,7 @@
           <span class="item price">от 500 ₽</span>
         </div>
         <div class="actions-row">
-          <a class="cta" href="ССЫЛКА_НА_ОПЛАТУ_1" target="_blank">
+          <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_1" target="_blank">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
             Купить билет
           </a>
@@ -522,7 +522,7 @@
           <span class="item price">от 700 ₽</span>
         </div>
         <div class="actions-row">
-          <a class="cta" href="ССЫЛКА_НА_ОПЛАТУ_2" target="_blank">
+          <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_2" target="_blank">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
             Купить билет
           </a>
@@ -554,7 +554,7 @@
           <span class="item price">от 600 ₽</span>
         </div>
         <div class="actions-row">
-          <a class="cta" href="ССЫЛКА_НА_ОПЛАТУ_3" target="_blank">
+          <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_3" target="_blank">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
             Купить билет
           </a>
@@ -815,6 +815,16 @@
       });
       updateIcons();
 
+      // ===== ТРЕК КЛИКА ПО «КУПИТЬ БИЛЕТ» =====
+      document.querySelectorAll('[data-cta]').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var slide = btn.closest('.slide');
+          var slideId = slide ? slide.dataset.id : null;
+          trackEvent('cta_click', { slide_id: slideId });
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'cta_click'); } catch(err){} }
+        });
+      });
+
       function openProfile(){
         if (window.ym) { try { ym(113067752, 'reachGoal', 'open_profile'); } catch(err){} }
         trackUser('profile_view');
@@ -1010,7 +1020,6 @@
           }, 100);
         });
 
-        // Параллельно ставим src всем трём видео, браузер сам раскидает канал
         function setSrc(id){
           var s = document.querySelector('#' + id + ' video');
           if (!s) return null;

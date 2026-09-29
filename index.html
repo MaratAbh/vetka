@@ -912,7 +912,6 @@
           if (!user) return;
           var tgId = readTgId();
 
-          // Если мы в Telegram, но initDataUnsafe.user ещё не пришёл — ждём до 3с
           if (!tgId && window.Telegram && window.Telegram.WebApp) {
             for (var i = 0; i < 15; i++) {
               await new Promise(function(r){ setTimeout(r, 200); });
@@ -992,7 +991,7 @@
         setTimeout(function(){ trackUser('visit'); }, 15000);
       });
 
-      // ===== СТАРТ: показываем рилсы + каскадная загрузка =====
+      // ===== СТАРТ: показываем рилсы + параллельная загрузка всех трёх видео =====
       (function showReels(){
         layoutReels();
         feed.classList.add('visible');
@@ -1011,16 +1010,19 @@
           }, 100);
         });
 
-        function preloadSlide(id, autoplay){
+        // Параллельно ставим src всем трём видео, браузер сам раскидает канал
+        function setSrc(id){
           var s = document.querySelector('#' + id + ' video');
-          if (!s) return;
+          if (!s) return null;
           if (!s._loaded) { s.src = s.dataset.src; s._loaded = true; }
-          if (autoplay) { s.muted = true; s.play().catch(function(){}); }
+          return s;
         }
 
-        preloadSlide('r1', true);
-        setTimeout(function(){ preloadSlide('r2', false); }, 300);
-        setTimeout(function(){ preloadSlide('r3', false); }, 900);
+        var v1 = setSrc('r1');
+        setSrc('r2');
+        setSrc('r3');
+
+        if (v1) { v1.muted = true; v1.play().catch(function(){}); }
       })();
 
       // ===== ТРЕК ПРОСМОТРОВ СЛАЙДОВ =====

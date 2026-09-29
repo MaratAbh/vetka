@@ -650,6 +650,7 @@
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
 
+      // ===== ФИКС ЛАГОВ ОНБОРДИНГА: 4K видео → сжатый источник =====
       if (onboarding) {
         onboarding.querySelectorAll('video').forEach(function(v){
           var s = v.getAttribute('src') || '';
@@ -660,19 +661,39 @@
         });
       }
 
+      // ===== ВЫСОТА РИЛСОВ =====
       function layoutReels(){
         var vh = window.innerHeight;
         if (!vh || vh < 100) return;
         feed.style.height = vh + 'px';
         var allSlides = feed.querySelectorAll('.slide');
-        for (var i = 0; i < allSlides.length; i++) allSlides[i].style.height = vh + 'px';
+        for (var i = 0; i < allSlides.length; i++) {
+          allSlides[i].style.height = vh + 'px';
+        }
       }
 
+      // ===== ОНБОРДИНГ =====
       if (onboarding) {
         var startY = 0, currentY = 0, dragging = false;
         var THRESHOLD = 70;
-        function onStart(e){ var t = e.touches ? e.touches[0] : e; startY = t.clientY; currentY = startY; dragging = true; onboarding.classList.add('dragging'); }
-        function onMove(e){ if (!dragging) return; var t = e.touches ? e.touches[0] : e; currentY = t.clientY; var delta = currentY - startY; if (delta < 0) { onboarding.style.transform = 'translateY(' + delta + 'px)'; if (e.cancelable) e.preventDefault(); } }
+
+        function onStart(e){
+          var t = e.touches ? e.touches[0] : e;
+          startY = t.clientY;
+          currentY = startY;
+          dragging = true;
+          onboarding.classList.add('dragging');
+        }
+        function onMove(e){
+          if (!dragging) return;
+          var t = e.touches ? e.touches[0] : e;
+          currentY = t.clientY;
+          var delta = currentY - startY;
+          if (delta < 0) {
+            onboarding.style.transform = 'translateY(' + delta + 'px)';
+            if (e.cancelable) e.preventDefault();
+          }
+        }
         function onEnd(){
           if (!dragging) return;
           dragging = false;
@@ -682,19 +703,31 @@
             onboarding.style.transform = '';
             onboarding.classList.add('gone');
             layoutReels();
-            setTimeout(function(){ if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding); onboarding = null; }, 600);
-          } else { onboarding.style.transform = ''; }
+            setTimeout(function(){
+              if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
+              onboarding = null;
+            }, 600);
+          } else {
+            onboarding.style.transform = '';
+          }
         }
+
         onboarding.addEventListener('touchstart', onStart, {passive:true});
         onboarding.addEventListener('touchmove', onMove, {passive:false});
         onboarding.addEventListener('touchend', onEnd);
         onboarding.addEventListener('touchcancel', onEnd);
+
         onboarding.addEventListener('mousedown', onStart);
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
+
         onboarding.querySelectorAll('video').forEach(function(v){
           var revealed = false;
-          function reveal(){ if (revealed) return; revealed = true; v.classList.add('loaded'); }
+          function reveal(){
+            if (revealed) return;
+            revealed = true;
+            v.classList.add('loaded');
+          }
           v.addEventListener('loadeddata', reveal);
           v.addEventListener('canplay', reveal);
           v.addEventListener('playing', reveal);
@@ -703,6 +736,7 @@
         });
       }
 
+      // ===== РИЛСЫ =====
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var videos = feed.querySelectorAll('video');
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -710,9 +744,26 @@
       var profile = document.getElementById('profile');
       var openBtns = document.querySelectorAll('[data-open-profile]');
       var closeBtn = document.getElementById('closeProfile');
+      var scrollEndTracked = false;
 
-      function loadVideo(v){ if (v._loaded) return; if (v.dataset.src) { v.src = v.dataset.src; v._loaded = true; } }
+      function loadVideo(v){
+        if (v._loaded) return;
+        if (v.dataset.src) { v.src = v.dataset.src; v._loaded = true; }
+      }
+      function activateRange(idx){
+        var range = [idx - 1, idx, idx + 1];
+        slides.forEach(function(s, i){
+          if (range.indexOf(i) === -1) return;
+          var v = s.querySelector('video');
+          if (v) loadVideo(v);
+        });
+      }
       function playOnlyInView(entry){
+        var idx = slides.indexOf(entry);
+        if (idx === slides.length - 1 && !scrollEndTracked) {
+          scrollEndTracked = true;
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'scroll_end'); } catch(err){} }
+        }
         videos.forEach(function(v){
           var s = v.closest('.slide');
           if (s === entry) { v.muted = !soundEnabled; v.play().catch(function(){}); }
@@ -724,7 +775,7 @@
         entries.forEach(function(e){
           if (e.isIntersecting && e.intersectionRatio > 0.55) {
             var idx = slides.indexOf(e.target);
-            if (idx !== -1) { currentIndex = idx; playOnlyInView(e.target); }
+            if (idx !== -1) { currentIndex = idx; activateRange(idx); playOnlyInView(e.target); }
           }
         });
       }, { root: feed, threshold: [0, 0.55, 0.9] });
@@ -743,11 +794,28 @@
           }
         });
       }
-      function enableSound(){ if (soundEnabled) return; soundEnabled = true; updateIcons(); videos.forEach(function(v){ v.muted = false; v.volume = 1; }); var c = slides[currentIndex]; if (c) { var v = c.querySelector('video'); if (v) v.play().catch(function(){}); } trackEvent('sound_on', {}); }
-      function disableSound(){ if (!soundEnabled) return; soundEnabled = false; updateIcons(); videos.forEach(function(v){ v.muted = true; }); }
-      soundBtns.forEach(function(btn){ btn.addEventListener('click', function(e){ e.stopPropagation(); if (soundEnabled) disableSound(); else enableSound(); }); });
+      function enableSound(){
+        if (soundEnabled) return;
+        soundEnabled = true; updateIcons();
+        videos.forEach(function(v){ v.muted = false; v.volume = 1; });
+        var current = slides[currentIndex];
+        if (current) { var v = current.querySelector('video'); if (v) v.play().catch(function(){}); }
+        trackEvent('sound_on', {});
+      }
+      function disableSound(){
+        if (!soundEnabled) return;
+        soundEnabled = false; updateIcons();
+        videos.forEach(function(v){ v.muted = true; });
+      }
+      soundBtns.forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          if (soundEnabled) disableSound(); else enableSound();
+        });
+      });
       updateIcons();
 
+      // ===== ТРЕК КЛИКА ПО «КУПИТЬ БИЛЕТ» =====
       document.querySelectorAll('[data-cta]').forEach(function(btn){
         btn.addEventListener('click', function(){
           var slide = btn.closest('.slide');
@@ -766,10 +834,12 @@
       }
       function closeProfile(){
         profile.classList.remove('open');
-        var c = slides[currentIndex];
-        if (c) { var v = c.querySelector('video'); if (v) { v.muted = !soundEnabled; v.play().catch(function(){}); } }
+        var current = slides[currentIndex];
+        if (current) { var v = current.querySelector('video'); if (v) { v.muted = !soundEnabled; v.play().catch(function(){}); } }
       }
-      openBtns.forEach(function(btn){ btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); }); });
+      openBtns.forEach(function(btn){
+        btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); });
+      });
       closeBtn.addEventListener('click', function(e){ e.stopPropagation(); closeProfile(); });
 
       var followBtn = document.getElementById('followBtn');
@@ -790,27 +860,40 @@
         }
       });
 
+      // ===== SUPABASE =====
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
       var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
       var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        auth: { detectSessionInUrl: false, persistSession: true, autoRefreshToken: true, storageKey: STORAGE_KEY }
+        auth: {
+          detectSessionInUrl: false,
+          persistSession: true,
+          autoRefreshToken: true,
+          storageKey: STORAGE_KEY
+        }
       });
 
       function readTgId(){
         try {
           var tg = window.Telegram && window.Telegram.WebApp;
-          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) return tg.initDataUnsafe.user.id;
+          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
+            return tg.initDataUnsafe.user.id;
+          }
         } catch(e){}
         return null;
       }
+
       function getAnonId(){
         var id = null;
         try { id = localStorage.getItem('vetka_anon_id'); } catch(e){}
-        if (!id) { id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now() + '-' + Math.random().toString(36).slice(2)); try { localStorage.setItem('vetka_anon_id', id); } catch(e){} }
+        if (!id) {
+          id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+          try { localStorage.setItem('vetka_anon_id', id); } catch(e){}
+        }
         return id;
       }
 
+      // ===== АНАЛИТИКА (буферизация + flush с правильным tg_id) =====
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now() + '-' + Math.random().toString(36).slice(2));
       var trackedSlideViews = {};
       var pendingEvents = [];
@@ -842,9 +925,15 @@
         var tries = 0;
         var iv = setInterval(function(){
           tries++;
-          if (readTgId()) { clearInterval(iv); flushEvents(); }
-          else if (tries >= 25) { clearInterval(iv); flushEvents(); }
+          if (readTgId()) {
+            clearInterval(iv);
+            flushEvents();
+          } else if (tries >= 25) {
+            clearInterval(iv);
+            flushEvents();
+          }
         }, 200);
+        // Принудительный flush через 5 секунд, даже если tg_id так и не пришёл
         setTimeout(flushEvents, 5200);
       }
 
@@ -856,11 +945,21 @@
         pendingEvents = [];
         try {
           var user = await authReady;
-          if (!user) { flushing = false; return; }
+          if (!user) {
+            flushing = false;
+            return;
+          }
           var tgId = readTgId();
           var anonId = getAnonId();
           var rows = batch.map(function(e){
-            return { user_id: user.id, tg_id: tgId, anon_id: anonId, event_type: e.type, event_data: e.data, session_id: SESSION_ID };
+            return {
+              user_id: user.id,
+              tg_id: tgId,
+              anon_id: anonId,
+              event_type: e.type,
+              event_data: e.data,
+              session_id: SESSION_ID
+            };
           });
           await supabaseClient.from('events').insert(rows);
         } catch(e){ console.warn('Event flush error:', e); }
@@ -870,12 +969,19 @@
 
       function trackEvent(type, data){
         pendingEvents.push({ type: type, data: data || {} });
-        if (readTgId()) flushEvents();
-        else if (window.Telegram && window.Telegram.WebApp) startTgIdWatch();
-        else flushEvents();
+        if (readTgId()) {
+          flushEvents();
+        } else if (window.Telegram && window.Telegram.WebApp) {
+          startTgIdWatch();
+        } else {
+          flushEvents();
+        }
       }
 
-      document.addEventListener('visibilitychange', function(){ if (document.hidden) flushEvents(); });
+      // Срочный flush при уходе в фон / закрытии
+      document.addEventListener('visibilitychange', function(){
+        if (document.hidden) flushEvents();
+      });
       window.addEventListener('pagehide', function(){ flushEvents(); });
 
       async function trackUser(action, payload){
@@ -886,19 +992,40 @@
           var userId = user.id;
           var tgId = readTgId();
           var anonId = getAnonId();
+
           var existing = null;
-          if (tgId) { var r1 = await supabaseClient.from('users').select('*').eq('tg_id', tgId).maybeSingle(); existing = r1.data; }
-          if (!existing) { var r2 = await supabaseClient.from('users').select('*').eq('anon_id', anonId).maybeSingle(); existing = r2.data; }
-          if (!existing) { var r3 = await supabaseClient.from('users').select('*').eq('id', userId).maybeSingle(); existing = r3.data; }
+          if (tgId) {
+            var r1 = await supabaseClient.from('users').select('*').eq('tg_id', tgId).maybeSingle();
+            existing = r1.data;
+          }
+          if (!existing) {
+            var r2 = await supabaseClient.from('users').select('*').eq('anon_id', anonId).maybeSingle();
+            existing = r2.data;
+          }
+          if (!existing) {
+            var r3 = await supabaseClient.from('users').select('*').eq('id', userId).maybeSingle();
+            existing = r3.data;
+          }
+
           if (existing) {
             var updates = { last_seen: new Date().toISOString() };
-            if (action === 'profile_view') updates.profile_views = (existing.profile_views || 0) + 1;
-            else if (action === 'follow') updates.follows = payload.orgName || 'БАЗА';
+            if (action === 'profile_view') {
+              updates.profile_views = (existing.profile_views || 0) + 1;
+            } else if (action === 'follow') {
+              updates.follows = payload.orgName || 'БАЗА';
+            }
             if (tgId && !existing.tg_id) updates.tg_id = tgId;
             if (anonId && !existing.anon_id) updates.anon_id = anonId;
             await supabaseClient.from('users').update(updates).eq('id', existing.id);
           } else {
-            var insertData = { id: userId, last_seen: new Date().toISOString(), likes: [], invites: 0, profile_views: action === 'profile_view' ? 1 : 0, follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null };
+            var insertData = {
+              id: userId,
+              last_seen: new Date().toISOString(),
+              likes: [],
+              invites: 0,
+              profile_views: action === 'profile_view' ? 1 : 0,
+              follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null
+            };
             if (tgId) insertData.tg_id = tgId;
             if (anonId) insertData.anon_id = anonId;
             await supabaseClient.from('users').insert([insertData]);
@@ -909,17 +1036,23 @@
       authReady.then(function(u){
         if (!u) return;
         trackUser('visit');
-        trackEvent('visit', { ref: document.referrer || null, ua: navigator.userAgent });
+        trackEvent('visit', {
+          ref: document.referrer || null,
+          ua: navigator.userAgent
+        });
         setTimeout(function(){ trackUser('visit'); }, 5000);
         setTimeout(function(){ trackUser('visit'); }, 15000);
       });
 
+      // ===== СТАРТ: показываем рилсы + параллельная загрузка всех трёх видео =====
       (function showReels(){
         layoutReels();
         feed.classList.add('visible');
+
         feed.style.scrollSnapType = 'none';
         feed.scrollTop = 0;
         feed.scrollTo(0, 0);
+
         requestAnimationFrame(function(){
           feed.scrollTop = 0;
           feed.scrollTo(0, 0);
@@ -929,18 +1062,22 @@
             feed.style.scrollSnapType = '';
           }, 100);
         });
+
         function setSrc(id){
           var s = document.querySelector('#' + id + ' video');
           if (!s) return null;
           if (!s._loaded) { s.src = s.dataset.src; s._loaded = true; }
           return s;
         }
+
         var v1 = setSrc('r1');
         setSrc('r2');
         setSrc('r3');
+
         if (v1) { v1.muted = true; v1.play().catch(function(){}); }
       })();
 
+      // ===== ТРЕК ПРОСМОТРОВ СЛАЙДОВ =====
       var slideIO = new IntersectionObserver(function(entries){
         entries.forEach(function(e){
           if (e.isIntersecting && e.intersectionRatio > 0.55) {

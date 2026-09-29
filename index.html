@@ -226,7 +226,7 @@
 
   .bottom{
     position:absolute;left:0;right:0;
-    bottom:calc(64px + env(safe-area-inset-bottom,0px));
+    bottom:calc(20px + env(safe-area-inset-bottom,0px));
     z-index:5;
     padding:0 16px 14px;
     display:flex;flex-direction:column;gap:9px;pointer-events:none;
@@ -650,7 +650,7 @@
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
 
-      // ===== ФИКС ЛАГОВ ОНБОРДИНГА #1: 4K видео → сжатый источник =====
+      // ===== ФИКС ЛАГОВ ОНБОРДИНГА: 4K видео → сжатый источник =====
       if (onboarding) {
         onboarding.querySelectorAll('video').forEach(function(v){
           var s = v.getAttribute('src') || '';
@@ -659,6 +659,17 @@
             v.load();
           }
         });
+      }
+
+      // ===== ВЫСОТА РИЛСОВ =====
+      function layoutReels(){
+        var vh = window.innerHeight;
+        if (!vh || vh < 100) return;
+        feed.style.height = vh + 'px';
+        var allSlides = feed.querySelectorAll('.slide');
+        for (var i = 0; i < allSlides.length; i++) {
+          allSlides[i].style.height = vh + 'px';
+        }
       }
 
       // ===== ОНБОРДИНГ =====
@@ -724,166 +735,6 @@
           v.play().catch(function(){});
         });
       }
-
-      // ===== ВЫСОТА РИЛСОВ =====
-      function layoutReels(){
-        var vh = window.innerHeight;
-        if (!vh || vh < 100) return;
-        feed.style.height = vh + 'px';
-        var allSlides = feed.querySelectorAll('.slide');
-        for (var i = 0; i < allSlides.length; i++) {
-          allSlides[i].style.height = vh + 'px';
-        }
-      }
-
-      function showReels(){
-        layoutReels();
-        feed.classList.add('visible');
-
-        feed.style.scrollSnapType = 'none';
-        feed.scrollTop = 0;
-        feed.scrollTo(0, 0);
-
-        requestAnimationFrame(function(){
-          feed.scrollTop = 0;
-          feed.scrollTo(0, 0);
-          setTimeout(function(){
-            feed.scrollTop = 0;
-            feed.scrollTo(0, 0);
-            feed.style.scrollSnapType = '';
-          }, 100);
-        });
-
-        setTimeout(function(){
-          var firstVideo = document.querySelector('#r1 video');
-          if (firstVideo) {
-            if (!firstVideo._loaded) {
-              firstVideo.src = firstVideo.dataset.src;
-              firstVideo._loaded = true;
-            }
-            firstVideo.muted = true;
-            firstVideo.play().catch(function(){});
-          }
-          var secondVideo = document.querySelector('#r2 video');
-          if (secondVideo && !secondVideo._loaded) {
-            secondVideo.src = secondVideo.dataset.src;
-            secondVideo._loaded = true;
-          }
-          var thirdVideo = document.querySelector('#r3 video');
-          if (thirdVideo && !thirdVideo._loaded) {
-            thirdVideo.src = thirdVideo.dataset.src;
-            thirdVideo._loaded = true;
-          }
-        }, 400);
-      }
-
-      // ===== SUPABASE =====
-      var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
-      var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
-      var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
-      var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        auth: {
-          detectSessionInUrl: false,
-          persistSession: true,
-          autoRefreshToken: true,
-          storageKey: STORAGE_KEY
-        }
-      });
-
-      function readTgId(){
-        try {
-          var tg = window.Telegram && window.Telegram.WebApp;
-          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
-            return tg.initDataUnsafe.user.id;
-          }
-        } catch(e){}
-        return null;
-      }
-
-      function getAnonId(){
-        var id = null;
-        try { id = localStorage.getItem('vetka_anon_id'); } catch(e){}
-        if (!id) {
-          id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now() + '-' + Math.random().toString(36).slice(2));
-          try { localStorage.setItem('vetka_anon_id', id); } catch(e){}
-        }
-        return id;
-      }
-
-      var authReady = (async function(){
-        var hasStored = false;
-        try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
-        if (hasStored) {
-          for (var i = 0; i < 15; i++) {
-            try {
-              var s = await supabaseClient.auth.getSession();
-              if (s.data && s.data.session && s.data.session.user) return s.data.session.user;
-            } catch(e){}
-            await new Promise(function(r){ setTimeout(r, 200); });
-          }
-        }
-        try {
-          var r = await supabaseClient.auth.signInAnonymously();
-          if (r.error) { console.warn('Auth error:', r.error); return null; }
-          return r.data.user;
-        } catch(e) { console.warn('Auth error:', e); return null; }
-      })();
-
-      async function trackUser(action, payload){
-        payload = payload || {};
-        try {
-          var user = await authReady;
-          if (!user) return;
-          var userId = user.id;
-          var tgId = readTgId();
-          var anonId = getAnonId();
-
-          var existing = null;
-          if (tgId) {
-            var r1 = await supabaseClient.from('users').select('*').eq('tg_id', tgId).maybeSingle();
-            existing = r1.data;
-          }
-          if (!existing) {
-            var r2 = await supabaseClient.from('users').select('*').eq('anon_id', anonId).maybeSingle();
-            existing = r2.data;
-          }
-          if (!existing) {
-            var r3 = await supabaseClient.from('users').select('*').eq('id', userId).maybeSingle();
-            existing = r3.data;
-          }
-
-          if (existing) {
-            var updates = { last_seen: new Date().toISOString() };
-            if (action === 'profile_view') {
-              updates.profile_views = (existing.profile_views || 0) + 1;
-            } else if (action === 'follow') {
-              updates.follows = payload.orgName || 'БАЗА';
-            }
-            if (tgId && !existing.tg_id) updates.tg_id = tgId;
-            if (anonId && !existing.anon_id) updates.anon_id = anonId;
-            await supabaseClient.from('users').update(updates).eq('id', existing.id);
-          } else {
-            var insertData = {
-              id: userId,
-              last_seen: new Date().toISOString(),
-              likes: [],
-              invites: 0,
-              profile_views: action === 'profile_view' ? 1 : 0,
-              follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null
-            };
-            if (tgId) insertData.tg_id = tgId;
-            if (anonId) insertData.anon_id = anonId;
-            await supabaseClient.from('users').insert([insertData]);
-          }
-        } catch(e){ console.warn('Track error:', e); }
-      }
-
-      authReady.then(function(u){
-        if (!u) return;
-        trackUser('visit');
-        setTimeout(function(){ trackUser('visit'); }, 5000);
-        setTimeout(function(){ trackUser('visit'); }, 15000);
-      });
 
       // ===== РИЛСЫ =====
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
@@ -996,8 +847,144 @@
         }
       });
 
-      // ===== СТАРТ: показываем рилсы =====
-      showReels();
+      // ===== SUPABASE =====
+      var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
+      var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
+      var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
+      var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+          detectSessionInUrl: false,
+          persistSession: true,
+          autoRefreshToken: true,
+          storageKey: STORAGE_KEY
+        }
+      });
+
+      function readTgId(){
+        try {
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
+            return tg.initDataUnsafe.user.id;
+          }
+        } catch(e){}
+        return null;
+      }
+
+      function getAnonId(){
+        var id = null;
+        try { id = localStorage.getItem('vetka_anon_id'); } catch(e){}
+        if (!id) {
+          id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+          try { localStorage.setItem('vetka_anon_id', id); } catch(e){}
+        }
+        return id;
+      }
+
+      var authReady = (async function(){
+        var hasStored = false;
+        try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
+        if (hasStored) {
+          for (var i = 0; i < 15; i++) {
+            try {
+              var s = await supabaseClient.auth.getSession();
+              if (s.data && s.data.session && s.data.session.user) return s.data.session.user;
+            } catch(e){}
+            await new Promise(function(r){ setTimeout(r, 200); });
+          }
+        }
+        try {
+          var r = await supabaseClient.auth.signInAnonymously();
+          if (r.error) { console.warn('Auth error:', r.error); return null; }
+          return r.data.user;
+        } catch(e) { console.warn('Auth error:', e); return null; }
+      })();
+
+      async function trackUser(action, payload){
+        payload = payload || {};
+        try {
+          var user = await authReady;
+          if (!user) return;
+          var userId = user.id;
+          var tgId = readTgId();
+          var anonId = getAnonId();
+
+          var existing = null;
+          if (tgId) {
+            var r1 = await supabaseClient.from('users').select('*').eq('tg_id', tgId).maybeSingle();
+            existing = r1.data;
+          }
+          if (!existing) {
+            var r2 = await supabaseClient.from('users').select('*').eq('anon_id', anonId).maybeSingle();
+            existing = r2.data;
+          }
+          if (!existing) {
+            var r3 = await supabaseClient.from('users').select('*').eq('id', userId).maybeSingle();
+            existing = r3.data;
+          }
+
+          if (existing) {
+            var updates = { last_seen: new Date().toISOString() };
+            if (action === 'profile_view') {
+              updates.profile_views = (existing.profile_views || 0) + 1;
+            } else if (action === 'follow') {
+              updates.follows = payload.orgName || 'БАЗА';
+            }
+            if (tgId && !existing.tg_id) updates.tg_id = tgId;
+            if (anonId && !existing.anon_id) updates.anon_id = anonId;
+            await supabaseClient.from('users').update(updates).eq('id', existing.id);
+          } else {
+            var insertData = {
+              id: userId,
+              last_seen: new Date().toISOString(),
+              likes: [],
+              invites: 0,
+              profile_views: action === 'profile_view' ? 1 : 0,
+              follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null
+            };
+            if (tgId) insertData.tg_id = tgId;
+            if (anonId) insertData.anon_id = anonId;
+            await supabaseClient.from('users').insert([insertData]);
+          }
+        } catch(e){ console.warn('Track error:', e); }
+      }
+
+      authReady.then(function(u){
+        if (!u) return;
+        trackUser('visit');
+        setTimeout(function(){ trackUser('visit'); }, 5000);
+        setTimeout(function(){ trackUser('visit'); }, 15000);
+      });
+
+      // ===== СТАРТ: показываем рилсы + каскадная загрузка =====
+      (function showReels(){
+        layoutReels();
+        feed.classList.add('visible');
+
+        feed.style.scrollSnapType = 'none';
+        feed.scrollTop = 0;
+        feed.scrollTo(0, 0);
+
+        requestAnimationFrame(function(){
+          feed.scrollTop = 0;
+          feed.scrollTo(0, 0);
+          setTimeout(function(){
+            feed.scrollTop = 0;
+            feed.scrollTo(0, 0);
+            feed.style.scrollSnapType = '';
+          }, 100);
+        });
+
+        function preloadSlide(id, autoplay){
+          var s = document.querySelector('#' + id + ' video');
+          if (!s) return;
+          if (!s._loaded) { s.src = s.dataset.src; s._loaded = true; }
+          if (autoplay) { s.muted = true; s.play().catch(function(){}); }
+        }
+
+        preloadSlide('r1', true);
+        setTimeout(function(){ preloadSlide('r2', false); }, 300);
+        setTimeout(function(){ preloadSlide('r3', false); }, 900);
+      })();
     })();
   </script>
 

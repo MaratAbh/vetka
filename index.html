@@ -417,7 +417,7 @@
 
   .bottom{
     position:absolute;left:0;right:0;
-    bottom:calc(84px + env(safe-area-inset-bottom,0px));
+    bottom:calc(64px + env(safe-area-inset-bottom,0px));
     z-index:5;
     padding:0 16px 14px;
     display:flex;flex-direction:column;gap:9px;pointer-events:none;
@@ -452,7 +452,7 @@
 
   .title{
     font-family:'Unbounded',sans-serif;font-weight:500;
-    font-size:clamp(18px,5.6vw,22px);line-height:1.1;
+    font-size:clamp(17px,5.2vw,20px);line-height:1.1;
     letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);
   }
   .meta{
@@ -995,11 +995,24 @@
       var navItems = document.querySelectorAll('.nav-item');
       var onboarding = document.getElementById('onboarding');
 
-      // ===== ОНБОРДИНГ ВСЕГДА =====
+      // ===== ФИКС ЛАГОВ ОНБОРДИНГА #1: 4K видео → сжатый источник =====
+      if (onboarding) {
+        onboarding.querySelectorAll('video').forEach(function(v){
+          var s = v.getAttribute('src') || '';
+          if (s.indexOf('2160p') !== -1) {
+            v.setAttribute('src', 'https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4');
+            v.load();
+          }
+        });
+      }
 
       var instaVideos = insta.querySelectorAll('video');
 
+      // ===== ФИКС ЛАГОВ ОНБОРДИНГА #2: unlockVideos() срабатывает один раз =====
+      var videosUnlocked = false;
       function unlockVideos(){
+        if (videosUnlocked) return;
+        videosUnlocked = true;
         instaVideos.forEach(function(v){
           try {
             v.muted = true;
@@ -1039,7 +1052,6 @@
             onboarding.style.transform = 'translateY(' + delta + 'px)';
             if (e.cancelable) e.preventDefault();
           }
-          unlockVideos();
         }
         function onEnd(){
           if (!dragging) return;
@@ -1049,7 +1061,6 @@
           if (delta < -THRESHOLD) {
             onboarding.style.transform = '';
             onboarding.classList.add('gone');
-            unlockVideos();
             setTimeout(function(){
               if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
               onboarding = null;
@@ -1124,8 +1135,6 @@
       }
 
       function layoutReels(){
-        // Ключевой фикс: задаём высоту слайдов в пикселях по реальной высоте вьюпорта,
-        // чтобы dvh-глюк на первом заходе не растягивал/сжимал слайды.
         var vh = window.innerHeight;
         if (!vh || vh < 100) return;
         feed.style.height = vh + 'px';
@@ -1142,7 +1151,6 @@
             v.muted = true;
           });
 
-          // Сначала выставляем правильные высоты, потом показываем ленту
           layoutReels();
 
           insta.classList.add('hidden');

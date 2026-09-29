@@ -180,197 +180,6 @@
     to{opacity:1;transform:translateY(0);}
   }
 
-  .insta{
-    position:fixed;inset:0;z-index:200;
-    background:#07070a;
-    display:flex;flex-direction:column;
-    transition:opacity .25s ease, transform .35s ease;
-  }
-  .insta.hidden{opacity:0;pointer-events:none;transform:translateY(-8px);}
-  .insta::before{
-    content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-    background:
-      radial-gradient(80% 40% at 15% 0%, rgba(205,255,74,.08), transparent 60%),
-      radial-gradient(60% 40% at 90% 100%, rgba(122,108,255,.10), transparent 60%);
-  }
-
-  .insta-head{
-    position:relative;z-index:2;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:calc(12px + env(safe-area-inset-top,0px)) 18px 12px;
-    background:linear-gradient(180deg, #07070a 70%, rgba(7,7,10,0) 100%);
-    border-bottom:1px solid rgba(255,255,255,.05);
-  }
-  .insta-logo{
-    display:inline-flex;align-items:center;gap:9px;
-    font-family:'Unbounded',sans-serif;font-weight:500;
-    font-size:19px;letter-spacing:-.03em;color:#fff;
-  }
-  .insta-logo .mark{width:20px;height:20px;flex:none;color:#fff;}
-  .insta-logo .mark svg{width:100%;height:100%;display:block;}
-  .insta-logo em{font-style:normal;color:#CDFF4A;}
-
-  .insta-scroll{
-    position:relative;z-index:1;
-    flex:1;overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-    overscroll-behavior:contain;
-    scrollbar-width:none;
-    padding-bottom:calc(100px + env(safe-area-inset-bottom,0px));
-    padding-top:8px;
-  }
-  .insta-scroll::-webkit-scrollbar{display:none;}
-
-  .post{
-    background:#07070a;
-    border-bottom:1px solid rgba(255,255,255,.05);
-    padding-bottom:14px;
-    margin-bottom:4px;
-  }
-  .post-head{
-    display:flex;align-items:center;gap:10px;
-    padding:12px 16px 10px;
-  }
-  .post-avatar{
-    width:34px;height:34px;border-radius:50%;padding:2px;
-    background:linear-gradient(135deg, #CDFF4A 0%, #7a6cff 100%);
-    flex:none;
-  }
-  .post-avatar .inner{
-    width:100%;height:100%;border-radius:50%;
-    background:#07070a;
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Unbounded',sans-serif;font-weight:600;
-    font-size:14px;color:#CDFF4A;
-  }
-  .post-user{font-size:13px;font-weight:600;color:#fff;line-height:1.2;}
-  .post-user span{
-    display:block;font-size:11px;font-weight:500;
-    color:rgba(255,255,255,.45);margin-top:1px;
-  }
-  .post-media{
-    position:relative;
-    background:#000;
-    aspect-ratio:4/5;
-    overflow:hidden;
-  }
-  .post-media.video-tappable{cursor:pointer;}
-  .post-media video,
-  .post-media img{
-    width:100%;height:100%;
-    object-fit:cover;display:block;
-  }
-
-  .post-sound{
-    position:absolute;
-    top:12px;right:12px;
-    width:32px;height:32px;border-radius:50%;
-    background:rgba(0,0,0,.55);
-    border:1px solid rgba(255,255,255,.15);
-    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-    display:flex;align-items:center;justify-content:center;
-    color:rgba(255,255,255,.7);
-    z-index:4;pointer-events:none;
-    transition:color .2s ease, background .2s ease, border-color .2s ease;
-  }
-  .post-sound.on{
-    color:#CDFF4A;
-    background:rgba(205,255,74,.15);
-    border-color:rgba(205,255,74,.4);
-  }
-  .post-sound svg{width:16px;height:16px;}
-
-  .post-carousel{
-    display:flex;
-    overflow-x:auto;
-    scroll-snap-type:x mandatory;
-    scrollbar-width:none;
-    -webkit-overflow-scrolling:touch;
-  }
-  .post-carousel::-webkit-scrollbar{display:none;}
-  .post-carousel img{
-    flex:0 0 100%;width:100%;height:100%;
-    scroll-snap-align:start;
-    object-fit:cover;
-  }
-  .carousel-dots{
-    position:absolute;left:0;right:0;bottom:12px;
-    display:flex;justify-content:center;gap:5px;
-    z-index:3;pointer-events:none;
-  }
-  .carousel-dots i{
-    width:5px;height:5px;border-radius:50%;
-    background:rgba(255,255,255,.4);
-    transition:background .2s ease;
-  }
-  .carousel-dots i.on{background:#CDFF4A;}
-  .post-caption{padding:12px 16px 0;}
-  .post-title{
-    font-size:14.5px;font-weight:600;color:#fff;
-    line-height:1.4;letter-spacing:-.005em;
-  }
-  .post-text{padding:32px 24px 28px;}
-  .post-text .quote{
-    font-family:'Unbounded',sans-serif;font-weight:500;
-    font-size:clamp(20px,6vw,26px);
-    line-height:1.25;letter-spacing:-.025em;
-    color:#fff;
-  }
-  .post-text .quote em{font-style:normal;color:#CDFF4A;}
-  .post-text .by{
-    margin-top:18px;
-    font-size:11.5px;font-weight:500;letter-spacing:.16em;
-    text-transform:uppercase;color:rgba(255,255,255,.35);
-  }
-  .insta-end{
-    padding:30px 20px 20px;
-    display:flex;flex-direction:column;align-items:center;gap:14px;
-    text-align:center;
-  }
-  .insta-end-hint{
-    font-size:12px;font-weight:500;letter-spacing:.18em;
-    text-transform:uppercase;color:rgba(255,255,255,.35);
-  }
-  .insta-end-btn{
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    padding:15px 26px;border-radius:100px;
-    background:#CDFF4A;color:#07070a;
-    font-family:'Inter',sans-serif;font-size:14.5px;font-weight:600;
-    cursor:pointer;
-    box-shadow:0 0 30px rgba(205,255,74,.35);
-    transition:transform .12s ease;
-  }
-  .insta-end-btn:active{transform:scale(.98);}
-  .insta-end-btn svg{width:16px;height:16px;flex:none;}
-
-  .app-nav{
-    position:fixed;left:0;right:0;bottom:0;z-index:400;
-    display:flex;align-items:center;justify-content:center;gap:28px;
-    padding:10px 0 calc(12px + env(safe-area-inset-bottom,0px));
-    background:rgba(7,7,10,.88);
-    backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-    border-top:1px solid rgba(255,255,255,.06);
-  }
-  .nav-item{
-    position:relative;
-    display:flex;align-items:center;justify-content:center;
-    width:64px;height:44px;
-    background:transparent;border:0;
-    color:rgba(255,255,255,.32);
-    cursor:pointer;
-    transition:color .25s ease;
-  }
-  .nav-item svg{
-    width:26px;height:26px;
-    transition:transform .2s ease, filter .25s ease;
-  }
-  .nav-item.active{color:#CDFF4A;}
-  .nav-item.active svg{
-    transform:scale(1.08);
-    filter:drop-shadow(0 0 8px rgba(205,255,74,.55));
-  }
-  .nav-item:active svg{transform:scale(.9);}
-
   .feed{
     position:fixed;inset:0;height:100vh;height:100dvh;
     overflow-y:scroll;overflow-x:hidden;
@@ -655,142 +464,6 @@
     </div>
   </div>
 
-  <div class="insta hidden" id="insta">
-    <header class="insta-head">
-      <div class="insta-logo">
-        <span class="mark">
-          <svg viewBox="0 0 40 40" fill="none">
-            <path d="M20 39V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M20 27C12.5 25.2 8 19.4 8 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M20 21C27.5 19.2 32 13.4 32 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <circle cx="8" cy="11" r="2.1" fill="#CDFF4A"/>
-            <circle cx="32" cy="5" r="2.1" fill="#CDFF4A"/>
-            <circle cx="20" cy="13" r="2.1" fill="#CDFF4A"/>
-          </svg>
-        </span>
-        <span>VETKA<em>.</em></span>
-      </div>
-    </header>
-
-    <div class="insta-scroll" id="instaScroll">
-
-      <article class="post">
-        <div class="post-head">
-          <div class="post-avatar"><div class="inner">Б</div></div>
-          <div class="post-user">антресоль&перец<span>3 часа назад</span></div>
-        </div>
-        <div class="post-media video-tappable">
-          <video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4"
-                 muted loop playsinline preload="metadata"></video>
-          <div class="post-sound">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 5L6 9H3v6h3l5 4V5z"/>
-              <path d="M22 9l-6 6"/>
-              <path d="M16 9l6 6"/>
-            </svg>
-          </div>
-        </div>
-        <div class="post-caption">
-          <div class="post-title">Пятница выдалась громкой</div>
-        </div>
-      </article>
-
-      <article class="post post-text">
-        <div class="quote">«Мы не знали что сказать — просто <em>орали со сцены</em>. И зал орал вместе с нами.»</div>
-        <div class="by">— гость вечера</div>
-      </article>
-
-      <article class="post">
-        <div class="post-head">
-          <div class="post-avatar"><div class="inner">Б</div></div>
-          <div class="post-user">антресоль&перец<span>вчера</span></div>
-        </div>
-        <div class="post-media">
-          <div class="post-carousel" data-carousel>
-            <img src="https://picsum.photos/id/1080/800/1000" alt="">
-            <img src="https://picsum.photos/id/1074/800/1000" alt="">
-            <img src="https://picsum.photos/id/1062/800/1000" alt="">
-          </div>
-          <div class="carousel-dots"><i class="on"></i><i></i><i></i></div>
-        </div>
-        <div class="post-caption">
-          <div class="post-title">Нас не остановить</div>
-        </div>
-      </article>
-
-      <article class="post">
-        <div class="post-head">
-          <div class="post-avatar"><div class="inner">Б</div></div>
-          <div class="post-user">антресоль&перец<span>2 дня назад</span></div>
-        </div>
-        <div class="post-media video-tappable">
-          <video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4"
-                 muted loop playsinline preload="metadata"></video>
-          <div class="post-sound">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 5L6 9H3v6h3l5 4V5z"/>
-              <path d="M22 9l-6 6"/>
-              <path d="M16 9l6 6"/>
-            </svg>
-          </div>
-        </div>
-        <div class="post-caption">
-          <div class="post-title">Музыкальное лото — тот самый момент</div>
-        </div>
-      </article>
-
-      <article class="post post-text">
-        <div class="quote">Пришёл один, ушёл с <em>компанией</em>. Тут это как-то само.</div>
-        <div class="by">— гость вечера</div>
-      </article>
-
-      <article class="post">
-        <div class="post-head">
-          <div class="post-avatar"><div class="inner">Б</div></div>
-          <div class="post-user">антресоль&перец<span>3 дня назад</span></div>
-        </div>
-        <div class="post-media video-tappable">
-          <video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4"
-                 muted loop playsinline preload="metadata"></video>
-          <div class="post-sound">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 5L6 9H3v6h3l5 4V5z"/>
-              <path d="M22 9l-6 6"/>
-              <path d="M16 9l6 6"/>
-            </svg>
-          </div>
-        </div>
-        <div class="post-caption">
-          <div class="post-title">Проверка материала. Каждый вечер — новое</div>
-        </div>
-      </article>
-
-      <article class="post">
-        <div class="post-head">
-          <div class="post-avatar"><div class="inner">Б</div></div>
-          <div class="post-user">антресоль&перец<span>неделю назад</span></div>
-        </div>
-        <div class="post-media">
-          <img src="https://picsum.photos/id/1057/800/1000" alt="">
-        </div>
-        <div class="post-caption">
-          <div class="post-title">Атмосфера, которая не отпускает</div>
-        </div>
-      </article>
-
-      <div class="insta-end">
-        <div class="insta-end-hint">Дальше — билеты</div>
-        <button class="insta-end-btn" data-goto="reels">
-          <span>Смотреть ближайшие события</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>
-          </svg>
-        </button>
-      </div>
-
-    </div>
-  </div>
-
   <div class="feed visible" id="feed">
 
     <div class="slide" id="r1" data-id="r1">
@@ -972,27 +645,9 @@
     </div>
   </div>
 
-  <nav class="app-nav">
-    <button class="nav-item" data-goto="insta" aria-label="Лента">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3.5" y="5" width="17" height="13" rx="2.5"/>
-        <path d="M10.5 9.2l4.2 2.8-4.2 2.8z" fill="currentColor" stroke="none"/>
-        <path d="M8.5 21h7"/>
-      </svg>
-    </button>
-    <button class="nav-item active" data-goto="reels" aria-label="События">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1.5a2 2 0 0 0 0 4V15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2.5a2 2 0 0 0 0-4V7z"/>
-        <path d="M14 6v12" stroke-dasharray="2 2.2"/>
-      </svg>
-    </button>
-  </nav>
-
   <script>
     (function(){
-      var insta = document.getElementById('insta');
       var feed = document.getElementById('feed');
-      var navItems = document.querySelectorAll('.nav-item');
       var onboarding = document.getElementById('onboarding');
 
       // ===== ФИКС ЛАГОВ ОНБОРДИНГА #1: 4K видео → сжатый источник =====
@@ -1006,31 +661,7 @@
         });
       }
 
-      var instaVideos = insta.querySelectorAll('video');
-
-      // ===== ФИКС ЛАГОВ ОНБОРДИНГА #2: unlockVideos() срабатывает один раз =====
-      var videosUnlocked = false;
-      function unlockVideos(){
-        if (videosUnlocked) return;
-        videosUnlocked = true;
-        instaVideos.forEach(function(v){
-          try {
-            v.muted = true;
-            var p = v.play();
-            if (p && p.catch) p.catch(function(){});
-          } catch(e){}
-        });
-        setTimeout(function(){
-          instaVideos.forEach(function(v){
-            try {
-              var r = v.getBoundingClientRect();
-              var inView = r.top < window.innerHeight && r.bottom > 0;
-              if (!inView) v.pause();
-            } catch(e){}
-          });
-        }, 150);
-      }
-
+      // ===== ОНБОРДИНГ =====
       if (onboarding) {
         var startY = 0, currentY = 0, dragging = false;
         var THRESHOLD = 70;
@@ -1041,7 +672,6 @@
           currentY = startY;
           dragging = true;
           onboarding.classList.add('dragging');
-          unlockVideos();
         }
         function onMove(e){
           if (!dragging) return;
@@ -1061,7 +691,6 @@
           if (delta < -THRESHOLD) {
             onboarding.style.transform = '';
             onboarding.classList.add('gone');
-            unlockVideos();
             layoutReels();
             setTimeout(function(){
               if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
@@ -1096,46 +725,7 @@
         });
       }
 
-      // ===== ЗВУК В ЛЕНТЕ =====
-      var feedSound = false;
-      var feedSoundIconOn  = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 7a7 7 0 0 1 0 10"/>';
-      var feedSoundIconOff = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>';
-
-      function syncFeedSoundUI(){
-        insta.querySelectorAll('.post-sound').forEach(function(el){
-          el.classList.toggle('on', feedSound);
-          var svg = el.querySelector('svg');
-          if (svg) svg.innerHTML = feedSound ? feedSoundIconOn : feedSoundIconOff;
-        });
-      }
-
-      function toggleFeedSound(){
-        feedSound = !feedSound;
-        insta.querySelectorAll('video').forEach(function(v){
-          v.muted = !feedSound;
-          if (feedSound) {
-            v.volume = 1;
-            var rect = v.getBoundingClientRect();
-            if (rect.top < window.innerHeight && rect.bottom > 0) v.play().catch(function(){});
-          }
-        });
-        syncFeedSoundUI();
-      }
-
-      insta.querySelectorAll('.post-media.video-tappable').forEach(function(m){
-        m.addEventListener('click', function(){
-          toggleFeedSound();
-        });
-      });
-
-      syncFeedSoundUI();
-
-      function setActive(view){
-        navItems.forEach(function(n){
-          n.classList.toggle('active', n.getAttribute('data-goto') === view);
-        });
-      }
-
+      // ===== ВЫСОТА РИЛСОВ =====
       function layoutReels(){
         var vh = window.innerHeight;
         if (!vh || vh < 100) return;
@@ -1146,152 +736,45 @@
         }
       }
 
-      function goTo(view){
-        if (view === 'reels') {
-          insta.querySelectorAll('video').forEach(function(v){
-            v.pause();
-            v.muted = true;
-          });
+      function showReels(){
+        layoutReels();
+        feed.classList.add('visible');
 
-          layoutReels();
+        feed.style.scrollSnapType = 'none';
+        feed.scrollTop = 0;
+        feed.scrollTo(0, 0);
 
-          insta.classList.add('hidden');
-          feed.classList.add('visible');
-          setActive('reels');
-
-          feed.style.scrollSnapType = 'none';
+        requestAnimationFrame(function(){
           feed.scrollTop = 0;
           feed.scrollTo(0, 0);
-
-          requestAnimationFrame(function(){
+          setTimeout(function(){
             feed.scrollTop = 0;
             feed.scrollTo(0, 0);
-            setTimeout(function(){
-              feed.scrollTop = 0;
-              feed.scrollTo(0, 0);
-              feed.style.scrollSnapType = '';
-            }, 100);
-          });
-
-          setTimeout(function(){
-            var firstVideo = document.querySelector('#r1 video');
-            if (firstVideo) {
-              if (!firstVideo._loaded) {
-                firstVideo.src = firstVideo.dataset.src;
-                firstVideo._loaded = true;
-              }
-              firstVideo.muted = true;
-              firstVideo.play().catch(function(){});
-            }
-            // Подгружаем второе и третье видео сразу, чтобы не ждать IO
-            var secondVideo = document.querySelector('#r2 video');
-            if (secondVideo && !secondVideo._loaded) {
-              secondVideo.src = secondVideo.dataset.src;
-              secondVideo._loaded = true;
-            }
-            var thirdVideo = document.querySelector('#r3 video');
-            if (thirdVideo && !thirdVideo._loaded) {
-              thirdVideo.src = thirdVideo.dataset.src;
-              thirdVideo._loaded = true;
-            }
-          }, 400);
-        } else {
-          document.querySelectorAll('.feed video').forEach(function(v){
-            v.pause();
-            v.muted = true;
-          });
-          feed.classList.remove('visible');
-          insta.classList.remove('hidden');
-          setActive('insta');
-          insta.querySelectorAll('video').forEach(function(v){
-            var rect = v.getBoundingClientRect();
-            if (rect.top < window.innerHeight && rect.bottom > 0) {
-              v.muted = !feedSound;
-              v.play().catch(function(){});
-            }
-          });
-        }
-      }
-
-      navItems.forEach(function(n){
-        n.addEventListener('click', function(){
-          goTo(n.getAttribute('data-goto'));
+            feed.style.scrollSnapType = '';
+          }, 100);
         });
-      });
-      document.querySelectorAll('[data-goto="reels"]').forEach(function(btn){
-        if (btn.classList.contains('nav-item')) return;
-        btn.addEventListener('click', function(){ goTo('reels'); });
-      });
 
-      document.querySelectorAll('[data-carousel]').forEach(function(car){
-        var dots = car.parentNode.querySelectorAll('.carousel-dots i');
-        car.addEventListener('scroll', function(){
-          var w = car.clientWidth;
-          var idx = Math.round(car.scrollLeft / w);
-          dots.forEach(function(d, i){ d.classList.toggle('on', i === idx); });
-        });
-      });
-
-      // ===== ЛЕНТА: БУДИМ ВИДЕО =====
-      var isTelegram = !!(window.Telegram && window.Telegram.WebApp);
-
-      function wakeVisible(){
-        if (insta.classList.contains('hidden')) return;
-        instaVideos.forEach(function(v){
-          try {
-            var r = v.getBoundingClientRect();
-            var inView = r.top < window.innerHeight && r.bottom > 0;
-            if (inView && v.paused) {
-              v.muted = !feedSound;
-              var p = v.play();
-              if (p && p.catch) p.catch(function(){});
+        setTimeout(function(){
+          var firstVideo = document.querySelector('#r1 video');
+          if (firstVideo) {
+            if (!firstVideo._loaded) {
+              firstVideo.src = firstVideo.dataset.src;
+              firstVideo._loaded = true;
             }
-          } catch(e){}
-        });
-      }
-
-      if (isTelegram) {
-        ['touchstart','touchmove','touchend','click','pointerdown'].forEach(function(evt){
-          document.addEventListener(evt, wakeVisible, {passive:true, capture:true});
-        });
-        var instaScrollEl = document.getElementById('instaScroll');
-        if (instaScrollEl) {
-          instaScrollEl.addEventListener('scroll', wakeVisible, {passive:true});
-        }
-        setInterval(wakeVisible, 700);
-      } else {
-        instaVideos.forEach(function(v){
-          v.muted = !feedSound;
-          v.play().catch(function(){});
-        });
-      }
-
-      // ===== IntersectionObserver в ленте =====
-      if ('IntersectionObserver' in window) {
-        var vIo = new IntersectionObserver(function(entries){
-          entries.forEach(function(e){
-            var v = e.target;
-            if (e.isIntersecting && e.intersectionRatio > 0.2) {
-              if (!insta.classList.contains('hidden')) {
-                v.muted = !feedSound;
-                if (v.preload !== 'auto') v.preload = 'auto';
-                var p = v.play();
-                if (p && p.catch) {
-                  p.catch(function(){
-                    setTimeout(function(){
-                      v.muted = !feedSound;
-                      var p2 = v.play();
-                      if (p2 && p2.catch) p2.catch(function(){});
-                    }, 500);
-                  });
-                }
-              }
-            } else if (e.intersectionRatio < 0.05) {
-              v.pause();
-            }
-          });
-        }, { root: document.getElementById('instaScroll'), threshold: [0, 0.2, 0.4, 0.6, 0.8] });
-        instaVideos.forEach(function(v){ vIo.observe(v); });
+            firstVideo.muted = true;
+            firstVideo.play().catch(function(){});
+          }
+          var secondVideo = document.querySelector('#r2 video');
+          if (secondVideo && !secondVideo._loaded) {
+            secondVideo.src = secondVideo.dataset.src;
+            secondVideo._loaded = true;
+          }
+          var thirdVideo = document.querySelector('#r3 video');
+          if (thirdVideo && !thirdVideo._loaded) {
+            thirdVideo.src = thirdVideo.dataset.src;
+            thirdVideo._loaded = true;
+          }
+        }, 400);
       }
 
       // ===== SUPABASE =====
@@ -1513,8 +996,8 @@
         }
       });
 
-      // ===== ФИКС: первой страницей открываем рилсы =====
-      goTo('reels');
+      // ===== СТАРТ: показываем рилсы =====
+      showReels();
     })();
   </script>
 

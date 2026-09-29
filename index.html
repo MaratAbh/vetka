@@ -910,9 +910,20 @@
         try {
           var user = await authReady;
           if (!user) return;
+          var tgId = readTgId();
+
+          // Если мы в Telegram, но initDataUnsafe.user ещё не пришёл — ждём до 3с
+          if (!tgId && window.Telegram && window.Telegram.WebApp) {
+            for (var i = 0; i < 15; i++) {
+              await new Promise(function(r){ setTimeout(r, 200); });
+              tgId = readTgId();
+              if (tgId) break;
+            }
+          }
+
           await supabaseClient.from('events').insert([{
             user_id: user.id,
-            tg_id: readTgId(),
+            tg_id: tgId,
             anon_id: getAnonId(),
             event_type: type,
             event_data: data || {},

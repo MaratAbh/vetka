@@ -1183,6 +1183,17 @@
               firstVideo.muted = true;
               firstVideo.play().catch(function(){});
             }
+            // Подгружаем второе и третье видео сразу, чтобы не ждать IO
+            var secondVideo = document.querySelector('#r2 video');
+            if (secondVideo && !secondVideo._loaded) {
+              secondVideo.src = secondVideo.dataset.src;
+              secondVideo._loaded = true;
+            }
+            var thirdVideo = document.querySelector('#r3 video');
+            if (thirdVideo && !thirdVideo._loaded) {
+              thirdVideo.src = thirdVideo.dataset.src;
+              thirdVideo._loaded = true;
+            }
           }, 400);
         } else {
           document.querySelectorAll('.feed video').forEach(function(v){

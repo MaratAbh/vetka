@@ -1447,6 +1447,9 @@
             if (action === 'like') {
               var likes = Array.isArray(existing.likes) ? existing.likes : [];
               updates.likes = Array.from(new Set(likes.concat([payload.rId])));
+            } else if (action === 'unlike') {
+              var likes2 = Array.isArray(existing.likes) ? existing.likes : [];
+              updates.likes = likes2.filter(function(x){ return x !== payload.rId; });
             } else if (action === 'invite') {
               updates.invites = (existing.invites || 0) + 1;
             } else if (action === 'profile_view') {
@@ -1480,6 +1483,39 @@
         setTimeout(function(){ trackUser('visit'); }, 15000);
       });
 
+      // ===== ВОССТАНОВЛЕНИЕ ЛАЙКОВ ПОСЛЕ ПЕРЕЗАХОДА =====
+      async function restoreLikes(){
+        try {
+          var user = await authReady;
+          if (!user) return;
+          var tgId = readTgId();
+          var anonId = getAnonId();
+          var row = null;
+          if (tgId) {
+            var r = await supabaseClient.from('users').select('likes').eq('tg_id', tgId).maybeSingle();
+            row = r.data;
+          } else if (anonId) {
+            var r2 = await supabaseClient.from('users').select('likes').eq('anon_id', anonId).maybeSingle();
+            row = r2.data;
+          }
+          if (!row || !Array.isArray(row.likes)) return;
+          row.likes.forEach(function(rId){
+            var btn = document.querySelector('.slide[data-id="' + rId + '"] [data-like]');
+            if (!btn || btn.classList.contains('liked')) return;
+            btn.classList.add('liked');
+            var ico = btn.querySelector('.ico');
+            if (ico) {
+              ico.style.background = 'rgba(205,255,74,.9)';
+              ico.style.color = '#07070a';
+              ico.style.borderColor = 'rgba(205,255,74,.9)';
+            }
+            var cnt = btn.querySelector('[data-count]');
+            if (cnt) cnt.textContent = parseInt(cnt.textContent, 10) + 1;
+          });
+        } catch(e){ console.warn('restoreLikes error:', e); }
+      }
+      authReady.then(restoreLikes);
+
       // ===== РИЛСЫ =====
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var videos = feed.querySelectorAll('video');
@@ -1503,7 +1539,8 @@
         btn.addEventListener('click', function(e){
           e.stopPropagation();
           if (window.ym) { try { ym(113067752, 'reachGoal', 'want_go'); } catch(err){} }
-          trackUser('like', { rId: btn.closest('.slide').dataset.id });
+          var willLike = !btn.classList.contains('liked');
+          trackUser(willLike ? 'like' : 'unlike', { rId: btn.closest('.slide').dataset.id });
           var count = btn.querySelector('[data-count]');
           var ico = btn.querySelector('.ico');
           var liked = btn.classList.toggle('liked');

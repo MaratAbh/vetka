@@ -1123,12 +1123,28 @@
         });
       }
 
+      function layoutReels(){
+        // Ключевой фикс: задаём высоту слайдов в пикселях по реальной высоте вьюпорта,
+        // чтобы dvh-глюк на первом заходе не растягивал/сжимал слайды.
+        var vh = window.innerHeight;
+        if (!vh || vh < 100) return;
+        feed.style.height = vh + 'px';
+        var allSlides = feed.querySelectorAll('.slide');
+        for (var i = 0; i < allSlides.length; i++) {
+          allSlides[i].style.height = vh + 'px';
+        }
+      }
+
       function goTo(view){
         if (view === 'reels') {
           insta.querySelectorAll('video').forEach(function(v){
             v.pause();
             v.muted = true;
           });
+
+          // Сначала выставляем правильные высоты, потом показываем ленту
+          layoutReels();
+
           insta.classList.add('hidden');
           feed.classList.add('visible');
           setActive('reels');

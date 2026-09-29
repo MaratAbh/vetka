@@ -415,32 +415,6 @@
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
-  .side{
-    position:absolute;right:12px;
-    bottom:calc(280px + env(safe-area-inset-bottom,0px));
-    z-index:5;display:flex;flex-direction:column;
-    align-items:center;gap:18px;pointer-events:none;
-  }
-  .metric{
-    display:flex;flex-direction:column;align-items:center;gap:4px;
-    pointer-events:auto;background:transparent;border:0;cursor:pointer;padding:0;
-  }
-  .metric .ico{
-    width:34px;height:34px;border-radius:50%;
-    background:rgba(205,255,74,.14);
-    border:1px solid rgba(205,255,74,.4);
-    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-    display:flex;align-items:center;justify-content:center;color:#CDFF4A;
-    transition:transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
-  }
-  .metric:active .ico{transform:scale(.9);}
-  .metric .ico svg{width:16px;height:16px;}
-  .metric .num{font-size:11px;font-weight:600;color:#CDFF4A;text-shadow:0 1px 4px rgba(0,0,0,.6);}
-  .metric .lbl{font-size:8.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
-  .metric.invite:active .ico{
-    background:rgba(205,255,74,.9);color:#07070a;
-    border-color:rgba(205,255,74,.9);
-  }
   .bottom{
     position:absolute;left:0;right:0;
     bottom:calc(84px + env(safe-area-inset-bottom,0px));
@@ -476,19 +450,6 @@
   .org-info{text-align:left;padding-right:2px;}
   .org-name{font-size:11px;font-weight:600;color:#fff;line-height:1.1;}
 
-  .live{
-    display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;
-    color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;
-    background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);
-    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-    align-self:flex-start;
-  }
-  .live .dot{
-    width:5px;height:5px;border-radius:50%;background:#CDFF4A;
-    box-shadow:0 0 8px rgba(205,255,74,.85);
-    animation:pulse 1.8s ease-in-out infinite;
-  }
-  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
   .title{
     font-family:'Unbounded',sans-serif;font-weight:500;
     font-size:clamp(18px,5.6vw,22px);line-height:1.1;
@@ -651,26 +612,6 @@
     box-shadow:0 0 16px rgba(205,255,74,.3);
   }
   .event .go svg{width:16px;height:16px;}
-
-  .toast{
-    position:fixed;left:50%;
-    bottom:calc(120px + env(safe-area-inset-bottom,0px));
-    transform:translate(-50%, 20px);z-index:600;
-    padding:12px 20px;border-radius:100px;
-    background:rgba(0,0,0,.88);
-    border:1px solid rgba(205,255,74,.35);
-    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-    color:#fff;font-size:13px;font-weight:500;white-space:nowrap;
-    opacity:0;pointer-events:none;
-    transition:opacity .3s ease, transform .3s ease;
-    box-shadow:0 0 24px rgba(205,255,74,.2);
-    display:flex;align-items:center;gap:8px;
-  }
-  .toast::before{
-    content:'';width:6px;height:6px;border-radius:50%;
-    background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;
-  }
-  .toast.show{opacity:1;transform:translate(-50%, 0);}
 </style>
 </head>
 <body>
@@ -862,23 +803,7 @@
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-      <div class="side">
-        <button class="metric" data-like>
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>247</div>
-          <div class="lbl">хочу пойти</div>
-        </button>
-        <button class="metric invite" data-share>
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>
-            </svg>
-          </div>
-          <div class="lbl">пригласить</div>
-        </button>
-      </div>
       <div class="bottom">
-        <div class="live"><span class="dot"></span>84 смотрят прямо сейчас</div>
         <div class="title">Проверка материала</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">Б</div></div>
@@ -910,23 +835,7 @@
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-      <div class="side">
-        <button class="metric" data-like>
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>156</div>
-          <div class="lbl">хочу пойти</div>
-        </button>
-        <button class="metric invite" data-share>
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>
-            </svg>
-          </div>
-          <div class="lbl">пригласить</div>
-        </button>
-      </div>
       <div class="bottom">
-        <div class="live"><span class="dot"></span>61 смотрят прямо сейчас</div>
         <div class="title">Комедия и Таро</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">Б</div></div>
@@ -958,23 +867,7 @@
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-      <div class="side">
-        <button class="metric" data-like>
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>312</div>
-          <div class="lbl">хочу пойти</div>
-        </button>
-        <button class="metric invite" data-share>
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>
-            </svg>
-          </div>
-          <div class="lbl">пригласить</div>
-        </button>
-      </div>
       <div class="bottom">
-        <div class="live"><span class="dot"></span>112 смотрят прямо сейчас</div>
         <div class="title">Музыкальное лото</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">Б</div></div>
@@ -1094,8 +987,6 @@
       </svg>
     </button>
   </nav>
-
-  <div class="toast" id="toast">Ссылка скопирована</div>
 
   <script>
     (function(){
@@ -1242,7 +1133,6 @@
           feed.classList.add('visible');
           setActive('reels');
 
-          // Отключаем snap, чтобы WebView не "подтянул" скролл к неправильной точке
           feed.style.scrollSnapType = 'none';
           feed.scrollTop = 0;
           feed.scrollTo(0, 0);
@@ -1444,12 +1334,7 @@
 
           if (existing) {
             var updates = { last_seen: new Date().toISOString() };
-            if (action === 'like') {
-              var likes = Array.isArray(existing.likes) ? existing.likes : [];
-              updates.likes = Array.from(new Set(likes.concat([payload.rId])));
-            } else if (action === 'invite') {
-              updates.invites = (existing.invites || 0) + 1;
-            } else if (action === 'profile_view') {
+            if (action === 'profile_view') {
               updates.profile_views = (existing.profile_views || 0) + 1;
             } else if (action === 'follow') {
               updates.follows = payload.orgName || 'БАЗА';
@@ -1461,8 +1346,8 @@
             var insertData = {
               id: userId,
               last_seen: new Date().toISOString(),
-              likes: action === 'like' ? [payload.rId] : [],
-              invites: action === 'invite' ? 1 : 0,
+              likes: [],
+              invites: 0,
               profile_views: action === 'profile_view' ? 1 : 0,
               follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null
             };
@@ -1488,77 +1373,7 @@
       var profile = document.getElementById('profile');
       var openBtns = document.querySelectorAll('[data-open-profile]');
       var closeBtn = document.getElementById('closeProfile');
-      var toast = document.getElementById('toast');
       var scrollEndTracked = false;
-
-      var toastTimer;
-      function showToast(text){
-        toast.textContent = text;
-        toast.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
-      }
-
-      document.querySelectorAll('[data-like]').forEach(function(btn){
-        btn.addEventListener('click', function(e){
-          e.stopPropagation();
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'want_go'); } catch(err){} }
-          trackUser('like', { rId: btn.closest('.slide').dataset.id });
-          var count = btn.querySelector('[data-count]');
-          var ico = btn.querySelector('.ico');
-          var liked = btn.classList.toggle('liked');
-          if (liked) {
-            count.textContent = parseInt(count.textContent, 10) + 1;
-            ico.style.background = 'rgba(205,255,74,.9)';
-            ico.style.color = '#07070a';
-            ico.style.borderColor = 'rgba(205,255,74,.9)';
-          } else {
-            count.textContent = parseInt(count.textContent, 10) - 1;
-            ico.style.background = ''; ico.style.color = ''; ico.style.borderColor = '';
-          }
-        });
-      });
-
-      document.querySelectorAll('[data-share]').forEach(function(btn){
-        btn.addEventListener('click', function(e){
-          e.stopPropagation();
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'invite'); } catch(err){} }
-          trackUser('invite', { rId: btn.closest('.slide').dataset.id });
-          var slide = btn.closest('.slide');
-          var id = slide ? slide.dataset.id : '';
-          var url = location.origin + location.pathname + '#' + id;
-          if (window.Telegram && window.Telegram.WebApp) {
-            copyToClipboard(url).then(function(){
-              showToast('Ссылка скопирована');
-              try {
-                var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url);
-                window.Telegram.WebApp.openTelegramLink(shareUrl);
-              } catch(err){}
-            });
-            return;
-          }
-          if (navigator.share) {
-            copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
-            navigator.share({ title: 'VETKA', text: 'Пойдём вместе?', url: url }).catch(function(){});
-          } else {
-            copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }).catch(function(){ showToast('Не удалось скопировать'); });
-          }
-        });
-      });
-
-      function copyToClipboard(text){
-        if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
-        return new Promise(function(resolve, reject){
-          try {
-            var ta = document.createElement('textarea');
-            ta.value = text; ta.setAttribute('readonly', '');
-            ta.style.position = 'absolute'; ta.style.left = '-9999px';
-            document.body.appendChild(ta); ta.select();
-            document.execCommand('copy'); document.body.removeChild(ta);
-            resolve();
-          } catch(e){ reject(e); }
-        });
-      }
 
       function loadVideo(v){
         if (v._loaded) return;

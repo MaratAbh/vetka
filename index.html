@@ -1124,6 +1124,8 @@
       }
 
       function layoutReels(){
+        // Ключевой фикс: задаём высоту слайдов в пикселях по реальной высоте вьюпорта,
+        // чтобы dvh-глюк на первом заходе не растягивал/сжимал слайды.
         var vh = window.innerHeight;
         if (!vh || vh < 100) return;
         feed.style.height = vh + 'px';
@@ -1140,6 +1142,7 @@
             v.muted = true;
           });
 
+          // Сначала выставляем правильные высоты, потом показываем ленту
           layoutReels();
 
           insta.classList.add('hidden');

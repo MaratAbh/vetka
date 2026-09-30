@@ -831,7 +831,11 @@
 
       function loadVideo(v){
         if (v._loaded) return;
-        if (v.dataset.src) { v.src = v.dataset.src; v._loaded = true; }
+        if (v.dataset.src) {
+          v.preload = 'auto';
+          v.src = v.dataset.src;
+          v._loaded = true;
+        }
       }
       function activateRange(idx){
         var range = [idx - 1, idx, idx + 1];
@@ -849,7 +853,11 @@
         }
         videos.forEach(function(v){
           var s = v.closest('.slide');
-          if (s === entry) { v.muted = !soundEnabled; v.play().catch(function(){}); }
+          if (s === entry) {
+            if (v.readyState < 2 && v.src) { try { v.load(); } catch(e){} }
+            v.muted = !soundEnabled;
+            v.play().catch(function(){});
+          }
           else { v.pause(); try { v.currentTime = 0; } catch(e){} }
         });
       }
@@ -1143,7 +1151,11 @@
         function setSrc(id){
           var s = document.querySelector('#' + id + ' video');
           if (!s) return null;
-          if (!s._loaded) { s.src = s.dataset.src; s._loaded = true; }
+          if (!s._loaded) {
+            s.preload = 'auto';
+            s.src = s.dataset.src;
+            s._loaded = true;
+          }
           return s;
         }
 

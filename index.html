@@ -512,7 +512,7 @@
 
     <div class="slide" id="r1" data-id="r1">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -542,7 +542,7 @@
 
     <div class="slide" id="r2" data-id="r2">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -572,7 +572,7 @@
 
     <div class="slide" id="r3" data-id="r3">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -602,7 +602,7 @@
 
     <div class="slide" id="r4" data-id="r4">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -632,7 +632,7 @@
 
     <div class="slide" id="r5" data-id="r5">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -662,7 +662,7 @@
 
     <div class="slide" id="r6" data-id="r6">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -692,7 +692,7 @@
 
     <div class="slide" id="r7" data-id="r7">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -722,7 +722,7 @@
 
     <div class="slide" id="r8" data-id="r8">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -752,7 +752,7 @@
 
     <div class="slide" id="r9" data-id="r9">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -782,7 +782,7 @@
 
     <div class="slide" id="r10" data-id="r10">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -1042,14 +1042,17 @@
           v._loaded = true;
         }
       }
+
+      // Грузим ТОЛЬКО текущий + следующий. Не грузим предыдущий и не забегаем вперёд.
       function activateRange(idx){
-        var range = [idx - 1, idx, idx + 1];
+        var range = [idx, idx + 1];
         slides.forEach(function(s, i){
           if (range.indexOf(i) === -1) return;
           var v = s.querySelector('video');
           if (v) loadVideo(v);
         });
       }
+
       function playOnlyInView(entry){
         var idx = slides.indexOf(entry);
         if (idx === slides.length - 1 && !scrollEndTracked) {
@@ -1349,29 +1352,23 @@
           }, 100);
         });
 
-        function setSrc(id){
-          var s = document.querySelector('#' + id + ' video');
-          if (!s) return null;
-          if (!s._loaded) {
-            s.preload = 'auto';
-            s.src = s.dataset.src;
-            s._loaded = true;
-          }
-          return s;
+        // Грузим ТОЛЬКО первый рилс при старте. Остальные подтянутся по IO.
+        var first = document.querySelector('#r1 video');
+        if (first) {
+          first.preload = 'auto';
+          first.src = first.dataset.src;
+          first._loaded = true;
+          first.muted = true;
+          first.play().catch(function(){});
         }
 
-        var v1 = setSrc('r1');
-        setSrc('r2');
-        setSrc('r3');
-        setSrc('r4');
-        setSrc('r5');
-        setSrc('r6');
-        setSrc('r7');
-        setSrc('r8');
-        setSrc('r9');
-        setSrc('r10');
-
-        if (v1) { v1.muted = true; v1.play().catch(function(){}); }
+        // И сразу ставим в очередь второй — чтобы к моменту скролла был готов
+        var second = document.querySelector('#r2 video');
+        if (second) {
+          second.preload = 'auto';
+          second.src = second.dataset.src;
+          second._loaded = true;
+        }
       })();
 
       var slideIO = new IntersectionObserver(function(entries){

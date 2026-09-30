@@ -585,8 +585,6 @@
       }
 
       // ===== МЕНЕДЖЕР ОЧЕРЕДИ ЗАГРУЗКИ ВИДЕО =====
-      // Не более MAX_PARALLEL видео качается одновременно,
-      // чтобы канал не делился на 8 потоков и все успевали.
       var loadQueue = [];
       var loadActive = 0;
       var MAX_PARALLEL = 3;
@@ -617,13 +615,11 @@
             v.addEventListener('error', release);
             v.preload = 'auto';
             v.src = v.dataset.src;
-            // Страховка: если метаданные не пришли за 15 сек — освобождаем слот
             setTimeout(release, 15000);
           })(loadQueue.shift());
         }
       }
 
-      // Функция прогрева рилсов — ставит в очередь, а не грузит напрямую
       function primeVideos(ids){
         ids.forEach(function(id){
           var v = document.querySelector('#' + id + ' video');
@@ -661,7 +657,6 @@
             onboarding.style.transform = '';
             onboarding.classList.add('gone');
 
-            // Гасим все видео онбординга сразу, чтобы они не жрали канал.
             var onbVids = onboarding.querySelectorAll('video');
             for (var i = 0; i < onbVids.length; i++) {
               try { onbVids[i].pause(); } catch(e){}
@@ -669,9 +664,7 @@
             }
 
             layoutReels();
-            // Ставим в очередь r1, r2, r3 — они пойдут по 3 параллельно.
             primeVideos(['r1','r2','r3']);
-            // Запускаем первый
             var firstV = document.querySelector('#r1 video');
             if (firstV) { firstV.muted = true; firstV.play().catch(function(){}); }
             setTimeout(function(){
@@ -716,7 +709,6 @@
       var closeBtn = document.getElementById('closeProfile');
       var scrollEndTracked = false;
 
-      // Догрузка для будущих рилсов — теперь через очередь.
       function activateAround(idx){
         for (var i = idx; i <= idx + 4 && i < slides.length; i++){
           var v = slides[i].querySelector('video');
@@ -724,6 +716,14 @@
         }
       }
 
+      // ===== ГЛАВНАЯ ПРАВКА =====
+      // Раньше: для не-playing видео делали pause() + currentTime = 0.
+      // Это НЕ освобождало медиа-слот браузера, и после N слайдов
+      // новые play() блокировались (симптом: чёрный экран, но стоит
+      // нажать «звук» — user gesture разблокирует и всё играет).
+      // Теперь: для слайдов, далёких от текущего (|sIdx - idx| > 1),
+      // реально освобождаем медиа-слот: removeAttribute('src') + load().
+      // currentTime = 0 убрали совсем — он бесполезен и вреден.
       function playOnlyInView(entry){
         var idx = slides.indexOf(entry);
         if (idx === slides.length - 1 && !scrollEndTracked) {
@@ -732,13 +732,18 @@
         }
         videos.forEach(function(v){
           var s = v.closest('.slide');
+          var sIdx = slides.indexOf(s);
           if (s === entry) {
             v.muted = !soundEnabled;
             var p = v.play();
             if (p && p.catch) p.catch(function(){});
           } else {
             v.pause();
-            try { v.currentTime = 0; } catch(e){}
+            if (v._loaded && Math.abs(sIdx - idx) > 1) {
+              try { v.removeAttribute('src'); v.load(); } catch(e){}
+              v._loaded = false;
+              v._queued = false;
+            }
           }
         });
       }

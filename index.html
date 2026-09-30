@@ -86,9 +86,29 @@
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
-  .ticket-btn{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px;z-index:10;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;color:#CDFF4A;cursor:pointer;padding:0;text-decoration:none;transition:transform .15s ease;}
-  .ticket-btn:active{transform:scale(.94);}
-  .ticket-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
+  /* ===== ИКОНКА БИЛЕТА: правый нижний угол, заметная ===== */
+  .ticket-btn{
+    position:absolute;
+    bottom:calc(28px + env(safe-area-inset-bottom,0px));
+    right:20px;
+    z-index:20;
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:#CDFF4A;
+    border:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#07070a;
+    cursor:pointer;
+    padding:0;
+    text-decoration:none;
+    box-shadow:0 0 28px rgba(205,255,74,.55), 0 8px 24px rgba(0,0,0,.55);
+    transition:transform .15s ease, box-shadow .2s ease;
+  }
+  .ticket-btn:active{transform:scale(.92); box-shadow:0 0 36px rgba(205,255,74,.75), 0 6px 18px rgba(0,0,0,.6);}
+  .ticket-btn svg{width:26px;height:26px;}
 
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
@@ -208,7 +228,7 @@
         </svg>
       </div>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_1" target="_blank" aria-label="Купить билет">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
           <path d="M13 5v14"/>
         </svg>

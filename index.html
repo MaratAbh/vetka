@@ -468,7 +468,7 @@
 
     <div class="slide" id="r1" data-id="r1">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -893,7 +893,7 @@
         return id;
       }
 
-      // ===== АНАЛИТИКА (буферизация + flush с правильным tg_id) =====
+      // ===== АНАЛИТИКА =====
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now() + '-' + Math.random().toString(36).slice(2));
       var trackedSlideViews = {};
       var pendingEvents = [];
@@ -933,7 +933,6 @@
             flushEvents();
           }
         }, 200);
-        // Принудительный flush через 5 секунд, даже если tg_id так и не пришёл
         setTimeout(flushEvents, 5200);
       }
 
@@ -978,7 +977,6 @@
         }
       }
 
-      // Срочный flush при уходе в фон / закрытии
       document.addEventListener('visibilitychange', function(){
         if (document.hidden) flushEvents();
       });

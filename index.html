@@ -584,13 +584,50 @@
         for (var i = 0; i < allSlides.length; i++) allSlides[i].style.height = vh + 'px';
       }
 
-      // Функция прогрева рилсов — вызывается только после закрытия онбординга
+      // ===== МЕНЕДЖЕР ОЧЕРЕДИ ЗАГРУЗКИ ВИДЕО =====
+      // Не более MAX_PARALLEL видео качается одновременно,
+      // чтобы канал не делился на 8 потоков и все успевали.
+      var loadQueue = [];
+      var loadActive = 0;
+      var MAX_PARALLEL = 3;
+
+      function queueVideoLoad(v){
+        if (!v || v._loaded || v._queued) return;
+        v._queued = true;
+        loadQueue.push(v);
+        pumpVideoQueue();
+      }
+
+      function pumpVideoQueue(){
+        while (loadActive < MAX_PARALLEL && loadQueue.length > 0) {
+          (function(v){
+            loadActive++;
+            v._loaded = true;
+            v._queued = false;
+            var released = false;
+            function release(){
+              if (released) return;
+              released = true;
+              try { v.removeEventListener('loadedmetadata', release); } catch(e){}
+              try { v.removeEventListener('error', release); } catch(e){}
+              loadActive--;
+              pumpVideoQueue();
+            }
+            v.addEventListener('loadedmetadata', release);
+            v.addEventListener('error', release);
+            v.preload = 'auto';
+            v.src = v.dataset.src;
+            // Страховка: если метаданные не пришли за 15 сек — освобождаем слот
+            setTimeout(release, 15000);
+          })(loadQueue.shift());
+        }
+      }
+
+      // Функция прогрева рилсов — ставит в очередь, а не грузит напрямую
       function primeVideos(ids){
         ids.forEach(function(id){
           var v = document.querySelector('#' + id + ' video');
-          if (!v || v._loaded) return;
-          v.src = v.dataset.src;
-          v._loaded = true;
+          queueVideoLoad(v);
         });
       }
 
@@ -624,8 +661,7 @@
             onboarding.style.transform = '';
             onboarding.classList.add('gone');
 
-            // Гасим все видео онбординга сразу, чтобы они не жрали канал,
-            // пока грузятся рилсы.
+            // Гасим все видео онбординга сразу, чтобы они не жрали канал.
             var onbVids = onboarding.querySelectorAll('video');
             for (var i = 0; i < onbVids.length; i++) {
               try { onbVids[i].pause(); } catch(e){}
@@ -633,9 +669,9 @@
             }
 
             layoutReels();
-            // Прогреваем рилсы только когда онбординг закрыт
+            // Ставим в очередь r1, r2, r3 — они пойдут по 3 параллельно.
             primeVideos(['r1','r2','r3']);
-            // И запускаем первый
+            // Запускаем первый
             var firstV = document.querySelector('#r1 video');
             if (firstV) { firstV.muted = true; firstV.play().catch(function(){}); }
             setTimeout(function(){
@@ -680,16 +716,11 @@
       var closeBtn = document.getElementById('closeProfile');
       var scrollEndTracked = false;
 
-      // Догрузка для будущих рилсов (r4, r5, ... r8)
-      // ИЗМЕНЕНО: idx+2 → idx+4, чтобы у каждого ролика был запас 4 слайда на прогрев
+      // Догрузка для будущих рилсов — теперь через очередь.
       function activateAround(idx){
         for (var i = idx; i <= idx + 4 && i < slides.length; i++){
           var v = slides[i].querySelector('video');
-          if (v && !v._loaded) {
-            v.preload = 'auto';
-            v.src = v.dataset.src;
-            v._loaded = true;
-          }
+          queueVideoLoad(v);
         }
       }
 

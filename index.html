@@ -481,7 +481,7 @@
             <div class="post-user">антресоль&перец<span>3 часа назад</span></div>
           </div>
           <div class="post-media">
-            <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="none"></video>
+            <video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video>
           </div>
           <div class="post-caption">
             <div class="post-title">Пятница выдалась громкой</div>
@@ -517,7 +517,7 @@
             <div class="post-user">антресоль&перец<span>2 дня назад</span></div>
           </div>
           <div class="post-media">
-            <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="none"></video>
+            <video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video>
           </div>
           <div class="post-caption">
             <div class="post-title">Музыкальное лото — тот самый момент</div>
@@ -535,7 +535,7 @@
             <div class="post-user">антресоль&перец<span>3 дня назад</span></div>
           </div>
           <div class="post-media">
-            <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="none"></video>
+            <video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video>
           </div>
           <div class="post-caption">
             <div class="post-title">Проверка материала. Каждый вечер — новое</div>
@@ -585,33 +585,34 @@
       }
 
       // =====================================================================
-      // ===== АРХИТЕКТУРА "VIDEO SLOT POOL" =====
+      // ===== АРХИТЕКТУРА "VIDEO SLOT POOL" (лимит = 2 видео с src) =====
       // =====================================================================
-      // Гарантия: в DOM одновременно максимум 3 видео с src в ленте
-      // (prev, current, next) + 0 в профиле, пока он закрыт.
-      // Все остальные принудительно освобождают медиа-слот браузера:
-      //   removeAttribute('src') + load().
+      // Жёсткая гарантия: в DOM одновременно максимум 2 видео с src
+      // (текущий + следующий). Всё остальное — принудительный evict.
       //
-      // Решает корневую проблему мобильных WebView: жёсткий лимит
-      // одновременно активных медиа-элементов (обычно 6). Как только лимит
-      // исчерпан — новые play() блокируются, слайд показывает чёрный экран.
-      // User gesture (клик по «звуку») временно сбрасывает счётчик.
+      // Плюс watchdog: если через 900 мс после переключения текущий не
+      // играет — аварийно освобождаем ВСЕ остальные видео и перезагружаем
+      // текущий. Это ловит случай, когда WebView молча заблокировал play().
       //
-      // Профильные видео в HTML идут с data-src, а не src — они не занимают
-      // слот, пока профиль не открыт. При открытии — грузим, при закрытии —
-      // освобождаем.
+      // Плюс первый user-gesture (тап где угодно) дергает setActiveSlide —
+      // это лечит ситуацию, когда WebView заблокировал play() и нужен
+      // жест для разблокировки (тот самый эффект «нажал звук — заработало»).
       // =====================================================================
 
-      var WINDOW_BACK = 1;
-      var WINDOW_FWD  = 1;
+      var WINDOW_BACK = 0;   // не держим предыдущий
+      var WINDOW_FWD  = 1;   // только один вперёд
+      var playWatchdog = null;
 
       function ensureVideoLoaded(v){
         if (!v || v._loaded) return;
-        if (!v.dataset.src) return;
+        var url = v.dataset.src;
+        if (!url) return;
         v._loaded = true;
         v.preload = 'auto';
-        v.setAttribute('src', v.dataset.src);
-        try { v.load(); } catch(e){}
+        if (v.getAttribute('src') !== url) {
+          v.setAttribute('src', url);
+          try { v.load(); } catch(e){}
+        }
       }
 
       function evictVideo(v){
@@ -627,17 +628,10 @@
       function safePlay(v){
         if (!v) return;
         v.muted = !soundEnabled;
-        var p = v.play();
-        if (p && p.catch) {
-          p.catch(function(){
-            setTimeout(function(){
-              try {
-                var p2 = v.play();
-                if (p2 && p2.catch) p2.catch(function(){});
-              } catch(e){}
-            }, 250);
-          });
-        }
+        try {
+          var p = v.play();
+          if (p && p.catch) p.catch(function(){});
+        } catch(e){}
       }
 
       function safePause(v){
@@ -645,7 +639,17 @@
         try { if (!v.paused) v.pause(); } catch(e){}
       }
 
+      function emergencyEvictAllExcept(idx){
+        for (var i = 0; i < slides.length; i++) {
+          if (i === idx) continue;
+          var v = slides[i].querySelector('video');
+          evictVideo(v);
+        }
+      }
+
       function setActiveSlide(idx){
+        if (playWatchdog) { clearTimeout(playWatchdog); playWatchdog = null; }
+
         for (var i = 0; i < slides.length; i++) {
           var v = slides[i].querySelector('video');
           if (!v) continue;
@@ -660,19 +664,20 @@
             evictVideo(v);
           }
         }
-      }
 
-      function loadProfileVideos(){
-        var pvs = profile.querySelectorAll('.post-media video');
-        for (var i = 0; i < pvs.length; i++) {
-          ensureVideoLoaded(pvs[i]);
-        }
-      }
-      function evictProfileVideos(){
-        var pvs = profile.querySelectorAll('.post-media video');
-        for (var i = 0; i < pvs.length; i++) {
-          evictVideo(pvs[i]);
-        }
+        // Watchdog — если текущий не заиграл за 900мс, аварийный сброс
+        var currentV = (slides[idx] ? slides[idx].querySelector('video') : null);
+        playWatchdog = setTimeout(function(){
+          playWatchdog = null;
+          if (!currentV) return;
+          if (currentV.paused || currentV.readyState < 2) {
+            emergencyEvictAllExcept(idx);
+            if (currentV._loaded) {
+              try { currentV.load(); } catch(e){}
+            }
+            safePlay(currentV);
+          }
+        }, 900);
       }
 
       if (onboarding) {
@@ -778,6 +783,17 @@
       }, { root: feed, threshold: [0.1, 0.55, 0.9] });
       slides.forEach(function(s){ io.observe(s); });
 
+      // Первый user gesture где угодно — принудительно переиграть текущий слайд.
+      // Это то самое «нажатие звука», которое раньше всё чинило.
+      var gestureBound = false;
+      function onFirstGesture(){
+        if (gestureBound) return;
+        gestureBound = true;
+        setActiveSlide(currentIndex);
+      }
+      document.addEventListener('touchstart', onFirstGesture, {passive:true, once:true});
+      document.addEventListener('click', onFirstGesture, {once:true});
+
       function updateIcons(){
         soundBtns.forEach(function(btn){
           var svg = btn.querySelector('svg');
@@ -833,17 +849,14 @@
         trackEvent('profile_open', {});
         profile.classList.add('open');
         videos.forEach(function(v){ try { v.pause(); } catch(e){} });
-        // Освобождаем ленту и грузим только профильные видео
-        for (var i = 0; i < slides.length; i++) {
-          evictVideo(slides[i].querySelector('video'));
-        }
-        loadProfileVideos();
       }
       function closeProfile(){
         profile.classList.remove('open');
-        // Освобождаем профильные видео, возвращаем текущий слайд ленты
-        evictProfileVideos();
-        setActiveSlide(currentIndex);
+        var current = slides[currentIndex];
+        if (current) {
+          var v = current.querySelector('video');
+          if (v && v._loaded) safePlay(v);
+        }
       }
       openBtns.forEach(function(btn){
         btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); });

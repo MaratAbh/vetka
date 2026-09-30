@@ -434,6 +434,16 @@
         for (var i = 0; i < allSlides.length; i++) allSlides[i].style.height = vh + 'px';
       }
 
+      // Функция прогрева рилсов — вызывается только после закрытия онбординга
+      function primeVideos(ids){
+        ids.forEach(function(id){
+          var v = document.querySelector('#' + id + ' video');
+          if (!v || v._loaded) return;
+          v.src = v.dataset.src;
+          v._loaded = true;
+        });
+      }
+
       if (onboarding) {
         var startY = 0, currentY = 0, dragging = false;
         var THRESHOLD = 70;
@@ -464,6 +474,11 @@
             onboarding.style.transform = '';
             onboarding.classList.add('gone');
             layoutReels();
+            // Прогреваем рилсы только когда онбординг закрыт
+            primeVideos(['r1','r2','r3']);
+            // И запускаем первый
+            var firstV = document.querySelector('#r1 video');
+            if (firstV) { firstV.muted = true; firstV.play().catch(function(){}); }
             setTimeout(function(){
               if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
               onboarding = null;
@@ -506,20 +521,7 @@
       var closeBtn = document.getElementById('closeProfile');
       var scrollEndTracked = false;
 
-      // Ставим src для первых трёх при старте.
-      // preload="auto" в HTML гарантирует фоновую загрузку — даже если юзер
-      // долго смотрит первый рилс, второй и третий уже будут готовы.
-      function primeVideos(ids){
-        ids.forEach(function(id){
-          var v = document.querySelector('#' + id + ' video');
-          if (!v || v._loaded) return;
-          v.src = v.dataset.src;
-          v._loaded = true;
-        });
-      }
-      primeVideos(['r1','r2','r3']);
-
-      // Догрузка для будущих рилсов (если добавите r4+)
+      // Догрузка для будущих рилсов (r4, r5 и т.д.)
       function activateAround(idx){
         for (var i = idx; i <= idx + 2 && i < slides.length; i++){
           var v = slides[i].querySelector('video');
@@ -559,10 +561,6 @@
         });
       }, { root: feed, threshold: [0, 0.55, 0.9] });
       slides.forEach(function(s){ io.observe(s); });
-
-      // Играем первый сразу
-      var firstV = document.querySelector('#r1 video');
-      if (firstV) { firstV.muted = true; firstV.play().catch(function(){}); }
 
       function updateIcons(){
         soundBtns.forEach(function(btn){
@@ -782,7 +780,7 @@
 
       var slideIO = new IntersectionObserver(function(entries){
         entries.forEach(function(e){
-          if (e.isIntersecting && e.intersectionRatio > 0.55) {
+          if (e.isIntersecting && e.intersectionRatio > 0.5) {
             var slideId = e.target.dataset.id;
             if (slideId && !trackedSlideViews[slideId]) {
               trackedSlideViews[slideId] = true;

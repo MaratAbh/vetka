@@ -86,7 +86,6 @@
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
-  /* ===== ИКОНКА БИЛЕТА: правый нижний угол, заметная ===== */
   .ticket-btn{
     position:absolute;
     bottom:calc(28px + env(safe-area-inset-bottom,0px));
@@ -217,7 +216,6 @@
 
   <div class="feed visible" id="feed">
 
-    <!-- ===== r1: LaVidaLoca, без заголовка, без меты, билет в углу ===== -->
     <div class="slide" id="r1" data-id="r1">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_143810_843-compressed.mp4" loop playsinline preload="none" muted></video>
@@ -242,7 +240,6 @@
       </div>
     </div>
 
-    <!-- ===== r2: Что тебя ждёт ===== -->
     <div class="slide" id="r2" data-id="r2">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122929_597-compressed.mp4" loop playsinline preload="none" muted></video>
@@ -268,7 +265,6 @@
       </div>
     </div>
 
-    <!-- ===== r3: О месте ===== -->
     <div class="slide" id="r3" data-id="r3">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" loop playsinline preload="none" muted></video>
@@ -294,7 +290,6 @@
       </div>
     </div>
 
-    <!-- ===== r4: Ladies Night — полная карточка (title + meta + CTA) ===== -->
     <div class="slide" id="r4" data-id="r4">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
@@ -324,7 +319,6 @@
       </div>
     </div>
 
-    <!-- ===== r5: Как это было ===== -->
     <div class="slide" id="r5" data-id="r5">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
@@ -350,7 +344,6 @@
       </div>
     </div>
 
-    <!-- ===== r6: Наши события ===== -->
     <div class="slide" id="r6" data-id="r6">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="none" muted></video>
@@ -376,7 +369,6 @@
       </div>
     </div>
 
-    <!-- ===== r7: Музыкальный квартирник ===== -->
     <div class="slide" id="r7" data-id="r7">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122929_597-compressed.mp4" loop playsinline preload="none" muted></video>
@@ -402,7 +394,6 @@
       </div>
     </div>
 
-    <!-- ===== r8: Ночной стендап ===== -->
     <div class="slide" id="r8" data-id="r8">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" loop playsinline preload="none" muted></video>
@@ -580,17 +571,37 @@
       }
 
       // =====================================================================
-      // ===== АРХИТЕКТУРА "VIDEO SLOT POOL" (лимит = 2 видео с src) =====
+      // ===== АРХИТЕКТУРА "VIDEO SLOT POOL"
+      // =====================================================================
+      // Гарантия: в DOM одновременно максимум 2 видео с src.
+      // При эвикции видео ПОЛНОСТЬЮ удаляется из DOM (не только src),
+      // чтобы браузер 100% освободил медиа-сессию (иначе Telegram WebView
+      // держит слот и после N-го видео новые play() блокируются).
+      // При повторной активации видео возвращается в свой .video-контейнер.
       // =====================================================================
 
       var WINDOW_BACK = 0;
       var WINDOW_FWD  = 1;
       var playWatchdog = null;
 
+      // Ссылки на видео и их родные слоты — сохраняем ДО любых манипуляций,
+      // потому что после removeChild слайд уже не найдёт своё видео.
+      var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
+      slides.forEach(function(s){
+        var v = s.querySelector('video');
+        s._video = v;
+        if (v) v._slot = v.parentNode;
+      });
+
       function ensureVideoLoaded(v){
-        if (!v || v._loaded) return;
+        if (!v) return;
+        if (v._loaded) return;
         var url = v.dataset.src;
         if (!url) return;
+        // Возвращаем видео в его .video-контейнер, если оно было удалено
+        if (!v.parentNode && v._slot) {
+          try { v._slot.appendChild(v); } catch(e){}
+        }
         v._loaded = true;
         v.preload = 'auto';
         if (v.getAttribute('src') !== url) {
@@ -606,6 +617,10 @@
         try {
           v.removeAttribute('src');
           v.load();
+        } catch(e){}
+        // Ключевое: удаляем из DOM целиком — это освобождает медиа-сессию
+        try {
+          if (v.parentNode) v.parentNode.removeChild(v);
         } catch(e){}
       }
 
@@ -626,8 +641,7 @@
       function emergencyEvictAllExcept(idx){
         for (var i = 0; i < slides.length; i++) {
           if (i === idx) continue;
-          var v = slides[i].querySelector('video');
-          evictVideo(v);
+          evictVideo(slides[i]._video);
         }
       }
 
@@ -635,7 +649,7 @@
         if (playWatchdog) { clearTimeout(playWatchdog); playWatchdog = null; }
 
         for (var i = 0; i < slides.length; i++) {
-          var v = slides[i].querySelector('video');
+          var v = slides[i]._video;
           if (!v) continue;
           var d = i - idx;
           if (d === 0) {
@@ -649,7 +663,7 @@
           }
         }
 
-        var currentV = (slides[idx] ? slides[idx].querySelector('video') : null);
+        var currentV = slides[idx] ? slides[idx]._video : null;
         playWatchdog = setTimeout(function(){
           playWatchdog = null;
           if (!currentV) return;
@@ -734,7 +748,6 @@
         });
       }
 
-      var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var videos = feed.querySelectorAll('video');
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
       var soundEnabled = false;
@@ -793,7 +806,7 @@
         soundEnabled = true; updateIcons();
         var current = slides[currentIndex];
         if (current) {
-          var v = current.querySelector('video');
+          var v = current._video;
           if (v && v._loaded) { v.muted = false; v.volume = 1; safePlay(v); }
         }
         trackEvent('sound_on', {});
@@ -803,7 +816,7 @@
         soundEnabled = false; updateIcons();
         var current = slides[currentIndex];
         if (current) {
-          var v = current.querySelector('video');
+          var v = current._video;
           if (v && v._loaded) v.muted = true;
         }
       }
@@ -829,13 +842,16 @@
         trackUser('profile_view');
         trackEvent('profile_open', {});
         profile.classList.add('open');
-        videos.forEach(function(v){ try { v.pause(); } catch(e){} });
+        for (var i = 0; i < slides.length; i++) {
+          var v = slides[i]._video;
+          if (v) { try { v.pause(); } catch(e){} }
+        }
       }
       function closeProfile(){
         profile.classList.remove('open');
         var current = slides[currentIndex];
         if (current) {
-          var v = current.querySelector('video');
+          var v = current._video;
           if (v && v._loaded) safePlay(v);
         }
       }

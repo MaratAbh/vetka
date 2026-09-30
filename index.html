@@ -571,12 +571,23 @@
       }
 
       // =====================================================================
-      // ===== АРХИТЕКТУРА "VIDEO SLOT POOL"
+      // ===== VIDEO SLOT POOL с явной паузой между evict и load =====
+      // =====================================================================
+      // Логика:
+      //   1. Эвакуируем ВСЁ, что не нужно (включая старый current).
+      //      evictVideo делает pause + removeAttribute('src') + load() + removeChild.
+      //      Это освобождает медиа-сессию в WebView.
+      //   2. Ждём 150 мс — WebView реально отпускает слот (иначе он держит
+      //      его ещё какое-то время, и следующий play() блокируется).
+      //   3. Грузим видео из окна (current + next) и играем текущий.
+      //   4. Watchdog: если через 1200 мс текущий не заиграл — полный reset
+      //      (эвакуируем ВСЁ, ждём, грузим заново).
       // =====================================================================
 
       var WINDOW_BACK = 0;
       var WINDOW_FWD  = 1;
       var playWatchdog = null;
+      var setActiveToken = 0;
 
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       slides.forEach(function(s){
@@ -602,7 +613,8 @@
       }
 
       function evictVideo(v){
-        if (!v || !v._loaded) return;
+        if (!v) return;
+        // Освобождаем ДАЖЕ ЕСЛИ _loaded === false — на всякий случай
         v._loaded = false;
         try { v.pause(); } catch(e){}
         try {
@@ -628,43 +640,74 @@
         try { if (!v.paused) v.pause(); } catch(e){}
       }
 
-      function emergencyEvictAllExcept(idx){
+      function evictAllExcept(idx, keepNext){
         for (var i = 0; i < slides.length; i++) {
           if (i === idx) continue;
+          if (keepNext && i === idx + 1) continue;
           evictVideo(slides[i]._video);
         }
       }
 
+      function loadWindow(idx, keepNext){
+        // Текущий
+        var cv = slides[idx] ? slides[idx]._video : null;
+        if (cv) { ensureVideoLoaded(cv); safePlay(cv); }
+        // Следующий (пре-греем на паузе)
+        if (keepNext && idx + 1 < slides.length) {
+          var nv = slides[idx + 1]._video;
+          if (nv) { ensureVideoLoaded(nv); safePause(nv); }
+        }
+        return cv;
+      }
+
       function setActiveSlide(idx){
         if (playWatchdog) { clearTimeout(playWatchdog); playWatchdog = null; }
-
-        for (var i = 0; i < slides.length; i++) {
-          var v = slides[i]._video;
-          if (!v) continue;
-          var d = i - idx;
-          if (d === 0) {
-            ensureVideoLoaded(v);
-            safePlay(v);
-          } else if (d >= -WINDOW_BACK && d <= WINDOW_FWD) {
-            ensureVideoLoaded(v);
-            safePause(v);
-          } else {
-            evictVideo(v);
-          }
-        }
+        setActiveToken++;
+        var myToken = setActiveToken;
 
         var currentV = slides[idx] ? slides[idx]._video : null;
+
+        // Шаг 1: если текущий ещё не загружен — грузим сразу (нет чего эвакуировать).
+        // Если что-то уже висит — эвакуируем всё ЛИШНЕЕ (оставив current+next).
+        if (currentV && currentV._loaded) {
+          // current уже загружен — быстро переключаемся
+          evictAllExcept(idx, true);
+          // Если next ещё не загружен — грузим его
+          if (idx + 1 < slides.length) {
+            var nv = slides[idx + 1]._video;
+            if (nv && !nv._loaded) ensureVideoLoaded(nv);
+            if (nv) safePause(nv);
+          }
+          safePlay(currentV);
+        } else {
+          // current не загружен — эвакуируем ВСЁ (включая возможный старый current),
+          // ждём 150мс, потом грузим.
+          for (var i = 0; i < slides.length; i++) {
+            evictVideo(slides[i]._video);
+          }
+          setTimeout(function(){
+            if (myToken !== setActiveToken) return; // устарело
+            loadWindow(idx, true);
+          }, 150);
+        }
+
+        // Watchdog: если через 1200 мс текущий не заиграл — полный reset
         playWatchdog = setTimeout(function(){
           playWatchdog = null;
-          if (!currentV) return;
-          if (currentV.paused || currentV.readyState < 2) {
-            emergencyEvictAllExcept(idx);
-            if (currentV._loaded) {
-              try { currentV.load(); } catch(e){}
-            }
-            safePlay(currentV);
+          if (myToken !== setActiveToken) return;
+          var cv = slides[idx] ? slides[idx]._video : null;
+          if (!cv) return;
+          if (!cv.paused && cv.readyState >= 2) return; // всё ок
+
+          // Полный reset — эвакуируем ВСЁ, пауза, заново
+          for (var j = 0; j < slides.length; j++) {
+            evictVideo(slides[j]._video);
           }
-        }, 900);
+          setTimeout(function(){
+            if (myToken !== setActiveToken) return;
+            loadWindow(idx, true);
+          }, 180);
+        }, 1200);
       }
 
       if (onboarding) {
@@ -838,11 +881,8 @@
       }
       function closeProfile(){
         profile.classList.remove('open');
-        var current = slides[currentIndex];
-        if (current) {
-          var v = current._video;
-          if (v && v._loaded) safePlay(v);
-        }
+        // Перезапускаем текущий через тот же механизм setActiveSlide
+        setActiveSlide(currentIndex);
       }
       openBtns.forEach(function(btn){
         btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); });

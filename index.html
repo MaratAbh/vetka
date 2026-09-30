@@ -195,7 +195,7 @@
 
     <div class="slide" id="r1" data-id="r1">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -225,7 +225,7 @@
 
     <div class="slide" id="r2" data-id="r2">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122929_597-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122929_597-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -255,7 +255,7 @@
 
     <div class="slide" id="r3" data-id="r3">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -285,7 +285,7 @@
 
     <div class="slide" id="r4" data-id="r4">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -315,7 +315,7 @@
 
     <div class="slide" id="r5" data-id="r5">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -345,7 +345,7 @@
 
     <div class="slide" id="r6" data-id="r6">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -375,7 +375,7 @@
 
     <div class="slide" id="r7" data-id="r7">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122929_597-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122929_597-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -405,7 +405,7 @@
 
     <div class="slide" id="r8" data-id="r8">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -584,47 +584,77 @@
         for (var i = 0; i < allSlides.length; i++) allSlides[i].style.height = vh + 'px';
       }
 
-      // ===== МЕНЕДЖЕР ОЧЕРЕДИ ЗАГРУЗКИ ВИДЕО =====
-      var loadQueue = [];
-      var loadActive = 0;
-      var MAX_PARALLEL = 3;
+      // =====================================================================
+      // ===== АРХИТЕКТУРА "VIDEO SLOT POOL" (масштабируется на N видео) =====
+      // =====================================================================
+      // Идея:
+      //   В DOM одновременно максимум 4 видео имеют src:
+      //     idx-1 (предыдущий), idx (текущий), idx+1, idx+2 (пре-пре-фетч).
+      //   Все остальные принудительно освобождают медиа-слот браузера:
+      //     removeAttribute('src') + load().
+      //
+      //   Это решает корневую проблему мобильных WebView: лимит одновременных
+      //   медиа-сессий (обычно 4–6). Как только лимит исчерпан — новые play()
+      //   молча игнорируются, слайд показывает чёрный экран. User gesture
+      //   (клик по «звуку») временно сбрасывает счётчик — поэтому звук
+      //   «включал» видео.
+      //
+      //   Работает одинаково при 8, 80, 8000 слайдов.
+      // =====================================================================
 
-      function queueVideoLoad(v){
-        if (!v || v._loaded || v._queued) return;
-        v._queued = true;
-        loadQueue.push(v);
-        pumpVideoQueue();
-      }
+      var WINDOW_BACK = 1;   // сколько слайдов назад держим загруженными
+      var WINDOW_FWD  = 2;   // сколько слайдов вперёд пре-греваем
 
-      function pumpVideoQueue(){
-        while (loadActive < MAX_PARALLEL && loadQueue.length > 0) {
-          (function(v){
-            loadActive++;
-            v._loaded = true;
-            v._queued = false;
-            var released = false;
-            function release(){
-              if (released) return;
-              released = true;
-              try { v.removeEventListener('loadedmetadata', release); } catch(e){}
-              try { v.removeEventListener('error', release); } catch(e){}
-              loadActive--;
-              pumpVideoQueue();
-            }
-            v.addEventListener('loadedmetadata', release);
-            v.addEventListener('error', release);
-            v.preload = 'auto';
-            v.src = v.dataset.src;
-            setTimeout(release, 15000);
-          })(loadQueue.shift());
+      function ensureVideoLoaded(v){
+        if (!v || v._loaded) return;
+        v._loaded = true;
+        v.preload = 'auto';
+        var url = v.dataset.src;
+        if (url && v.getAttribute('src') !== url) {
+          v.setAttribute('src', url);
         }
       }
 
-      function primeVideos(ids){
-        ids.forEach(function(id){
-          var v = document.querySelector('#' + id + ' video');
-          queueVideoLoad(v);
-        });
+      function evictVideo(v){
+        if (!v || !v._loaded) return;
+        v._loaded = false;
+        try { v.pause(); } catch(e){}
+        try {
+          v.removeAttribute('src');
+          v.load();
+        } catch(e){}
+      }
+
+      function safePlay(v){
+        if (!v) return;
+        v.muted = !soundEnabled;
+        var p = v.play();
+        if (p && p.catch) p.catch(function(){});
+      }
+
+      function safePause(v){
+        if (!v) return;
+        try { if (!v.paused) v.pause(); } catch(e){}
+      }
+
+      function setActiveSlide(idx){
+        for (var i = 0; i < slides.length; i++) {
+          var v = slides[i].querySelector('video');
+          if (!v) continue;
+          var d = i - idx;
+          if (d === 0) {
+            // Текущий — грузим и играем
+            ensureVideoLoaded(v);
+            safePlay(v);
+          } else if (d >= -WINDOW_BACK && d <= WINDOW_FWD) {
+            // Соседи по окну — грузим, держим на паузе
+            ensureVideoLoaded(v);
+            safePause(v);
+          } else {
+            // Всё остальное — освобождаем медиа-слот
+            evictVideo(v);
+          }
+        }
       }
 
       if (onboarding) {
@@ -664,9 +694,8 @@
             }
 
             layoutReels();
-            primeVideos(['r1','r2','r3']);
-            var firstV = document.querySelector('#r1 video');
-            if (firstV) { firstV.muted = true; firstV.play().catch(function(){}); }
+            // Активируем первый слайд — setActiveSlide загрузит r1, r2, r3
+            setActiveSlide(0);
             setTimeout(function(){
               if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
               onboarding = null;
@@ -708,54 +737,28 @@
       var openBtns = document.querySelectorAll('[data-open-profile]');
       var closeBtn = document.getElementById('closeProfile');
       var scrollEndTracked = false;
+      var currentIndex = 0;
 
-      function activateAround(idx){
-        for (var i = idx; i <= idx + 4 && i < slides.length; i++){
-          var v = slides[i].querySelector('video');
-          queueVideoLoad(v);
-        }
-      }
-
-      // ===== ГЛАВНАЯ ПРАВКА =====
-      // Раньше: для не-playing видео делали pause() + currentTime = 0.
-      // Это НЕ освобождало медиа-слот браузера, и после N слайдов
-      // новые play() блокировались (симптом: чёрный экран, но стоит
-      // нажать «звук» — user gesture разблокирует и всё играет).
-      // Теперь: для слайдов, далёких от текущего (|sIdx - idx| > 1),
-      // реально освобождаем медиа-слот: removeAttribute('src') + load().
-      // currentTime = 0 убрали совсем — он бесполезен и вреден.
-      function playOnlyInView(entry){
-        var idx = slides.indexOf(entry);
-        if (idx === slides.length - 1 && !scrollEndTracked) {
-          scrollEndTracked = true;
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'scroll_end'); } catch(err){} }
-        }
-        videos.forEach(function(v){
-          var s = v.closest('.slide');
-          var sIdx = slides.indexOf(s);
-          if (s === entry) {
-            v.muted = !soundEnabled;
-            var p = v.play();
-            if (p && p.catch) p.catch(function(){});
-          } else {
-            v.pause();
-            if (v._loaded && Math.abs(sIdx - idx) > 1) {
-              try { v.removeAttribute('src'); v.load(); } catch(e){}
-              v._loaded = false;
-              v._queued = false;
+      var io = new IntersectionObserver(function(entries){
+        var best = null, bestRatio = 0;
+        entries.forEach(function(e){
+          if (e.isIntersecting && e.intersectionRatio > bestRatio) {
+            bestRatio = e.intersectionRatio;
+            best = e.target;
+          }
+        });
+        if (best && bestRatio > 0.55) {
+          var idx = slides.indexOf(best);
+          if (idx !== -1 && idx !== currentIndex) {
+            currentIndex = idx;
+            setActiveSlide(idx);
+            if (idx === slides.length - 1 && !scrollEndTracked) {
+              scrollEndTracked = true;
+              if (window.ym) { try { ym(113067752, 'reachGoal', 'scroll_end'); } catch(err){} }
             }
           }
-        });
-      }
-      var currentIndex = 0;
-      var io = new IntersectionObserver(function(entries){
-        entries.forEach(function(e){
-          if (e.isIntersecting && e.intersectionRatio > 0.55) {
-            var idx = slides.indexOf(e.target);
-            if (idx !== -1) { currentIndex = idx; activateAround(idx); playOnlyInView(e.target); }
-          }
-        });
-      }, { root: feed, threshold: [0, 0.55, 0.9] });
+        }
+      }, { root: feed, threshold: [0.1, 0.55, 0.9] });
       slides.forEach(function(s){ io.observe(s); });
 
       function updateIcons(){
@@ -774,15 +777,21 @@
       function enableSound(){
         if (soundEnabled) return;
         soundEnabled = true; updateIcons();
-        videos.forEach(function(v){ v.muted = false; v.volume = 1; });
         var current = slides[currentIndex];
-        if (current) { var v = current.querySelector('video'); if (v) v.play().catch(function(){}); }
+        if (current) {
+          var v = current.querySelector('video');
+          if (v && v._loaded) { v.muted = false; v.volume = 1; safePlay(v); }
+        }
         trackEvent('sound_on', {});
       }
       function disableSound(){
         if (!soundEnabled) return;
         soundEnabled = false; updateIcons();
-        videos.forEach(function(v){ v.muted = true; });
+        var current = slides[currentIndex];
+        if (current) {
+          var v = current.querySelector('video');
+          if (v && v._loaded) v.muted = true;
+        }
       }
       soundBtns.forEach(function(btn){
         btn.addEventListener('click', function(e){
@@ -806,12 +815,15 @@
         trackUser('profile_view');
         trackEvent('profile_open', {});
         profile.classList.add('open');
-        videos.forEach(function(v){ v.pause(); });
+        videos.forEach(function(v){ try { v.pause(); } catch(e){} });
       }
       function closeProfile(){
         profile.classList.remove('open');
         var current = slides[currentIndex];
-        if (current) { var v = current.querySelector('video'); if (v) { v.muted = !soundEnabled; v.play().catch(function(){}); } }
+        if (current) {
+          var v = current.querySelector('video');
+          if (v && v._loaded) safePlay(v);
+        }
       }
       openBtns.forEach(function(btn){
         btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); });
@@ -974,6 +986,7 @@
         }, 100);
       });
 
+      // Отдельный IntersectionObserver только для аналитики slide_view
       var slideIO = new IntersectionObserver(function(entries){
         entries.forEach(function(e){
           if (e.isIntersecting && e.intersectionRatio > 0.5) {

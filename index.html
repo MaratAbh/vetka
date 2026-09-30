@@ -86,6 +86,10 @@
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
+  .ticket-btn{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px;z-index:10;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;color:#CDFF4A;cursor:pointer;padding:0;text-decoration:none;transition:transform .15s ease;}
+  .ticket-btn:active{transform:scale(.94);}
+  .ticket-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
+
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
   .org-badge{display:inline-flex;align-items:center;gap:7px;padding:4px 12px 4px 4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;align-self:flex-start;pointer-events:auto;transition:transform .15s ease,border-color .2s ease;}
@@ -195,7 +199,7 @@
 
     <div class="slide" id="r1" data-id="r1">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_143810_843-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -203,23 +207,18 @@
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
+      <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_1" target="_blank" aria-label="Купить билет">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
+          <path d="M13 5v14"/>
+        </svg>
+      </a>
       <div class="bottom">
-        <div class="title">Проверка материала</div>
+        <div class="title">LaVidaLoca</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">Б</div></div>
           <div class="org-info"><div class="org-name">антресоль&перец</div></div>
         </button>
-        <div class="meta">
-          <span class="item">Сегодня · 20:30</span><i></i>
-          <span class="item">Антресоль&Перец</span><i></i>
-          <span class="item price">от 500 ₽</span>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_1" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            Купить билет
-          </a>
-        </div>
       </div>
     </div>
 
@@ -587,20 +586,9 @@
       // =====================================================================
       // ===== АРХИТЕКТУРА "VIDEO SLOT POOL" (лимит = 2 видео с src) =====
       // =====================================================================
-      // Жёсткая гарантия: в DOM одновременно максимум 2 видео с src
-      // (текущий + следующий). Всё остальное — принудительный evict.
-      //
-      // Плюс watchdog: если через 900 мс после переключения текущий не
-      // играет — аварийно освобождаем ВСЕ остальные видео и перезагружаем
-      // текущий. Это ловит случай, когда WebView молча заблокировал play().
-      //
-      // Плюс первый user-gesture (тап где угодно) дергает setActiveSlide —
-      // это лечит ситуацию, когда WebView заблокировал play() и нужен
-      // жест для разблокировки (тот самый эффект «нажал звук — заработало»).
-      // =====================================================================
 
-      var WINDOW_BACK = 0;   // не держим предыдущий
-      var WINDOW_FWD  = 1;   // только один вперёд
+      var WINDOW_BACK = 0;
+      var WINDOW_FWD  = 1;
       var playWatchdog = null;
 
       function ensureVideoLoaded(v){
@@ -665,7 +653,6 @@
           }
         }
 
-        // Watchdog — если текущий не заиграл за 900мс, аварийный сброс
         var currentV = (slides[idx] ? slides[idx].querySelector('video') : null);
         playWatchdog = setTimeout(function(){
           playWatchdog = null;
@@ -783,8 +770,6 @@
       }, { root: feed, threshold: [0.1, 0.55, 0.9] });
       slides.forEach(function(s){ io.observe(s); });
 
-      // Первый user gesture где угодно — принудительно переиграть текущий слайд.
-      // Это то самое «нажатие звука», которое раньше всё чинило.
       var gestureBound = false;
       function onFirstGesture(){
         if (gestureBound) return;

@@ -242,7 +242,7 @@
 
     <div class="slide" id="r2" data-id="r2">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122929_597-compressed.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000034015-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -267,7 +267,7 @@
 
     <div class="slide" id="r3" data-id="r3">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -292,7 +292,7 @@
 
     <div class="slide" id="r4" data-id="r4">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122908_998.mp4-compressed.mov" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -321,7 +321,7 @@
 
     <div class="slide" id="r5" data-id="r5">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -573,19 +573,11 @@
       // =====================================================================
       // ===== АРХИТЕКТУРА "VIDEO SLOT POOL"
       // =====================================================================
-      // Гарантия: в DOM одновременно максимум 2 видео с src.
-      // При эвикции видео ПОЛНОСТЬЮ удаляется из DOM (не только src),
-      // чтобы браузер 100% освободил медиа-сессию (иначе Telegram WebView
-      // держит слот и после N-го видео новые play() блокируются).
-      // При повторной активации видео возвращается в свой .video-контейнер.
-      // =====================================================================
 
       var WINDOW_BACK = 0;
       var WINDOW_FWD  = 1;
       var playWatchdog = null;
 
-      // Ссылки на видео и их родные слоты — сохраняем ДО любых манипуляций,
-      // потому что после removeChild слайд уже не найдёт своё видео.
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       slides.forEach(function(s){
         var v = s.querySelector('video');
@@ -598,7 +590,6 @@
         if (v._loaded) return;
         var url = v.dataset.src;
         if (!url) return;
-        // Возвращаем видео в его .video-контейнер, если оно было удалено
         if (!v.parentNode && v._slot) {
           try { v._slot.appendChild(v); } catch(e){}
         }
@@ -618,7 +609,6 @@
           v.removeAttribute('src');
           v.load();
         } catch(e){}
-        // Ключевое: удаляем из DOM целиком — это освобождает медиа-сессию
         try {
           if (v.parentNode) v.parentNode.removeChild(v);
         } catch(e){}
@@ -748,7 +738,6 @@
         });
       }
 
-      var videos = feed.querySelectorAll('video');
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
       var soundEnabled = false;
       var profile = document.getElementById('profile');

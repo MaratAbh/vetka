@@ -283,8 +283,6 @@
       </div>
     </div>
 
-    <!-- ===== НОВЫЕ СЛАЙДЫ r4–r8 ===== -->
-
     <div class="slide" id="r4" data-id="r4">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="auto" muted></video>
@@ -434,8 +432,6 @@
         </div>
       </div>
     </div>
-
-    <!-- ===== /НОВЫЕ СЛАЙДЫ ===== -->
 
   </div>
 
@@ -684,9 +680,10 @@
       var closeBtn = document.getElementById('closeProfile');
       var scrollEndTracked = false;
 
-      // Догрузка для будущих рилсов (r4, r5 и т.д.)
+      // Догрузка для будущих рилсов (r4, r5, ... r8)
+      // ИЗМЕНЕНО: idx+2 → idx+4, чтобы у каждого ролика был запас 4 слайда на прогрев
       function activateAround(idx){
-        for (var i = idx; i <= idx + 2 && i < slides.length; i++){
+        for (var i = idx; i <= idx + 4 && i < slides.length; i++){
           var v = slides[i].querySelector('video');
           if (v && !v._loaded) {
             v.preload = 'auto';

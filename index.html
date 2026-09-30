@@ -473,6 +473,18 @@
           if (delta < -THRESHOLD) {
             onboarding.style.transform = '';
             onboarding.classList.add('gone');
+
+            // ===== ЕДИНСТВЕННАЯ ПРАВКА =====
+            // Гасим все видео онбординга сразу, чтобы они не жрали канал,
+            // пока грузятся рилсы. Элементы всё равно удаляются через 600мс,
+            // так что removeAttribute+load() безопасен и только отменяет загрузку.
+            var onbVids = onboarding.querySelectorAll('video');
+            for (var i = 0; i < onbVids.length; i++) {
+              try { onbVids[i].pause(); } catch(e){}
+              try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
+            }
+            // ===== КОНЕЦ ПРАВКИ =====
+
             layoutReels();
             // Прогреваем рилсы только когда онбординг закрыт
             primeVideos(['r1','r2','r3']);

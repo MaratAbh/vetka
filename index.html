@@ -283,6 +283,7 @@
   }
   .cta svg{width:14px;height:14px;flex:none;}
 
+  /* ===== PROFILE SCREEN ===== */
   .profile-screen{
     position:fixed;inset:0;z-index:500;background:#07070a;
     transform:translateY(100%);
@@ -290,33 +291,39 @@
     overflow:hidden;pointer-events:none;
   }
   .profile-screen.open{transform:translateY(0);pointer-events:auto;}
-  .profile-screen::before{
-    content:'';position:absolute;inset:0;
-    background:radial-gradient(80% 40% at 50% 0%, rgba(205,255,74,.10), transparent 60%);
-    pointer-events:none;z-index:0;
+  .profile-scroll{
+    position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   }
-  .profile-scroll{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
   .profile-scroll::-webkit-scrollbar{display:none;}
-  .cover{position:relative;height:36vh;min-height:200px;max-height:260px;overflow:hidden;flex:none;}
-  .cover-bg{
+
+  .profile-hero{
+    position:relative;
+    min-height:58vh;
+    overflow:hidden;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    padding-bottom:26px;
+  }
+  .hero-bg{
     position:absolute;inset:0;
     background:
       radial-gradient(60% 80% at 30% 30%, rgba(205,255,74,.28), transparent 65%),
-      radial-gradient(70% 70% at 80% 80%, rgba(122,108,255,.35), transparent 65%),
+      radial-gradient(70% 70% at 80% 80%, rgba(122,108,255,.38), transparent 65%),
       radial-gradient(50% 60% at 60% 40%, rgba(255,138,108,.20), transparent 60%),
       linear-gradient(160deg,#16161e 0%,#08080c 100%);
   }
-  .cover-bg::after{
+  .hero-bg::after{
     content:'';position:absolute;inset:0;
     background-image:radial-gradient(rgba(255,255,255,.045) 1px, transparent 1px);
     background-size:4px 4px;opacity:.7;mix-blend-mode:overlay;
   }
-  .cover-veil{
-    position:absolute;inset:0;
+  .hero-veil{
+    position:absolute;inset:0;pointer-events:none;
     background:linear-gradient(180deg,
-      rgba(7,7,10,.55) 0%,rgba(7,7,10,.10) 45%,
-      rgba(7,7,10,.75) 82%,rgba(7,7,10,.98) 100%);
-    pointer-events:none;
+      rgba(7,7,10,.45) 0%,
+      rgba(7,7,10,.05) 40%,
+      rgba(7,7,10,.75) 82%,
+      rgba(7,7,10,1) 100%);
   }
   .profile-topnav{
     position:absolute;top:0;left:0;right:0;z-index:10;
@@ -330,39 +337,36 @@
     display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;
   }
   .back svg,.menu svg{width:18px;height:18px;}
-  .avatar-abs{
-    position:absolute;left:20px;bottom:-38px;z-index:5;
-    width:92px;height:92px;border-radius:50%;padding:3px;
+  .hero-content{
+    position:relative;z-index:2;padding:0 20px;
+    display:flex;flex-direction:column;align-items:flex-start;
+  }
+  .hero-avatar{
+    width:88px;height:88px;border-radius:50%;padding:3px;
     background:linear-gradient(135deg,#CDFF4A 0%,#a8d92e 100%);
     box-shadow:0 0 40px rgba(205,255,74,.35), 0 8px 24px rgba(0,0,0,.5);
+    margin-bottom:14px;
   }
-  .avatar-abs .inner{
+  .hero-avatar .inner{
     width:100%;height:100%;border-radius:50%;
     background:linear-gradient(160deg,#15151c 0%,#06060a 100%);
     display:flex;align-items:center;justify-content:center;
     font-family:'Unbounded',sans-serif;font-weight:600;font-size:32px;
     color:#CDFF4A;border:2px solid #07070a;
   }
-  .profile-info{position:relative;z-index:2;padding:52px 20px 24px;}
   .name-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
   .name{
-    font-family:'Unbounded',sans-serif;font-weight:600;font-size:22px;
+    font-family:'Unbounded',sans-serif;font-weight:600;font-size:24px;
     line-height:1.1;letter-spacing:-.02em;color:#fff;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    text-shadow:0 2px 20px rgba(0,0,0,.6);
   }
-  .verified{width:18px;height:18px;flex:none;}
-  .verified svg{width:18px;height:18px;display:block;}
+  .verified{width:20px;height:20px;flex:none;}
+  .verified svg{width:20px;height:20px;display:block;}
   .handle{font-size:12.5px;font-weight:500;color:rgba(255,255,255,.55);margin-bottom:12px;}
   .bio{
-    font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.75);
+    font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.78);
     margin-bottom:18px;max-width:38ch;
-    overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
   }
-  .stats{display:flex;gap:24px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.06);}
-  .stat{display:flex;flex-direction:column;gap:2px;}
-  .stat .n{font-family:'Unbounded',sans-serif;font-weight:500;font-size:18px;letter-spacing:-.01em;color:#fff;line-height:1;}
-  .stat .l{font-size:11px;font-weight:500;color:rgba(255,255,255,.45);}
-  .stat.hi .n{color:#CDFF4A;}
   .follow-btn{
     display:flex;align-items:center;justify-content:center;gap:8px;
     width:100%;padding:14px 22px;border-radius:100px;
@@ -378,49 +382,90 @@
     background:rgba(205,255,74,.12);color:#CDFF4A;
     border:1px solid rgba(205,255,74,.4);box-shadow:none;
   }
-  .events-head{
-    padding:8px 20px 12px;font-size:11px;font-weight:500;
-    letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.4);
+
+  .org-feed{
+    padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));
   }
-  .events-list{
-    padding:0 16px calc(30px + env(safe-area-inset-bottom,0px));
-    display:flex;flex-direction:column;gap:10px;
+  .post{
+    background:#07070a;
+    border-bottom:1px solid rgba(255,255,255,.05);
+    padding-bottom:14px;
+    margin-bottom:4px;
   }
-  .event{
-    display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;
-    padding:14px;border-radius:16px;
-    background:
-      radial-gradient(70% 100% at 0% 0%, rgba(205,255,74,.06), transparent 60%),
-      rgba(255,255,255,.03);
-    border:1px solid rgba(255,255,255,.08);
-    cursor:pointer;transition:background .2s ease;
+  .post-head{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 16px 10px;
   }
-  .event:active{background:rgba(255,255,255,.05);}
-  .event .date-box{
-    width:64px;height:64px;flex:none;border-radius:12px;
-    background:linear-gradient(135deg,#14141b 0%,#0a0a0f 100%);
-    border:1px solid rgba(205,255,74,.25);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  .post-avatar{
+    width:34px;height:34px;border-radius:50%;padding:2px;
+    background:linear-gradient(135deg, #CDFF4A 0%, #7a6cff 100%);
+    flex:none;
   }
-  .event .date-box .d{font-family:'Unbounded',sans-serif;font-weight:500;font-size:20px;line-height:1;color:#fff;}
-  .event .date-box .m{font-size:9.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#CDFF4A;}
-  .event-info{min-width:0;}
-  .event-info .fmt{font-size:9.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#CDFF4A;margin-bottom:5px;}
-  .event-info .nm{
-    font-family:'Unbounded',sans-serif;font-weight:500;
-    font-size:14.5px;line-height:1.15;letter-spacing:-.015em;color:#fff;margin-bottom:5px;
-    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-  }
-  .event-info .meta2{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.5);}
-  .event-info .meta2 i{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.3);flex:none;}
-  .event-info .meta2 .price{color:#CDFF4A;font-weight:600;}
-  .event .go{
-    width:36px;height:36px;flex:none;border-radius:50%;
-    background:#CDFF4A;color:#07070a;
+  .post-avatar .inner{
+    width:100%;height:100%;border-radius:50%;
+    background:#07070a;
     display:flex;align-items:center;justify-content:center;
-    box-shadow:0 0 16px rgba(205,255,74,.3);
+    font-family:'Unbounded',sans-serif;font-weight:600;
+    font-size:14px;color:#CDFF4A;
   }
-  .event .go svg{width:16px;height:16px;}
+  .post-user{font-size:13px;font-weight:600;color:#fff;line-height:1.2;}
+  .post-user span{
+    display:block;font-size:11px;font-weight:500;
+    color:rgba(255,255,255,.45);margin-top:1px;
+  }
+  .post-media{
+    position:relative;
+    background:#000;
+    aspect-ratio:4/5;
+    overflow:hidden;
+  }
+  .post-media video,
+  .post-media img{
+    width:100%;height:100%;
+    object-fit:cover;display:block;
+  }
+  .post-carousel{
+    display:flex;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .post-carousel::-webkit-scrollbar{display:none;}
+  .post-carousel img{
+    flex:0 0 100%;width:100%;height:100%;
+    scroll-snap-align:start;
+    object-fit:cover;
+  }
+  .carousel-dots{
+    position:absolute;left:0;right:0;bottom:12px;
+    display:flex;justify-content:center;gap:5px;
+    z-index:3;pointer-events:none;
+  }
+  .carousel-dots i{
+    width:5px;height:5px;border-radius:50%;
+    background:rgba(255,255,255,.4);
+    transition:background .2s ease;
+  }
+  .carousel-dots i.on{background:#CDFF4A;}
+  .post-caption{padding:12px 16px 0;}
+  .post-title{
+    font-size:14.5px;font-weight:600;color:#fff;
+    line-height:1.4;letter-spacing:-.005em;
+  }
+  .post-text{padding:32px 24px 28px;}
+  .post-text .quote{
+    font-family:'Unbounded',sans-serif;font-weight:500;
+    font-size:clamp(20px,6vw,26px);
+    line-height:1.25;letter-spacing:-.025em;
+    color:#fff;
+  }
+  .post-text .quote em{font-style:normal;color:#CDFF4A;}
+  .post-text .by{
+    margin-top:18px;
+    font-size:11.5px;font-weight:500;letter-spacing:.16em;
+    text-transform:uppercase;color:rgba(255,255,255,.35);
+  }
 </style>
 </head>
 <body>
@@ -468,7 +513,7 @@
 
     <div class="slide" id="r1" data-id="r1">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="auto" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -480,9 +525,7 @@
         <div class="title">Проверка материала</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">Б</div></div>
-          <div class="org-info">
-            <div class="org-name">антресоль&перец</div>
-          </div>
+          <div class="org-info"><div class="org-name">антресоль&перец</div></div>
         </button>
         <div class="meta">
           <span class="item">Сегодня · 20:30</span><i></i>
@@ -500,7 +543,7 @@
 
     <div class="slide" id="r2" data-id="r2">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="auto" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -512,9 +555,7 @@
         <div class="title">Комедия и Таро</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">Б</div></div>
-          <div class="org-info">
-            <div class="org-name">антресоль&перец</div>
-          </div>
+          <div class="org-info"><div class="org-name">антресоль&перец</div></div>
         </button>
         <div class="meta">
           <span class="item">Чт · 21:00</span><i></i>
@@ -532,7 +573,7 @@
 
     <div class="slide" id="r3" data-id="r3">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="auto" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -544,9 +585,7 @@
         <div class="title">Музыкальное лото</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">Б</div></div>
-          <div class="org-info">
-            <div class="org-name">антресоль&перец</div>
-          </div>
+          <div class="org-info"><div class="org-name">антресоль&перец</div></div>
         </button>
         <div class="meta">
           <span class="item">Сб · 19:00</span><i></i>
@@ -566,9 +605,11 @@
 
   <div class="profile-screen" id="profile">
     <div class="profile-scroll">
-      <div class="cover">
-        <div class="cover-bg"></div>
-        <div class="cover-veil"></div>
+
+      <div class="profile-hero">
+        <div class="hero-bg"></div>
+        <div class="hero-veil"></div>
+
         <div class="profile-topnav">
           <div class="back" id="closeProfile">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -579,69 +620,111 @@
             </svg>
           </div>
         </div>
-        <div class="avatar-abs"><div class="inner">Б</div></div>
-      </div>
-      <div class="profile-info">
-        <div class="name-row">
-          <div class="name">БАЗА</div>
-          <div class="verified">
-            <svg viewBox="0 0 24 24" fill="#CDFF4A">
-              <path d="M12 1l3 3h4v4l3 3-3 3v4h-4l-3 3-3-3H5v-4l-3-3 3-3V4h4l3-3z"/>
-              <path d="M10.5 15.5L7 12l1.4-1.4 2.1 2.1 5-5L17 9l-6.5 6.5z" fill="#07070a"/>
-            </svg>
+
+        <div class="hero-content">
+          <div class="hero-avatar"><div class="inner">Б</div></div>
+          <div class="name-row">
+            <div class="name">БАЗА</div>
+            <div class="verified">
+              <svg viewBox="0 0 24 24" fill="#CDFF4A">
+                <path d="M12 1l3 3h4v4l3 3-3 3v4h-4l-3 3-3-3H5v-4l-3-3 3-3V4h4l3-3z"/>
+                <path d="M10.5 15.5L7 12l1.4-1.4 2.1 2.1 5-5L17 9l-6.5 6.5z" fill="#07070a"/>
+              </svg>
+            </div>
           </div>
-        </div>
-        <div class="handle">@baza · Организатор</div>
-        <div class="bio">Стендап на БАЗЕ — каждый вечер. Проверенные комики, неформаты, музыкальное лото. Каждый вечер — новое событие.</div>
-        <div class="stats">
-          <div class="stat hi"><div class="n">1.4K</div><div class="l">подписчиков</div></div>
-          <div class="stat"><div class="n">128</div><div class="l">мероприятий</div></div>
-          <div class="stat"><div class="n">24.8K</div><div class="l">просмотров</div></div>
-        </div>
-        <button class="follow-btn" id="followBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-          <span>Подписаться</span>
-        </button>
-      </div>
-      <div class="events-head">Ближайшие события</div>
-      <div class="events-list">
-        <div class="event">
-          <div class="date-box"><div class="d">25</div><div class="m">сент</div></div>
-          <div class="event-info">
-            <div class="fmt">Стендап · Сегодня</div>
-            <div class="nm">Проверка материала</div>
-            <div class="meta2"><span>20:30</span><i></i><span class="price">от 500 ₽</span></div>
-          </div>
-          <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
-        </div>
-        <div class="event">
-          <div class="date-box"><div class="d">26</div><div class="m">сент</div></div>
-          <div class="event-info">
-            <div class="fmt">Стендап · Неформат</div>
-            <div class="nm">Комедия и Таро</div>
-            <div class="meta2"><span>21:00</span><i></i><span class="price">от 700 ₽</span></div>
-          </div>
-          <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
-        </div>
-        <div class="event">
-          <div class="date-box"><div class="d">28</div><div class="m">сент</div></div>
-          <div class="event-info">
-            <div class="fmt">Стендап · Музлато</div>
-            <div class="nm">Музыкальное лото</div>
-            <div class="meta2"><span>19:00</span><i></i><span class="price">от 600 ₽</span></div>
-          </div>
-          <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
-        </div>
-        <div class="event">
-          <div class="date-box"><div class="d">30</div><div class="m">сент</div></div>
-          <div class="event-info">
-            <div class="fmt">Стендап · Сольник</div>
-            <div class="nm">Сольный концерт</div>
-            <div class="meta2"><span>20:00</span><i></i><span class="price">от 900 ₽</span></div>
-          </div>
-          <div class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+          <div class="handle">@baza · Организатор</div>
+          <div class="bio">Стендап на БАЗЕ — каждый вечер. Проверенные комики, неформаты, музыкальное лото. Каждый вечер — новое событие.</div>
+          <button class="follow-btn" id="followBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            <span>Подписаться</span>
+          </button>
         </div>
       </div>
+
+      <div class="org-feed">
+
+        <article class="post">
+          <div class="post-head">
+            <div class="post-avatar"><div class="inner">Б</div></div>
+            <div class="post-user">антресоль&перец<span>3 часа назад</span></div>
+          </div>
+          <div class="post-media">
+            <video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video>
+          </div>
+          <div class="post-caption">
+            <div class="post-title">Пятница выдалась громкой</div>
+          </div>
+        </article>
+
+        <article class="post post-text">
+          <div class="quote">«Мы не знали что сказать — просто <em>орали со сцены</em>. И зал орал вместе с нами.»</div>
+          <div class="by">— гость вечера</div>
+        </article>
+
+        <article class="post">
+          <div class="post-head">
+            <div class="post-avatar"><div class="inner">Б</div></div>
+            <div class="post-user">антресоль&перец<span>вчера</span></div>
+          </div>
+          <div class="post-media">
+            <div class="post-carousel" data-carousel>
+              <img src="https://picsum.photos/id/1080/800/1000" alt="">
+              <img src="https://picsum.photos/id/1074/800/1000" alt="">
+              <img src="https://picsum.photos/id/1062/800/1000" alt="">
+            </div>
+            <div class="carousel-dots"><i class="on"></i><i></i><i></i></div>
+          </div>
+          <div class="post-caption">
+            <div class="post-title">Нас не остановить</div>
+          </div>
+        </article>
+
+        <article class="post">
+          <div class="post-head">
+            <div class="post-avatar"><div class="inner">Б</div></div>
+            <div class="post-user">антресоль&перец<span>2 дня назад</span></div>
+          </div>
+          <div class="post-media">
+            <video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video>
+          </div>
+          <div class="post-caption">
+            <div class="post-title">Музыкальное лото — тот самый момент</div>
+          </div>
+        </article>
+
+        <article class="post post-text">
+          <div class="quote">Пришёл один, ушёл с <em>компанией</em>. Тут это как-то само.</div>
+          <div class="by">— гость вечера</div>
+        </article>
+
+        <article class="post">
+          <div class="post-head">
+            <div class="post-avatar"><div class="inner">Б</div></div>
+            <div class="post-user">антресоль&перец<span>3 дня назад</span></div>
+          </div>
+          <div class="post-media">
+            <video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video>
+          </div>
+          <div class="post-caption">
+            <div class="post-title">Проверка материала. Каждый вечер — новое</div>
+          </div>
+        </article>
+
+        <article class="post">
+          <div class="post-head">
+            <div class="post-avatar"><div class="inner">Б</div></div>
+            <div class="post-user">антресоль&перец<span>неделю назад</span></div>
+          </div>
+          <div class="post-media">
+            <img src="https://picsum.photos/id/1057/800/1000" alt="">
+          </div>
+          <div class="post-caption">
+            <div class="post-title">Атмосфера, которая не отпускает</div>
+          </div>
+        </article>
+
+      </div>
+
     </div>
   </div>
 
@@ -650,7 +733,6 @@
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
 
-      // ===== ФИКС ЛАГОВ ОНБОРДИНГА: 4K видео → сжатый источник =====
       if (onboarding) {
         onboarding.querySelectorAll('video').forEach(function(v){
           var s = v.getAttribute('src') || '';
@@ -661,7 +743,6 @@
         });
       }
 
-      // ===== ВЫСОТА РИЛСОВ =====
       function layoutReels(){
         var vh = window.innerHeight;
         if (!vh || vh < 100) return;
@@ -672,7 +753,6 @@
         }
       }
 
-      // ===== ОНБОРДИНГ =====
       if (onboarding) {
         var startY = 0, currentY = 0, dragging = false;
         var THRESHOLD = 70;
@@ -736,7 +816,6 @@
         });
       }
 
-      // ===== РИЛСЫ =====
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var videos = feed.querySelectorAll('video');
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -748,7 +827,11 @@
 
       function loadVideo(v){
         if (v._loaded) return;
-        if (v.dataset.src) { v.src = v.dataset.src; v._loaded = true; }
+        if (v.dataset.src) {
+          v.preload = 'auto';
+          v.src = v.dataset.src;
+          v._loaded = true;
+        }
       }
       function activateRange(idx){
         var range = [idx - 1, idx, idx + 1];
@@ -815,7 +898,6 @@
       });
       updateIcons();
 
-      // ===== ТРЕК КЛИКА ПО «КУПИТЬ БИЛЕТ» =====
       document.querySelectorAll('[data-cta]').forEach(function(btn){
         btn.addEventListener('click', function(){
           var slide = btn.closest('.slide');
@@ -860,7 +942,6 @@
         }
       });
 
-      // ===== SUPABASE =====
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
       var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
@@ -893,7 +974,6 @@
         return id;
       }
 
-      // ===== АНАЛИТИКА =====
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now() + '-' + Math.random().toString(36).slice(2));
       var trackedSlideViews = {};
       var pendingEvents = [];
@@ -1042,7 +1122,6 @@
         setTimeout(function(){ trackUser('visit'); }, 15000);
       });
 
-      // ===== СТАРТ: показываем рилсы + параллельная загрузка всех трёх видео =====
       (function showReels(){
         layoutReels();
         feed.classList.add('visible');
@@ -1064,7 +1143,11 @@
         function setSrc(id){
           var s = document.querySelector('#' + id + ' video');
           if (!s) return null;
-          if (!s._loaded) { s.src = s.dataset.src; s._loaded = true; }
+          if (!s._loaded) {
+            s.preload = 'auto';
+            s.src = s.dataset.src;
+            s._loaded = true;
+          }
           return s;
         }
 
@@ -1075,7 +1158,6 @@
         if (v1) { v1.muted = true; v1.play().catch(function(){}); }
       })();
 
-      // ===== ТРЕК ПРОСМОТРОВ СЛАЙДОВ =====
       var slideIO = new IntersectionObserver(function(entries){
         entries.forEach(function(e){
           if (e.isIntersecting && e.intersectionRatio > 0.55) {

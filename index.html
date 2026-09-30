@@ -50,21 +50,17 @@
   .onboarding{position:fixed;inset:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;}
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
-
   .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;filter:blur(.4px) brightness(.92) saturate(1.08);transform:scale(1.2);opacity:0;animation:onbBgFade 1.2s .1s ease forwards;}
   @keyframes onbBgFade{to{opacity:1;}}
-
   .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
   .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
   .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;}
   .onb-col .tile video{position:relative;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .8s ease;}
   .onb-col .tile video.loaded{opacity:1;}
-
   .onb-col-up{animation:colUp 60s linear infinite;}
   .onb-col-down{animation:colDown 60s linear infinite;}
   @keyframes colUp{from{transform:translateY(0);}to{transform:translateY(-50%);}}
   @keyframes colDown{from{transform:translateY(-50%);}to{transform:translateY(0);}}
-
   .onb-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.55) 0%,rgba(7,7,10,.15) 30%,rgba(7,7,10,.35) 55%,rgba(7,7,10,.85) 85%,rgba(7,7,10,.98) 100%);}
   .onb-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(42px + env(safe-area-inset-bottom,0px));z-index:2;pointer-events:none;}
   .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;animation:onbFade .9s .2s ease forwards;}
@@ -81,7 +77,6 @@
   .feed{position:fixed;inset:0;height:100vh;height:100dvh;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;z-index:1;opacity:0;pointer-events:none;transition:opacity .25s ease;}
   .feed.visible{opacity:1;pointer-events:auto;}
   .feed::-webkit-scrollbar{display:none;}
-
   .slide{position:relative;height:100vh;height:100dvh;width:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#000;}
   .video{position:absolute;inset:0;overflow:hidden;background:#05050a;display:flex;align-items:center;justify-content:center;}
   .video video{position:relative;width:100%;height:100%;object-fit:contain;display:block;}
@@ -160,20 +155,20 @@
   <div class="onboarding" id="onboarding">
     <div class="onb-bg">
       <div class="onb-col onb-col-up">
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
       </div>
       <div class="onb-col onb-col-down">
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
       </div>
     </div>
 
@@ -260,7 +255,7 @@
 
     <div class="slide" id="r3" data-id="r3">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="auto" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -341,156 +336,6 @@
         </div>
         <div class="actions-row">
           <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_5" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            Купить билет
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r6" data-id="r6">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="bottom">
-        <div class="title">Стендап на БАЗЕ</div>
-        <button class="org-badge" data-open-profile>
-          <div class="org-avatar"><div class="inner">Б</div></div>
-          <div class="org-info"><div class="org-name">антресоль&перец</div></div>
-        </button>
-        <div class="meta">
-          <span class="item">Пт · 20:00</span><i></i>
-          <span class="item">Антресоль&Перец</span><i></i>
-          <span class="item price">от 650 ₽</span>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_6" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            Купить билет
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r7" data-id="r7">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="bottom">
-        <div class="title">Открытый микрофон</div>
-        <button class="org-badge" data-open-profile>
-          <div class="org-avatar"><div class="inner">Б</div></div>
-          <div class="org-info"><div class="org-name">антресоль&перец</div></div>
-        </button>
-        <div class="meta">
-          <span class="item">Вт · 19:30</span><i></i>
-          <span class="item">Антресоль&Перец</span><i></i>
-          <span class="item price">от 400 ₽</span>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_7" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            Купить билет
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r8" data-id="r8">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="bottom">
-        <div class="title">Музыкальный квартирник</div>
-        <button class="org-badge" data-open-profile>
-          <div class="org-avatar"><div class="inner">Б</div></div>
-          <div class="org-info"><div class="org-name">антресоль&перец</div></div>
-        </button>
-        <div class="meta">
-          <span class="item">Сб · 22:00</span><i></i>
-          <span class="item">Антресоль&Перец</span><i></i>
-          <span class="item price">от 800 ₽</span>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_8" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            Купить билет
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r9" data-id="r9">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="bottom">
-        <div class="title">Гости со сцены</div>
-        <button class="org-badge" data-open-profile>
-          <div class="org-avatar"><div class="inner">Б</div></div>
-          <div class="org-info"><div class="org-name">антресоль&перец</div></div>
-        </button>
-        <div class="meta">
-          <span class="item">Вс · 18:00</span><i></i>
-          <span class="item">Антресоль&Перец</span><i></i>
-          <span class="item price">от 550 ₽</span>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_9" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            Купить билет
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r10" data-id="r10">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="bottom">
-        <div class="title">Финальный вечер</div>
-        <button class="org-badge" data-open-profile>
-          <div class="org-avatar"><div class="inner">Б</div></div>
-          <div class="org-info"><div class="org-name">антресоль&перец</div></div>
-        </button>
-        <div class="meta">
-          <span class="item">Вс · 21:00</span><i></i>
-          <span class="item">Антресоль&Перец</span><i></i>
-          <span class="item price">от 750 ₽</span>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_10" target="_blank">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
             Купить билет
           </a>
@@ -630,6 +475,17 @@
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
 
+      // ===== ФИКС ЛАГОВ ОНБОРДИНГА: 4K видео → сжатый источник =====
+      if (onboarding) {
+        onboarding.querySelectorAll('video').forEach(function(v){
+          var s = v.getAttribute('src') || '';
+          if (s.indexOf('2160p') !== -1) {
+            v.setAttribute('src', 'https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4');
+            v.load();
+          }
+        });
+      }
+
       function layoutReels(){
         var vh = window.innerHeight;
         if (!vh || vh < 100) return;
@@ -719,9 +575,9 @@
         }
       }
 
-      // Грузим текущий + 2 следующих, чтобы к моменту скролла всегда было готово
+      // Грузим текущий + следующий
       function activateRange(idx){
-        var range = [idx, idx + 1, idx + 2];
+        var range = [idx, idx + 1];
         slides.forEach(function(s, i){
           if (range.indexOf(i) === -1) return;
           var v = s.querySelector('video');
@@ -984,8 +840,8 @@
           }, 100);
         });
 
-        // Ставим src на первые три видео сразу
-        ['r1', 'r2', 'r3'].forEach(function(id){
+        // Грузим первые два сразу, чтобы при скролле они уже были готовы
+        ['r1', 'r2'].forEach(function(id){
           var v = document.querySelector('#' + id + ' video');
           if (!v) return;
           v.preload = 'auto';

@@ -292,7 +292,7 @@
 
     <div class="slide" id="r4" data-id="r4">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122908_998.mp4-compressed.mov" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -321,7 +321,7 @@
 
     <div class="slide" id="r5" data-id="r5">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -571,27 +571,16 @@
       }
 
       // =====================================================================
-      // ===== VIDEO SLOT POOL (лимит = 2 видео с src) =====
+      // ===== VIDEO SLOT POOL =====
       // =====================================================================
 
-      var WINDOW_BACK = 0;
+      var WINDOW_BACK = 1;
       var WINDOW_FWD  = 1;
-      var playWatchdog = null;
-
-      var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
-      slides.forEach(function(s){
-        var v = s.querySelector('video');
-        s._video = v;
-        if (v) v._slot = v.parentNode;
-      });
 
       function ensureVideoLoaded(v){
         if (!v || v._loaded) return;
         var url = v.dataset.src;
         if (!url) return;
-        if (!v.parentNode && v._slot) {
-          try { v._slot.appendChild(v); } catch(e){}
-        }
         v._loaded = true;
         v.preload = 'auto';
         if (v.getAttribute('src') !== url) {
@@ -607,9 +596,6 @@
         try {
           v.removeAttribute('src');
           v.load();
-        } catch(e){}
-        try {
-          if (v.parentNode) v.parentNode.removeChild(v);
         } catch(e){}
       }
 
@@ -627,18 +613,9 @@
         try { if (!v.paused) v.pause(); } catch(e){}
       }
 
-      function emergencyEvictAllExcept(idx){
-        for (var i = 0; i < slides.length; i++) {
-          if (i === idx) continue;
-          evictVideo(slides[i]._video);
-        }
-      }
-
       function setActiveSlide(idx){
-        if (playWatchdog) { clearTimeout(playWatchdog); playWatchdog = null; }
-
         for (var i = 0; i < slides.length; i++) {
-          var v = slides[i]._video;
+          var v = slides[i].querySelector('video');
           if (!v) continue;
           var d = i - idx;
           if (d === 0) {
@@ -651,19 +628,6 @@
             evictVideo(v);
           }
         }
-
-        var currentV = slides[idx] ? slides[idx]._video : null;
-        playWatchdog = setTimeout(function(){
-          playWatchdog = null;
-          if (!currentV) return;
-          if (currentV.paused || currentV.readyState < 2) {
-            emergencyEvictAllExcept(idx);
-            if (currentV._loaded) {
-              try { currentV.load(); } catch(e){}
-            }
-            safePlay(currentV);
-          }
-        }, 900);
       }
 
       if (onboarding) {
@@ -737,6 +701,7 @@
         });
       }
 
+      var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
       var soundEnabled = false;
       var profile = document.getElementById('profile');
@@ -767,15 +732,6 @@
       }, { root: feed, threshold: [0.1, 0.55, 0.9] });
       slides.forEach(function(s){ io.observe(s); });
 
-      var gestureBound = false;
-      function onFirstGesture(){
-        if (gestureBound) return;
-        gestureBound = true;
-        setActiveSlide(currentIndex);
-      }
-      document.addEventListener('touchstart', onFirstGesture, {passive:true, once:true});
-      document.addEventListener('click', onFirstGesture, {once:true});
-
       function updateIcons(){
         soundBtns.forEach(function(btn){
           var svg = btn.querySelector('svg');
@@ -794,7 +750,7 @@
         soundEnabled = true; updateIcons();
         var current = slides[currentIndex];
         if (current) {
-          var v = current._video;
+          var v = current.querySelector('video');
           if (v && v._loaded) { v.muted = false; v.volume = 1; safePlay(v); }
         }
         trackEvent('sound_on', {});
@@ -804,7 +760,7 @@
         soundEnabled = false; updateIcons();
         var current = slides[currentIndex];
         if (current) {
-          var v = current._video;
+          var v = current.querySelector('video');
           if (v && v._loaded) v.muted = true;
         }
       }
@@ -831,7 +787,7 @@
         trackEvent('profile_open', {});
         profile.classList.add('open');
         for (var i = 0; i < slides.length; i++) {
-          var v = slides[i]._video;
+          var v = slides[i].querySelector('video');
           if (v) { try { v.pause(); } catch(e){} }
         }
       }
@@ -839,7 +795,7 @@
         profile.classList.remove('open');
         var current = slides[currentIndex];
         if (current) {
-          var v = current._video;
+          var v = current.querySelector('video');
           if (v && v._loaded) safePlay(v);
         }
       }

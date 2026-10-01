@@ -571,65 +571,115 @@
       }
 
       // =====================================================================
-      // ===== VIDEO SLOT POOL =====
+      // ===== VIDEO FACTORY: новый <video> для каждого показа =====
+      // =====================================================================
+      // Идея: НИКОГДА не переиспользуем <video> элемент.
+      //   - Когда слайд становится активным — создаём СВЕЖИЙ <video> из data-src.
+      //   - Когда слайд уходит из окна — полностью убиваем его <video>.
+      //
+      //   WebView ни разу не видит один и тот же медиа-элемент дважды.
+      //   Его внутренний счётчик сессий всегда чист → play() работает всегда,
+      //   независимо от того, как долго играл предыдущий ролик.
+      //
+      //   URL-ы хранятся отдельно в videoUrls[], потому что после удаления
+      //   <video> из DOM его data-src недоступен.
       // =====================================================================
 
-      // ИЗМЕНЕНО: WINDOW_BACK 1 → 0
-      // В DOM теперь максимум 2 видео (current + next), а не 3.
-      // Это освободило слоты и позволило r6–r8 грузиться.
       var WINDOW_BACK = 0;
       var WINDOW_FWD  = 1;
 
-      function ensureVideoLoaded(v){
-        if (!v || v._loaded) return;
-        var url = v.dataset.src;
-        if (!url) return;
-        v._loaded = true;
-        v.preload = 'auto';
-        if (v.getAttribute('src') !== url) {
-          v.setAttribute('src', url);
-          try { v.load(); } catch(e){}
+      var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
+
+      // Собрать URL-ы из исходных <video data-src="..."> и сразу удалить
+      // эти элементы из DOM, чтобы они не висели фоном.
+      var videoUrls = [];
+      slides.forEach(function(s, i){
+        var v = s.querySelector('video');
+        videoUrls[i] = v ? (v.dataset.src || v.getAttribute('src') || null) : null;
+        if (v && v.parentNode) {
+          try {
+            v.pause();
+            v.removeAttribute('src');
+            v.load();
+            v.parentNode.removeChild(v);
+          } catch(e){}
         }
-      }
+      });
 
-      function evictVideo(v){
-        if (!v || !v._loaded) return;
-        v._loaded = false;
-        try { v.pause(); } catch(e){}
-        try {
-          v.removeAttribute('src');
-          v.load();
-        } catch(e){}
-      }
+      function rebuildVideoFor(idx, autoplay){
+        if (idx < 0 || idx >= slides.length) return null;
+        var url = videoUrls[idx];
+        if (!url) return null;
+        var container = slides[idx].querySelector('.video');
+        if (!container) return null;
 
-      function safePlay(v){
-        if (!v) return;
+        // На всякий случай снести всё, что там лежит
+        var old = container.querySelector('video');
+        if (old) {
+          try { old.pause(); } catch(e){}
+          try { old.removeAttribute('src'); old.load(); } catch(e){}
+          try { container.removeChild(old); } catch(e){}
+        }
+
+        // Создать СВЕЖИЙ <video>
+        var v = document.createElement('video');
+        v.setAttribute('playsinline', '');
+        v.setAttribute('webkit-playsinline', '');
+        v.setAttribute('loop', '');
+        v.setAttribute('preload', 'auto');
         v.muted = !soundEnabled;
-        try {
+        v.src = url;
+        v.dataset.src = url;
+        container.appendChild(v);
+
+        if (autoplay) {
           var p = v.play();
           if (p && p.catch) p.catch(function(){});
-        } catch(e){}
+        }
+        return v;
       }
 
-      function safePause(v){
+      function killVideo(idx){
+        if (idx < 0 || idx >= slides.length) return;
+        var container = slides[idx].querySelector('.video');
+        if (!container) return;
+        var v = container.querySelector('video');
         if (!v) return;
-        try { if (!v.paused) v.pause(); } catch(e){}
+        try { v.pause(); } catch(e){}
+        try { v.removeAttribute('src'); v.load(); } catch(e){}
+        try { container.removeChild(v); } catch(e){}
+      }
+
+      function getVideo(idx){
+        if (idx < 0 || idx >= slides.length) return null;
+        var container = slides[idx].querySelector('.video');
+        return container ? container.querySelector('video') : null;
       }
 
       function setActiveSlide(idx){
+        // 1. Убить всё, что вне окна [idx .. idx + WINDOW_FWD] и не равно idx
         for (var i = 0; i < slides.length; i++) {
-          var v = slides[i].querySelector('video');
-          if (!v) continue;
-          var d = i - idx;
-          if (d === 0) {
-            ensureVideoLoaded(v);
-            safePlay(v);
-          } else if (d >= -WINDOW_BACK && d <= WINDOW_FWD) {
-            ensureVideoLoaded(v);
-            safePause(v);
-          } else {
-            evictVideo(v);
-          }
+          if (i === idx) continue;
+          if (i > idx && i <= idx + WINDOW_FWD) continue;
+          killVideo(i);
+        }
+
+        // 2. Текущий — создать/пересоздать и play
+        var cur = getVideo(idx);
+        if (!cur) {
+          rebuildVideoFor(idx, false);
+          cur = getVideo(idx);
+        }
+        if (cur) {
+          cur.muted = !soundEnabled;
+          var p = cur.play();
+          if (p && p.catch) p.catch(function(){});
+        }
+
+        // 3. Пре-фетч следующего — создать без autoplay
+        if (WINDOW_FWD > 0 && idx + 1 < slides.length) {
+          var next = getVideo(idx + 1);
+          if (!next) rebuildVideoFor(idx + 1, false);
         }
       }
 
@@ -704,7 +754,6 @@
         });
       }
 
-      var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
       var soundEnabled = false;
       var profile = document.getElementById('profile');
@@ -751,21 +800,15 @@
       function enableSound(){
         if (soundEnabled) return;
         soundEnabled = true; updateIcons();
-        var current = slides[currentIndex];
-        if (current) {
-          var v = current.querySelector('video');
-          if (v && v._loaded) { v.muted = false; v.volume = 1; safePlay(v); }
-        }
+        var v = getVideo(currentIndex);
+        if (v) { v.muted = false; v.volume = 1; var p = v.play(); if (p && p.catch) p.catch(function(){}); }
         trackEvent('sound_on', {});
       }
       function disableSound(){
         if (!soundEnabled) return;
         soundEnabled = false; updateIcons();
-        var current = slides[currentIndex];
-        if (current) {
-          var v = current.querySelector('video');
-          if (v && v._loaded) v.muted = true;
-        }
+        var v = getVideo(currentIndex);
+        if (v) v.muted = true;
       }
       soundBtns.forEach(function(btn){
         btn.addEventListener('click', function(e){
@@ -789,18 +832,15 @@
         trackUser('profile_view');
         trackEvent('profile_open', {});
         profile.classList.add('open');
+        // Паузим все живые видео ленты
         for (var i = 0; i < slides.length; i++) {
-          var v = slides[i].querySelector('video');
+          var v = getVideo(i);
           if (v) { try { v.pause(); } catch(e){} }
         }
       }
       function closeProfile(){
         profile.classList.remove('open');
-        var current = slides[currentIndex];
-        if (current) {
-          var v = current.querySelector('video');
-          if (v && v._loaded) safePlay(v);
-        }
+        setActiveSlide(currentIndex);
       }
       openBtns.forEach(function(btn){
         btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); });

@@ -178,19 +178,19 @@
   <div class="onboarding" id="onboarding">
     <div class="onb-bg">
       <div class="onb-col onb-col-up">
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
       </div>
       <div class="onb-col onb-col-down">
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/20260919_211854-2160p.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
       </div>
     </div>
@@ -551,17 +551,6 @@
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
 
-      // ===== ФИКС ЛАГОВ ОНБОРДИНГА: 4K видео → сжатый источник =====
-      if (onboarding) {
-        onboarding.querySelectorAll('video').forEach(function(v){
-          var s = v.getAttribute('src') || '';
-          if (s.indexOf('2160p') !== -1) {
-            v.setAttribute('src', 'https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4');
-            v.load();
-          }
-        });
-      }
-
       function layoutReels(){
         var vh = window.innerHeight;
         if (!vh || vh < 100) return;
@@ -622,7 +611,6 @@
         var container = slides[idx].querySelector('.video');
         if (!container) return null;
 
-        // Снести старое — сначала глушим, потом сносим
         var old = container.querySelector('video');
         if (old) {
           try { old.muted = true; } catch(e){}
@@ -631,8 +619,6 @@
           try { container.removeChild(old); } catch(e){}
         }
 
-        // Создать СВЕЖИЙ <video>. ВСЕГДА muted — размьютим только текущий
-        // после того как play() реально начнётся.
         var v = document.createElement('video');
         v.setAttribute('playsinline', '');
         v.setAttribute('webkit-playsinline', '');
@@ -656,7 +642,6 @@
         if (!container) return;
         var v = container.querySelector('video');
         if (!v) return;
-        // Сначала глушим, потом всё остальное — иначе звук может «протечь»
         try { v.muted = true; } catch(e){}
         try { v.pause(); } catch(e){}
         try { v.removeAttribute('src'); v.load(); } catch(e){}
@@ -664,22 +649,17 @@
       }
 
       function setActiveSlide(idx){
-        // ШАГ 0: принудительно заглушить ВСЕ существующие видео.
-        // Это устраняет «двойное звучание» — когда старый ролик
-        // ещё не успел заглохнуть, а новый уже начал играть.
         for (var i = 0; i < slides.length; i++) {
           var v0 = getVideo(i);
           if (v0) { try { v0.muted = true; } catch(e){} }
         }
 
-        // ШАГ 1: убить всё, что вне окна [idx .. idx + WINDOW_FWD]
         for (var j = 0; j < slides.length; j++) {
           if (j === idx) continue;
           if (j > idx && j <= idx + WINDOW_FWD) continue;
           killVideo(j);
         }
 
-        // ШАГ 2: текущий — создать/взять, play, размьютить ПОСЛЕ play
         var cur = getVideo(idx);
         if (!cur) {
           rebuildVideoFor(idx, false);
@@ -699,7 +679,6 @@
           }
         }
 
-        // ШАГ 3: пре-фетч следующего (создаётся muted, на паузе)
         if (WINDOW_FWD > 0 && idx + 1 < slides.length) {
           var next = getVideo(idx + 1);
           if (!next) rebuildVideoFor(idx + 1, false);

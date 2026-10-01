@@ -474,9 +474,9 @@
         </svg>
       </div>
       <div class="side">
-        <button class="metric" data-like data-base="0">
+        <button class="metric" data-like data-base="19">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>0</div>
+          <div class="num" data-count>19</div>
           <div class="lbl">хочу пойти</div>
         </button>
       </div>
@@ -892,9 +892,9 @@
       var currentIndex = 0;
       var toast = document.getElementById('toast');
 
-      // ===== ЛАЙКИ: локальные стейты =====
-      var myLikedSlides = {};   // { r1: true, ... } — что лайкнул этот юзер
-      var likeDeltas = {};      // { r1: 3, ... } — прибавка от всех юзеров (лайки - анлайки)
+      // ===== ЛАЙКИ =====
+      var myLikedSlides = {};  // что лайкнул этот user
+      var likeCounts = {};     // общий счётчик из таблицы likes
 
       var io = new IntersectionObserver(function(entries){
         var best = null, bestRatio = 0;
@@ -976,8 +976,8 @@
           var metric = slide.querySelector('[data-like]');
           if (!metric) return;
           var base = parseInt(metric.dataset.base || '0', 10) || 0;
-          var delta = likeDeltas[id] || 0;
-          var total = base + delta;
+          var count = likeCounts[id] || 0;
+          var total = base + count;
           if (total < 0) total = 0;
           var cnt = metric.querySelector('[data-count]');
           if (cnt) cnt.textContent = total;
@@ -1001,24 +1001,37 @@
       }
 
       document.querySelectorAll('[data-like]').forEach(function(btn){
-        btn.addEventListener('click', function(e){
+        btn.addEventListener('click', async function(e){
           e.stopPropagation();
           var slide = btn.closest('.slide');
           var id = slide ? slide.dataset.id : null;
           if (!id) return;
           var wasLiked = !!myLikedSlides[id];
           var nowLiked = !wasLiked;
+
+          // Оптимистично
           if (nowLiked) {
             myLikedSlides[id] = true;
-            likeDeltas[id] = (likeDeltas[id] || 0) + 1;
+            likeCounts[id] = (likeCounts[id] || 0) + 1;
           } else {
             delete myLikedSlides[id];
-            likeDeltas[id] = (likeDeltas[id] || 0) - 1;
+            likeCounts[id] = Math.max(0, (likeCounts[id] || 0) - 1);
           }
           refreshLikeUI();
+
           if (window.ym) { try { ym(113067752, 'reachGoal', 'want_go'); } catch(err){} }
           trackEvent('like', { slide_id: id, liked: nowLiked });
-          trackUser('like', { rId: id, liked: nowLiked });
+
+          // В таблицу likes
+          try {
+            var user = await authReady;
+            if (!user) return;
+            if (nowLiked) {
+              await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
+            } else {
+              await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
+            }
+          } catch(err){ console.warn('like db error:', err); }
         });
       });
 
@@ -1027,31 +1040,29 @@
         try {
           var user = await authReady;
           if (!user) return;
-          // мои лайки
+          // Общий счётчик
           try {
-            var res = await supabaseClient.from('users').select('likes').eq('id', user.id).maybeSingle();
-            if (res && res.data && Array.isArray(res.data.likes)) {
-              res.data.likes.forEach(function(id){ if (id) myLikedSlides[id] = true; });
-            }
-          } catch(e){ console.warn('myLikes load error:', e); }
-          // все лайки для подсчёта (лайк +1, анлайк -1)
-          try {
-            var ev = await supabaseClient.from('events').select('event_data').eq('event_type', 'like');
-            if (ev && ev.data) {
-              ev.data.forEach(function(row){
-                var d = row.event_data || {};
-                var sid = d.slide_id;
-                if (!sid) return;
-                var liked = d.liked === true;
-                likeDeltas[sid] = (likeDeltas[sid] || 0) + (liked ? 1 : -1);
+            var all = await supabaseClient.from('likes').select('slide_id');
+            if (all && all.data) {
+              var counts = {};
+              all.data.forEach(function(r){
+                if (r.slide_id) counts[r.slide_id] = (counts[r.slide_id] || 0) + 1;
               });
+              likeCounts = counts;
             }
-          } catch(e){ console.warn('allLikes load error:', e); }
+          } catch(e){ console.warn('all likes load error:', e); }
+          // Мои лайки
+          try {
+            var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
+            if (mine && mine.data) {
+              mine.data.forEach(function(r){ if (r.slide_id) myLikedSlides[r.slide_id] = true; });
+            }
+          } catch(e){ console.warn('my likes load error:', e); }
           refreshLikeUI();
         } catch(e){ console.warn('loadLikes error:', e); }
       }
 
-      // ===== ПРИГЛАСИТЬ (share) =====
+      // ===== ПРИГЛАСИТЬ =====
       var toastTimer;
       function showToast(text){
         if (!toast) return;
@@ -1080,7 +1091,6 @@
           var slide = btn.closest('.slide');
           var id = slide ? slide.dataset.id : '';
           trackEvent('invite', { slide_id: id });
-          trackUser('invite', { rId: id });
           var url = location.origin + location.pathname + '#' + id;
           if (window.Telegram && window.Telegram.WebApp) {
             copyToClipboard(url).then(function(){
@@ -1256,24 +1266,12 @@
             var updates = { last_seen: new Date().toISOString() };
             if (action === 'profile_view') updates.profile_views = (existing.profile_views || 0) + 1;
             else if (action === 'follow') updates.follows = payload.orgName || 'БАЗА';
-            else if (action === 'like') {
-              var likesArr = Array.isArray(existing.likes) ? existing.likes : [];
-              var rid = payload.rId;
-              var liked = payload.liked === true;
-              if (liked) {
-                if (rid && likesArr.indexOf(rid) === -1) updates.likes = likesArr.concat([rid]);
-              } else {
-                updates.likes = likesArr.filter(function(x){ return x !== rid; });
-              }
-            } else if (action === 'invite') {
-              updates.invites = (existing.invites || 0) + 1;
-            }
+            else if (action === 'invite') updates.invites = (existing.invites || 0) + 1;
             if (tgId && !existing.tg_id) updates.tg_id = tgId;
             if (anonId && !existing.anon_id) updates.anon_id = anonId;
             await supabaseClient.from('users').update(updates).eq('id', existing.id);
           } else {
             var insertData = { id: userId, last_seen: new Date().toISOString(), likes: [], invites: 0, profile_views: action === 'profile_view' ? 1 : 0, follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null };
-            if (action === 'like' && payload.liked && payload.rId) insertData.likes = [payload.rId];
             if (action === 'invite') insertData.invites = 1;
             if (tgId) insertData.tg_id = tgId;
             if (anonId) insertData.anon_id = anonId;
@@ -1288,7 +1286,6 @@
         trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
         setTimeout(function(){ trackUser('visit'); }, 5000);
         setTimeout(function(){ trackUser('visit'); }, 15000);
-        // загрузка лайков из БД
         loadLikesFromSupabase();
       });
 
@@ -1306,10 +1303,7 @@
         }, 100);
       });
 
-      // открытие по хэшу
-      if (!openByHash()) {
-        // обычный старт — первый слайд
-      }
+      openByHash();
       window.addEventListener('hashchange', openByHash);
 
       var slideIO = new IntersectionObserver(function(entries){

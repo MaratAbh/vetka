@@ -109,6 +109,98 @@
   .ticket-btn:active{transform:scale(.92); box-shadow:0 0 36px rgba(205,255,74,.75), 0 6px 18px rgba(0,0,0,.6);}
   .ticket-btn svg{width:26px;height:26px;}
 
+  /* ===== СЧЁТЧИК ЗРИТЕЛЕЙ ===== */
+  .viewer-pill{
+    position:absolute;
+    top:calc(16px + env(safe-area-inset-top,0px));
+    left:16px;
+    z-index:10;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 12px;
+    background:rgba(0,0,0,.5);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-radius:100px;
+    font-size:11px;
+    font-weight:600;
+    color:#fff;
+    pointer-events:none;
+  }
+  .viewer-pill .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:#CDFF4A;
+    box-shadow:0 0 8px rgba(205,255,74,.8);
+    animation:vPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes vPulse{
+    0%,100%{opacity:1;transform:scale(1);}
+    50%{opacity:.5;transform:scale(.75);}
+  }
+
+  /* ===== ЛАЙКИ ===== */
+  .like-btn{
+    position:absolute;
+    top:calc(60px + env(safe-area-inset-top,0px));
+    right:16px;
+    z-index:20;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    background:transparent;
+    border:0;
+    color:#fff;
+    cursor:pointer;
+    padding:0;
+    touch-action:manipulation;
+  }
+  .like-btn .icon-wrap{
+    width:44px;height:44px;
+    border-radius:50%;
+    background:rgba(0,0,0,.5);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform .15s ease,background .2s ease,border-color .2s ease;
+  }
+  .like-btn:active .icon-wrap{transform:scale(.9);}
+  .like-btn svg{
+    width:22px;height:22px;
+    fill:none;
+    stroke:#fff;
+    stroke-width:1.8;
+    transition:fill .2s ease,stroke .2s ease;
+  }
+  .like-btn .count{
+    font-size:11px;
+    font-weight:600;
+    color:#fff;
+    text-shadow:0 1px 3px rgba(0,0,0,.6);
+  }
+  .like-btn.liked .icon-wrap{
+    background:rgba(205,255,74,.15);
+    border-color:rgba(205,255,74,.4);
+  }
+  .like-btn.liked svg{fill:#CDFF4A;stroke:#CDFF4A;}
+  .like-btn.liked .count{color:#CDFF4A;}
+
+  /* ===== ВТОРИЧНАЯ CTA ===== */
+  .cta-secondary{
+    background:rgba(255,255,255,.1);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.2);
+    box-shadow:none;
+    flex:0 0 auto;
+    padding:12px 16px;
+  }
+  .cta-secondary:active{background:rgba(255,255,255,.15);}
+
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
   .org-badge{display:inline-flex;align-items:center;gap:7px;padding:4px 12px 4px 4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;align-self:flex-start;pointer-events:auto;transition:transform .15s ease,border-color .2s ease;}
@@ -216,16 +308,26 @@
 
   <div class="feed visible" id="feed">
 
+    <!-- ===== r1: LaVidaLoca, без заголовка ===== -->
     <div class="slide" id="r1" data-id="r1">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_143810_843-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="viewer-pill"><span class="dot"></span><span>47 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
+      <button class="like-btn" data-like-btn data-likes="1240">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <span class="count">1.2k</span>
+      </button>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_1" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
@@ -240,16 +342,26 @@
       </div>
     </div>
 
+    <!-- ===== r2: без заголовка ===== -->
     <div class="slide" id="r2" data-id="r2">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/1000034015-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="viewer-pill"><span class="dot"></span><span>128 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
+      <button class="like-btn" data-like-btn data-likes="892">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <span class="count">892</span>
+      </button>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_2" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
@@ -257,7 +369,6 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="title">Что тебя ждёт</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -265,16 +376,26 @@
       </div>
     </div>
 
+    <!-- ===== r3: без заголовка ===== -->
     <div class="slide" id="r3" data-id="r3">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="viewer-pill"><span class="dot"></span><span>89 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
+      <button class="like-btn" data-like-btn data-likes="1503">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <span class="count">1.5k</span>
+      </button>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_3" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
@@ -282,7 +403,6 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="title">О месте</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -290,16 +410,26 @@
       </div>
     </div>
 
+    <!-- ===== r4: Ladies Night — с заголовком, с Пригласить ===== -->
     <div class="slide" id="r4" data-id="r4">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="viewer-pill"><span class="dot"></span><span>213 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
+      <button class="like-btn" data-like-btn data-likes="2876">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <span class="count">2.8k</span>
+      </button>
       <div class="bottom">
         <div class="title">Ladies Night</div>
         <button class="org-badge" data-open-profile>
@@ -311,6 +441,15 @@
           <span class="item price">от 500 ₽</span>
         </div>
         <div class="actions-row">
+          <a class="cta cta-secondary" data-cta href="ССЫЛКА_ПРИГЛАСИТЬ_4" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M22 11h-6"/>
+              <path d="M19 8v6"/>
+            </svg>
+            Пригласить
+          </a>
           <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_4" target="_blank">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
             Купить билет
@@ -319,16 +458,26 @@
       </div>
     </div>
 
+    <!-- ===== r5: без заголовка ===== -->
     <div class="slide" id="r5" data-id="r5">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="viewer-pill"><span class="dot"></span><span>64 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
+      <button class="like-btn" data-like-btn data-likes="641">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <span class="count">641</span>
+      </button>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_5" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
@@ -336,7 +485,6 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="title">Как это было</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -344,16 +492,26 @@
       </div>
     </div>
 
+    <!-- ===== r6: без заголовка ===== -->
     <div class="slide" id="r6" data-id="r6">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="viewer-pill"><span class="dot"></span><span>156 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
+      <button class="like-btn" data-like-btn data-likes="1129">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <span class="count">1.1k</span>
+      </button>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_6" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
@@ -361,7 +519,6 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="title">Наши события</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -369,16 +526,26 @@
       </div>
     </div>
 
+    <!-- ===== r7: без заголовка ===== -->
     <div class="slide" id="r7" data-id="r7">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122929_597-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="viewer-pill"><span class="dot"></span><span>92 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
+      <button class="like-btn" data-like-btn data-likes="758">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <span class="count">758</span>
+      </button>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_7" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
@@ -386,7 +553,6 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="title">Музыкальный квартирник</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -394,16 +560,26 @@
       </div>
     </div>
 
+    <!-- ===== r8: без заголовка ===== -->
     <div class="slide" id="r8" data-id="r8">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="viewer-pill"><span class="dot"></span><span>178 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
+      <button class="like-btn" data-like-btn data-likes="1320">
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <span class="count">1.3k</span>
+      </button>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_8" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
@@ -411,7 +587,6 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="title">Ночной стендап</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -562,27 +737,12 @@
       // =====================================================================
       // ===== VIDEO FACTORY =====
       // =====================================================================
-      // Каждый раз, когда слайд становится активным, создаём СВЕЖИЙ <video>.
-      // Когда слайд уходит из окна — полностью убиваем его <video>.
-      //
-      // Ни одно видео не переиспользуется — WebView всегда видит новый
-      // медиа-элемент, его счётчик сессий чист. play() работает всегда,
-      // независимо от длительности просмотра любого ролика.
-      //
-      // Звук:
-      //   - все видео создаются muted
-      //   - перед переключением ВСЕ существующие видео глушатся
-      //   - текущий размьючивается только после play()
-      //   - killVideo сначала muted, потом pause
-      // =====================================================================
 
       var WINDOW_BACK = 0;
       var WINDOW_FWD  = 1;
 
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
 
-      // Собираем URL-ы из исходных <video data-src> и сразу удаляем
-      // эти элементы из DOM, чтобы они не висели фоном.
       var videoUrls = [];
       slides.forEach(function(s, i){
         var v = s.querySelector('video');
@@ -834,6 +994,30 @@
           var slideId = slide ? slide.dataset.id : null;
           trackEvent('cta_click', { slide_id: slideId });
           if (window.ym) { try { ym(113067752, 'reachGoal', 'cta_click'); } catch(err){} }
+        });
+      });
+
+      // ===== ЛАЙКИ =====
+      function formatLikes(n){
+        if (n >= 1000) {
+          var s = (n / 1000).toFixed(1);
+          s = s.replace('.0', '');
+          return s + 'k';
+        }
+        return String(n);
+      }
+      document.querySelectorAll('[data-like-btn]').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          var liked = btn.classList.toggle('liked');
+          var raw = parseInt(btn.dataset.likes || '0', 10) || 0;
+          raw = liked ? raw + 1 : Math.max(0, raw - 1);
+          btn.dataset.likes = raw;
+          var cnt = btn.querySelector('.count');
+          if (cnt) cnt.textContent = formatLikes(raw);
+          var slide = btn.closest('.slide');
+          var slideId = slide ? slide.dataset.id : null;
+          trackEvent('like', { slide_id: slideId, liked: liked });
         });
       });
 

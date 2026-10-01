@@ -109,97 +109,54 @@
   .ticket-btn:active{transform:scale(.92); box-shadow:0 0 36px rgba(205,255,74,.75), 0 6px 18px rgba(0,0,0,.6);}
   .ticket-btn svg{width:26px;height:26px;}
 
-  /* ===== СЧЁТЧИК ЗРИТЕЛЕЙ ===== */
-  .viewer-pill{
+  .side{
     position:absolute;
-    top:calc(16px + env(safe-area-inset-top,0px));
-    left:16px;
-    z-index:10;
-    display:flex;
-    align-items:center;
-    gap:6px;
-    padding:6px 12px;
-    background:rgba(0,0,0,.5);
-    border:1px solid rgba(255,255,255,.12);
-    backdrop-filter:blur(10px);
-    -webkit-backdrop-filter:blur(10px);
-    border-radius:100px;
-    font-size:11px;
-    font-weight:600;
-    color:#fff;
-    pointer-events:none;
-  }
-  .viewer-pill .dot{
-    width:6px;height:6px;border-radius:50%;
-    background:#CDFF4A;
-    box-shadow:0 0 8px rgba(205,255,74,.8);
-    animation:vPulse 1.6s ease-in-out infinite;
-  }
-  @keyframes vPulse{
-    0%,100%{opacity:1;transform:scale(1);}
-    50%{opacity:.5;transform:scale(.75);}
-  }
-
-  /* ===== ЛАЙКИ ===== */
-  .like-btn{
-    position:absolute;
-    top:calc(60px + env(safe-area-inset-top,0px));
-    right:16px;
-    z-index:20;
+    right:12px;
+    bottom:calc(200px + env(safe-area-inset-bottom,0px));
+    z-index:5;
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:4px;
-    background:transparent;
-    border:0;
-    color:#fff;
-    cursor:pointer;
-    padding:0;
-    touch-action:manipulation;
+    gap:18px;
+    pointer-events:none;
   }
-  .like-btn .icon-wrap{
-    width:44px;height:44px;
-    border-radius:50%;
-    background:rgba(0,0,0,.5);
-    border:1px solid rgba(255,255,255,.12);
-    backdrop-filter:blur(10px);
-    -webkit-backdrop-filter:blur(10px);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:transform .15s ease,background .2s ease,border-color .2s ease;
+  .metric{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    pointer-events:auto;background:transparent;border:0;cursor:pointer;padding:0;
+    color:inherit;
   }
-  .like-btn:active .icon-wrap{transform:scale(.9);}
-  .like-btn svg{
-    width:22px;height:22px;
-    fill:none;
-    stroke:#fff;
-    stroke-width:1.8;
-    transition:fill .2s ease,stroke .2s ease;
+  .metric .ico{
+    width:34px;height:34px;border-radius:50%;
+    background:rgba(205,255,74,.14);
+    border:1px solid rgba(205,255,74,.4);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;color:#CDFF4A;
+    transition:transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
   }
-  .like-btn .count{
-    font-size:11px;
-    font-weight:600;
-    color:#fff;
-    text-shadow:0 1px 3px rgba(0,0,0,.6);
+  .metric:active .ico{transform:scale(.9);}
+  .metric .ico svg{width:16px;height:16px;}
+  .metric .num{font-size:11px;font-weight:600;color:#CDFF4A;text-shadow:0 1px 4px rgba(0,0,0,.6);}
+  .metric .lbl{font-size:8.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
+  .metric.invite:active .ico{
+    background:rgba(205,255,74,.9);
+    color:#07070a;
+    border-color:rgba(205,255,74,.9);
   }
-  .like-btn.liked .icon-wrap{
-    background:rgba(205,255,74,.15);
-    border-color:rgba(205,255,74,.4);
-  }
-  .like-btn.liked svg{fill:#CDFF4A;stroke:#CDFF4A;}
-  .like-btn.liked .count{color:#CDFF4A;}
 
-  /* ===== ВТОРИЧНАЯ CTA ===== */
-  .cta-secondary{
-    background:rgba(255,255,255,.1);
-    color:#fff;
-    border:1px solid rgba(255,255,255,.2);
-    box-shadow:none;
-    flex:0 0 auto;
-    padding:12px 16px;
+  .live{
+    display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;
+    color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;
+    background:rgba(0,0,0,.4);
+    border:1px solid rgba(255,255,255,.1);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    align-self:flex-start;
   }
-  .cta-secondary:active{background:rgba(255,255,255,.15);}
+  .live .dot{
+    width:5px;height:5px;border-radius:50%;background:#CDFF4A;
+    box-shadow:0 0 8px rgba(205,255,74,.85);
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
 
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
@@ -217,6 +174,27 @@
   .actions-row{display:flex;gap:8px;align-items:center;}
   .cta{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 0 24px rgba(205,255,74,.35);white-space:nowrap;flex:1;}
   .cta svg{width:14px;height:14px;flex:none;}
+
+  .toast{
+    position:fixed;left:50%;
+    bottom:calc(100px + env(safe-area-inset-bottom,0px));
+    transform:translate(-50%, 20px);
+    z-index:200;
+    padding:12px 20px;border-radius:100px;
+    background:rgba(0,0,0,.88);
+    border:1px solid rgba(205,255,74,.35);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    color:#fff;font-size:13px;font-weight:500;white-space:nowrap;
+    opacity:0;pointer-events:none;
+    transition:opacity .3s ease, transform .3s ease;
+    box-shadow:0 0 24px rgba(205,255,74,.2);
+    display:flex;align-items:center;gap:8px;
+  }
+  .toast::before{
+    content:'';width:6px;height:6px;border-radius:50%;
+    background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;
+  }
+  .toast.show{opacity:1;transform:translate(-50%, 0);}
 
   .profile-screen{position:fixed;inset:0;z-index:500;background:#07070a;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,.24,1);overflow:hidden;pointer-events:none;}
   .profile-screen.open{transform:translateY(0);pointer-events:auto;}
@@ -308,33 +286,31 @@
 
   <div class="feed visible" id="feed">
 
-    <!-- ===== r1: LaVidaLoca, без заголовка ===== -->
+    <!-- ===== 1-й: r1 (LaVidaLoca, «Проверка материала») ===== -->
     <div class="slide" id="r1" data-id="r1">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_143810_843-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
-      <div class="viewer-pill"><span class="dot"></span><span>47 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-      <button class="like-btn" data-like-btn data-likes="1240">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </div>
-        <span class="count">1.2k</span>
-      </button>
+      <div class="side">
+        <button class="metric" data-like>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>247</div>
+          <div class="lbl">хочу пойти</div>
+        </button>
+      </div>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_1" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
-          <path d="M13 5v14"/>
+          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/>
         </svg>
       </a>
       <div class="bottom">
+        <div class="live"><span class="dot"></span>84 смотрят прямо сейчас</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -342,33 +318,31 @@
       </div>
     </div>
 
-    <!-- ===== r2: без заголовка ===== -->
+    <!-- ===== 2-й: r2 (Комедия и Таро) ===== -->
     <div class="slide" id="r2" data-id="r2">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/1000034015-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
-      <div class="viewer-pill"><span class="dot"></span><span>128 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-      <button class="like-btn" data-like-btn data-likes="892">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </div>
-        <span class="count">892</span>
-      </button>
+      <div class="side">
+        <button class="metric" data-like>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>156</div>
+          <div class="lbl">хочу пойти</div>
+        </button>
+      </div>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_2" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
-          <path d="M13 5v14"/>
+          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/>
         </svg>
       </a>
       <div class="bottom">
+        <div class="live"><span class="dot"></span>61 смотрят прямо сейчас</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -376,61 +350,36 @@
       </div>
     </div>
 
-    <!-- ===== r3: без заголовка ===== -->
-    <div class="slide" id="r3" data-id="r3">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="viewer-pill"><span class="dot"></span><span>89 смотрят</span></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <button class="like-btn" data-like-btn data-likes="1503">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </div>
-        <span class="count">1.5k</span>
-      </button>
-      <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_3" target="_blank" aria-label="Купить билет">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
-          <path d="M13 5v14"/>
-        </svg>
-      </a>
-      <div class="bottom">
-        <button class="org-badge" data-open-profile>
-          <div class="org-avatar"><div class="inner">L</div></div>
-          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </button>
-      </div>
-    </div>
-
-    <!-- ===== r4: Ladies Night — с заголовком, с Пригласить ===== -->
+    <!-- ===== 3-й: r4 (Ladies Night) — с заголовком и Купить билет ===== -->
     <div class="slide" id="r4" data-id="r4">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
-      <div class="viewer-pill"><span class="dot"></span><span>213 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-      <button class="like-btn" data-like-btn data-likes="2876">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </div>
-        <span class="count">2.8k</span>
-      </button>
+      <div class="side">
+        <button class="metric" data-like>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>458</div>
+          <div class="lbl">хочу пойти</div>
+        </button>
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/><path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl">пригласить</div>
+        </button>
+      </div>
       <div class="bottom">
+        <div class="live"><span class="dot"></span>203 смотрят прямо сейчас</div>
         <div class="title">Ladies Night</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
@@ -441,15 +390,6 @@
           <span class="item price">от 500 ₽</span>
         </div>
         <div class="actions-row">
-          <a class="cta cta-secondary" data-cta href="ССЫЛКА_ПРИГЛАСИТЬ_4" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M22 11h-6"/>
-              <path d="M19 8v6"/>
-            </svg>
-            Пригласить
-          </a>
           <a class="cta" data-cta href="ССЫЛКА_НА_ОПЛАТУ_4" target="_blank">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
             Купить билет
@@ -458,33 +398,63 @@
       </div>
     </div>
 
-    <!-- ===== r5: без заголовка ===== -->
+    <!-- ===== 4-й: r3 (Музыкальное лото) ===== -->
+    <div class="slide" id="r3" data-id="r3">
+      <div class="video">
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
+        </svg>
+      </div>
+      <div class="side">
+        <button class="metric" data-like>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>312</div>
+          <div class="lbl">хочу пойти</div>
+        </button>
+      </div>
+      <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_3" target="_blank" aria-label="Купить билет">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/>
+        </svg>
+      </a>
+      <div class="bottom">
+        <div class="live"><span class="dot"></span>112 смотрят прямо сейчас</div>
+        <button class="org-badge" data-open-profile>
+          <div class="org-avatar"><div class="inner">L</div></div>
+          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== 5-й: r5 ===== -->
     <div class="slide" id="r5" data-id="r5">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
-      <div class="viewer-pill"><span class="dot"></span><span>64 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-      <button class="like-btn" data-like-btn data-likes="641">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </div>
-        <span class="count">641</span>
-      </button>
+      <div class="side">
+        <button class="metric" data-like>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>189</div>
+          <div class="lbl">хочу пойти</div>
+        </button>
+      </div>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_5" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
-          <path d="M13 5v14"/>
+          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/>
         </svg>
       </a>
       <div class="bottom">
+        <div class="live"><span class="dot"></span>72 смотрят прямо сейчас</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -492,33 +462,31 @@
       </div>
     </div>
 
-    <!-- ===== r6: без заголовка ===== -->
+    <!-- ===== 6-й: r6 ===== -->
     <div class="slide" id="r6" data-id="r6">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
-      <div class="viewer-pill"><span class="dot"></span><span>156 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-      <button class="like-btn" data-like-btn data-likes="1129">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </div>
-        <span class="count">1.1k</span>
-      </button>
+      <div class="side">
+        <button class="metric" data-like>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>284</div>
+          <div class="lbl">хочу пойти</div>
+        </button>
+      </div>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_6" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
-          <path d="M13 5v14"/>
+          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/>
         </svg>
       </a>
       <div class="bottom">
+        <div class="live"><span class="dot"></span>118 смотрят прямо сейчас</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -526,33 +494,31 @@
       </div>
     </div>
 
-    <!-- ===== r7: без заголовка ===== -->
+    <!-- ===== 7-й: r7 ===== -->
     <div class="slide" id="r7" data-id="r7">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122929_597-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
-      <div class="viewer-pill"><span class="dot"></span><span>92 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-      <button class="like-btn" data-like-btn data-likes="758">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </div>
-        <span class="count">758</span>
-      </button>
+      <div class="side">
+        <button class="metric" data-like>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>175</div>
+          <div class="lbl">хочу пойти</div>
+        </button>
+      </div>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_7" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
-          <path d="M13 5v14"/>
+          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/>
         </svg>
       </a>
       <div class="bottom">
+        <div class="live"><span class="dot"></span>56 смотрят прямо сейчас</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -560,33 +526,31 @@
       </div>
     </div>
 
-    <!-- ===== r8: без заголовка ===== -->
+    <!-- ===== 8-й: r8 ===== -->
     <div class="slide" id="r8" data-id="r8">
       <div class="video">
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
-      <div class="viewer-pill"><span class="dot"></span><span>178 смотрят</span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
-      <button class="like-btn" data-like-btn data-likes="1320">
-        <div class="icon-wrap">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </div>
-        <span class="count">1.3k</span>
-      </button>
+      <div class="side">
+        <button class="metric" data-like>
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>364</div>
+          <div class="lbl">хочу пойти</div>
+        </button>
+      </div>
       <a class="ticket-btn" data-cta href="ССЫЛКА_НА_ОПЛАТУ_8" target="_blank" aria-label="Купить билет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/>
-          <path d="M13 5v14"/>
+          <path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/>
         </svg>
       </a>
       <div class="bottom">
+        <div class="live"><span class="dot"></span>97 смотрят прямо сейчас</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -720,6 +684,8 @@
 
     </div>
   </div>
+
+  <div class="toast" id="toast">Ссылка скопирована</div>
 
   <script>
     (function(){
@@ -924,6 +890,7 @@
       var closeBtn = document.getElementById('closeProfile');
       var scrollEndTracked = false;
       var currentIndex = 0;
+      var toast = document.getElementById('toast');
 
       var io = new IntersectionObserver(function(entries){
         var best = null, bestRatio = 0;
@@ -997,27 +964,72 @@
         });
       });
 
-      // ===== ЛАЙКИ =====
-      function formatLikes(n){
-        if (n >= 1000) {
-          var s = (n / 1000).toFixed(1);
-          s = s.replace('.0', '');
-          return s + 'k';
-        }
-        return String(n);
-      }
-      document.querySelectorAll('[data-like-btn]').forEach(function(btn){
+      document.querySelectorAll('[data-like]').forEach(function(btn){
         btn.addEventListener('click', function(e){
           e.stopPropagation();
-          var liked = btn.classList.toggle('liked');
-          var raw = parseInt(btn.dataset.likes || '0', 10) || 0;
-          raw = liked ? raw + 1 : Math.max(0, raw - 1);
-          btn.dataset.likes = raw;
-          var cnt = btn.querySelector('.count');
-          if (cnt) cnt.textContent = formatLikes(raw);
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'want_go'); } catch(err){} }
           var slide = btn.closest('.slide');
-          var slideId = slide ? slide.dataset.id : null;
-          trackEvent('like', { slide_id: slideId, liked: liked });
+          trackEvent('like', { slide_id: slide ? slide.dataset.id : null });
+          var count = btn.querySelector('[data-count]');
+          var ico = btn.querySelector('.ico');
+          var liked = btn.classList.toggle('liked');
+          if (liked) {
+            count.textContent = parseInt(count.textContent, 10) + 1;
+            ico.style.background = 'rgba(205,255,74,.9)';
+            ico.style.color = '#07070a';
+            ico.style.borderColor = 'rgba(205,255,74,.9)';
+          } else {
+            count.textContent = parseInt(count.textContent, 10) - 1;
+            ico.style.background = ''; ico.style.color = ''; ico.style.borderColor = '';
+          }
+        });
+      });
+
+      var toastTimer;
+      function showToast(text){
+        if (!toast) return;
+        toast.textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
+      }
+      function copyToClipboard(text){
+        if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+        return new Promise(function(resolve, reject){
+          try {
+            var ta = document.createElement('textarea');
+            ta.value = text; ta.setAttribute('readonly', '');
+            ta.style.position = 'absolute'; ta.style.left = '-9999px';
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); document.body.removeChild(ta);
+            resolve();
+          } catch(e){ reject(e); }
+        });
+      }
+      document.querySelectorAll('[data-share]').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'invite'); } catch(err){} }
+          var slide = btn.closest('.slide');
+          var id = slide ? slide.dataset.id : '';
+          trackEvent('invite', { slide_id: id });
+          var url = location.origin + location.pathname + '#' + id;
+          if (window.Telegram && window.Telegram.WebApp) {
+            copyToClipboard(url).then(function(){
+              showToast('Ссылка скопирована');
+              try {
+                var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url);
+                window.Telegram.WebApp.openTelegramLink(shareUrl);
+              } catch(err){}
+            });
+            return;
+          }
+          if (navigator.share) {
+            copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
+            navigator.share({ title: 'VETKA', text: 'Пойдём вместе?', url: url }).catch(function(){});
+          } else {
+            copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }).catch(function(){ showToast('Не удалось скопировать'); });
+          }
         });
       });
 
@@ -1162,11 +1174,22 @@
             var updates = { last_seen: new Date().toISOString() };
             if (action === 'profile_view') updates.profile_views = (existing.profile_views || 0) + 1;
             else if (action === 'follow') updates.follows = payload.orgName || 'БАЗА';
+            else if (action === 'like') {
+              var likesArr = Array.isArray(existing.likes) ? existing.likes : [];
+              var rid = payload.rId;
+              if (rid && likesArr.indexOf(rid) === -1) {
+                updates.likes = likesArr.concat([rid]);
+              }
+            } else if (action === 'invite') {
+              updates.invites = (existing.invites || 0) + 1;
+            }
             if (tgId && !existing.tg_id) updates.tg_id = tgId;
             if (anonId && !existing.anon_id) updates.anon_id = anonId;
             await supabaseClient.from('users').update(updates).eq('id', existing.id);
           } else {
             var insertData = { id: userId, last_seen: new Date().toISOString(), likes: [], invites: 0, profile_views: action === 'profile_view' ? 1 : 0, follows: action === 'follow' ? (payload.orgName || 'БАЗА') : null };
+            if (action === 'like' && payload.rId) insertData.likes = [payload.rId];
+            if (action === 'invite') insertData.invites = 1;
             if (tgId) insertData.tg_id = tgId;
             if (anonId) insertData.anon_id = anonId;
             await supabaseClient.from('users').insert([insertData]);
@@ -1182,7 +1205,7 @@
         setTimeout(function(){ trackUser('visit'); }, 15000);
       });
 
-      // ===== СТАРТ: показываем рилсы =====
+      // ===== СТАРТ =====
       layoutReels();
       feed.classList.add('visible');
       feed.style.scrollSnapType = 'none';

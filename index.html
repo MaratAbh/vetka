@@ -571,18 +571,20 @@
       }
 
       // =====================================================================
-      // ===== VIDEO FACTORY: новый <video> для каждого показа =====
+      // ===== VIDEO FACTORY =====
       // =====================================================================
-      // Идея: НИКОГДА не переиспользуем <video> элемент.
-      //   - Когда слайд становится активным — создаём СВЕЖИЙ <video> из data-src.
-      //   - Когда слайд уходит из окна — полностью убиваем его <video>.
+      // Каждый раз, когда слайд становится активным, создаём СВЕЖИЙ <video>.
+      // Когда слайд уходит из окна — полностью убиваем его <video>.
       //
-      //   WebView ни разу не видит один и тот же медиа-элемент дважды.
-      //   Его внутренний счётчик сессий всегда чист → play() работает всегда,
-      //   независимо от того, как долго играл предыдущий ролик.
+      // Ни одно видео не переиспользуется — WebView всегда видит новый
+      // медиа-элемент, его счётчик сессий чист. play() работает всегда,
+      // независимо от длительности просмотра любого ролика.
       //
-      //   URL-ы хранятся отдельно в videoUrls[], потому что после удаления
-      //   <video> из DOM его data-src недоступен.
+      // Звук:
+      //   - все видео создаются muted
+      //   - перед переключением ВСЕ существующие видео глушатся
+      //   - текущий размьючивается только после play()
+      //   - killVideo сначала muted, потом pause
       // =====================================================================
 
       var WINDOW_BACK = 0;
@@ -590,7 +592,7 @@
 
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
 
-      // Собрать URL-ы из исходных <video data-src="..."> и сразу удалить
+      // Собираем URL-ы из исходных <video data-src> и сразу удаляем
       // эти элементы из DOM, чтобы они не висели фоном.
       var videoUrls = [];
       slides.forEach(function(s, i){
@@ -598,6 +600,7 @@
         videoUrls[i] = v ? (v.dataset.src || v.getAttribute('src') || null) : null;
         if (v && v.parentNode) {
           try {
+            v.muted = true;
             v.pause();
             v.removeAttribute('src');
             v.load();
@@ -606,6 +609,12 @@
         }
       });
 
+      function getVideo(idx){
+        if (idx < 0 || idx >= slides.length) return null;
+        var container = slides[idx].querySelector('.video');
+        return container ? container.querySelector('video') : null;
+      }
+
       function rebuildVideoFor(idx, autoplay){
         if (idx < 0 || idx >= slides.length) return null;
         var url = videoUrls[idx];
@@ -613,21 +622,23 @@
         var container = slides[idx].querySelector('.video');
         if (!container) return null;
 
-        // На всякий случай снести всё, что там лежит
+        // Снести старое — сначала глушим, потом сносим
         var old = container.querySelector('video');
         if (old) {
+          try { old.muted = true; } catch(e){}
           try { old.pause(); } catch(e){}
           try { old.removeAttribute('src'); old.load(); } catch(e){}
           try { container.removeChild(old); } catch(e){}
         }
 
-        // Создать СВЕЖИЙ <video>
+        // Создать СВЕЖИЙ <video>. ВСЕГДА muted — размьютим только текущий
+        // после того как play() реально начнётся.
         var v = document.createElement('video');
         v.setAttribute('playsinline', '');
         v.setAttribute('webkit-playsinline', '');
         v.setAttribute('loop', '');
         v.setAttribute('preload', 'auto');
-        v.muted = !soundEnabled;
+        v.muted = true;
         v.src = url;
         v.dataset.src = url;
         container.appendChild(v);
@@ -645,38 +656,50 @@
         if (!container) return;
         var v = container.querySelector('video');
         if (!v) return;
+        // Сначала глушим, потом всё остальное — иначе звук может «протечь»
+        try { v.muted = true; } catch(e){}
         try { v.pause(); } catch(e){}
         try { v.removeAttribute('src'); v.load(); } catch(e){}
         try { container.removeChild(v); } catch(e){}
       }
 
-      function getVideo(idx){
-        if (idx < 0 || idx >= slides.length) return null;
-        var container = slides[idx].querySelector('.video');
-        return container ? container.querySelector('video') : null;
-      }
-
       function setActiveSlide(idx){
-        // 1. Убить всё, что вне окна [idx .. idx + WINDOW_FWD] и не равно idx
+        // ШАГ 0: принудительно заглушить ВСЕ существующие видео.
+        // Это устраняет «двойное звучание» — когда старый ролик
+        // ещё не успел заглохнуть, а новый уже начал играть.
         for (var i = 0; i < slides.length; i++) {
-          if (i === idx) continue;
-          if (i > idx && i <= idx + WINDOW_FWD) continue;
-          killVideo(i);
+          var v0 = getVideo(i);
+          if (v0) { try { v0.muted = true; } catch(e){} }
         }
 
-        // 2. Текущий — создать/пересоздать и play
+        // ШАГ 1: убить всё, что вне окна [idx .. idx + WINDOW_FWD]
+        for (var j = 0; j < slides.length; j++) {
+          if (j === idx) continue;
+          if (j > idx && j <= idx + WINDOW_FWD) continue;
+          killVideo(j);
+        }
+
+        // ШАГ 2: текущий — создать/взять, play, размьютить ПОСЛЕ play
         var cur = getVideo(idx);
         if (!cur) {
           rebuildVideoFor(idx, false);
           cur = getVideo(idx);
         }
         if (cur) {
-          cur.muted = !soundEnabled;
+          cur.muted = true;
           var p = cur.play();
-          if (p && p.catch) p.catch(function(){});
+          var unmute = function(){
+            if (!soundEnabled) return;
+            try { cur.muted = false; cur.volume = 1; } catch(e){}
+          };
+          if (p && p.then) {
+            p.then(unmute).catch(function(){});
+          } else {
+            requestAnimationFrame(unmute);
+          }
         }
 
-        // 3. Пре-фетч следующего — создать без autoplay
+        // ШАГ 3: пре-фетч следующего (создаётся muted, на паузе)
         if (WINDOW_FWD > 0 && idx + 1 < slides.length) {
           var next = getVideo(idx + 1);
           if (!next) rebuildVideoFor(idx + 1, false);
@@ -715,6 +738,7 @@
 
             var onbVids = onboarding.querySelectorAll('video');
             for (var i = 0; i < onbVids.length; i++) {
+              try { onbVids[i].muted = true; } catch(e){}
               try { onbVids[i].pause(); } catch(e){}
               try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
             }
@@ -801,14 +825,21 @@
         if (soundEnabled) return;
         soundEnabled = true; updateIcons();
         var v = getVideo(currentIndex);
-        if (v) { v.muted = false; v.volume = 1; var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+        if (v) {
+          var p = v.play();
+          var unmute = function(){
+            try { v.muted = false; v.volume = 1; } catch(e){}
+          };
+          if (p && p.then) { p.then(unmute).catch(function(){}); }
+          else { unmute(); }
+        }
         trackEvent('sound_on', {});
       }
       function disableSound(){
         if (!soundEnabled) return;
         soundEnabled = false; updateIcons();
         var v = getVideo(currentIndex);
-        if (v) v.muted = true;
+        if (v) { try { v.muted = true; } catch(e){} }
       }
       soundBtns.forEach(function(btn){
         btn.addEventListener('click', function(e){
@@ -832,10 +863,9 @@
         trackUser('profile_view');
         trackEvent('profile_open', {});
         profile.classList.add('open');
-        // Паузим все живые видео ленты
         for (var i = 0; i < slides.length; i++) {
           var v = getVideo(i);
-          if (v) { try { v.pause(); } catch(e){} }
+          if (v) { try { v.muted = true; v.pause(); } catch(e){} }
         }
       }
       function closeProfile(){

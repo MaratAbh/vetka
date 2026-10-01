@@ -574,7 +574,10 @@
       // ===== VIDEO SLOT POOL =====
       // =====================================================================
 
-      var WINDOW_BACK = 1;
+      // ИЗМЕНЕНО: WINDOW_BACK 1 → 0
+      // В DOM теперь максимум 2 видео (current + next), а не 3.
+      // Это освободило слоты и позволило r6–r8 грузиться.
+      var WINDOW_BACK = 0;
       var WINDOW_FWD  = 1;
 
       function ensureVideoLoaded(v){

@@ -9,6 +9,8 @@
 
 <link rel="preconnect" href="https://telegram.org" crossorigin>
 <link rel="dns-prefetch" href="https://telegram.org">
+<link rel="preconnect" href="https://storage.yandexcloud.net" crossorigin>
+<link rel="dns-prefetch" href="https://storage.yandexcloud.net">
 
 <script type="text/javascript" >
    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -50,13 +52,19 @@
   .onboarding{position:fixed;inset:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;}
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
-  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;filter:blur(.4px) brightness(.92) saturate(1.08);transform:scale(1.2);opacity:0;animation:onbBgFade 1.2s .1s ease forwards;}
+  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;animation:onbBgFade 1.2s .1s ease forwards;}
   @keyframes onbBgFade{to{opacity:1;}}
   .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
   .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
-  .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;}
-  .onb-col .tile video{position:relative;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .8s ease;}
-  .onb-col .tile video.loaded{opacity:1;}
+  .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;z-index:1;}
+  .onb-col .tile video{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;display:block;
+    background:#0a0a12;
+    transform:translateZ(0);-webkit-transform:translateZ(0);
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    pointer-events:none;
+  }
   .onb-col-up{animation:colUp 60s linear infinite;}
   .onb-col-down{animation:colDown 60s linear infinite;}
   @keyframes colUp{from{transform:translateY(0);}to{transform:translateY(-50%);}}
@@ -248,20 +256,20 @@
   <div class="onboarding" id="onboarding">
     <div class="onb-bg">
       <div class="onb-col onb-col-up">
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline autoplay preload="auto"></video></div>
       </div>
       <div class="onb-col onb-col-down">
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
       </div>
     </div>
 
@@ -762,8 +770,8 @@
         for (var i = 0; i < allSlides.length; i++) allSlides[i].style.height = vh + 'px';
       }
 
-      var WINDOW_BACK = 0;
-      var WINDOW_FWD  = 1;
+      var WINDOW_BACK = 1;
+      var WINDOW_FWD  = 2;
 
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
 
@@ -839,8 +847,7 @@
         }
 
         for (var j = 0; j < slides.length; j++) {
-          if (j === idx) continue;
-          if (j > idx && j <= idx + WINDOW_FWD) continue;
+          if (j >= idx - WINDOW_BACK && j <= idx + WINDOW_FWD) continue;
           killVideo(j);
         }
 
@@ -863,9 +870,11 @@
           }
         }
 
-        if (WINDOW_FWD > 0 && idx + 1 < slides.length) {
-          var next = getVideo(idx + 1);
-          if (!next) rebuildVideoFor(idx + 1, false);
+        for (var k = 1; k <= WINDOW_FWD; k++) {
+          var ni = idx + k;
+          if (ni < slides.length && !getVideo(ni)) {
+            rebuildVideoFor(ni, false);
+          }
         }
       }
 
@@ -928,18 +937,34 @@
         document.addEventListener('mouseup', onEnd);
 
         onboarding.querySelectorAll('video').forEach(function(v){
-          var revealed = false;
-          function reveal(){
-            if (revealed) return;
-            revealed = true;
-            v.classList.add('loaded');
+          v.muted = true;
+          v.setAttribute('muted','');
+          v.setAttribute('playsinline','');
+          v.setAttribute('webkit-playsinline','');
+          v.setAttribute('autoplay','');
+          try { v.load(); } catch(e){}
+
+          var kick = function(){
+            var p = v.play();
+            if (p && p.catch) p.catch(function(){});
+          };
+
+          if (v.readyState >= 2) kick();
+          else {
+            v.addEventListener('loadeddata', kick, {once:true});
+            v.addEventListener('canplay', kick, {once:true});
+            kick();
           }
-          v.addEventListener('loadeddata', reveal);
-          v.addEventListener('canplay', reveal);
-          v.addEventListener('playing', reveal);
-          setTimeout(reveal, 4000);
-          v.play().catch(function(){});
         });
+
+        var kickAll = function(){
+          onboarding.querySelectorAll('video').forEach(function(v){
+            var p = v.play();
+            if (p && p.catch) p.catch(function(){});
+          });
+        };
+        onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
+        onboarding.addEventListener('click', kickAll, {once:true});
       }
 
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -1452,6 +1477,14 @@
         setTimeout(function(){ trackUser('visit'); }, 15000);
         loadLikesFromSupabase();
       });
+
+      // Пока крутится онбординг — уже начинаем качать первые 3 ролика ленты.
+      (function eagerPreload(){
+        var n = Math.min(3, slides.length);
+        for (var i = 0; i < n; i++) {
+          if (!getVideo(i)) rebuildVideoFor(i, false);
+        }
+      })();
 
       layoutReels();
       feed.classList.add('visible');

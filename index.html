@@ -759,8 +759,44 @@
 
   <script>
     (function(){
+      // ====== TELEGRAM MINI APP ======
+      // Бот: @vetkaevent_bot
+      var TG_BOT_USERNAME = 'vetkaevent_bot';
+      var TG_MINIAPP_SHORT_NAME = ''; // если у мини-аппа есть отдельный short name — впиши сюда
+
+      function buildTgDeepLink(payload){
+        var base = 'https://t.me/' + TG_BOT_USERNAME;
+        if (TG_MINIAPP_SHORT_NAME) base += '/' + TG_MINIAPP_SHORT_NAME;
+        return base + '?startapp=' + encodeURIComponent(payload);
+      }
+
+      function readStartParamFromUrl(){
+        try {
+          var h = location.hash || '';
+          var m = h.match(/tgWebAppStartParam=([^&]+)/);
+          if (m && m[1]) return decodeURIComponent(m[1]);
+        } catch(e){}
+        return null;
+      }
+      function readStartParamFromSdk(){
+        try {
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) return tg.initDataUnsafe.start_param;
+        } catch(e){}
+        return null;
+      }
+      function getStartParam(){
+        return readStartParamFromUrl() || readStartParamFromSdk();
+      }
+
+      var EARLY_START_PARAM = getStartParam();
+
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
+
+      if (onboarding && EARLY_START_PARAM) {
+        onboarding.classList.add('gone');
+      }
 
       function layoutReels(){
         var vh = window.innerHeight;
@@ -972,6 +1008,15 @@
         };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
         onboarding.addEventListener('click', kickAll, {once:true});
+
+        if (EARLY_START_PARAM) {
+          setTimeout(function(){
+            if (onboarding && onboarding.parentNode) {
+              onboarding.parentNode.removeChild(onboarding);
+            }
+            onboarding = null;
+          }, 500);
+        }
       }
 
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -1274,34 +1319,49 @@
           var slide = btn.closest('.slide');
           var id = slide ? slide.dataset.id : '';
           trackEvent('invite', { slide_id: id });
-          var url = location.origin + location.pathname + '#' + id;
+
+          // Deep link в Telegram Mini App с payload = id слайда (r1..r8).
+          var deepLink = buildTgDeepLink(id);
+          var shareText = 'Пойдём вместе?';
+
           if (window.Telegram && window.Telegram.WebApp) {
-            copyToClipboard(url).then(function(){
-              showToast('Ссылка скопирована');
-              try {
-                var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url);
-                window.Telegram.WebApp.openTelegramLink(shareUrl);
-              } catch(err){}
-            });
+            try {
+              var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(deepLink) + '&text=' + encodeURIComponent(shareText);
+              window.Telegram.WebApp.openTelegramLink(shareUrl);
+            } catch(err){
+              copyToClipboard(deepLink).then(function(){ showToast('Ссылка скопирована'); });
+            }
             return;
           }
+
           if (navigator.share) {
-            copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
-            navigator.share({ title: 'VETKA', text: 'Пойдём вместе?', url: url }).catch(function(){});
+            navigator.share({ title: 'VETKA', text: shareText, url: deepLink }).catch(function(){
+              copyToClipboard(deepLink).then(function(){ showToast('Ссылка скопирована'); }).catch(function(){});
+            });
           } else {
-            copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }).catch(function(){ showToast('Не удалось скопировать'); });
+            copyToClipboard(deepLink).then(function(){ showToast('Ссылка скопирована'); }).catch(function(){ showToast('Не удалось скопировать'); });
           }
         });
       });
 
       function openByHash(){
-        var hash = location.hash.replace('#', '');
-        if (!hash) return false;
-        var target = document.getElementById(hash);
+        var hash = (location.hash || '').replace('#', '');
+        var sp = getStartParam();
+        var targetId = sp || hash;
+        if (!targetId) return false;
+        if (targetId.indexOf('tgWebApp') === 0 || targetId.indexOf('=') !== -1) return false;
+        var target = document.getElementById(targetId);
         if (!target) return false;
+
         setTimeout(function(){
           try { target.scrollIntoView({behavior: 'auto', block: 'start'}); } catch(e){
             target.scrollIntoView();
+          }
+          var idx = slides.indexOf(target);
+          if (idx !== -1) {
+            currentIndex = idx;
+            slideEnteredAt = Date.now();
+            setActiveSlide(idx);
           }
         }, 80);
         return true;
@@ -1485,7 +1545,6 @@
         loadLikesFromSupabase();
       });
 
-      // Пока крутится онбординг — уже начинаем качать первые 3 ролика ленты.
       (function eagerPreload(){
         var n = Math.min(3, slides.length);
         for (var i = 0; i < n; i++) {
@@ -1507,6 +1566,8 @@
       });
 
       openByHash();
+      setTimeout(openByHash, 600);
+      setTimeout(openByHash, 1500);
       window.addEventListener('hashchange', openByHash);
 
       var slideIO = new IntersectionObserver(function(entries){

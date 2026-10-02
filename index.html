@@ -378,7 +378,7 @@
 
     <div class="slide" id="r3" data-id="r3">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -419,7 +419,7 @@
 
     <div class="slide" id="r4" data-id="r4">
       <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" loop playsinline preload="none" muted></video>
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
       <div class="sound-btn" data-sound-btn>
@@ -841,7 +841,6 @@
       }
 
       function setActiveSlide(idx){
-        // Глушим звук у всех, у не-текущих — пауза + сброс на начало.
         for (var i = 0; i < slides.length; i++) {
           var v0 = getVideo(i);
           if (!v0) continue;
@@ -852,13 +851,11 @@
           }
         }
 
-        // Убиваем всё, что вне окна [idx - WINDOW_BACK, idx + WINDOW_FWD].
         for (var j = 0; j < slides.length; j++) {
           if (j >= idx - WINDOW_BACK && j <= idx + WINDOW_FWD) continue;
           killVideo(j);
         }
 
-        // Текущий — с нуля.
         var cur = getVideo(idx);
         if (!cur) {
           rebuildVideoFor(idx, false);
@@ -879,7 +876,6 @@
           }
         }
 
-        // Прелоад следующих слайдов в окне.
         for (var k = 1; k <= WINDOW_FWD; k++) {
           var ni = idx + k;
           if (ni < slides.length && !getVideo(ni)) {

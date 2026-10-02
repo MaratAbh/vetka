@@ -248,20 +248,20 @@
   <div class="onboarding" id="onboarding">
     <div class="onb-bg">
       <div class="onb-col onb-col-up">
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_163137_406.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_143810_843-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000034015-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_163137_406.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017.mp4" muted loop playsinline preload="metadata"></video></div>
         <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_143810_843-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/1000034015-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
       </div>
       <div class="onb-col onb-col-down">
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_122923_082-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/YouCut_20261002_153045891.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_162206_479.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/YouCut_20261002_153045891.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_162206_479.mp4" muted loop playsinline preload="metadata"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20260930_130607_095-compressed.mp4" muted loop playsinline preload="metadata"></video></div>
       </div>
     </div>
 
@@ -915,7 +915,6 @@
             }
 
             layoutReels();
-            slideEnteredAt = Date.now();
             setActiveSlide(0);
             setTimeout(function(){
               if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
@@ -957,18 +956,7 @@
       var closeBtn = document.getElementById('closeProfile');
       var scrollEndTracked = false;
       var currentIndex = 0;
-      var slideEnteredAt = 0;
       var toast = document.getElementById('toast');
-
-      function flushDwell(idx){
-        if (idx < 0 || idx >= slides.length) return;
-        if (!slideEnteredAt) return;
-        var dur = Date.now() - slideEnteredAt;
-        slideEnteredAt = 0;
-        if (dur < 500 || dur > 30 * 60 * 1000) return;
-        var slideId = slides[idx].dataset.id;
-        if (slideId) trackEvent('slide_dwell', { slide_id: slideId, duration_ms: dur });
-      }
 
       var myLikedSlides = {};
       var likeCounts = {};
@@ -1070,14 +1058,11 @@
         if (best && bestRatio > 0.55) {
           var idx = slides.indexOf(best);
           if (idx !== -1 && idx !== currentIndex) {
-            flushDwell(currentIndex);
             currentIndex = idx;
-            slideEnteredAt = Date.now();
             setActiveSlide(idx);
             if (idx === slides.length - 1 && !scrollEndTracked) {
               scrollEndTracked = true;
               if (window.ym) { try { ym(113067752, 'reachGoal', 'scroll_end'); } catch(err){} }
-              trackEvent('scroll_end', { slide_id: slides[idx].dataset.id });
             }
           }
         }
@@ -1288,7 +1273,6 @@
         trackUser('profile_view');
         trackEvent('profile_open', {});
         profile.classList.add('open');
-        flushDwell(currentIndex);
         for (var i = 0; i < slides.length; i++) {
           var v = getVideo(i);
           if (v) { try { v.muted = true; v.pause(); } catch(e){} }
@@ -1296,7 +1280,6 @@
       }
       function closeProfile(){
         profile.classList.remove('open');
-        slideEnteredAt = Date.now();
         setActiveSlide(currentIndex);
       }
       openBtns.forEach(function(btn){
@@ -1400,27 +1383,15 @@
         if (pendingEvents.length > 0) flushEvents();
       }
 
-      var flushTimer = null;
-      function scheduleFlush(){
-        if (flushTimer) return;
-        flushTimer = setTimeout(function(){
-          flushTimer = null;
-          flushEvents();
-        }, 1500);
-      }
-
       function trackEvent(type, data){
         pendingEvents.push({ type: type, data: data || {} });
-        if (readTgId()) scheduleFlush();
+        if (readTgId()) flushEvents();
         else if (window.Telegram && window.Telegram.WebApp) startTgIdWatch();
-        else scheduleFlush();
+        else flushEvents();
       }
 
-      document.addEventListener('visibilitychange', function(){
-        if (document.hidden) { flushDwell(currentIndex); flushEvents(); }
-        else { slideEnteredAt = Date.now(); }
-      });
-      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
+      document.addEventListener('visibilitychange', function(){ if (document.hidden) flushEvents(); });
+      window.addEventListener('pagehide', function(){ flushEvents(); });
 
       async function trackUser(action, payload){
         payload = payload || {};

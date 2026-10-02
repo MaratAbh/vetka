@@ -841,16 +841,24 @@
       }
 
       function setActiveSlide(idx){
+        // Глушим звук у всех, у не-текущих — пауза + сброс на начало.
         for (var i = 0; i < slides.length; i++) {
           var v0 = getVideo(i);
-          if (v0) { try { v0.muted = true; } catch(e){} }
+          if (!v0) continue;
+          try { v0.muted = true; } catch(e){}
+          if (i !== idx) {
+            try { v0.pause(); } catch(e){}
+            try { v0.currentTime = 0; } catch(e){}
+          }
         }
 
+        // Убиваем всё, что вне окна [idx - WINDOW_BACK, idx + WINDOW_FWD].
         for (var j = 0; j < slides.length; j++) {
           if (j >= idx - WINDOW_BACK && j <= idx + WINDOW_FWD) continue;
           killVideo(j);
         }
 
+        // Текущий — с нуля.
         var cur = getVideo(idx);
         if (!cur) {
           rebuildVideoFor(idx, false);
@@ -858,6 +866,7 @@
         }
         if (cur) {
           cur.muted = true;
+          try { cur.currentTime = 0; } catch(e){}
           var p = cur.play();
           var unmute = function(){
             if (!soundEnabled) return;
@@ -870,6 +879,7 @@
           }
         }
 
+        // Прелоад следующих слайдов в окне.
         for (var k = 1; k <= WINDOW_FWD; k++) {
           var ni = idx + k;
           if (ni < slides.length && !getVideo(ni)) {
@@ -958,6 +968,7 @@
         });
 
         var kickAll = function(){
+          if (!onboarding) return;
           onboarding.querySelectorAll('video').forEach(function(v){
             var p = v.play();
             if (p && p.catch) p.catch(function(){});

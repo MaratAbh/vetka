@@ -256,20 +256,20 @@
   <div class="onboarding" id="onboarding">
     <div class="onb-bg">
       <div class="onb-col onb-col-up">
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline autoplay preload="auto"></video></div>
       </div>
       <div class="onb-col onb-col-down">
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
       </div>
     </div>
 
@@ -760,8 +760,9 @@
   <script>
     (function(){
       // ====== TELEGRAM MINI APP ======
+      // Бот: @vetkaevent_bot
       var TG_BOT_USERNAME = 'vetkaevent_bot';
-      var TG_MINIAPP_SHORT_NAME = '';
+      var TG_MINIAPP_SHORT_NAME = ''; // если у мини-аппа есть отдельный short name — впиши сюда
 
       function buildTgDeepLink(payload){
         var base = 'https://t.me/' + TG_BOT_USERNAME;
@@ -790,29 +791,11 @@
 
       var EARLY_START_PARAM = getStartParam();
 
-      try {
-        if (window.Telegram && window.Telegram.WebApp) {
-          window.Telegram.WebApp.ready();
-          try { window.Telegram.WebApp.expand(); } catch(e){}
-        }
-      } catch(e){}
-
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
 
-      // При deep link — синхронно убираем онбординг, чтобы не тянул трафик.
       if (onboarding && EARLY_START_PARAM) {
-        try {
-          var onbVidsKill = onboarding.querySelectorAll('video');
-          for (var oi = 0; oi < onbVidsKill.length; oi++) {
-            try { onbVidsKill[oi].muted = true; } catch(e){}
-            try { onbVidsKill[oi].pause(); } catch(e){}
-            try { onbVidsKill[oi].removeAttribute('src'); } catch(e){}
-            try { onbVidsKill[oi].load(); } catch(e){}
-          }
-          if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-        } catch(e){}
-        onboarding = null;
+        onboarding.classList.add('gone');
       }
 
       function layoutReels(){
@@ -868,15 +851,11 @@
         v.setAttribute('playsinline', '');
         v.setAttribute('webkit-playsinline', '');
         v.setAttribute('loop', '');
-        v.setAttribute('muted', '');
-        v.setAttribute('autoplay', '');
         v.setAttribute('preload', 'auto');
         v.muted = true;
-        v.defaultMuted = true;
         v.src = url;
         v.dataset.src = url;
         container.appendChild(v);
-        try { v.load(); } catch(e){}
 
         if (autoplay) {
           var p = v.play();
@@ -920,7 +899,6 @@
         }
         if (cur) {
           cur.muted = true;
-          try { cur.setAttribute('muted', ''); } catch(e){}
           try { cur.currentTime = 0; } catch(e){}
           var p = cur.play();
           var unmute = function(){
@@ -942,34 +920,6 @@
         }
       }
 
-      var playKeeper = null;
-      function ensurePlaying(idx){
-        if (playKeeper) { clearInterval(playKeeper); playKeeper = null; }
-        var attempts = 0;
-        var maxAttempts = 60;
-        playKeeper = setInterval(function(){
-          attempts++;
-          var v = getVideo(idx);
-          if (v) {
-            try { v.muted = true; v.setAttribute('muted', ''); } catch(e){}
-            if (v.paused) {
-              var p = v.play();
-              if (p && p.catch) p.catch(function(){});
-            }
-            if (!v.paused && v.currentTime > 0.05) {
-              clearInterval(playKeeper);
-              playKeeper = null;
-              return;
-            }
-          }
-          if (attempts >= maxAttempts) {
-            clearInterval(playKeeper);
-            playKeeper = null;
-          }
-        }, 150);
-      }
-
-      // ====== ОНБОРДИНГ ======
       if (onboarding) {
         var startY = 0, currentY = 0, dragging = false;
         var THRESHOLD = 70;
@@ -1009,12 +959,7 @@
 
             layoutReels();
             slideEnteredAt = Date.now();
-
-            // Теперь, когда онбординг уехал — грузим первые слайды ленты.
-            preloadFirstSlides();
             setActiveSlide(0);
-            ensurePlaying(0);
-
             setTimeout(function(){
               if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
               onboarding = null;
@@ -1033,66 +978,44 @@
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
 
-        // Стартуем видео онбординга пачками по 3, чтобы не забивать канал.
-        var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0;
-        var ONB_BATCH = 3;
-        function loadOnbBatch(){
-          if (!onboarding) return;
-          var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
-          for (; onbIdx < end; onbIdx++) {
-            (function(v){
-              if (!v || v.dataset.started) return;
-              v.dataset.started = '1';
-              var url = v.dataset.src;
-              if (!url) return;
-              try { v.setAttribute('preload', 'auto'); } catch(e){}
-              v.muted = true;
-              v.setAttribute('muted', '');
-              v.setAttribute('playsinline', '');
-              v.setAttribute('webkit-playsinline', '');
-              try { v.setAttribute('autoplay', ''); } catch(e){}
-              v.src = url;
-              try { v.load(); } catch(e){}
-              var p = v.play();
-              if (p && p.catch) p.catch(function(){});
-            })(onbVids[onbIdx]);
-          }
-          if (onbIdx < onbVids.length) {
-            setTimeout(loadOnbBatch, 400);
-          }
-        }
-        loadOnbBatch();
+        onboarding.querySelectorAll('video').forEach(function(v){
+          v.muted = true;
+          v.setAttribute('muted','');
+          v.setAttribute('playsinline','');
+          v.setAttribute('webkit-playsinline','');
+          v.setAttribute('autoplay','');
+          try { v.load(); } catch(e){}
 
-        // Клик по онбордингу — принудительно перезапустить всё, что ещё не играет.
+          var kick = function(){
+            var p = v.play();
+            if (p && p.catch) p.catch(function(){});
+          };
+
+          if (v.readyState >= 2) kick();
+          else {
+            v.addEventListener('loadeddata', kick, {once:true});
+            v.addEventListener('canplay', kick, {once:true});
+            kick();
+          }
+        });
+
         var kickAll = function(){
           if (!onboarding) return;
           onboarding.querySelectorAll('video').forEach(function(v){
-            if (v.paused) {
-              var p = v.play();
-              if (p && p.catch) p.catch(function(){});
-            }
+            var p = v.play();
+            if (p && p.catch) p.catch(function(){});
           });
         };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
         onboarding.addEventListener('click', kickAll, {once:true});
-      }
 
-      function preloadFirstSlides(){
-        var n = Math.min(3, slides.length);
-        for (var i = 0; i < n; i++) {
-          if (!getVideo(i)) rebuildVideoFor(i, false);
-        }
-      }
-
-      // ====== Преload целевого слайда при deep link ======
-      var TARGET_IDX_INIT = -1;
-      if (EARLY_START_PARAM) {
-        for (var ei = 0; ei < slides.length; ei++) {
-          if (slides[ei].dataset.id === EARLY_START_PARAM) { TARGET_IDX_INIT = ei; break; }
-        }
-        if (TARGET_IDX_INIT !== -1 && !getVideo(TARGET_IDX_INIT)) {
-          rebuildVideoFor(TARGET_IDX_INIT, false);
+        if (EARLY_START_PARAM) {
+          setTimeout(function(){
+            if (onboarding && onboarding.parentNode) {
+              onboarding.parentNode.removeChild(onboarding);
+            }
+            onboarding = null;
+          }, 500);
         }
       }
 
@@ -1397,6 +1320,7 @@
           var id = slide ? slide.dataset.id : '';
           trackEvent('invite', { slide_id: id });
 
+          // Deep link в Telegram Mini App с payload = id слайда (r1..r8).
           var deepLink = buildTgDeepLink(id);
           var shareText = 'Пойдём вместе?';
 
@@ -1420,48 +1344,27 @@
         });
       });
 
-      function jumpToSlide(targetId){
-        var target = document.getElementById(targetId);
-        if (!target) return false;
-        var idx = slides.indexOf(target);
-        if (idx === -1) return false;
-
-        var existing = getVideo(idx);
-        if (currentIndex === idx && existing && !existing.paused && existing.currentTime > 0.05) {
-          return true;
-        }
-
-        var vh = window.innerHeight;
-        feed.style.scrollSnapType = 'none';
-        feed.scrollTop = idx * vh;
-        try { feed.scrollTo(0, idx * vh); } catch(e){}
-
-        currentIndex = idx;
-        slideEnteredAt = Date.now();
-
-        if (!getVideo(idx)) rebuildVideoFor(idx, false);
-        setActiveSlide(idx);
-        ensurePlaying(idx);
-
-        setTimeout(function(){
-          feed.style.scrollSnapType = '';
-        }, 500);
-
-        return true;
-      }
-
       function openByHash(){
+        var hash = (location.hash || '').replace('#', '');
         var sp = getStartParam();
-        var targetId = sp;
-        if (!targetId) {
-          var hash = (location.hash || '').replace('#', '');
-          if (hash && hash.indexOf('tgWebApp') !== 0 && hash.indexOf('=') === -1) {
-            targetId = hash;
-          }
-        }
+        var targetId = sp || hash;
         if (!targetId) return false;
         if (targetId.indexOf('tgWebApp') === 0 || targetId.indexOf('=') !== -1) return false;
-        return jumpToSlide(targetId);
+        var target = document.getElementById(targetId);
+        if (!target) return false;
+
+        setTimeout(function(){
+          try { target.scrollIntoView({behavior: 'auto', block: 'start'}); } catch(e){
+            target.scrollIntoView();
+          }
+          var idx = slides.indexOf(target);
+          if (idx !== -1) {
+            currentIndex = idx;
+            slideEnteredAt = Date.now();
+            setActiveSlide(idx);
+          }
+        }, 80);
+        return true;
       }
 
       function openProfile(){
@@ -1479,7 +1382,6 @@
         profile.classList.remove('open');
         slideEnteredAt = Date.now();
         setActiveSlide(currentIndex);
-        ensurePlaying(currentIndex);
       }
       openBtns.forEach(function(btn){
         btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); });
@@ -1599,16 +1501,8 @@
       }
 
       document.addEventListener('visibilitychange', function(){
-        if (document.hidden) {
-          flushDwell(currentIndex);
-          flushEvents();
-        } else {
-          slideEnteredAt = Date.now();
-          ensurePlaying(currentIndex);
-        }
-      });
-      window.addEventListener('pageshow', function(){
-        ensurePlaying(currentIndex);
+        if (document.hidden) { flushDwell(currentIndex); flushEvents(); }
+        else { slideEnteredAt = Date.now(); }
       });
       window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
 
@@ -1651,38 +1545,29 @@
         loadLikesFromSupabase();
       });
 
+      (function eagerPreload(){
+        var n = Math.min(3, slides.length);
+        for (var i = 0; i < n; i++) {
+          if (!getVideo(i)) rebuildVideoFor(i, false);
+        }
+      })();
+
       layoutReels();
       feed.classList.add('visible');
-
-      // Если НЕТ deep link и онбординг виден — не грузим ленту, пока онбординг не уедет.
-      // Если deep link — целевой слайд уже преload'ится.
-      if (!EARLY_START_PARAM) {
-        // Онбординг есть — ждём, пока пользователь свайпнет.
-        // Если онбординга нет (маловероятно) — грузим первые слайды.
-        if (!onboarding) {
-          preloadFirstSlides();
-          setActiveSlide(0);
-          ensurePlaying(0);
-        }
-        feed.style.scrollSnapType = 'none';
-        feed.scrollTop = 0;
-        feed.scrollTo(0, 0);
-        requestAnimationFrame(function(){
+      feed.style.scrollSnapType = 'none';
+      feed.scrollTop = 0;
+      feed.scrollTo(0, 0);
+      requestAnimationFrame(function(){
+        feed.scrollTop = 0; feed.scrollTo(0, 0);
+        setTimeout(function(){
           feed.scrollTop = 0; feed.scrollTo(0, 0);
-          setTimeout(function(){
-            feed.scrollTop = 0; feed.scrollTo(0, 0);
-            feed.style.scrollSnapType = '';
-          }, 100);
-        });
-      }
+          feed.style.scrollSnapType = '';
+        }, 100);
+      });
 
-      // Всегда пытаемся прыгнуть по deep link — несколько раз, потому что start_param
-      // может появиться только после загрузки Telegram SDK.
       openByHash();
-      setTimeout(openByHash, 200);
-      setTimeout(openByHash, 500);
-      setTimeout(openByHash, 1000);
-      setTimeout(openByHash, 2000);
+      setTimeout(openByHash, 600);
+      setTimeout(openByHash, 1500);
       window.addEventListener('hashchange', openByHash);
 
       var slideIO = new IntersectionObserver(function(entries){

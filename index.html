@@ -409,7 +409,7 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="live" data-weight="1.1"><span class="dot"></span><span data-viewers>—</span> смотрят прямо сейчас</div>
+        <div class="live" data-weight="1.1"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -800,8 +800,18 @@
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
 
+      // При deep link — синхронно убить и удалить онбординг целиком, чтобы освободить полосу.
       if (onboarding && EARLY_START_PARAM) {
-        onboarding.classList.add('gone');
+        try {
+          var onbVids = onboarding.querySelectorAll('video');
+          for (var oi = 0; oi < onbVids.length; oi++) {
+            try { onbVids[oi].muted = true; } catch(e){}
+            try { onbVids[oi].pause(); } catch(e){}
+            try { onbVids[oi].removeAttribute('src'); onbVids[oi].load(); } catch(e){}
+          }
+          if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
+        } catch(e){}
+        onboarding = null;
       }
 
       function layoutReels(){
@@ -816,6 +826,15 @@
       var WINDOW_FWD  = 2;
 
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
+
+      // Найдём целевой индекс сразу.
+      var TARGET_IDX = -1;
+      if (EARLY_START_PARAM) {
+        for (var ti = 0; ti < slides.length; ti++) {
+          if (slides[ti].dataset.id === EARLY_START_PARAM) { TARGET_IDX = ti; break; }
+        }
+      }
+      var jumpInProgress = TARGET_IDX !== -1;
 
       var videoUrls = [];
       slides.forEach(function(s, i){
@@ -838,7 +857,6 @@
         return container ? container.querySelector('video') : null;
       }
 
-      // Создание видео с максимально «автоплей-дружелюбными» атрибутами.
       function rebuildVideoFor(idx, autoplay){
         if (idx < 0 || idx >= slides.length) return null;
         var url = videoUrls[idx];
@@ -855,7 +873,6 @@
         }
 
         var v = document.createElement('video');
-        // ВАЖНО: атрибуты ставим ДО src — иначе iOS WKWebView может отклонить autoplay.
         v.setAttribute('playsinline', '');
         v.setAttribute('webkit-playsinline', '');
         v.setAttribute('loop', '');
@@ -888,6 +905,14 @@
         try { v.pause(); } catch(e){}
         try { v.removeAttribute('src'); v.load(); } catch(e){}
         try { container.removeChild(v); } catch(e){}
+      }
+
+      // Убиваем все видео кроме целевого индекса (для момента прыжка).
+      function killAllExcept(keepIdx){
+        for (var i = 0; i < slides.length; i++) {
+          if (i === keepIdx) continue;
+          killVideo(i);
+        }
       }
 
       function setActiveSlide(idx){
@@ -935,12 +960,12 @@
         }
       }
 
-      // ===== ГЛАВНОЕ: гарантированный запуск видео целевого слайда =====
+      // ===== ГЛАВНОЕ: гарантированный запуск целевого слайда =====
       var playKeeper = null;
       function ensurePlaying(idx){
         if (playKeeper) { clearInterval(playKeeper); playKeeper = null; }
         var attempts = 0;
-        var maxAttempts = 60; // ~9 секунд с шагом 150мс
+        var maxAttempts = 60;
         playKeeper = setInterval(function(){
           attempts++;
           var v = getVideo(idx);
@@ -965,15 +990,28 @@
         }, 150);
       }
 
-      if (EARLY_START_PARAM) {
-        var earlyIdx = -1;
-        for (var ei = 0; ei < slides.length; ei++) {
-          if (slides[ei].dataset.id === EARLY_START_PARAM) { earlyIdx = ei; break; }
-        }
-        if (earlyIdx !== -1) {
-          if (!getVideo(earlyIdx)) rebuildVideoFor(earlyIdx, false);
-          if (earlyIdx + 1 < slides.length && !getVideo(earlyIdx + 1)) rebuildVideoFor(earlyIdx + 1, false);
-          if (earlyIdx - 1 >= 0 && !getVideo(earlyIdx - 1)) rebuildVideoFor(earlyIdx - 1, false);
+      // Ранний преload ТОЛЬКО целевого слайда. Соседей подтянем после playing.
+      if (TARGET_IDX !== -1) {
+        if (!getVideo(TARGET_IDX)) rebuildVideoFor(TARGET_IDX, false);
+        var tv = getVideo(TARGET_IDX);
+        if (tv) {
+          var onFirstPlaying = function(){
+            tv.removeEventListener('playing', onFirstPlaying);
+            // Теперь, когда целевое пошло — можно подгрузить соседей.
+            if (TARGET_IDX + 1 < slides.length && !getVideo(TARGET_IDX + 1)) rebuildVideoFor(TARGET_IDX + 1, false);
+            if (TARGET_IDX - 1 >= 0 && !getVideo(TARGET_IDX - 1)) rebuildVideoFor(TARGET_IDX - 1, false);
+            // Снимаем защиту IO — можно реагировать на скролл.
+            jumpInProgress = false;
+          };
+          tv.addEventListener('playing', onFirstPlaying);
+          // Fallback: через 4 секунды тоже снимаем защиту, даже если playing не пришёл.
+          setTimeout(function(){
+            if (jumpInProgress) {
+              jumpInProgress = false;
+              if (TARGET_IDX + 1 < slides.length && !getVideo(TARGET_IDX + 1)) rebuildVideoFor(TARGET_IDX + 1, false);
+              if (TARGET_IDX - 1 >= 0 && !getVideo(TARGET_IDX - 1)) rebuildVideoFor(TARGET_IDX - 1, false);
+            }
+          }, 4000);
         }
       }
 
@@ -1065,15 +1103,6 @@
         };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
         onboarding.addEventListener('click', kickAll, {once:true});
-
-        if (EARLY_START_PARAM) {
-          setTimeout(function(){
-            if (onboarding && onboarding.parentNode) {
-              onboarding.parentNode.removeChild(onboarding);
-            }
-            onboarding = null;
-          }, 300);
-        }
       }
 
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -1195,6 +1224,8 @@
         });
         if (best && bestRatio > 0.55) {
           var idx = slides.indexOf(best);
+          // Пока идёт прыжок — реагируем только на целевой.
+          if (jumpInProgress && idx !== TARGET_IDX) return;
           if (idx !== -1 && idx !== currentIndex) {
             flushDwell(currentIndex);
             currentIndex = idx;
@@ -1407,25 +1438,29 @@
         var idx = slides.indexOf(target);
         if (idx === -1) return false;
 
-        var vh = window.innerHeight;
-        // Отключаем snap на момент прыжка, чтобы iOS не «дотянул» до другого слайда.
-        feed.style.scrollSnapType = 'none';
+        // Если уже на этом слайде и видео играет — ничего не делаем.
+        var existing = getVideo(idx);
+        if (currentIndex === idx && existing && !existing.paused && existing.currentTime > 0.05) {
+          return true;
+        }
 
-        // Прямая установка скролла — синхронная и надёжная.
+        var vh = window.innerHeight;
+        feed.style.scrollSnapType = 'none';
         feed.scrollTop = idx * vh;
         try { feed.scrollTo(0, idx * vh); } catch(e){}
 
         currentIndex = idx;
         slideEnteredAt = Date.now();
 
+        // Убиваем всё, кроме целевого, чтобы освободить канал.
+        killAllExcept(idx);
         if (!getVideo(idx)) rebuildVideoFor(idx, false);
         setActiveSlide(idx);
         ensurePlaying(idx);
 
-        // Возвращаем snap, когда скролл устоялся.
         setTimeout(function(){
           feed.style.scrollSnapType = '';
-        }, 350);
+        }, 500);
 
         return true;
       }
@@ -1579,7 +1614,6 @@
           flushEvents();
         } else {
           slideEnteredAt = Date.now();
-          // При возврате в WebApp — проверить, что текущий слайд играет.
           ensurePlaying(currentIndex);
         }
       });
@@ -1627,18 +1661,20 @@
         loadLikesFromSupabase();
       });
 
-      (function eagerPreload(){
-        if (EARLY_START_PARAM) return;
-        var n = Math.min(3, slides.length);
-        for (var i = 0; i < n; i++) {
-          if (!getVideo(i)) rebuildVideoFor(i, false);
-        }
-      })();
+      // Обычная загрузка (без deep link) — преload первых 3 слайдов.
+      if (TARGET_IDX === -1) {
+        (function eagerPreload(){
+          var n = Math.min(3, slides.length);
+          for (var i = 0; i < n; i++) {
+            if (!getVideo(i)) rebuildVideoFor(i, false);
+          }
+        })();
+      }
 
       layoutReels();
       feed.classList.add('visible');
 
-      if (!EARLY_START_PARAM) {
+      if (TARGET_IDX === -1) {
         feed.style.scrollSnapType = 'none';
         feed.scrollTop = 0;
         feed.scrollTo(0, 0);
@@ -1651,12 +1687,13 @@
         });
       }
 
-      // Прыжок несколько раз, чтобы поймать момент, когда initDataUnsafe.start_param появится позже.
-      if (!openByHash()) {
-        setTimeout(openByHash, 200);
-        setTimeout(openByHash, 600);
-        setTimeout(openByHash, 1200);
-        setTimeout(openByHash, 2500);
+      // Прыжок на целевой слайд — один раз сразу, дальше с редкой подстраховкой.
+      if (TARGET_IDX !== -1) {
+        openByHash();
+        setTimeout(openByHash, 400);
+        setTimeout(openByHash, 1500);
+      } else {
+        openByHash();
       }
       window.addEventListener('hashchange', openByHash);
 

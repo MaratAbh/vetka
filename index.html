@@ -409,7 +409,7 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="live" data-weight="1.1"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
+        <div class="live" data-weight="1.1"><span class="dot"></span><span data-viewers>—</span> смотрят прямо сейчас</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -790,7 +790,6 @@
 
       var EARLY_START_PARAM = getStartParam();
 
-      // Telegram WebApp — готовность и разворот.
       try {
         if (window.Telegram && window.Telegram.WebApp) {
           window.Telegram.WebApp.ready();
@@ -839,6 +838,7 @@
         return container ? container.querySelector('video') : null;
       }
 
+      // Создание видео с максимально «автоплей-дружелюбными» атрибутами.
       function rebuildVideoFor(idx, autoplay){
         if (idx < 0 || idx >= slides.length) return null;
         var url = videoUrls[idx];
@@ -855,14 +855,21 @@
         }
 
         var v = document.createElement('video');
+        // ВАЖНО: атрибуты ставим ДО src — иначе iOS WKWebView может отклонить autoplay.
         v.setAttribute('playsinline', '');
         v.setAttribute('webkit-playsinline', '');
         v.setAttribute('loop', '');
+        v.setAttribute('muted', '');
+        v.setAttribute('autoplay', '');
         v.setAttribute('preload', 'auto');
         v.muted = true;
+        v.defaultMuted = true;
+
         v.src = url;
         v.dataset.src = url;
         container.appendChild(v);
+
+        try { v.load(); } catch(e){}
 
         if (autoplay) {
           var p = v.play();
@@ -906,6 +913,7 @@
         }
         if (cur) {
           cur.muted = true;
+          try { cur.setAttribute('muted', ''); } catch(e){}
           try { cur.currentTime = 0; } catch(e){}
           var p = cur.play();
           var unmute = function(){
@@ -927,7 +935,36 @@
         }
       }
 
-      // Преload целевого слайда сразу при старте — до любых скроллов.
+      // ===== ГЛАВНОЕ: гарантированный запуск видео целевого слайда =====
+      var playKeeper = null;
+      function ensurePlaying(idx){
+        if (playKeeper) { clearInterval(playKeeper); playKeeper = null; }
+        var attempts = 0;
+        var maxAttempts = 60; // ~9 секунд с шагом 150мс
+        playKeeper = setInterval(function(){
+          attempts++;
+          var v = getVideo(idx);
+          if (v) {
+            try { v.muted = true; v.setAttribute('muted', ''); } catch(e){}
+            try { v.setAttribute('playsinline', ''); } catch(e){}
+            try { v.setAttribute('webkit-playsinline', ''); } catch(e){}
+            if (v.paused) {
+              var p = v.play();
+              if (p && p.catch) p.catch(function(){});
+            }
+            if (!v.paused && v.currentTime > 0.05) {
+              clearInterval(playKeeper);
+              playKeeper = null;
+              return;
+            }
+          }
+          if (attempts >= maxAttempts) {
+            clearInterval(playKeeper);
+            playKeeper = null;
+          }
+        }, 150);
+      }
+
       if (EARLY_START_PARAM) {
         var earlyIdx = -1;
         for (var ei = 0; ei < slides.length; ei++) {
@@ -935,7 +972,6 @@
         }
         if (earlyIdx !== -1) {
           if (!getVideo(earlyIdx)) rebuildVideoFor(earlyIdx, false);
-          // соседние слайды тоже подтянем
           if (earlyIdx + 1 < slides.length && !getVideo(earlyIdx + 1)) rebuildVideoFor(earlyIdx + 1, false);
           if (earlyIdx - 1 >= 0 && !getVideo(earlyIdx - 1)) rebuildVideoFor(earlyIdx - 1, false);
         }
@@ -1036,7 +1072,7 @@
               onboarding.parentNode.removeChild(onboarding);
             }
             onboarding = null;
-          }, 400);
+          }, 300);
         }
       }
 
@@ -1364,50 +1400,32 @@
         });
       });
 
-      // Усиленный прыжок к нужному слайду с повторами play().
+      // ====== Прямой прыжок на слайд + гарантированный play ======
       function jumpToSlide(targetId){
         var target = document.getElementById(targetId);
         if (!target) return false;
         var idx = slides.indexOf(target);
         if (idx === -1) return false;
 
-        try { target.scrollIntoView({behavior: 'auto', block: 'start'}); } catch(e){
-          target.scrollIntoView();
-        }
+        var vh = window.innerHeight;
+        // Отключаем snap на момент прыжка, чтобы iOS не «дотянул» до другого слайда.
+        feed.style.scrollSnapType = 'none';
+
+        // Прямая установка скролла — синхронная и надёжная.
+        feed.scrollTop = idx * vh;
+        try { feed.scrollTo(0, idx * vh); } catch(e){}
 
         currentIndex = idx;
         slideEnteredAt = Date.now();
-        setActiveSlide(idx);
 
-        // Форсируем play() с повторами — лечит случай, когда iOS отклоняет первый play().
-        var tries = 0;
-        (function attempt(){
-          tries++;
-          var v = getVideo(idx);
-          if (!v) {
-            if (tries < 10) setTimeout(attempt, 150);
-            return;
-          }
-          try { v.muted = true; } catch(e){}
-          if (v.readyState >= 2) {
-            var p = v.play();
-            if (p && p.catch) p.catch(function(){});
-            // Ещё раз страхуемся через 400мс
-            setTimeout(function(){
-              var vv = getVideo(idx);
-              if (vv && vv.paused) {
-                var pp = vv.play();
-                if (pp && pp.catch) pp.catch(function(){});
-              }
-            }, 400);
-          } else {
-            v.addEventListener('canplay', function(){
-              var p = v.play();
-              if (p && p.catch) p.catch(function(){});
-            }, {once:true});
-            if (tries < 10) setTimeout(attempt, 200);
-          }
-        })();
+        if (!getVideo(idx)) rebuildVideoFor(idx, false);
+        setActiveSlide(idx);
+        ensurePlaying(idx);
+
+        // Возвращаем snap, когда скролл устоялся.
+        setTimeout(function(){
+          feed.style.scrollSnapType = '';
+        }, 350);
 
         return true;
       }
@@ -1436,6 +1454,7 @@
         profile.classList.remove('open');
         slideEnteredAt = Date.now();
         setActiveSlide(currentIndex);
+        ensurePlaying(currentIndex);
       }
       openBtns.forEach(function(btn){
         btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); });
@@ -1555,8 +1574,17 @@
       }
 
       document.addEventListener('visibilitychange', function(){
-        if (document.hidden) { flushDwell(currentIndex); flushEvents(); }
-        else { slideEnteredAt = Date.now(); }
+        if (document.hidden) {
+          flushDwell(currentIndex);
+          flushEvents();
+        } else {
+          slideEnteredAt = Date.now();
+          // При возврате в WebApp — проверить, что текущий слайд играет.
+          ensurePlaying(currentIndex);
+        }
+      });
+      window.addEventListener('pageshow', function(){
+        ensurePlaying(currentIndex);
       });
       window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
 
@@ -1600,7 +1628,7 @@
       });
 
       (function eagerPreload(){
-        if (EARLY_START_PARAM) return; // целевой слайд уже преload'ится выше
+        if (EARLY_START_PARAM) return;
         var n = Math.min(3, slides.length);
         for (var i = 0; i < n; i++) {
           if (!getVideo(i)) rebuildVideoFor(i, false);
@@ -1610,7 +1638,6 @@
       layoutReels();
       feed.classList.add('visible');
 
-      // Если пришли по deep link — НЕ сбрасываем скролл на первый слайд, иначе погасим преload.
       if (!EARLY_START_PARAM) {
         feed.style.scrollSnapType = 'none';
         feed.scrollTop = 0;
@@ -1622,16 +1649,15 @@
             feed.style.scrollSnapType = '';
           }, 100);
         });
-      } else {
-        feed.style.scrollSnapType = 'none';
-        setTimeout(function(){ feed.style.scrollSnapType = ''; }, 350);
       }
 
-      // Прыжок к целевому слайду. Первый — уже сразу, дальше — с подстраховкой.
-      openByHash();
-      setTimeout(openByHash, 400);
-      setTimeout(openByHash, 900);
-      setTimeout(openByHash, 1800);
+      // Прыжок несколько раз, чтобы поймать момент, когда initDataUnsafe.start_param появится позже.
+      if (!openByHash()) {
+        setTimeout(openByHash, 200);
+        setTimeout(openByHash, 600);
+        setTimeout(openByHash, 1200);
+        setTimeout(openByHash, 2500);
+      }
       window.addEventListener('hashchange', openByHash);
 
       var slideIO = new IntersectionObserver(function(entries){

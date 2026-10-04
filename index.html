@@ -759,50 +759,11 @@
 
   <script>
     (function(){
-      // ====== TELEGRAM MINI APP ======
-      var TG_BOT_USERNAME = 'vetkaevent_bot';
-
-      function buildTgDeepLink(payload){
-        return 'https://t.me/' + TG_BOT_USERNAME + '?startapp=' + encodeURIComponent(payload);
-      }
-
-      // start_param читаем сразу из URL-hash (мгновенно, до инициализации SDK),
-      // с фоллбэком на Telegram.WebApp.initDataUnsafe.start_param.
-      function readStartParamFromUrl(){
-        try {
-          var h = location.hash || '';
-          var m = h.match(/tgWebAppStartParam=([^&]+)/);
-          if (m && m[1]) return decodeURIComponent(m[1]);
-        } catch(e){}
-        return null;
-      }
-      function readStartParamFromSdk(){
-        try {
-          var tg = window.Telegram && window.Telegram.WebApp;
-          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) return tg.initDataUnsafe.start_param;
-        } catch(e){}
-        return null;
-      }
-      function getStartParam(){
-        return readStartParamFromUrl() || readStartParamFromSdk();
-      }
-
-      var EARLY_START_PARAM = getStartParam();
-
-      try {
-        if (window.Telegram && window.Telegram.WebApp) {
-          window.Telegram.WebApp.ready();
-          try { window.Telegram.WebApp.expand(); } catch(e){}
-        }
-      } catch(e){}
+      // Ссылка на Mini App. Открывает приложение, без deep link на конкретный рилс.
+      var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
 
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
-
-      // Если пришли по deep link — сразу прячем онбординг.
-      if (onboarding && EARLY_START_PARAM) {
-        onboarding.classList.add('gone');
-      }
 
       function layoutReels(){
         var vh = window.innerHeight;
@@ -1317,8 +1278,8 @@
           var id = slide ? slide.dataset.id : '';
           trackEvent('invite', { slide_id: id });
 
-          // Ссылка ведёт в Telegram Mini App с payload = id слайда.
-          var url = buildTgDeepLink(id);
+          // Просто ссылка на Mini App, без привязки к конкретному рилсу.
+          var url = TG_MINIAPP_URL;
 
           if (window.Telegram && window.Telegram.WebApp) {
             try {
@@ -1341,26 +1302,13 @@
       });
 
       function openByHash(){
-        // Приоритет — start_param из Telegram deep link.
-        var sp = getStartParam();
-        var hash = (location.hash || '').replace('#', '');
-        var targetId = sp || hash;
-        if (!targetId) return false;
-        // Игнорируем служебные tgWebApp* токены.
-        if (targetId.indexOf('tgWebApp') === 0 || targetId.indexOf('=') !== -1) return false;
-
-        var target = document.getElementById(targetId);
+        var hash = location.hash.replace('#', '');
+        if (!hash) return false;
+        var target = document.getElementById(hash);
         if (!target) return false;
-
         setTimeout(function(){
           try { target.scrollIntoView({behavior: 'auto', block: 'start'}); } catch(e){
             target.scrollIntoView();
-          }
-          var idx = slides.indexOf(target);
-          if (idx !== -1) {
-            currentIndex = idx;
-            slideEnteredAt = Date.now();
-            setActiveSlide(idx);
           }
         }, 80);
         return true;
@@ -1544,48 +1492,28 @@
         loadLikesFromSupabase();
       });
 
-      // Преload первых 3 слайдов идёт только когда НЕ пришли по deep link
-      // (иначе целевой слайд конкурирует за канал с соседями).
-      if (!EARLY_START_PARAM) {
-        (function eagerPreload(){
-          var n = Math.min(3, slides.length);
-          for (var i = 0; i < n; i++) {
-            if (!getVideo(i)) rebuildVideoFor(i, false);
-          }
-        })();
-      } else {
-        // Преload целевого слайда + двух соседей для мгновенного старта.
-        var tidx = -1;
-        for (var ei = 0; ei < slides.length; ei++) {
-          if (slides[ei].dataset.id === EARLY_START_PARAM) { tidx = ei; break; }
+      // Пока крутится онбординг — уже начинаем качать первые 3 ролика ленты.
+      (function eagerPreload(){
+        var n = Math.min(3, slides.length);
+        for (var i = 0; i < n; i++) {
+          if (!getVideo(i)) rebuildVideoFor(i, false);
         }
-        if (tidx !== -1) {
-          if (!getVideo(tidx)) rebuildVideoFor(tidx, false);
-        }
-      }
+      })();
 
       layoutReels();
       feed.classList.add('visible');
-
-      // Если не deep link — обычный сброс скролла на r1.
-      if (!EARLY_START_PARAM) {
-        feed.style.scrollSnapType = 'none';
-        feed.scrollTop = 0;
-        feed.scrollTo(0, 0);
-        requestAnimationFrame(function(){
+      feed.style.scrollSnapType = 'none';
+      feed.scrollTop = 0;
+      feed.scrollTo(0, 0);
+      requestAnimationFrame(function(){
+        feed.scrollTop = 0; feed.scrollTo(0, 0);
+        setTimeout(function(){
           feed.scrollTop = 0; feed.scrollTo(0, 0);
-          setTimeout(function(){
-            feed.scrollTop = 0; feed.scrollTo(0, 0);
-            feed.style.scrollSnapType = '';
-          }, 100);
-        });
-      }
+          feed.style.scrollSnapType = '';
+        }, 100);
+      });
 
-      // Прыжок на целевой слайд. Повторные попытки — на случай поздней инициализации SDK.
       openByHash();
-      setTimeout(openByHash, 300);
-      setTimeout(openByHash, 800);
-      setTimeout(openByHash, 1600);
       window.addEventListener('hashchange', openByHash);
 
       var slideIO = new IntersectionObserver(function(entries){

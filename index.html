@@ -328,10 +328,10 @@
       </a>
       <div class="bottom">
         <div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
-        <button class="org-badge" data-open-profile>
+        <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </button>
+        </div>
       </div>
     </div>
 
@@ -369,10 +369,10 @@
       </a>
       <div class="bottom">
         <div class="live" data-weight="0.8"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
-        <button class="org-badge" data-open-profile>
+        <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </button>
+        </div>
       </div>
     </div>
 
@@ -410,10 +410,10 @@
       </a>
       <div class="bottom">
         <div class="live" data-weight="1.1"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
-        <button class="org-badge" data-open-profile>
+        <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </button>
+        </div>
       </div>
     </div>
 
@@ -447,10 +447,10 @@
       <div class="bottom">
         <div class="live" data-weight="1.4"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
         <div class="title">Ladies Night</div>
-        <button class="org-badge" data-open-profile>
+        <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </button>
+        </div>
         <div class="meta">
           <span class="item">Сб, 3 октября · 23:30</span><i></i>
           <span class="item price">от 500 ₽</span>
@@ -498,10 +498,10 @@
       </a>
       <div class="bottom">
         <div class="live" data-weight="0.75"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
-        <button class="org-badge" data-open-profile>
+        <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </button>
+        </div>
       </div>
     </div>
 
@@ -539,10 +539,10 @@
       </a>
       <div class="bottom">
         <div class="live" data-weight="1.15"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
-        <button class="org-badge" data-open-profile>
+        <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </button>
+        </div>
       </div>
     </div>
 
@@ -580,10 +580,10 @@
       </a>
       <div class="bottom">
         <div class="live" data-weight="0.85"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
-        <button class="org-badge" data-open-profile>
+        <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </button>
+        </div>
       </div>
     </div>
 
@@ -621,10 +621,10 @@
       </a>
       <div class="bottom">
         <div class="live" data-weight="0.9"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
-        <button class="org-badge" data-open-profile>
+        <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </button>
+        </div>
       </div>
     </div>
 
@@ -762,7 +762,6 @@
       // ====== TELEGRAM MINI APP ======
       var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
 
-      // Полный профиль пользователя из URL-хэша — доступен до загрузки SDK.
       function readTgUserFromHash(){
         try {
           var h = location.hash || '';
@@ -788,7 +787,6 @@
       var EARLY_TG_USER = readTgUserFromHash();
       var EARLY_TG_ID   = EARLY_TG_USER ? String(EARLY_TG_USER.id) : null;
 
-      // Фоллбэк на SDK, если hash не успел прийти.
       function readTgUser(){
         if (EARLY_TG_USER) return EARLY_TG_USER;
         try {
@@ -881,7 +879,6 @@
         try { container.removeChild(v); } catch(e){}
       }
 
-      // Watchdog: если активное видео не стартует за 5 сек — пересоздаём с cache-bust.
       var watchdogTimer = null;
       function armWatchdog(idx){
         if (watchdogTimer) { clearTimeout(watchdogTimer); watchdogTimer = null; }
@@ -1023,7 +1020,6 @@
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
 
-        // Онбординг грузим батчами по 3 видео.
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
         var onbIdx = 0;
         var ONB_BATCH = 3;
@@ -1446,7 +1442,6 @@
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
 
-      // Ключ localStorage привязан к tg_id — у каждого аккаунта своя сессия Supabase.
       var STORAGE_KEY = EARLY_TG_ID
         ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID
         : 'sb-rlkjsjgktyltvxnfyski-auth-token';
@@ -1560,7 +1555,6 @@
           var tgId = tgUser ? String(tgUser.id) : null;
           var anonId = getAnonId();
 
-          // Поля профиля Telegram для сохранения в таблицу users.
           var profileFields = {};
           if (tgUser) {
             profileFields.first_name  = tgUser.first_name  || null;
@@ -1582,7 +1576,6 @@
             if (tgId && !existing.tg_id) updates.tg_id = tgId;
             if (anonId && !existing.anon_id) updates.anon_id = anonId;
 
-            // Профильные поля — всегда перезаписываем актуальными из Telegram.
             if (profileFields.first_name  !== undefined) updates.first_name  = profileFields.first_name;
             if (profileFields.last_name   !== undefined) updates.last_name   = profileFields.last_name;
             if (profileFields.username    !== undefined) updates.username    = profileFields.username;

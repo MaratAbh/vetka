@@ -82,6 +82,43 @@
   @keyframes onbHint{0%{transform:translateY(-10px) scaleY(.3);opacity:0;}45%{opacity:1;}100%{transform:translateY(10px) scaleY(1);opacity:0;}}
   @keyframes onbFade{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 
+  .lang-switch{
+    position:absolute;
+    top:calc(20px + env(safe-area-inset-top,0px));
+    right:16px;
+    z-index:10;
+    display:flex;
+    gap:2px;
+    padding:4px;
+    border-radius:100px;
+    background:rgba(0,0,0,.5);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    pointer-events:auto;
+    opacity:0;
+    animation:onbFade .9s .5s ease forwards;
+  }
+  .lang-switch button{
+    background:transparent;
+    border:0;
+    color:rgba(255,255,255,.6);
+    font-family:'Inter',sans-serif;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.08em;
+    padding:6px 11px;
+    border-radius:100px;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease, transform .12s ease;
+  }
+  .lang-switch button.active{
+    background:#CDFF4A;
+    color:#07070a;
+  }
+  .lang-switch button:active{
+    transform:scale(.94);
+  }
+
   .feed{position:fixed;inset:0;height:100vh;height:100dvh;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;z-index:1;opacity:0;pointer-events:none;transition:opacity .25s ease;}
   .feed.visible{opacity:1;pointer-events:auto;}
   .feed::-webkit-scrollbar{display:none;}
@@ -275,6 +312,12 @@
 
     <div class="onb-veil"></div>
 
+    <div class="lang-switch">
+      <button type="button" data-lang="ru">RU</button>
+      <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="es">ES</button>
+    </div>
+
     <div class="onb-content">
       <div class="onb-mark">
         <svg viewBox="0 0 40 40" fill="none">
@@ -287,8 +330,8 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag">Поток событий, мест и гостей — <em>под твой вайб</em></div>
-      <div class="onb-hint"><i></i>Листай вверх</div>
+      <div class="onb-tag" data-i18n="onboard_tag">Поток событий, мест и гостей — <em>под твой вайб</em></div>
+      <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
 
@@ -308,7 +351,7 @@
         <button class="metric" data-like data-base="52">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div class="num" data-count>52</div>
-          <div class="lbl">хочу пойти</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
         </button>
         <button class="metric invite" data-share>
           <div class="ico">
@@ -318,7 +361,7 @@
               <path d="M19 8v6"/><path d="M22 11h-6"/>
             </svg>
           </div>
-          <div class="lbl">пригласить</div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
         </button>
       </div>
       <a class="ticket-btn" data-cta href="https://qtickets.ru/event/260719" target="_blank" aria-label="Купить билет">
@@ -327,7 +370,7 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
+        <div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
         <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -349,7 +392,7 @@
         <button class="metric" data-like data-base="43">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div class="num" data-count>43</div>
-          <div class="lbl">хочу пойти</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
         </button>
         <button class="metric invite" data-share>
           <div class="ico">
@@ -359,7 +402,7 @@
               <path d="M19 8v6"/><path d="M22 11h-6"/>
             </svg>
           </div>
-          <div class="lbl">пригласить</div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
         </button>
       </div>
       <a class="ticket-btn" data-cta href="https://qtickets.ru/event/260719" target="_blank" aria-label="Купить билет">
@@ -368,7 +411,7 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="live" data-weight="0.8"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
+        <div class="live" data-weight="0.8"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
         <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -390,7 +433,7 @@
         <button class="metric" data-like data-base="28">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div class="num" data-count>28</div>
-          <div class="lbl">хочу пойти</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
         </button>
         <button class="metric invite" data-share>
           <div class="ico">
@@ -400,7 +443,7 @@
               <path d="M19 8v6"/><path d="M22 11h-6"/>
             </svg>
           </div>
-          <div class="lbl">пригласить</div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
         </button>
       </div>
       <a class="ticket-btn" data-cta href="https://qtickets.ru/event/260719" target="_blank" aria-label="Купить билет">
@@ -409,7 +452,7 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="live" data-weight="1.1"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
+        <div class="live" data-weight="1.1"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
         <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -431,7 +474,7 @@
         <button class="metric" data-like data-base="72">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div class="num" data-count>72</div>
-          <div class="lbl">хочу пойти</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
         </button>
         <button class="metric invite" data-share>
           <div class="ico">
@@ -441,11 +484,11 @@
               <path d="M19 8v6"/><path d="M22 11h-6"/>
             </svg>
           </div>
-          <div class="lbl">пригласить</div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
         </button>
       </div>
       <div class="bottom">
-        <div class="live" data-weight="1.4"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
+        <div class="live" data-weight="1.4"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
         <div class="title">Ladies Night</div>
         <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
@@ -458,7 +501,7 @@
         <div class="actions-row">
           <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            Купить билет
+            <span data-i18n="buy_ticket">Купить билет</span>
           </a>
         </div>
       </div>
@@ -478,7 +521,7 @@
         <button class="metric" data-like data-base="64">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div class="num" data-count>64</div>
-          <div class="lbl">хочу пойти</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
         </button>
         <button class="metric invite" data-share>
           <div class="ico">
@@ -488,7 +531,7 @@
               <path d="M19 8v6"/><path d="M22 11h-6"/>
             </svg>
           </div>
-          <div class="lbl">пригласить</div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
         </button>
       </div>
       <a class="ticket-btn" data-cta href="https://qtickets.ru/event/260719" target="_blank" aria-label="Купить билет">
@@ -497,7 +540,7 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="live" data-weight="0.75"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
+        <div class="live" data-weight="0.75"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
         <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -519,7 +562,7 @@
         <button class="metric" data-like data-base="19">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div class="num" data-count>19</div>
-          <div class="lbl">хочу пойти</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
         </button>
         <button class="metric invite" data-share>
           <div class="ico">
@@ -529,7 +572,7 @@
               <path d="M19 8v6"/><path d="M22 11h-6"/>
             </svg>
           </div>
-          <div class="lbl">пригласить</div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
         </button>
       </div>
       <a class="ticket-btn" data-cta href="https://qtickets.ru/event/260719" target="_blank" aria-label="Купить билет">
@@ -538,7 +581,7 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="live" data-weight="1.15"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
+        <div class="live" data-weight="1.15"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
         <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -560,7 +603,7 @@
         <button class="metric" data-like data-base="12">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div class="num" data-count>12</div>
-          <div class="lbl">хочу пойти</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
         </button>
         <button class="metric invite" data-share>
           <div class="ico">
@@ -570,7 +613,7 @@
               <path d="M19 8v6"/><path d="M22 11h-6"/>
             </svg>
           </div>
-          <div class="lbl">пригласить</div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
         </button>
       </div>
       <a class="ticket-btn" data-cta href="https://qtickets.ru/event/260719" target="_blank" aria-label="Купить билет">
@@ -579,7 +622,7 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="live" data-weight="0.85"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
+        <div class="live" data-weight="0.85"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
         <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -601,7 +644,7 @@
         <button class="metric" data-like data-base="29">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
           <div class="num" data-count>29</div>
-          <div class="lbl">хочу пойти</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
         </button>
         <button class="metric invite" data-share>
           <div class="ico">
@@ -611,7 +654,7 @@
               <path d="M19 8v6"/><path d="M22 11h-6"/>
             </svg>
           </div>
-          <div class="lbl">пригласить</div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
         </button>
       </div>
       <a class="ticket-btn" data-cta href="https://qtickets.ru/event/260719" target="_blank" aria-label="Купить билет">
@@ -620,7 +663,7 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="live" data-weight="0.9"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
+        <div class="live" data-weight="0.9"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
         <div class="org-badge">
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -759,6 +802,58 @@
 
   <script>
     (function(){
+      // ====== i18n (RU / EN / ES) ======
+      var I18N = {
+        ru: {
+          onboard_tag:  'Поток событий, мест и гостей — <em>под твой вайб</em>',
+          onboard_hint: 'Листай вверх',
+          want_go:      'хочу пойти',
+          invite:       'пригласить',
+          watching:     'смотрят прямо сейчас',
+          buy_ticket:   'Купить билет'
+        },
+        en: {
+          onboard_tag:  'A stream of events, places and people — <em>on your vibe</em>',
+          onboard_hint: 'Swipe up',
+          want_go:      'want to go',
+          invite:       'invite',
+          watching:     'watching now',
+          buy_ticket:   'Buy ticket'
+        },
+        es: {
+          onboard_tag:  'Un flujo de eventos, lugares y personas — <em>a tu rollo</em>',
+          onboard_hint: 'Desliza hacia arriba',
+          want_go:      'quiero ir',
+          invite:       'invitar',
+          watching:     'viendo ahora',
+          buy_ticket:   'Comprar entrada'
+        }
+      };
+
+      var currentLang = 'ru';
+      try { currentLang = localStorage.getItem('vetka_lang') || 'ru'; } catch(e){}
+      if (!I18N[currentLang]) currentLang = 'ru';
+
+      function applyLang(lang){
+        if (!I18N[lang]) lang = 'ru';
+        currentLang = lang;
+        try { localStorage.setItem('vetka_lang', lang); } catch(e){}
+        var t = I18N[lang];
+
+        var nodes = document.querySelectorAll('[data-i18n]');
+        for (var i = 0; i < nodes.length; i++) {
+          var key = nodes[i].getAttribute('data-i18n');
+          if (t[key] != null) nodes[i].innerHTML = t[key];
+        }
+
+        var btns = document.querySelectorAll('[data-lang]');
+        for (var j = 0; j < btns.length; j++) {
+          var b = btns[j];
+          if (b.getAttribute('data-lang') === lang) b.classList.add('active');
+          else b.classList.remove('active');
+        }
+      }
+
       // ====== TELEGRAM MINI APP ======
       var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
 
@@ -879,6 +974,41 @@
         try { container.removeChild(v); } catch(e){}
       }
 
+      function reviveVideo(idx, autoplayAfter){
+        if (idx < 0 || idx >= slides.length) return null;
+        var baseUrl = videoUrls[idx];
+        if (!baseUrl) return null;
+        var container = slides[idx].querySelector('.video');
+        if (!container) return null;
+
+        var old = container.querySelector('video');
+        if (old) {
+          try { old.muted = true; } catch(e){}
+          try { old.pause(); } catch(e){}
+          try { old.removeAttribute('src'); old.load(); } catch(e){}
+          try { container.removeChild(old); } catch(e){}
+        }
+
+        var busted = baseUrl + (baseUrl.indexOf('?') === -1 ? '?' : '&') + '_r=' + Date.now();
+        var v = document.createElement('video');
+        v.setAttribute('playsinline', '');
+        v.setAttribute('webkit-playsinline', '');
+        v.setAttribute('loop', '');
+        v.setAttribute('preload', 'auto');
+        v.muted = true;
+        v.src = busted;
+        v.dataset.src = baseUrl;
+        container.appendChild(v);
+        try { v.load(); } catch(e){}
+
+        if (autoplayAfter) {
+          try { v.currentTime = 0; } catch(e){}
+          var p = v.play();
+          if (p && p.catch) p.catch(function(){});
+        }
+        return v;
+      }
+
       var watchdogTimer = null;
       function armWatchdog(idx){
         if (watchdogTimer) { clearTimeout(watchdogTimer); watchdogTimer = null; }
@@ -890,29 +1020,7 @@
           if (!v.paused && v.currentTime > 0.1) return;
           if (v.networkState === 2) { armWatchdog(idx); return; }
 
-          var baseUrl = videoUrls[idx];
-          if (!baseUrl) return;
-          var busted = baseUrl + (baseUrl.indexOf('?') === -1 ? '?' : '&') + '_r=' + Date.now();
-          var container = slides[idx].querySelector('.video');
-          if (!container) return;
-          var old = container.querySelector('video');
-          if (old) {
-            try { old.pause(); } catch(e){}
-            try { old.removeAttribute('src'); old.load(); } catch(e){}
-            try { container.removeChild(old); } catch(e){}
-          }
-          var nv = document.createElement('video');
-          nv.setAttribute('playsinline','');
-          nv.setAttribute('webkit-playsinline','');
-          nv.setAttribute('loop','');
-          nv.setAttribute('preload','auto');
-          nv.muted = true;
-          nv.src = busted;
-          nv.dataset.src = baseUrl;
-          container.appendChild(nv);
-          try { nv.load(); } catch(e){}
-          var p = nv.play();
-          if (p && p.catch) p.catch(function(){});
+          reviveVideo(idx, true);
         }, 5000);
       }
 
@@ -936,6 +1044,8 @@
         if (!cur) {
           rebuildVideoFor(idx, false);
           cur = getVideo(idx);
+        } else if (cur.readyState < 2 && cur.networkState !== 2) {
+          cur = reviveVideo(idx, false);
         }
         if (cur) {
           cur.muted = true;
@@ -1062,7 +1172,21 @@
         };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
         onboarding.addEventListener('click', kickAll, {once:true});
+
+        var langBtns = document.querySelectorAll('[data-lang]');
+        for (var li = 0; li < langBtns.length; li++) {
+          (function(b){
+            b.addEventListener('click', function(e){
+              e.stopPropagation();
+              applyLang(b.getAttribute('data-lang'));
+            });
+            b.addEventListener('touchstart', function(e){ e.stopPropagation(); }, {passive:true});
+            b.addEventListener('touchend', function(e){ e.stopPropagation(); });
+          })(langBtns[li]);
+        }
       }
+
+      applyLang(currentLang);
 
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
       var soundEnabled = false;
@@ -1612,6 +1736,23 @@
         setTimeout(function(){ trackUser('visit'); }, 15000);
         loadLikesFromSupabase();
       });
+
+      // Фоновый sweep: раз в 6 сек оживляем залипшие видео в окне прелоада.
+      (function startSweep(){
+        setInterval(function(){
+          if (document.hidden) return;
+          var lo = Math.max(0, currentIndex - WINDOW_BACK);
+          var hi = Math.min(slides.length - 1, currentIndex + WINDOW_FWD);
+          for (var i = lo; i <= hi; i++) {
+            var v = getVideo(i);
+            if (!v) continue;
+            if (!v.paused && v.currentTime > 0.1) continue;
+            if (v.networkState === 2) continue;
+            if (v.readyState >= 2) continue;
+            reviveVideo(i, i === currentIndex);
+          }
+        }, 6000);
+      })();
 
       (function eagerPreload(){
         var n = Math.min(3, slides.length);

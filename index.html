@@ -256,20 +256,20 @@
   <div class="onboarding" id="onboarding">
     <div class="onb-bg">
       <div class="onb-col onb-col-up">
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline autoplay preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline preload="none"></video></div>
       </div>
       <div class="onb-col onb-col-down">
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline autoplay preload="auto"></video></div>
-        <div class="tile"><video src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline autoplay preload="auto"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
       </div>
     </div>
 
@@ -620,7 +620,7 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="live" data-weight="0.9"><span class="dot"></span><span data-viewers>—</span> смотрят прямо сейчас</div>
+        <div class="live" data-weight="0.9"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -763,8 +763,6 @@
       var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
 
       // Раннее чтение tg_id из URL-хэша — до инициализации SDK.
-      // Нужно, чтобы у каждого Telegram-аккаунта на одном устройстве был свой
-      // localStorage-ключ для Supabase и свой anon_id.
       function readTgIdFromHash(){
         try {
           var h = location.hash || '';
@@ -1006,32 +1004,47 @@
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
 
-        onboarding.querySelectorAll('video').forEach(function(v){
-          v.muted = true;
-          v.setAttribute('muted','');
-          v.setAttribute('playsinline','');
-          v.setAttribute('webkit-playsinline','');
-          v.setAttribute('autoplay','');
-          try { v.load(); } catch(e){}
+        // Онбординг грузим батчами по 3 видео: первая тройка стартует сразу,
+        // остальные подтягиваются фоном каждые 500мс, чтобы не забивать канал.
+        var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
+        var onbIdx = 0;
+        var ONB_BATCH = 3;
 
-          var kick = function(){
-            var p = v.play();
-            if (p && p.catch) p.catch(function(){});
-          };
-
-          if (v.readyState >= 2) kick();
-          else {
-            v.addEventListener('loadeddata', kick, {once:true});
-            v.addEventListener('canplay', kick, {once:true});
-            kick();
+        function loadOnbBatch(){
+          if (!onboarding) return;
+          var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
+          for (; onbIdx < end; onbIdx++) {
+            (function(v){
+              if (!v || v.dataset.started) return;
+              v.dataset.started = '1';
+              var url = v.dataset.src;
+              if (!url) return;
+              v.muted = true;
+              v.setAttribute('muted','');
+              v.setAttribute('playsinline','');
+              v.setAttribute('webkit-playsinline','');
+              v.setAttribute('autoplay','');
+              try { v.setAttribute('preload','auto'); } catch(e){}
+              v.src = url;
+              try { v.load(); } catch(e){}
+              var p = v.play();
+              if (p && p.catch) p.catch(function(){});
+            })(onbVids[onbIdx]);
           }
-        });
+          if (onbIdx < onbVids.length) {
+            setTimeout(loadOnbBatch, 500);
+          }
+        }
+        loadOnbBatch();
 
+        // Тап по онбордингу — добиваем плей у тех, что ещё не играют.
         var kickAll = function(){
           if (!onboarding) return;
           onboarding.querySelectorAll('video').forEach(function(v){
-            var p = v.play();
-            if (p && p.catch) p.catch(function(){});
+            if (v.paused) {
+              var p = v.play();
+              if (p && p.catch) p.catch(function(){});
+            }
           });
         };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
@@ -1416,7 +1429,6 @@
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
 
-      // Ключ localStorage привязан к tg_id — у каждого аккаунта своя сессия Supabase.
       var STORAGE_KEY = EARLY_TG_ID
         ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID
         : 'sb-rlkjsjgktyltvxnfyski-auth-token';

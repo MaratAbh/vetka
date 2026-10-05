@@ -620,7 +620,7 @@
         </svg>
       </a>
       <div class="bottom">
-        <div class="live" data-weight="0.9"><span class="dot"></span><span data-viewers>—</span>&nbsp;смотрят прямо сейчас</div>
+        <div class="live" data-weight="0.9"><span class="dot"></span><span data-viewers>—</span> смотрят прямо сейчас</div>
         <button class="org-badge" data-open-profile>
           <div class="org-avatar"><div class="inner">L</div></div>
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
@@ -759,8 +759,29 @@
 
   <script>
     (function(){
-      // Ссылка на Mini App. Открывает приложение, без deep link на конкретный рилс.
+      // ====== TELEGRAM MINI APP ======
       var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
+
+      // Раннее чтение tg_id из URL-хэша — до инициализации SDK.
+      // Нужно, чтобы у каждого Telegram-аккаунта на одном устройстве был свой
+      // localStorage-ключ для Supabase и свой anon_id.
+      function readTgIdFromHash(){
+        try {
+          var h = location.hash || '';
+          var m = h.match(/tgWebAppData=([^&]+)/);
+          if (m && m[1]) {
+            var data = decodeURIComponent(m[1]);
+            var params = new URLSearchParams(data);
+            var userJson = params.get('user');
+            if (userJson) {
+              var u = JSON.parse(userJson);
+              if (u && u.id) return String(u.id);
+            }
+          }
+        } catch(e){}
+        return null;
+      }
+      var EARLY_TG_ID = readTgIdFromHash();
 
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
@@ -843,6 +864,44 @@
         try { container.removeChild(v); } catch(e){}
       }
 
+      // Watchdog: если активное видео не стартует за 5 сек — пересоздаём с cache-bust.
+      var watchdogTimer = null;
+      function armWatchdog(idx){
+        if (watchdogTimer) { clearTimeout(watchdogTimer); watchdogTimer = null; }
+        watchdogTimer = setTimeout(function(){
+          watchdogTimer = null;
+          if (idx !== currentIndex) return;
+          var v = getVideo(idx);
+          if (!v) return;
+          if (!v.paused && v.currentTime > 0.1) return;
+          if (v.networkState === 2) { armWatchdog(idx); return; }
+
+          var baseUrl = videoUrls[idx];
+          if (!baseUrl) return;
+          var busted = baseUrl + (baseUrl.indexOf('?') === -1 ? '?' : '&') + '_r=' + Date.now();
+          var container = slides[idx].querySelector('.video');
+          if (!container) return;
+          var old = container.querySelector('video');
+          if (old) {
+            try { old.pause(); } catch(e){}
+            try { old.removeAttribute('src'); old.load(); } catch(e){}
+            try { container.removeChild(old); } catch(e){}
+          }
+          var nv = document.createElement('video');
+          nv.setAttribute('playsinline','');
+          nv.setAttribute('webkit-playsinline','');
+          nv.setAttribute('loop','');
+          nv.setAttribute('preload','auto');
+          nv.muted = true;
+          nv.src = busted;
+          nv.dataset.src = baseUrl;
+          container.appendChild(nv);
+          try { nv.load(); } catch(e){}
+          var p = nv.play();
+          if (p && p.catch) p.catch(function(){});
+        }, 5000);
+      }
+
       function setActiveSlide(idx){
         for (var i = 0; i < slides.length; i++) {
           var v0 = getVideo(i);
@@ -885,6 +944,8 @@
             rebuildVideoFor(ni, false);
           }
         }
+
+        armWatchdog(idx);
       }
 
       if (onboarding) {
@@ -1278,7 +1339,6 @@
           var id = slide ? slide.dataset.id : '';
           trackEvent('invite', { slide_id: id });
 
-          // Просто ссылка на Mini App, без привязки к конкретному рилсу.
           var url = TG_MINIAPP_URL;
 
           if (window.Telegram && window.Telegram.WebApp) {
@@ -1355,22 +1415,32 @@
 
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
-      var STORAGE_KEY = 'sb-rlkjsjgktyltvxnfyski-auth-token';
+
+      // Ключ localStorage привязан к tg_id — у каждого аккаунта своя сессия Supabase.
+      var STORAGE_KEY = EARLY_TG_ID
+        ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID
+        : 'sb-rlkjsjgktyltvxnfyski-auth-token';
+
       var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: { detectSessionInUrl: false, persistSession: true, autoRefreshToken: true, storageKey: STORAGE_KEY }
       });
 
       function readTgId(){
+        if (EARLY_TG_ID) return EARLY_TG_ID;
         try {
           var tg = window.Telegram && window.Telegram.WebApp;
-          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) return tg.initDataUnsafe.user.id;
+          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) return String(tg.initDataUnsafe.user.id);
         } catch(e){}
         return null;
       }
       function getAnonId(){
+        var key = EARLY_TG_ID ? 'vetka_anon_id_' + EARLY_TG_ID : 'vetka_anon_id';
         var id = null;
-        try { id = localStorage.getItem('vetka_anon_id'); } catch(e){}
-        if (!id) { id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now() + '-' + Math.random().toString(36).slice(2)); try { localStorage.setItem('vetka_anon_id', id); } catch(e){} }
+        try { id = localStorage.getItem(key); } catch(e){}
+        if (!id) {
+          id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+          try { localStorage.setItem(key, id); } catch(e){}
+        }
         return id;
       }
 
@@ -1492,7 +1562,6 @@
         loadLikesFromSupabase();
       });
 
-      // Пока крутится онбординг — уже начинаем качать первые 3 ролика ленты.
       (function eagerPreload(){
         var n = Math.min(3, slides.length);
         for (var i = 0; i < n; i++) {

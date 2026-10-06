@@ -807,7 +807,7 @@
           invite:       'пригласить',
           watching:     'смотрят прямо сейчас',
           buy_ticket:   'Купить билет',
-          notify_btn:   'Сообщить о новом',
+          notify_btn:   'Получить приглашение',
           notify_ok:    'Готово! Пришлём в боте 🔔',
           notify_already:'Уже подписан на уведомления',
           share_text:   'Пойдём вместе?'
@@ -819,7 +819,7 @@
           invite:       'invite',
           watching:     'watching now',
           buy_ticket:   'Buy ticket',
-          notify_btn:   'Notify me',
+          notify_btn:   'Get invitation',
           notify_ok:    'Done! We\'ll ping you in the bot 🔔',
           notify_already:'Already subscribed',
           share_text:   'Let\'s go together?'
@@ -831,7 +831,7 @@
           invite:       'invitar',
           watching:     'viendo ahora',
           buy_ticket:   'Comprar entrada',
-          notify_btn:   'Avisadme',
+          notify_btn:   'Obtener invitación',
           notify_ok:    '¡Listo! Te avisamos en el bot 🔔',
           notify_already:'Ya estás suscrito',
           share_text:   '¿Vamos juntos?'
@@ -936,10 +936,6 @@
           if (txt) {
             if (isArchive) txt.textContent = t('notify_btn');
             else if (s.cta_text) txt.textContent = s.cta_text;
-          }
-          var svg = btn.querySelector('svg');
-          if (svg && isArchive) {
-            svg.innerHTML = '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>';
           }
           if (isArchive) {
             btn.removeAttribute('href');

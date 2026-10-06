@@ -111,13 +111,8 @@
     cursor:pointer;
     transition:background .2s ease, color .2s ease, transform .12s ease;
   }
-  .lang-switch button.active{
-    background:#CDFF4A;
-    color:#07070a;
-  }
-  .lang-switch button:active{
-    transform:scale(.94);
-  }
+  .lang-switch button.active{ background:#CDFF4A; color:#07070a; }
+  .lang-switch button:active{ transform:scale(.94); }
 
   .feed{position:fixed;inset:0;height:100vh;height:100dvh;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;z-index:1;opacity:0;pointer-events:none;transition:opacity .25s ease;}
   .feed.visible{opacity:1;pointer-events:auto;}
@@ -220,6 +215,34 @@
   .cta{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 0 24px rgba(205,255,74,.35);white-space:nowrap;flex:1;}
   .cta svg{width:14px;height:14px;flex:none;}
 
+  /* Баннер сверху ленты */
+  .banner{
+    position:fixed;
+    top:calc(12px + env(safe-area-inset-top,0px));
+    left:50%;transform:translateX(-50%);
+    z-index:30;
+    max-width:calc(100% - 32px);
+    padding:9px 16px;
+    border-radius:100px;
+    background:linear-gradient(90deg, rgba(205,255,74,.95) 0%, rgba(168,217,46,.95) 100%);
+    color:#07070a;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:.01em;
+    box-shadow:0 4px 20px rgba(205,255,74,.35);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    display:none;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    animation:bannerIn .35s ease;
+  }
+  .banner.on{ display:block; }
+  @keyframes bannerIn{
+    from{opacity:0; transform:translateX(-50%) translateY(-10px);}
+    to{opacity:1; transform:translateX(-50%) translateY(0);}
+  }
+
   .toast{
     position:fixed;left:50%;
     bottom:calc(100px + env(safe-area-inset-bottom,0px));
@@ -234,6 +257,7 @@
     transition:opacity .3s ease, transform .3s ease;
     box-shadow:0 0 24px rgba(205,255,74,.2);
     display:flex;align-items:center;gap:8px;
+    max-width:calc(100% - 32px);
   }
   .toast::before{
     content:'';width:6px;height:6px;border-radius:50%;
@@ -334,6 +358,8 @@
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
+
+  <div class="banner" id="banner"></div>
 
   <div class="feed visible" id="feed">
 
@@ -495,8 +521,8 @@
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
         </div>
         <div class="meta">
-          <span class="item">Сб, 3 октября · 23:30</span><i></i>
-          <span class="item price">от 500 ₽</span>
+          <span class="item" data-i18n-meta>Сб, 3 октября · 23:30</span><i></i>
+          <span class="item price" data-i18n-price>от 500 ₽</span>
         </div>
         <div class="actions-row">
           <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
@@ -810,7 +836,11 @@
           want_go:      'хочу пойти',
           invite:       'пригласить',
           watching:     'смотрят прямо сейчас',
-          buy_ticket:   'Купить билет'
+          buy_ticket:   'Купить билет',
+          notify_btn:   'Сообщить о новом',
+          notify_ok:    'Готово! Пришлём в боте 🔔',
+          notify_already:'Уже подписан на уведомления',
+          share_text:   'Пойдём вместе?'
         },
         en: {
           onboard_tag:  'A stream of events, places and people — <em>on your vibe</em>',
@@ -818,7 +848,11 @@
           want_go:      'want to go',
           invite:       'invite',
           watching:     'watching now',
-          buy_ticket:   'Buy ticket'
+          buy_ticket:   'Buy ticket',
+          notify_btn:   'Notify me',
+          notify_ok:    'Done! We\'ll ping you in the bot 🔔',
+          notify_already:'Already subscribed',
+          share_text:   'Let\'s go together?'
         },
         es: {
           onboard_tag:  'Un flujo de eventos, lugares y personas — <em>a tu rollo</em>',
@@ -826,7 +860,11 @@
           want_go:      'quiero ir',
           invite:       'invitar',
           watching:     'viendo ahora',
-          buy_ticket:   'Comprar entrada'
+          buy_ticket:   'Comprar entrada',
+          notify_btn:   'Avisadme',
+          notify_ok:    '¡Listo! Te avisamos en el bot 🔔',
+          notify_already:'Ya estás suscrito',
+          share_text:   '¿Vamos juntos?'
         }
       };
 
@@ -834,16 +872,21 @@
       try { currentLang = localStorage.getItem('vetka_lang') || 'ru'; } catch(e){}
       if (!I18N[currentLang]) currentLang = 'ru';
 
+      function t(key){
+        var dict = I18N[currentLang] || I18N.ru;
+        return dict[key] != null ? dict[key] : (I18N.ru[key] || key);
+      }
+
       function applyLang(lang){
         if (!I18N[lang]) lang = 'ru';
         currentLang = lang;
         try { localStorage.setItem('vetka_lang', lang); } catch(e){}
-        var t = I18N[lang];
 
         var nodes = document.querySelectorAll('[data-i18n]');
         for (var i = 0; i < nodes.length; i++) {
           var key = nodes[i].getAttribute('data-i18n');
-          if (t[key] != null) nodes[i].innerHTML = t[key];
+          var dict = I18N[lang];
+          if (dict && dict[key] != null) nodes[i].innerHTML = dict[key];
         }
 
         var btns = document.querySelectorAll('[data-lang]');
@@ -895,7 +938,84 @@
 
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
+      var bannerEl = document.getElementById('banner');
 
+      // ====== НАСТРОЙКИ ПРИЛОЖЕНИЯ ======
+      var APP_SETTINGS = {
+        mode: 'live',
+        cta_text: null,
+        cta_url: null,
+        meta_text: null,
+        banner_text: null,
+        notify_title: null,
+        notify_text: null
+      };
+
+      function applyAppSettings(s){
+        if (!s) return;
+        APP_SETTINGS = Object.assign({}, APP_SETTINGS, s);
+
+        // Баннер над лентой
+        if (bannerEl) {
+          if (s.banner_text) {
+            bannerEl.textContent = s.banner_text;
+            bannerEl.classList.add('on');
+          } else {
+            bannerEl.classList.remove('on');
+          }
+        }
+
+        // CTA на слайде r4
+        var ctaBtns = document.querySelectorAll('[data-cta]');
+        var isArchive = s.mode === 'archive' || s.mode === 'teaser';
+        for (var i = 0; i < ctaBtns.length; i++) {
+          var btn = ctaBtns[i];
+          // текст
+          var txt = btn.querySelector('[data-i18n="buy_ticket"]');
+          if (txt && s.cta_text) txt.textContent = s.cta_text;
+          // иконка: если архивный режим — рисуем колокольчик вместо билета
+          var svg = btn.querySelector('svg');
+          if (svg && isArchive) {
+            svg.innerHTML = '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>';
+          }
+          // href отключаем, если архивный режим
+          if (isArchive) {
+            btn.removeAttribute('href');
+            btn.removeAttribute('target');
+          } else if (s.cta_url) {
+            btn.setAttribute('href', s.cta_url);
+            btn.setAttribute('target', '_blank');
+          }
+        }
+
+        // Мета-строка на r4
+        if (s.meta_text) {
+          var metaItem = document.querySelector('[data-i18n-meta]');
+          if (metaItem) metaItem.textContent = s.meta_text;
+        }
+
+        // Если archive — скрываем блок с ценой
+        var priceEl = document.querySelector('[data-i18n-price]');
+        if (priceEl) {
+          var sep = priceEl.previousElementSibling;
+          if (isArchive) {
+            priceEl.style.display = 'none';
+            if (sep && sep.tagName === 'I') sep.style.display = 'none';
+          } else {
+            priceEl.style.display = '';
+            if (sep && sep.tagName === 'I') sep.style.display = '';
+          }
+        }
+      }
+
+      async function loadAppSettings(){
+        try {
+          var s = await api('app_settings', 'select=*&id=eq.1&limit=1');
+          if (s && s[0]) applyAppSettings(s[0]);
+        } catch(e){ console.warn('settings load error', e); }
+      }
+
+      // ====== БАЗОВАЯ РАБОТА С ВИДЕО ======
       function layoutReels(){
         var vh = window.innerHeight;
         if (!vh || vh < 100) return;
@@ -939,7 +1059,6 @@
 
         var old = container.querySelector('video');
         if (old) {
-          // Уже есть — не пересоздаём. Если prime и буфер не набран — форсируем загрузку.
           if (prime && old.readyState < 2 && old.networkState !== 2) {
             try {
               var op = old.play();
@@ -966,7 +1085,6 @@
           var p = v.play();
           if (p && p.catch) p.catch(function(){});
         } else if (prime) {
-          // Форсируем реальную буферизацию: play() запускает загрузку, pause() сразу останавливает.
           try {
             var pp = v.play();
             if (pp && pp.then) {
@@ -1030,7 +1148,6 @@
       }
 
       function setActiveSlide(idx){
-        // 1. Все видео на паузу, currentTime=0 у не-активных.
         for (var i = 0; i < slides.length; i++) {
           var v0 = getVideo(i);
           if (!v0) continue;
@@ -1041,7 +1158,6 @@
           }
         }
 
-        // 2. Активный — играем.
         var cur = getVideo(idx);
         if (!cur) {
           rebuildVideoFor(idx, false, false);
@@ -1062,7 +1178,6 @@
           }
         }
 
-        // 3. Прелоад соседей: +1 и +2. Форсируем загрузку буфера.
         for (var k = 1; k <= WINDOW_FWD; k++) {
           var ni = idx + k;
           if (ni < slides.length) rebuildVideoFor(ni, false, true);
@@ -1071,6 +1186,7 @@
         armWatchdog(idx);
       }
 
+      // ====== ОНБОРДИНГ ======
       if (onboarding) {
         var startY = 0, currentY = 0, dragging = false;
         var THRESHOLD = 70;
@@ -1187,6 +1303,7 @@
 
       applyLang(currentLang);
 
+      // ====== ОСТАЛЬНАЯ ЛОГИКА ======
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
       var soundEnabled = false;
       var profile = document.getElementById('profile');
@@ -1362,15 +1479,66 @@
       });
       updateIcons();
 
+      // ====== ПОДПИСКА НА УВЕДОМЛЕНИЯ ======
+      var notifyInFlight = false;
+      async function subscribeNotify(){
+        if (notifyInFlight) return;
+        notifyInFlight = true;
+        try {
+          var tgUser = readTgUser();
+          var tgId = tgUser ? String(tgUser.id) : null;
+          if (!tgId) { showToast(t('notify_already')); return; }
+
+          // Проверяем, не подписан ли уже
+          var existing = await api('users', 'select=wants_notify&tg_id=eq.' + encodeURIComponent(tgId) + '&limit=1');
+          if (existing && existing[0] && existing[0].wants_notify === true) {
+            showToast(t('notify_already'));
+            notifyInFlight = false;
+            return;
+          }
+
+          // Патчим существующую строку
+          await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ wants_notify: true })
+          });
+
+          showToast(t('notify_ok'));
+          trackEvent('notify_subscribe', {});
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'notify_subscribe'); } catch(err){} }
+        } catch(e) {
+          console.warn('subscribeNotify error:', e);
+          showToast('—');
+        } finally {
+          notifyInFlight = false;
+        }
+      }
+
+      // ====== ОБРАБОТКА CTA ======
       document.querySelectorAll('[data-cta]').forEach(function(btn){
-        btn.addEventListener('click', function(){
+        btn.addEventListener('click', function(e){
           var slide = btn.closest('.slide');
           var slideId = slide ? slide.dataset.id : null;
+          var isArchive = APP_SETTINGS.mode === 'archive' || APP_SETTINGS.mode === 'teaser';
+
+          if (isArchive) {
+            e.preventDefault();
+            subscribeNotify();
+            return;
+          }
+
           trackEvent('cta_click', { slide_id: slideId });
           if (window.ym) { try { ym(113067752, 'reachGoal', 'cta_click'); } catch(err){} }
         });
       });
 
+      // ====== ЛАЙКИ / ШЕРИНГ / ПРОФИЛЬ / SUPABASE / TRACKING ======
       function refreshLikeUI(){
         slides.forEach(function(slide){
           var id = slide.dataset.id;
@@ -1465,7 +1633,7 @@
         toast.textContent = text;
         toast.classList.add('show');
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
       }
       function copyToClipboard(text){
         if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
@@ -1492,7 +1660,7 @@
 
           if (window.Telegram && window.Telegram.WebApp) {
             try {
-              var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent('Пойдём вместе?');
+              var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(t('share_text'));
               window.Telegram.WebApp.openTelegramLink(shareUrl);
             } catch(err){
               copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
@@ -1501,7 +1669,7 @@
           }
 
           if (navigator.share) {
-            navigator.share({ title: 'VETKA', text: 'Пойдём вместе?', url: url }).catch(function(){
+            navigator.share({ title: 'VETKA', text: t('share_text'), url: url }).catch(function(){
               copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
             });
           } else {
@@ -1564,6 +1732,20 @@
 
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
+
+      async function api(path, query){
+        var url = SUPABASE_URL + '/rest/v1/' + path;
+        if (query) url += '?' + query;
+        var r = await fetch(url, {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Accept': 'application/json'
+          }
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      }
 
       var STORAGE_KEY = EARLY_TG_ID
         ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID
@@ -1698,12 +1880,10 @@
             else if (action === 'invite') updates.invites = (existing.invites || 0) + 1;
             if (tgId && !existing.tg_id) updates.tg_id = tgId;
             if (anonId && !existing.anon_id) updates.anon_id = anonId;
-
             if (profileFields.first_name  !== undefined) updates.first_name  = profileFields.first_name;
             if (profileFields.last_name   !== undefined) updates.last_name   = profileFields.last_name;
             if (profileFields.username    !== undefined) updates.username    = profileFields.username;
             if (profileFields.profile_url !== undefined) updates.profile_url = profileFields.profile_url;
-
             await supabaseClient.from('users').update(updates).eq('id', existing.id);
           } else {
             var insertData = {
@@ -1721,7 +1901,6 @@
             if (profileFields.last_name)   insertData.last_name   = profileFields.last_name;
             if (profileFields.username)    insertData.username    = profileFields.username;
             if (profileFields.profile_url) insertData.profile_url = profileFields.profile_url;
-
             await supabaseClient.from('users').insert([insertData]);
           }
         } catch(e){ console.warn('Track error:', e); }
@@ -1735,6 +1914,9 @@
         setTimeout(function(){ trackUser('visit'); }, 15000);
         loadLikesFromSupabase();
       });
+
+      // Настройки тянем сразу и без блокировки
+      loadAppSettings();
 
       (function eagerPreload(){
         var n = Math.min(3, slides.length);

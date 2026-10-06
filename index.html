@@ -215,11 +215,12 @@
   .cta{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 0 24px rgba(205,255,74,.35);white-space:nowrap;flex:1;}
   .cta svg{width:14px;height:14px;flex:none;}
 
-  /* Баннер сверху ленты */
+  /* Баннер сверху ленты — показывается только на первом слайде */
   .banner{
     position:fixed;
     top:calc(12px + env(safe-area-inset-top,0px));
-    left:50%;transform:translateX(-50%);
+    left:50%;
+    transform:translateX(-50%);
     z-index:30;
     max-width:calc(100% - 32px);
     padding:9px 16px;
@@ -235,9 +236,11 @@
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+  }
+  .banner.on{
+    display:block;
     animation:bannerIn .35s ease;
   }
-  .banner.on{ display:block; }
   @keyframes bannerIn{
     from{opacity:0; transform:translateX(-50%) translateY(-10px);}
     to{opacity:1; transform:translateX(-50%) translateY(0);}
@@ -946,21 +949,21 @@
         cta_text: null,
         cta_url: null,
         meta_text: null,
-        banner_text: null,
-        notify_title: null,
-        notify_text: null
+        banner_text: null
       };
 
       function applyAppSettings(s){
         if (!s) return;
         APP_SETTINGS = Object.assign({}, APP_SETTINGS, s);
 
-        // Баннер над лентой
+        // Баннер: только сохраняем текст, показ управляется setActiveSlide
         if (bannerEl) {
           if (s.banner_text) {
             bannerEl.textContent = s.banner_text;
-            bannerEl.classList.add('on');
+            bannerEl.dataset.text = s.banner_text;
           } else {
+            bannerEl.textContent = '';
+            bannerEl.dataset.text = '';
             bannerEl.classList.remove('on');
           }
         }
@@ -970,15 +973,12 @@
         var isArchive = s.mode === 'archive' || s.mode === 'teaser';
         for (var i = 0; i < ctaBtns.length; i++) {
           var btn = ctaBtns[i];
-          // текст
           var txt = btn.querySelector('[data-i18n="buy_ticket"]');
           if (txt && s.cta_text) txt.textContent = s.cta_text;
-          // иконка: если архивный режим — рисуем колокольчик вместо билета
           var svg = btn.querySelector('svg');
           if (svg && isArchive) {
             svg.innerHTML = '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>';
           }
-          // href отключаем, если архивный режим
           if (isArchive) {
             btn.removeAttribute('href');
             btn.removeAttribute('target');
@@ -994,7 +994,7 @@
           if (metaItem) metaItem.textContent = s.meta_text;
         }
 
-        // Если archive — скрываем блок с ценой
+        // Скрываем цену в archive-режиме
         var priceEl = document.querySelector('[data-i18n-price]');
         if (priceEl) {
           var sep = priceEl.previousElementSibling;
@@ -1006,6 +1006,18 @@
             if (sep && sep.tagName === 'I') sep.style.display = '';
           }
         }
+
+        // Обновить видимость баннера под текущий слайд
+        updateBannerVisibility(currentIndex);
+      }
+
+      // Плашку показываем только на первом слайде (r1)
+      function updateBannerVisibility(idx){
+        if (!bannerEl) return;
+        var text = bannerEl.dataset.text || '';
+        if (!text) { bannerEl.classList.remove('on'); return; }
+        if (idx === 0) bannerEl.classList.add('on');
+        else bannerEl.classList.remove('on');
       }
 
       async function loadAppSettings(){
@@ -1182,6 +1194,9 @@
           var ni = idx + k;
           if (ni < slides.length) rebuildVideoFor(ni, false, true);
         }
+
+        // Плашка видна только на первом слайде
+        updateBannerVisibility(idx);
 
         armWatchdog(idx);
       }
@@ -1489,7 +1504,6 @@
           var tgId = tgUser ? String(tgUser.id) : null;
           if (!tgId) { showToast(t('notify_already')); return; }
 
-          // Проверяем, не подписан ли уже
           var existing = await api('users', 'select=wants_notify&tg_id=eq.' + encodeURIComponent(tgId) + '&limit=1');
           if (existing && existing[0] && existing[0].wants_notify === true) {
             showToast(t('notify_already'));
@@ -1497,7 +1511,6 @@
             return;
           }
 
-          // Патчим существующую строку
           await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
             method: 'PATCH',
             headers: {
@@ -1915,7 +1928,6 @@
         loadLikesFromSupabase();
       });
 
-      // Настройки тянем сразу и без блокировки
       loadAppSettings();
 
       (function eagerPreload(){

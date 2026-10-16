@@ -305,7 +305,7 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Выбери поток событий под свой вайб — <em>а мы подскажем, куда пойти</em></div>
+      <div class="onb-tag" data-i18n="onboard_tag">Проверенные маршруты событий <em>- под твой вайб</em></div>
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
@@ -798,40 +798,40 @@
       // ====== i18n (RU / EN / ES) ======
       var I18N = {
         ru: {
-          onboard_tag: 'Выбери поток событий под свой вайб — <em>а мы подскажем, куда пойти</em>',
+          onboard_tag:  'Проверенные маршруты событий <em>- под твой вайб</em>',
           onboard_hint: 'Листай вверх',
-          want_go: 'хочу пойти',
-          invite: 'пригласить',
-          watching: 'смотрят прямо сейчас',
-          buy_ticket: 'Купить билет',
-          notify_btn: 'Получить приглашение',
-          notify_ok: 'Готово! Пришлём в боте 🔔',
+          want_go:      'хочу пойти',
+          invite:       'пригласить',
+          watching:     'смотрят прямо сейчас',
+          buy_ticket:   'Купить билет',
+          notify_btn:   'Получить приглашение',
+          notify_ok:    'Готово! Пришлём в боте 🔔',
           notify_already:'Уже подписан на уведомления',
-          share_text: 'Пойдём вместе?'
+          share_text:   'Пойдём вместе?'
         },
         en: {
-          onboard_tag: 'Pick the stream that fits your vibe — <em>we\'ll tell you where to go</em>',
+          onboard_tag:  'Verified event routes <em>- for your vibe</em>',
           onboard_hint: 'Swipe up',
-          want_go: 'want to go',
-          invite: 'invite',
-          watching: 'watching now',
-          buy_ticket: 'Buy ticket',
-          notify_btn: 'Get invitation',
-          notify_ok: 'Done! We\'ll ping you in the bot 🔔',
+          want_go:      'want to go',
+          invite:       'invite',
+          watching:     'watching now',
+          buy_ticket:   'Buy ticket',
+          notify_btn:   'Get invitation',
+          notify_ok:    'Done! We\'ll ping you in the bot 🔔',
           notify_already:'Already subscribed',
-          share_text: 'Let\'s go together?'
+          share_text:   'Let\'s go together?'
         },
         es: {
-          onboard_tag: 'Elige el flujo que va con tu rollo — <em>y te decimos dónde ir</em>',
+          onboard_tag:  'Rutas de eventos verificadas <em>- para tu vibe</em>',
           onboard_hint: 'Desliza hacia arriba',
-          want_go: 'quiero ir',
-          invite: 'invitar',
-          watching: 'viendo ahora',
-          buy_ticket: 'Comprar entrada',
-          notify_btn: 'Obtener invitación',
-          notify_ok: '¡Listo! Te avisamos en el bot 🔔',
+          want_go:      'quiero ir',
+          invite:       'invitar',
+          watching:     'viendo ahora',
+          buy_ticket:   'Comprar entrada',
+          notify_btn:   'Obtener invitación',
+          notify_ok:    '¡Listo! Te avisamos en el bot 🔔',
           notify_already:'Ya estás suscrito',
-          share_text: '¿Vamos juntos?'
+          share_text:   '¿Vamos juntos?'
         }
       };
 
@@ -898,7 +898,7 @@
       }
 
       var EARLY_TG_USER = readTgUserFromHash();
-      var EARLY_TG_ID = EARLY_TG_USER ? String(EARLY_TG_USER.id) : null;
+      var EARLY_TG_ID   = EARLY_TG_USER ? String(EARLY_TG_USER.id) : null;
 
       function readTgUser(){
         if (EARLY_TG_USER) return EARLY_TG_USER;
@@ -965,7 +965,7 @@
             if (!cfg) return;
             var tEl = slide.querySelector('[data-vibe-title]');
             var sEl = slide.querySelector('[data-vibe-subtitle]');
-            if (tEl && cfg.vibe_title) tEl.textContent = cfg.vibe_title;
+            if (tEl && cfg.vibe_title)    tEl.textContent = cfg.vibe_title;
             if (sEl && cfg.vibe_subtitle) sEl.textContent = cfg.vibe_subtitle;
           });
         } catch(e){ console.warn('slides_config load error', e); }
@@ -981,7 +981,7 @@
       }
 
       var WINDOW_BACK = 1;
-      var WINDOW_FWD = 2;
+      var WINDOW_FWD  = 2;
 
       var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
 
@@ -1285,10 +1285,10 @@
 
       var VIEWERS_PEAK = 200;
       var DAY_CURVE = [
-        {h: 0, v: 0.15},
-        {h: 4, v: 0.06},
-        {h: 6, v: 0.10},
-        {h: 8, v: 0.28},
+        {h: 0,  v: 0.15},
+        {h: 4,  v: 0.06},
+        {h: 6,  v: 0.10},
+        {h: 8,  v: 0.28},
         {h: 10, v: 0.42},
         {h: 13, v: 0.65},
         {h: 16, v: 0.72},
@@ -1816,9 +1816,9 @@
 
           var profileFields = {};
           if (tgUser) {
-            profileFields.first_name = tgUser.first_name || null;
-            profileFields.last_name = tgUser.last_name || null;
-            profileFields.username = tgUser.username || null;
+            profileFields.first_name  = tgUser.first_name  || null;
+            profileFields.last_name   = tgUser.last_name   || null;
+            profileFields.username    = tgUser.username    || null;
             profileFields.profile_url = buildProfileUrl(tgUser);
           }
 
@@ -1834,9 +1834,9 @@
             else if (action === 'invite') updates.invites = (existing.invites || 0) + 1;
             if (tgId && !existing.tg_id) updates.tg_id = tgId;
             if (anonId && !existing.anon_id) updates.anon_id = anonId;
-            if (profileFields.first_name !== undefined) updates.first_name = profileFields.first_name;
-            if (profileFields.last_name !== undefined) updates.last_name = profileFields.last_name;
-            if (profileFields.username !== undefined) updates.username = profileFields.username;
+            if (profileFields.first_name  !== undefined) updates.first_name  = profileFields.first_name;
+            if (profileFields.last_name   !== undefined) updates.last_name   = profileFields.last_name;
+            if (profileFields.username    !== undefined) updates.username    = profileFields.username;
             if (profileFields.profile_url !== undefined) updates.profile_url = profileFields.profile_url;
             await supabaseClient.from('users').update(updates).eq('id', existing.id);
           } else {
@@ -1851,9 +1851,9 @@
             if (action === 'invite') insertData.invites = 1;
             if (tgId) insertData.tg_id = tgId;
             if (anonId) insertData.anon_id = anonId;
-            if (profileFields.first_name) insertData.first_name = profileFields.first_name;
-            if (profileFields.last_name) insertData.last_name = profileFields.last_name;
-            if (profileFields.username) insertData.username = profileFields.username;
+            if (profileFields.first_name)  insertData.first_name  = profileFields.first_name;
+            if (profileFields.last_name)   insertData.last_name   = profileFields.last_name;
+            if (profileFields.username)    insertData.username    = profileFields.username;
             if (profileFields.profile_url) insertData.profile_url = profileFields.profile_url;
             await supabaseClient.from('users').insert([insertData]);
           }

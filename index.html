@@ -152,7 +152,6 @@
   }
   .metric:active .ico{transform:scale(.9);}
   .metric .ico svg{width:16px;height:16px;}
-  .metric .num{font-size:11px;font-weight:600;color:#CDFF4A;text-shadow:0 1px 4px rgba(0,0,0,.6);}
   .metric .lbl{font-size:8.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
   .metric.invite:active .ico{
     background:rgba(205,255,74,.9);
@@ -175,6 +174,20 @@
   }
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
 
+  /* LIVE в верхнем левом углу */
+  .live-top{
+    position:absolute;
+    top:calc(16px + env(safe-area-inset-top,0px));
+    left:16px;
+    z-index:10;
+    pointer-events:none;
+    font-weight:600;
+    color:#fff;
+    border-color:rgba(205,255,74,.55);
+    align-self:auto;
+  }
+  .live-top .live-time{font-variant-numeric:tabular-nums;}
+
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
   .org-badge{display:inline-flex;align-items:center;gap:7px;padding:4px 12px 4px 4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;align-self:flex-start;pointer-events:auto;transition:transform .15s ease,border-color .2s ease;}
@@ -191,8 +204,46 @@
   .meta i{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.35);}
   .meta .price{color:#CDFF4A;font-weight:600;}
   .actions-row{display:flex;gap:8px;align-items:center;}
-  .cta{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 0 24px rgba(205,255,74,.35);white-space:nowrap;flex:1;}
-  .cta svg{width:14px;height:14px;flex:none;}
+
+  /* Кнопка «Топ вайб» — размер как у CTA */
+  .top-vibe{
+    pointer-events:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    padding:12px 20px;
+    border-radius:100px;
+    background:#CDFF4A;
+    color:#07070a;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    text-decoration:none;
+    box-shadow:0 0 24px rgba(205,255,74,.35);
+    white-space:nowrap;
+    flex:1;
+    border:none;
+    transition:transform .12s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .top-vibe:active{transform:scale(.98);}
+  .top-vibe svg{width:14px;height:14px;flex:none;}
+  .top-vibe .tv-label{font-weight:600;}
+  .top-vibe .tv-count{
+    font-weight:700;
+    font-variant-numeric:tabular-nums;
+    min-width:18px;
+    text-align:right;
+  }
+  .top-vibe.voted{
+    background:rgba(205,255,74,.14);
+    color:#CDFF4A;
+    box-shadow:inset 0 0 0 1px rgba(205,255,74,.5);
+  }
+  @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
+  .top-vibe .tv-count.pulse{animation:countPulse .45s ease;}
 
   .toast{
     position:fixed;left:50%;
@@ -317,17 +368,13 @@
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="live live-top" data-published=""><span class="dot"></span><span class="live-time"></span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
       <div class="side">
-        <button class="metric" data-like data-base="52">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>52</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
         <button class="metric invite" data-share>
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -348,10 +395,11 @@
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
         </div>
         <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
+          <button class="top-vibe" data-top data-base="52">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+            <span class="tv-label" data-i18n="top_vibe">Топ вайб</span>
+            <span class="tv-count" data-count>52</span>
+          </button>
         </div>
       </div>
     </div>
@@ -361,17 +409,13 @@
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="live live-top" data-published=""><span class="dot"></span><span class="live-time"></span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
       <div class="side">
-        <button class="metric" data-like data-base="43">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>43</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
         <button class="metric invite" data-share>
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -392,10 +436,11 @@
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
         </div>
         <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
+          <button class="top-vibe" data-top data-base="43">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+            <span class="tv-label" data-i18n="top_vibe">Топ вайб</span>
+            <span class="tv-count" data-count>43</span>
+          </button>
         </div>
       </div>
     </div>
@@ -405,17 +450,13 @@
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="live live-top" data-published=""><span class="dot"></span><span class="live-time"></span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
       <div class="side">
-        <button class="metric" data-like data-base="28">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>28</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
         <button class="metric invite" data-share>
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -436,10 +477,11 @@
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
         </div>
         <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
+          <button class="top-vibe" data-top data-base="28">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+            <span class="tv-label" data-i18n="top_vibe">Топ вайб</span>
+            <span class="tv-count" data-count>28</span>
+          </button>
         </div>
       </div>
     </div>
@@ -449,17 +491,13 @@
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="live live-top" data-published=""><span class="dot"></span><span class="live-time"></span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
       <div class="side">
-        <button class="metric" data-like data-base="72">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>72</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
         <button class="metric invite" data-share>
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -480,10 +518,11 @@
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
         </div>
         <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
+          <button class="top-vibe" data-top data-base="72">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+            <span class="tv-label" data-i18n="top_vibe">Топ вайб</span>
+            <span class="tv-count" data-count>72</span>
+          </button>
         </div>
       </div>
     </div>
@@ -493,17 +532,13 @@
         <video data-src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="live live-top" data-published=""><span class="dot"></span><span class="live-time"></span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
       <div class="side">
-        <button class="metric" data-like data-base="64">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>64</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
         <button class="metric invite" data-share>
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -524,10 +559,11 @@
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
         </div>
         <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
+          <button class="top-vibe" data-top data-base="64">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+            <span class="tv-label" data-i18n="top_vibe">Топ вайб</span>
+            <span class="tv-count" data-count>64</span>
+          </button>
         </div>
       </div>
     </div>
@@ -537,17 +573,13 @@
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_162746_363.mp4.mov" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="live live-top" data-published=""><span class="dot"></span><span class="live-time"></span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
       <div class="side">
-        <button class="metric" data-like data-base="19">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>19</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
         <button class="metric invite" data-share>
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -568,10 +600,11 @@
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
         </div>
         <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
+          <button class="top-vibe" data-top data-base="19">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+            <span class="tv-label" data-i18n="top_vibe">Топ вайб</span>
+            <span class="tv-count" data-count>19</span>
+          </button>
         </div>
       </div>
     </div>
@@ -581,17 +614,13 @@
         <video data-src="https://storage.yandexcloud.net/vetkaevets/YouCut_20261002_153045891-compressed.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="live live-top" data-published=""><span class="dot"></span><span class="live-time"></span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
       <div class="side">
-        <button class="metric" data-like data-base="12">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>12</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
         <button class="metric invite" data-share>
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -612,10 +641,11 @@
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
         </div>
         <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
+          <button class="top-vibe" data-top data-base="12">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+            <span class="tv-label" data-i18n="top_vibe">Топ вайб</span>
+            <span class="tv-count" data-count>12</span>
+          </button>
         </div>
       </div>
     </div>
@@ -625,17 +655,13 @@
         <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_163137_406.mp4" loop playsinline preload="none" muted></video>
       </div>
       <div class="veil"></div>
+      <div class="live live-top" data-published=""><span class="dot"></span><span class="live-time"></span></div>
       <div class="sound-btn" data-sound-btn>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
         </svg>
       </div>
       <div class="side">
-        <button class="metric" data-like data-base="29">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>29</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
         <button class="metric invite" data-share>
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -656,10 +682,11 @@
           <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
         </div>
         <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
+          <button class="top-vibe" data-top data-base="29">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+            <span class="tv-label" data-i18n="top_vibe">Топ вайб</span>
+            <span class="tv-count" data-count>29</span>
+          </button>
         </div>
       </div>
     </div>
@@ -668,11 +695,9 @@
 
   <div class="profile-screen" id="profile">
     <div class="profile-scroll">
-
       <div class="profile-hero">
         <div class="hero-bg"></div>
         <div class="hero-veil"></div>
-
         <div class="profile-topnav">
           <div class="back" id="closeProfile">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -683,7 +708,6 @@
             </svg>
           </div>
         </div>
-
         <div class="hero-content">
           <div class="hero-avatar"><div class="inner">Б</div></div>
           <div class="name-row">
@@ -703,9 +727,7 @@
           </button>
         </div>
       </div>
-
       <div class="org-feed">
-
         <article class="post">
           <div class="post-head">
             <div class="post-avatar"><div class="inner">Б</div></div>
@@ -718,12 +740,10 @@
             <div class="post-title">Пятница выдалась громкой</div>
           </div>
         </article>
-
         <article class="post post-text">
           <div class="quote">«Мы не знали что сказать — просто <em>орали со сцены</em>. И зал орал вместе с нами.»</div>
           <div class="by">— гость вечера</div>
         </article>
-
         <article class="post">
           <div class="post-head">
             <div class="post-avatar"><div class="inner">Б</div></div>
@@ -741,7 +761,6 @@
             <div class="post-title">Нас не остановить</div>
           </div>
         </article>
-
         <article class="post">
           <div class="post-head">
             <div class="post-avatar"><div class="inner">Б</div></div>
@@ -754,12 +773,10 @@
             <div class="post-title">Музыкальное лото — тот самый момент</div>
           </div>
         </article>
-
         <article class="post post-text">
           <div class="quote">Пришёл один, ушёл с <em>компанией</em>. Тут это как-то само.</div>
           <div class="by">— гость вечера</div>
         </article>
-
         <article class="post">
           <div class="post-head">
             <div class="post-avatar"><div class="inner">Б</div></div>
@@ -772,7 +789,6 @@
             <div class="post-title">Проверка материала. Каждый вечер — новое</div>
           </div>
         </article>
-
         <article class="post">
           <div class="post-head">
             <div class="post-avatar"><div class="inner">Б</div></div>
@@ -785,13 +801,11 @@
             <div class="post-title">Атмосфера, которая не отпускает</div>
           </div>
         </article>
-
       </div>
-
     </div>
   </div>
 
-  <div class="toast" id="toast">Ссылка скопирована</div>
+  <div class="toast" id="toast">Вайб продвинут ⬆️</div>
 
   <script>
     (function(){
@@ -800,38 +814,44 @@
         ru: {
           onboard_tag:  'Выбери поток событий под свой вайб — <em>а мы подскажем, куда пойти</em>',
           onboard_hint: 'Листай вверх',
-          want_go:      'хочу пойти',
+          top_vibe:     'Топ вайб',
           invite:       'пригласить',
           watching:     'смотрят прямо сейчас',
-          buy_ticket:   'Купить билет',
-          notify_btn:   'Получить приглашение',
-          notify_ok:    'Готово! Пришлём в боте 🔔',
-          notify_already:'Уже подписан на уведомления',
-          share_text:   'Пойдём вместе?'
+          top_ok:       'Вайб продвинут ⬆️',
+          top_removed:  'Голос отозван',
+          share_text:   'Пойдём вместе?',
+          live_now:     'сейчас',
+          live_min:     'мин назад',
+          live_hour:    'ч назад',
+          live_day:     'дн назад'
         },
         en: {
           onboard_tag:  'Pick the stream that fits your vibe — <em>we\'ll tell you where to go</em>',
           onboard_hint: 'Swipe up',
-          want_go:      'want to go',
+          top_vibe:     'Top vibe',
           invite:       'invite',
           watching:     'watching now',
-          buy_ticket:   'Buy ticket',
-          notify_btn:   'Get invitation',
-          notify_ok:    'Done! We\'ll ping you in the bot 🔔',
-          notify_already:'Already subscribed',
-          share_text:   'Let\'s go together?'
+          top_ok:       'Vibe promoted ⬆️',
+          top_removed:  'Vote withdrawn',
+          share_text:   'Let\'s go together?',
+          live_now:     'just now',
+          live_min:     'min ago',
+          live_hour:    'h ago',
+          live_day:     'd ago'
         },
         es: {
           onboard_tag:  'Elige el flujo que va con tu rollo — <em>y te decimos dónde ir</em>',
           onboard_hint: 'Desliza hacia arriba',
-          want_go:      'quiero ir',
+          top_vibe:     'Top vibe',
           invite:       'invitar',
           watching:     'viendo ahora',
-          buy_ticket:   'Comprar entrada',
-          notify_btn:   'Obtener invitación',
-          notify_ok:    '¡Listo! Te avisamos en el bot 🔔',
-          notify_already:'Ya estás suscrito',
-          share_text:   '¿Vamos juntos?'
+          top_ok:       'Vibe promovido ⬆️',
+          top_removed:  'Voto retirado',
+          share_text:   '¿Vamos juntos?',
+          live_now:     'ahora',
+          live_min:     'min',
+          live_hour:    'h',
+          live_day:     'd'
         }
       };
 
@@ -863,13 +883,11 @@
           else b.classList.remove('active');
         }
 
-        // Если сейчас archive-режим — перевести текст кнопки на выбранный язык
-        if (APP_SETTINGS.mode === 'archive' || APP_SETTINGS.mode === 'teaser') {
-          var ctaTxts = document.querySelectorAll('[data-cta] [data-i18n="buy_ticket"]');
-          for (var k = 0; k < ctaTxts.length; k++) {
-            ctaTxts[k].textContent = t('notify_btn');
-          }
-        }
+        // Обновить все LIVE-метки при смене языка
+        slides.forEach(function(s){
+          var el = s.querySelector('.live-top');
+          if (el && el.dataset.published) updateLiveLabel(el);
+        });
       }
 
       // ====== TELEGRAM MINI APP ======
@@ -924,24 +942,7 @@
       function applyAppSettings(s){
         if (!s) return;
         APP_SETTINGS = Object.assign({}, APP_SETTINGS, s);
-
-        var ctaBtns = document.querySelectorAll('[data-cta]');
-        var isArchive = s.mode === 'archive' || s.mode === 'teaser';
-        for (var i = 0; i < ctaBtns.length; i++) {
-          var btn = ctaBtns[i];
-          var txt = btn.querySelector('[data-i18n="buy_ticket"]');
-          if (txt) {
-            if (isArchive) txt.textContent = t('notify_btn');
-            else if (s.cta_text) txt.textContent = s.cta_text;
-          }
-          if (isArchive) {
-            btn.removeAttribute('href');
-            btn.removeAttribute('target');
-          } else if (s.cta_url) {
-            btn.setAttribute('href', s.cta_url);
-            btn.setAttribute('target', '_blank');
-          }
-        }
+        // CTA больше нет в ленте — оставлено на будущее
       }
 
       async function loadAppSettings(){
@@ -1259,6 +1260,52 @@
 
       applyLang(currentLang);
 
+      // ====== LIVE МЕТКИ (верхний левый угол) ======
+      function formatLiveAgo(diffMs){
+        var mins = Math.floor(diffMs / 60000);
+        if (mins < 1) return t('live_now');
+        if (mins < 60) return mins + ' ' + t('live_min');
+        var hours = Math.floor(mins / 60);
+        if (hours < 24) return hours + ' ' + t('live_hour');
+        var days = Math.floor(hours / 24);
+        return days + ' ' + t('live_day');
+      }
+
+      function updateLiveLabel(el){
+        var pub = el.dataset.published;
+        if (!pub) return;
+        var diff = Date.now() - new Date(pub).getTime();
+        var isFresh = diff >= 0 && diff < 2 * 60 * 60 * 1000;
+        var label = formatLiveAgo(diff);
+        if (isFresh) {
+          el.classList.add('live-fresh');
+          el.innerHTML = '<span class="dot"></span><span class="live-time">LIVE · ' + label + '</span>';
+        } else {
+          el.classList.remove('live-fresh');
+          el.innerHTML = '<span class="live-time">' + label + '</span>';
+        }
+      }
+
+      function initLiveLabels(){
+        var now = Date.now();
+        slides.forEach(function(s, i){
+          var el = s.querySelector('.live-top');
+          if (!el) return;
+          // Разное «время публикации»: 3, 15, 35, 50, 70, 85, 100, 115 минут назад
+          var preMinutes = [3, 15, 35, 50, 70, 85, 100, 115][i] || 10;
+          var pub = new Date(now - preMinutes * 60000).toISOString();
+          el.dataset.published = pub;
+          updateLiveLabel(el);
+        });
+      }
+      initLiveLabels();
+      setInterval(function(){
+        slides.forEach(function(s){
+          var el = s.querySelector('.live-top');
+          if (el && el.dataset.published) updateLiveLabel(el);
+        });
+      }, 30000);
+
       // ====== ОСТАЛЬНАЯ ЛОГИКА ======
       var soundBtns = feed.querySelectorAll('[data-sound-btn]');
       var soundEnabled = false;
@@ -1321,7 +1368,7 @@
 
       function initViewerCounters(){
         slides.forEach(function(s, i){
-          var live = s.querySelector('.live');
+          var live = s.querySelector('.bottom .live');
           if (!live) return;
           var w = parseFloat(live.dataset.weight || '1') || 1;
           var target = targetFor(w);
@@ -1343,7 +1390,7 @@
       }
 
       function tickViewer(slide){
-        var live = slide.querySelector('.live');
+        var live = slide.querySelector('.bottom .live');
         if (!live) return;
         var w = parseFloat(live.dataset.weight || '1') || 1;
         var cur = parseInt(live.dataset.current || '0', 10) || 0;
@@ -1435,129 +1482,63 @@
       });
       updateIcons();
 
-      // ====== ПОДПИСКА НА УВЕДОМЛЕНИЯ ======
-      var notifyInFlight = false;
-      async function subscribeNotify(){
-        if (notifyInFlight) return;
-        notifyInFlight = true;
-        try {
-          var tgUser = readTgUser();
-          var tgId = tgUser ? String(tgUser.id) : null;
-          if (!tgId) { showToast(t('notify_already')); return; }
-
-          var existing = await api('users', 'select=wants_notify&tg_id=eq.' + encodeURIComponent(tgId) + '&limit=1');
-          if (existing && existing[0] && existing[0].wants_notify === true) {
-            showToast(t('notify_already'));
-            notifyInFlight = false;
-            return;
-          }
-
-          await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
-            method: 'PATCH',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify({ wants_notify: true })
-          });
-
-          showToast(t('notify_ok'));
-          trackEvent('notify_subscribe', {});
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'notify_subscribe'); } catch(err){} }
-        } catch(e) {
-          console.warn('subscribeNotify error:', e);
-          showToast('—');
-        } finally {
-          notifyInFlight = false;
-        }
-      }
-
-      // ====== ОБРАБОТКА CTA ======
-      document.querySelectorAll('[data-cta]').forEach(function(btn){
-        btn.addEventListener('click', function(e){
-          var slide = btn.closest('.slide');
-          var slideId = slide ? slide.dataset.id : null;
-          var isArchive = APP_SETTINGS.mode === 'archive' || APP_SETTINGS.mode === 'teaser';
-
-          if (isArchive) {
-            e.preventDefault();
-            subscribeNotify();
-            return;
-          }
-
-          trackEvent('cta_click', { slide_id: slideId });
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'cta_click'); } catch(err){} }
-        });
-      });
-
-      // ====== ЛАЙКИ / ШЕРИНГ / ПРОФИЛЬ / SUPABASE / TRACKING ======
-      function refreshLikeUI(){
+      // ====== ТОП ВАЙБ ======
+      function refreshTopUI(){
         slides.forEach(function(slide){
           var id = slide.dataset.id;
           if (!id) return;
-          var metric = slide.querySelector('[data-like]');
-          if (!metric) return;
-          var base = parseInt(metric.dataset.base || '0', 10) || 0;
+          var btn = slide.querySelector('[data-top]');
+          if (!btn) return;
+          var base = parseInt(btn.dataset.base || '0', 10) || 0;
           var count = likeCounts[id] || 0;
           var total = base + count;
           if (total < 0) total = 0;
-          var cnt = metric.querySelector('[data-count]');
+          var cnt = btn.querySelector('[data-count]');
           if (cnt) cnt.textContent = total;
-          var ico = metric.querySelector('.ico');
-          if (myLikedSlides[id]) {
-            metric.classList.add('liked');
-            if (ico) {
-              ico.style.background = 'rgba(205,255,74,.9)';
-              ico.style.color = '#07070a';
-              ico.style.borderColor = 'rgba(205,255,74,.9)';
-            }
-          } else {
-            metric.classList.remove('liked');
-            if (ico) {
-              ico.style.background = '';
-              ico.style.color = '';
-              ico.style.borderColor = '';
-            }
-          }
+          if (myLikedSlides[id]) btn.classList.add('voted');
+          else btn.classList.remove('voted');
         });
       }
 
-      document.querySelectorAll('[data-like]').forEach(function(btn){
+      document.querySelectorAll('[data-top]').forEach(function(btn){
         btn.addEventListener('click', async function(e){
           e.stopPropagation();
           var slide = btn.closest('.slide');
           var id = slide ? slide.dataset.id : null;
           if (!id) return;
-          var wasLiked = !!myLikedSlides[id];
-          var nowLiked = !wasLiked;
+          var wasVoted = !!myLikedSlides[id];
+          var nowVoted = !wasVoted;
 
-          if (nowLiked) {
+          if (nowVoted) {
             myLikedSlides[id] = true;
             likeCounts[id] = (likeCounts[id] || 0) + 1;
+            showToast(t('top_ok'));
+            var cnt = btn.querySelector('[data-count]');
+            if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
+            try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
           } else {
             delete myLikedSlides[id];
             likeCounts[id] = Math.max(0, (likeCounts[id] || 0) - 1);
+            showToast(t('top_removed'));
           }
-          refreshLikeUI();
+          refreshTopUI();
 
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'want_go'); } catch(err){} }
-          trackEvent('like', { slide_id: id, liked: nowLiked });
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'top_vibe'); } catch(err){} }
+          trackEvent('top_vibe', { slide_id: id, voted: nowVoted });
 
           try {
             var user = await authReady;
             if (!user) return;
-            if (nowLiked) {
+            if (nowVoted) {
               await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
             } else {
               await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
             }
-          } catch(err){ console.warn('like db error:', err); }
+          } catch(err){ console.warn('top db error:', err); }
         });
       });
 
-      async function loadLikesFromSupabase(){
+      async function loadTopsFromSupabase(){
         try {
           var user = await authReady;
           if (!user) return;
@@ -1570,15 +1551,15 @@
               });
               likeCounts = counts;
             }
-          } catch(e){ console.warn('all likes load error:', e); }
+          } catch(e){ console.warn('all tops load error:', e); }
           try {
             var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
             if (mine && mine.data) {
               mine.data.forEach(function(r){ if (r.slide_id) myLikedSlides[r.slide_id] = true; });
             }
-          } catch(e){ console.warn('my likes load error:', e); }
-          refreshLikeUI();
-        } catch(e){ console.warn('loadLikes error:', e); }
+          } catch(e){ console.warn('my tops load error:', e); }
+          refreshTopUI();
+        } catch(e){ console.warn('loadTops error:', e); }
       }
 
       var toastTimer;
@@ -1664,25 +1645,27 @@
       openBtns.forEach(function(btn){
         btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); });
       });
-      closeBtn.addEventListener('click', function(e){ e.stopPropagation(); closeProfile(); });
+      if (closeBtn) closeBtn.addEventListener('click', function(e){ e.stopPropagation(); closeProfile(); });
 
       var followBtn = document.getElementById('followBtn');
       var followed = false;
-      followBtn.addEventListener('click', function(){
-        followed = !followed;
-        if (window.ym) { try { ym(113067752, 'reachGoal', 'follow'); } catch(err){} }
-        trackUser('follow', { orgName: 'БАЗА' });
-        trackEvent('follow', { following: followed });
-        if (followed) {
-          followBtn.classList.add('followed');
-          followBtn.querySelector('span').textContent = 'Вы подписаны';
-          followBtn.querySelector('svg').innerHTML = '<path d="M20 6L9 17l-5-5"/>';
-        } else {
-          followBtn.classList.remove('followed');
-          followBtn.querySelector('span').textContent = 'Подписаться';
-          followBtn.querySelector('svg').innerHTML = '<path d="M12 5v14"/><path d="M5 12h14"/>';
-        }
-      });
+      if (followBtn) {
+        followBtn.addEventListener('click', function(){
+          followed = !followed;
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'follow'); } catch(err){} }
+          trackUser('follow', { orgName: 'БАЗА' });
+          trackEvent('follow', { following: followed });
+          if (followed) {
+            followBtn.classList.add('followed');
+            followBtn.querySelector('span').textContent = 'Вы подписаны';
+            followBtn.querySelector('svg').innerHTML = '<path d="M20 6L9 17l-5-5"/>';
+          } else {
+            followBtn.classList.remove('followed');
+            followBtn.querySelector('span').textContent = 'Подписаться';
+            followBtn.querySelector('svg').innerHTML = '<path d="M12 5v14"/><path d="M5 12h14"/>';
+          }
+        });
+      }
 
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
@@ -1866,7 +1849,7 @@
         trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
         setTimeout(function(){ trackUser('visit'); }, 5000);
         setTimeout(function(){ trackUser('visit'); }, 15000);
-        loadLikesFromSupabase();
+        loadTopsFromSupabase();
       });
 
       loadAppSettings();

@@ -89,18 +89,18 @@
   .metric .lbl{font-size:8.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
   .metric.invite:active .ico{background:rgba(205,255,74,.9);color:#07070a;border-color:rgba(205,255,74,.9);}
 
-  /* === ROW со статусом и зрителями === */
-  .live-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;align-self:flex-start;}
-
-  .live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);transition:color .2s ease, border-color .2s ease;}
-  .live.live-fresh{color:#fff;border-color:rgba(205,255,74,.55);box-shadow:0 0 12px rgba(205,255,74,.2);}
-  .live.live-fresh .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);animation:pulse 1.8s ease-in-out infinite;flex:none;}
-  .live.live-old{color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.06);}
-
-  .live-viewers{color:rgba(255,255,255,.65);border-color:rgba(255,255,255,.08);font-weight:500;letter-spacing:.02em;text-transform:none;font-size:10.5px;}
-  .live-viewers span[data-viewers]{color:rgba(255,255,255,.85);font-weight:700;font-variant-numeric:tabular-nums;}
-
+  /* === .live — старый стиль, как было === */
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+  .live .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.85);animation:pulse 1.8s ease-in-out infinite;flex:none;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
+
+  /* Нижний бейдж «смотрят прямо сейчас» */
+  .bottom .live{align-self:flex-start;}
+
+  /* LIVE метка в левом верхнем углу */
+  .live-top{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px;z-index:10;pointer-events:none;font-weight:600;color:#fff;border-color:rgba(205,255,74,.55);}
+  .live-top.live-old{color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.08);}
+  .live-top.live-old .dot{display:none;}
 
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
@@ -263,7 +263,6 @@
         return diff >= 0 && diff < 2 * 60 * 60 * 1000;
       }
 
-      // === Viewer counter (имитация) ===
       var VIEWERS_PEAK = 200;
       var DAY_CURVE = [{h:0,v:0.15},{h:4,v:0.06},{h:6,v:0.10},{h:8,v:0.28},{h:10,v:0.42},{h:13,v:0.65},{h:16,v:0.72},{h:18,v:0.95},{h:20,v:1.00},{h:22,v:0.85},{h:24,v:0.15}];
       function getDayFactor(){
@@ -354,7 +353,7 @@
       var pendingEvents = [];
       var reelsLoaded = false;
       var onboardingDismissed = false;
-      var viewersInitialized = false;
+      var feedStarted = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
 
@@ -382,7 +381,7 @@
 
       function renderReels(reels){
         feed.innerHTML = '';
-        viewersInitialized = false;
+        feedStarted = false;
         if (!reels || reels.length === 0) {
           emptyState.classList.add('visible');
           return;
@@ -395,7 +394,7 @@
           slide.dataset.id = reel.id;
 
           var live = isLive(reel.published_at);
-          var liveClass = live ? 'live live-fresh' : 'live live-old';
+          var liveClass = live ? 'live live-top' : 'live live-top live-old';
           var liveDot = live ? '<span class="dot"></span>' : '';
           var timeText = formatTimeAgo(reel.published_at);
           var baseVotes = parseInt(reel.base_votes, 10) || 0;
@@ -403,6 +402,9 @@
           slide.innerHTML =
             '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
             '<div class="veil"></div>' +
+            '<div class="' + liveClass + '" data-published="' + escapeAttr(reel.published_at) + '">' +
+              liveDot + '<span class="live-time">' + (live ? 'LIVE · ' : '') + timeText + '</span>' +
+            '</div>' +
             '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
             '<div class="side">' +
               '<button class="metric invite" data-share>' +
@@ -411,13 +413,8 @@
               '</button>' +
             '</div>' +
             '<div class="bottom">' +
-              '<div class="live-row">' +
-                '<div class="' + liveClass + '" data-published="' + escapeAttr(reel.published_at) + '">' +
-                  liveDot + '<span class="live-time">' + timeText + '</span>' +
-                '</div>' +
-                '<div class="live live-viewers" data-weight="1.0">' +
-                  '<span data-viewers>—</span><span data-i18n="watching">' + t('watching') + '</span>' +
-                '</div>' +
+              '<div class="live live-viewers" data-weight="1.0">' +
+                '<span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">' + t('watching') + '</span>' +
               '</div>' +
               '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
               '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
@@ -445,7 +442,6 @@
 
         bindHandlers();
         initViewerCounters();
-        viewersInitialized = true;
       }
 
       function escapeHtml(s){
@@ -457,16 +453,16 @@
 
       function refreshLiveLabels(){
         slides.forEach(function(slide){
-          var live = slide.querySelector('.live[data-published]');
+          var live = slide.querySelector('.live-top');
           if (!live) return;
           var pub = live.getAttribute('data-published');
           if (!pub) return;
           var isFresh = isLive(pub);
-          live.className = isFresh ? 'live live-fresh' : 'live live-old';
+          live.className = isFresh ? 'live live-top' : 'live live-top live-old';
           live.setAttribute('data-published', pub);
           var timeText = formatTimeAgo(pub);
           var dotHtml = isFresh ? '<span class="dot"></span>' : '';
-          live.innerHTML = dotHtml + '<span class="live-time">' + timeText + '</span>';
+          live.innerHTML = dotHtml + '<span class="live-time">' + (isFresh ? 'LIVE · ' : '') + timeText + '</span>';
         });
       }
       setInterval(refreshLiveLabels, 30000);
@@ -554,7 +550,10 @@
             }
             onboardingDismissed = true;
             if (reelsLoaded) startFeed();
-            setTimeout(function(){ if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding); onboarding = null; }, 600);
+            setTimeout(function(){
+              if (onboarding && onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
+              onboarding = null;
+            }, 600);
           } else { onboarding.style.transform = ''; }
         }
         onboarding.addEventListener('touchstart', onStart, {passive:true});
@@ -739,7 +738,9 @@
       }
 
       function startFeed(){
+        if (feedStarted) return;
         if (!slides.length) return;
+        feedStarted = true;
         layoutReels();
         initIO();
         initSlideViewsIO();

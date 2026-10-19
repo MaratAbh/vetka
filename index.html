@@ -89,10 +89,17 @@
   .metric .lbl{font-size:8.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
   .metric.invite:active .ico{background:rgba(205,255,74,.9);color:#07070a;border-color:rgba(205,255,74,.9);}
 
-  .live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);align-self:flex-start;transition:color .2s ease, border-color .2s ease;}
+  /* === ROW со статусом и зрителями === */
+  .live-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;align-self:flex-start;}
+
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);transition:color .2s ease, border-color .2s ease;}
   .live.live-fresh{color:#fff;border-color:rgba(205,255,74,.55);box-shadow:0 0 12px rgba(205,255,74,.2);}
   .live.live-fresh .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);animation:pulse 1.8s ease-in-out infinite;flex:none;}
   .live.live-old{color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.06);}
+
+  .live-viewers{color:rgba(255,255,255,.65);border-color:rgba(255,255,255,.08);font-weight:500;letter-spacing:.02em;text-transform:none;font-size:10.5px;}
+  .live-viewers span[data-viewers]{color:rgba(255,255,255,.85);font-weight:700;font-variant-numeric:tabular-nums;}
+
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
 
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
@@ -101,28 +108,13 @@
   .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);min-height:0;}
   .meta:empty{display:none;}
 
-  /* === actions-row === */
   .actions-row{display:flex;gap:8px;align-items:center;pointer-events:auto;}
 
-  /* === ТОП ВАЙБ (размер как старый CTA) === */
   .top-vibe{
-    pointer-events:auto;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:7px;
-    padding:12px 20px;
-    border-radius:100px;
-    background:#CDFF4A;
-    color:#07070a;
-    font-family:'Inter',sans-serif;
-    font-size:13px;
-    font-weight:600;
-    cursor:pointer;
-    border:none;
-    box-shadow:0 0 24px rgba(205,255,74,.35);
-    white-space:nowrap;
-    flex:1;
+    pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:7px;
+    padding:12px 20px;border-radius:100px;background:#CDFF4A;color:#07070a;
+    font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;
+    box-shadow:0 0 24px rgba(205,255,74,.35);white-space:nowrap;flex:1;
     transition:transform .12s ease, box-shadow .2s ease, background .2s ease, color .2s ease, border-color .2s ease;
   }
   .top-vibe:active{transform:scale(.98);}
@@ -135,13 +127,7 @@
   @keyframes arrowBounce{0%{transform:translateY(0);}40%{transform:translateY(-3px);}100%{transform:translateY(0);}}
   .top-vibe svg.bounce{animation:arrowBounce .4s ease;}
 
-  .top-vibe.voted{
-    background:rgba(205,255,74,.14);
-    color:#CDFF4A;
-    border:1px solid rgba(205,255,74,.5);
-    box-shadow:none;
-    padding:11px 19px;
-  }
+  .top-vibe.voted{background:rgba(205,255,74,.14);color:#CDFF4A;border:1px solid rgba(205,255,74,.5);box-shadow:none;padding:11px 19px;}
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
@@ -157,7 +143,6 @@
 </head>
 <body>
 
-  <!-- ====== ONBOARDING ====== -->
   <div class="onboarding" id="onboarding">
     <div class="onb-bg">
       <div class="onb-col onb-col-up">
@@ -203,10 +188,8 @@
     </div>
   </div>
 
-  <!-- ====== FEED (пустой, заполнится из Supabase) ====== -->
   <div class="feed visible" id="feed"></div>
 
-  <!-- ====== EMPTY STATE ====== -->
   <div class="empty-state" id="emptyState">
     <div class="es-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -221,11 +204,10 @@
 
   <script>
     (function(){
-      // ===== i18n =====
       var I18N = {
-        ru: { onboard_tag:'Потоки событий, мест и гостей - <em>под твой вайб</em>', onboard_hint:'Листай вверх', invite:'пригласить', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'Streams of events, places and guests - <em>for your vibe</em>', onboard_hint:'Swipe up', invite:'invite', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Flujos de eventos, lugares y gente - <em>para tu vibe</em>', onboard_hint:'Desliza hacia arriba', invite:'invitar', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Потоки событий, мест и гостей - <em>под твой вайб</em>', onboard_hint:'Листай вверх', invite:'пригласить', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'Streams of events, places and guests - <em>for your vibe</em>', onboard_hint:'Swipe up', invite:'invite', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Flujos de eventos, lugares y gente - <em>para tu vibe</em>', onboard_hint:'Desliza hacia arriba', invite:'invitar', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -253,7 +235,6 @@
         refreshLiveLabels();
       }
 
-      // ===== Supabase =====
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
 
@@ -265,7 +246,6 @@
         return r.json();
       }
 
-      // ===== Time helpers =====
       function formatTimeAgo(publishedAt){
         var diff = Date.now() - new Date(publishedAt).getTime();
         var mins = Math.floor(diff / 60000);
@@ -283,7 +263,57 @@
         return diff >= 0 && diff < 2 * 60 * 60 * 1000;
       }
 
-      // ===== Telegram =====
+      // === Viewer counter (имитация) ===
+      var VIEWERS_PEAK = 200;
+      var DAY_CURVE = [{h:0,v:0.15},{h:4,v:0.06},{h:6,v:0.10},{h:8,v:0.28},{h:10,v:0.42},{h:13,v:0.65},{h:16,v:0.72},{h:18,v:0.95},{h:20,v:1.00},{h:22,v:0.85},{h:24,v:0.15}];
+      function getDayFactor(){
+        var d = new Date(); var tt = d.getHours() + d.getMinutes()/60;
+        for (var i = 0; i < DAY_CURVE.length-1; i++) {
+          var a = DAY_CURVE[i], b = DAY_CURVE[i+1];
+          if (tt >= a.h && tt <= b.h) { var k = (tt-a.h)/(b.h-a.h); return a.v + (b.v-a.v)*k; }
+        }
+        return 0.15;
+      }
+      function targetFor(weight){ var base = VIEWERS_PEAK * getDayFactor() * weight; var noise = 1 + (Math.random()-0.5)*0.24; return Math.max(1, Math.round(base*noise)); }
+
+      function initViewerCounters(){
+        slides.forEach(function(s){
+          var lv = s.querySelector('.live-viewers');
+          if (!lv) return;
+          var w = parseFloat(lv.dataset.weight || '1') || 1;
+          var target = targetFor(w);
+          lv.dataset.current = target;
+          var el = lv.querySelector('[data-viewers]');
+          if (el) el.textContent = target;
+          (function(slide){
+            function scheduleNext(){
+              var delay = 6000 + Math.random()*8000;
+              setTimeout(function(){
+                if (!document.body.contains(slide)) return;
+                tickViewer(slide);
+                scheduleNext();
+              }, delay);
+            }
+            scheduleNext();
+          })(s);
+        });
+      }
+      function tickViewer(slide){
+        var lv = slide.querySelector('.live-viewers');
+        if (!lv) return;
+        var w = parseFloat(lv.dataset.weight || '1') || 1;
+        var cur = parseInt(lv.dataset.current || '0', 10) || 0;
+        var target = targetFor(w);
+        var diff = target - cur;
+        var step;
+        if (Math.abs(diff) >= 8) { var dir = diff > 0 ? 1 : -1; step = dir * (1 + Math.floor(Math.random()*3)); }
+        else { step = Math.random() < 0.65 ? (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random()*2)) : 0; }
+        var next = Math.max(1, cur + step);
+        lv.dataset.current = next;
+        var el = lv.querySelector('[data-viewers]');
+        if (el) el.textContent = next;
+      }
+
       var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
       function readTgUserFromHash(){
         try {
@@ -306,7 +336,6 @@
         return null;
       }
 
-      // ===== State =====
       var feed = document.getElementById('feed');
       var emptyState = document.getElementById('emptyState');
       var onboarding = document.getElementById('onboarding');
@@ -325,6 +354,7 @@
       var pendingEvents = [];
       var reelsLoaded = false;
       var onboardingDismissed = false;
+      var viewersInitialized = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
 
@@ -337,7 +367,6 @@
         toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
       }
 
-      // ===== Загрузка рилсов =====
       async function loadReels(){
         try {
           var rows = await api('reels', 'select=*&is_active=eq.true&order=published_at.desc&limit=50');
@@ -353,6 +382,7 @@
 
       function renderReels(reels){
         feed.innerHTML = '';
+        viewersInitialized = false;
         if (!reels || reels.length === 0) {
           emptyState.classList.add('visible');
           return;
@@ -381,8 +411,13 @@
               '</button>' +
             '</div>' +
             '<div class="bottom">' +
-              '<div class="' + liveClass + '" data-published="' + escapeAttr(reel.published_at) + '">' +
-                liveDot + '<span class="live-time">' + timeText + '</span>' +
+              '<div class="live-row">' +
+                '<div class="' + liveClass + '" data-published="' + escapeAttr(reel.published_at) + '">' +
+                  liveDot + '<span class="live-time">' + timeText + '</span>' +
+                '</div>' +
+                '<div class="live live-viewers" data-weight="1.0">' +
+                  '<span data-viewers>—</span><span data-i18n="watching">' + t('watching') + '</span>' +
+                '</div>' +
               '</div>' +
               '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
               '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
@@ -409,6 +444,8 @@
         });
 
         bindHandlers();
+        initViewerCounters();
+        viewersInitialized = true;
       }
 
       function escapeHtml(s){
@@ -418,10 +455,9 @@
       }
       function escapeAttr(s){ return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
-      // ===== Live-метка обновляется каждые 30 сек =====
       function refreshLiveLabels(){
         slides.forEach(function(slide){
-          var live = slide.querySelector('.live');
+          var live = slide.querySelector('.live[data-published]');
           if (!live) return;
           var pub = live.getAttribute('data-published');
           if (!pub) return;
@@ -435,15 +471,12 @@
       }
       setInterval(refreshLiveLabels, 30000);
 
-      // ===== Video management =====
       var WINDOW_FWD = 2;
-
       function getVideo(idx){
         if (idx < 0 || idx >= slides.length) return null;
         var c = slides[idx].querySelector('.video');
         return c ? c.querySelector('video') : null;
       }
-
       function rebuildVideoFor(idx, autoplay, prime){
         if (idx < 0 || idx >= slides.length) return null;
         var url = videoUrls[idx]; if (!url) return null;
@@ -468,7 +501,6 @@
         }
         return v;
       }
-
       function setActiveSlide(idx){
         if (!slides.length) return;
         for (var i = 0; i < slides.length; i++) {
@@ -486,10 +518,7 @@
           if (p && p.then) p.then(unmute).catch(function(){});
           else requestAnimationFrame(unmute);
         }
-        for (var k = 1; k <= WINDOW_FWD; k++) {
-          var ni = idx + k;
-          if (ni < slides.length) rebuildVideoFor(ni, false, true);
-        }
+        for (var k = 1; k <= WINDOW_FWD; k++) { var ni = idx + k; if (ni < slides.length) rebuildVideoFor(ni, false, true); }
       }
 
       function layoutReels(){
@@ -500,7 +529,6 @@
         for (var i = 0; i < all.length; i++) all[i].style.height = vh + 'px';
       }
 
-      // ===== Onboarding =====
       if (onboarding) {
         var startY = 0, currentY = 0, dragging = false;
         var THRESHOLD = 70;
@@ -576,7 +604,6 @@
 
       applyLang(currentLang);
 
-      // ===== Sound =====
       var soundBtns = [];
       function bindSoundBtns(){
         soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -603,7 +630,6 @@
       }
       function disableSound(){ if (!soundEnabled) return; soundEnabled = false; updateIcons(); var v = getVideo(currentIndex); if (v) { try { v.muted = true; } catch(e){} } }
 
-      // ===== Share =====
       function bindShareBtns(){
         document.querySelectorAll('[data-share]').forEach(function(btn){
           btn.addEventListener('click', function(e){
@@ -626,7 +652,6 @@
         });
       }
 
-      // ===== Top vibe =====
       function bindTopBtns(){
         document.querySelectorAll('[data-top]').forEach(function(btn){
           btn.addEventListener('click', async function(e){
@@ -679,7 +704,6 @@
         });
       }
 
-      // ===== IO =====
       var currentIO = null;
       function initIO(){
         if (currentIO) currentIO.disconnect();
@@ -754,7 +778,6 @@
         });
       }
 
-      // ===== Supabase client =====
       var STORAGE_KEY = EARLY_TG_ID ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID : 'sb-rlkjsjgktyltvxnfyski-auth-token';
       var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { detectSessionInUrl: false, persistSession: true, autoRefreshToken: true, storageKey: STORAGE_KEY } });
 

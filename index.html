@@ -41,24 +41,20 @@
   .onboarding{position:fixed;inset:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;}
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
-  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;animation:onbBgFade .35s ease forwards;}
+  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;animation:onbBgFade .4s ease forwards;}
   @keyframes onbBgFade{to{opacity:1;}}
   .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
   .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
-  .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;z-index:1;}
-  /* Shimmer — виден только пока видео не загрузилось */
-  .onb-col .tile::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg, transparent 30%, rgba(205,255,74,.09) 50%, transparent 70%);background-size:250% 100%;animation:onbTileShimmer 1.8s linear infinite;z-index:3;pointer-events:none;transition:opacity .35s ease;}
-  .onb-col .tile.loaded::after{opacity:0;}
-  @keyframes onbTileShimmer{from{background-position:250% 0;}to{background-position:-150% 0;}}
-  .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:transparent;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;opacity:0;transition:opacity .4s ease;}
-  .onb-col .tile.loaded video{opacity:1;}
+  .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.10),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.12),transparent 60%);pointer-events:none;z-index:1;animation:onbGlow 4s ease-in-out infinite;}
+  @keyframes onbGlow{0%,100%{opacity:.55;}50%{opacity:1;}}
+  .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:transparent;z-index:2;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;}
   .onb-col-up{animation:colUp 60s linear infinite;}
   .onb-col-down{animation:colDown 60s linear infinite;}
   @keyframes colUp{from{transform:translateY(0);}to{transform:translateY(-50%);}}
   @keyframes colDown{from{transform:translateY(-50%);}to{transform:translateY(0);}}
   .onb-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.55) 0%,rgba(7,7,10,.15) 30%,rgba(7,7,10,.35) 55%,rgba(7,7,10,.85) 85%,rgba(7,7,10,.98) 100%);}
   .onb-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(42px + env(safe-area-inset-bottom,0px));z-index:2;pointer-events:none;}
-  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;animation:onbFade .4s 0s ease forwards;}
+  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;animation:onbFade .4s ease forwards;}
   .onb-mark svg{width:100%;height:100%;display:block;}
   .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);opacity:0;animation:onbFade .4s .06s ease forwards;}
   .onb-logo em{font-style:normal;color:#CDFF4A;}
@@ -102,38 +98,11 @@
   .title-row{display:flex;align-items:center;gap:12px;pointer-events:none;}
   .title-row .title{flex:1;min-width:0;}
 
-  .share-icon{
-    pointer-events:auto;
-    flex:none;
-    width:34px;
-    height:34px;
-    background:transparent;
-    border:0;
-    padding:0;
-    color:#CDFF4A;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:transform .15s ease, color .15s ease, opacity .15s ease;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .share-icon:active{
-    transform:scale(.85);
-    color:#e0ff6b;
-  }
-  .share-icon svg{
-    width:22px;
-    height:22px;
-    display:block;
-    overflow:visible;
-  }
+  .share-icon{pointer-events:auto;flex:none;width:34px;height:34px;background:transparent;border:0;padding:0;color:#CDFF4A;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s ease, color .15s ease; -webkit-tap-highlight-color:transparent;}
+  .share-icon:active{transform:scale(.85);color:#e0ff6b;}
+  .share-icon svg{width:22px;height:22px;display:block;overflow:visible;}
   .share-icon:active .tip{transform:scale(1.3);}
-  .share-icon .tip{
-    transform-origin:center;
-    transform-box:fill-box;
-    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
-  }
+  .share-icon .tip{transform-origin:center;transform-box:fill-box;transition:transform .2s cubic-bezier(.34,1.56,.64,1);}
 
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
@@ -145,60 +114,15 @@
 
   .actions-row{display:flex;gap:8px;align-items:center;}
 
-  .top-vibe{
-    pointer-events:auto;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    padding:8px 16px 8px 14px;
-    border-radius:100px;
-    background:#CDFF4A;
-    color:#07070a;
-    font-family:'Inter',sans-serif;
-    font-size:12px;
-    font-weight:600;
-    cursor:pointer;
-    text-decoration:none;
-    box-shadow:0 0 20px rgba(205,255,74,.32);
-    white-space:nowrap;
-    flex:1;
-    border:none;
-    transition:transform .12s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
-    -webkit-tap-highlight-color:transparent;
-  }
+  .top-vibe{pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 16px 8px 14px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 0 20px rgba(205,255,74,.32);white-space:nowrap;flex:1;border:none;transition:transform .12s ease, background .2s ease, color .2s ease, box-shadow .2s ease; -webkit-tap-highlight-color:transparent;}
   .top-vibe:active{transform:scale(.98);}
 
-  .tv-ph{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:1px;
-    flex:none;
-    line-height:1;
-  }
-  .tv-ph svg{
-    width:13px;
-    height:13px;
-    display:block;
-    overflow:visible;
-  }
-  .tv-count{
-    font-size:10px;
-    font-weight:800;
-    line-height:1;
-    font-variant-numeric:tabular-nums;
-    letter-spacing:-.02em;
-  }
-
+  .tv-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;flex:none;line-height:1;}
+  .tv-ph svg{width:13px;height:13px;display:block;overflow:visible;}
+  .tv-count{font-size:10px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
   .tv-label{font-weight:700;}
 
-  .top-vibe.voted{
-    background:rgba(205,255,74,.14);
-    color:#CDFF4A;
-    box-shadow:inset 0 0 0 1px rgba(205,255,74,.5);
-  }
+  .top-vibe.voted{background:rgba(205,255,74,.14);color:#CDFF4A;box-shadow:inset 0 0 0 1px rgba(205,255,74,.5);}
 
   @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
   .tv-count.pulse{animation:countPulse .45s ease;}
@@ -281,41 +205,44 @@
   <script>
     (function(){
       // =========================================================
-      // 0. SUPABASE CONSTANTS
+      // 0. CONSTANTS
       // =========================================================
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
 
-      // =========================================================
-      // 1. ONBOARDING VIDEO URLS — cache + early network fetch
-      //    Стартует СРАЗУ, до всей остальной логики.
-      //    Кэш в localStorage → повторное открытие идеально мгновенно.
-      // =========================================================
-      var ONB_CACHE_KEY = 'vetka_onb_videos_v1';
+      // Кэш-ключ поднят до v2 — сбрасываем любые старые битые данные
+      var ONB_CACHE_KEY = 'vetka_onb_videos_v2';
       var ONB_COUNT = 12;
 
+      // =========================================================
+      // 1. ONBOARDING URLS — ранний fetch + кэш
+      // =========================================================
       var onbCachedUrls = null;
       try {
-        var __c = localStorage.getItem(ONB_CACHE_KEY);
-        if (__c) {
-          var __p = JSON.parse(__c);
-          if (Array.isArray(__p) && __p.length) {
+        var __raw = localStorage.getItem(ONB_CACHE_KEY);
+        if (__raw) {
+          var __parsed = JSON.parse(__raw);
+          if (Array.isArray(__parsed) && __parsed.length) {
             onbCachedUrls = [];
-            for (var __i = 0; __i < __p.length; __i++) {
-              if (typeof __p[__i] === 'string' && __p[__i]) onbCachedUrls.push(__p[__i]);
+            for (var __i = 0; __i < __parsed.length; __i++) {
+              if (typeof __parsed[__i] === 'string' && __parsed[__i]) onbCachedUrls.push(__parsed[__i]);
             }
             if (!onbCachedUrls.length) onbCachedUrls = null;
           }
         }
       } catch(e){}
 
-      // Сетевой запрос стартует немедленно, параллельно с рендером
-      var onbNetworkUrlsPromise = (async function(){
+      // Ранний лёгкий fetch — стартует сразу
+      var onbEarlyPromise = (async function(){
         try {
-          var r = await fetch(
-            SUPABASE_URL + '/rest/v1/reels?select=video_url&is_active=eq.true&limit=' + (ONB_COUNT * 2),
-            { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Accept': 'application/json' } }
-          );
+          var url = SUPABASE_URL + '/rest/v1/reels?select=video_url&is_active=eq.true&limit=' + (ONB_COUNT * 2);
+          var r = await fetch(url, {
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Accept': 'application/json'
+            }
+          });
           if (!r.ok) return null;
           var rows = await r.json();
           if (!rows || !rows.length) return null;
@@ -427,7 +354,7 @@
       var toast = document.getElementById('toast');
 
       // =========================================================
-      // 6. Onboarding video loader — мгновенный старт
+      // 6. Onboarding video loader
       // =========================================================
       var onbVids = [];
       var onboardingDismissed = false;
@@ -436,38 +363,30 @@
       function loadOnbVideos(){
         if (!onboarding || onboardingDismissed) return;
         for (var i = 0; i < onbVids.length; i++) {
-          (function(v){
-            if (!v || v.dataset.started) return;
-            var url = v.dataset.src;
-            if (!url) return;
-            v.dataset.started = '1';
-            v.muted = true;
-            v.setAttribute('muted','');
-            v.setAttribute('playsinline','');
-            v.setAttribute('webkit-playsinline','');
-            v.setAttribute('autoplay','');
-            try { v.setAttribute('preload','auto'); } catch(e){}
-            try { v.setAttribute('fetchpriority','high'); } catch(e){}
-            v.src = url;
-            try { v.load(); } catch(e){}
-
-            function markLoaded(){
-              var tile = v.closest ? v.closest('.tile') : null;
-              if (tile) tile.classList.add('loaded');
-            }
-            v.addEventListener('loadeddata', markLoaded, { once: true });
-            v.addEventListener('playing', markLoaded, { once: true });
-
-            var p = v.play();
-            if (p && p.catch) p.catch(function(){});
-          })(onbVids[i]);
+          var v = onbVids[i];
+          if (!v || v.dataset.started) continue;
+          var url = v.dataset.src;
+          if (!url) continue;
+          v.dataset.started = '1';
+          v.muted = true;
+          try { v.setAttribute('muted',''); } catch(e){}
+          try { v.setAttribute('playsinline',''); } catch(e){}
+          try { v.setAttribute('webkit-playsinline',''); } catch(e){}
+          try { v.setAttribute('autoplay',''); } catch(e){}
+          try { v.setAttribute('preload','auto'); } catch(e){}
+          v.src = url;
+          try { v.load(); } catch(e){}
+          var p = v.play();
+          if (p && p.catch) p.catch(function(){});
         }
       }
 
       function populateOnbSources(urls){
-        if (!onboarding || onboardingDismissed || !urls || !urls.length) return;
+        if (!onboarding || onboardingDismissed) return;
+        if (!urls || !urls.length) return;
+        if (!onbVids.length) return;
         for (var i = 0; i < onbVids.length; i++) {
-          if (!onbVids[i].dataset.started && !onbVids[i].dataset.src) {
+          if (onbVids[i] && !onbVids[i].dataset.started && !onbVids[i].dataset.src) {
             onbVids[i].dataset.src = urls[i % urls.length];
           }
         }
@@ -516,17 +435,25 @@
           if (!rows) rows = [];
         } catch(e){ console.warn('loadReels error:', e); rows = []; }
 
-        // Fallback: если ранний prefetch по какой-то причине не сработал — подстрахуемся
-        if ((!onbCachedUrls || !onbCachedUrls.length) && onboarding && !onboardingDismissed) {
-          var onbUrls = [];
-          for (var oi = 0; oi < rows.length; oi++) {
-            if (rows[oi] && rows[oi].video_url) onbUrls.push(rows[oi].video_url);
+        // Fallback: если ранний fetch ещё не дал результата, но onboarding ещё жив — заполним из rows
+        try {
+          if (onboarding && !onboardingDismissed && rows.length) {
+            var needPopulate = false;
+            for (var ci = 0; ci < onbVids.length; ci++) {
+              if (!onbVids[ci].dataset.src) { needPopulate = true; break; }
+            }
+            if (needPopulate) {
+              var onbUrls = [];
+              for (var oi = 0; oi < rows.length; oi++) {
+                if (rows[oi] && rows[oi].video_url) onbUrls.push(rows[oi].video_url);
+              }
+              if (onbUrls.length) {
+                populateOnbSources(onbUrls);
+                try { localStorage.setItem(ONB_CACHE_KEY, JSON.stringify(onbUrls)); } catch(e){}
+              }
+            }
           }
-          if (onbUrls.length) {
-            populateOnbSources(onbUrls);
-            try { localStorage.setItem(ONB_CACHE_KEY, JSON.stringify(onbUrls)); } catch(e){}
-          }
-        }
+        } catch(e){}
 
         try {
           var likesAll = await api('likes', 'select=slide_id');
@@ -742,23 +669,21 @@
       }
 
       // =========================================================
-      // 9. Onboarding init — СРАЗУ грузим видео из кэша
+      // 9. Onboarding init
       // =========================================================
       if (onboarding) {
         onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
 
-        // 1) Кэш — мгновенно, без сети
+        // Сразу — из кэша
         if (onbCachedUrls && onbCachedUrls.length) {
           populateOnbSources(onbCachedUrls);
         }
 
-        // 2) Сеть — параллельно; если кэша не было или он был пуст — подхватываем
-        onbNetworkUrlsPromise.then(function(urls){
+        // Параллельно — когда ранний fetch резолвится, добавим недостающие URL
+        onbEarlyPromise.then(function(urls){
           if (!urls || !urls.length) return;
           if (!onboarding || onboardingDismissed) return;
-          if (!onbCachedUrls || !onbCachedUrls.length) {
-            populateOnbSources(urls);
-          }
+          populateOnbSources(urls);
         });
 
         // --- drag / dismiss ---
@@ -806,12 +731,18 @@
         document.addEventListener('mouseup', onEnd);
 
         onboarding.addEventListener('click', function(e){
-          if (e.target.closest('.lang-switch')) return;
+          var el = e.target;
+          if (el && el.closest && el.closest('.lang-switch')) return;
           if (moved) return;
           dismissOnboarding();
         });
 
-        var kickAll = function(){ if (!onboarding) return; onboarding.querySelectorAll('video').forEach(function(v){ if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } }); };
+        var kickAll = function(){
+          if (!onboarding) return;
+          onboarding.querySelectorAll('video').forEach(function(v){
+            if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+          });
+        };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
         onboarding.addEventListener('click', kickAll, {once:true});
 
@@ -935,7 +866,7 @@
       }
 
       // =========================================================
-      // 11. Viewer counters (fake)
+      // 11. Viewer counters
       // =========================================================
       var VIEWERS_PEAK = 200;
       var DAY_CURVE = [{h:0,v:0.15},{h:4,v:0.06},{h:6,v:0.10},{h:8,v:0.28},{h:10,v:0.42},{h:13,v:0.65},{h:16,v:0.72},{h:18,v:0.95},{h:20,v:1.00},{h:22,v:0.85},{h:24,v:0.15}];

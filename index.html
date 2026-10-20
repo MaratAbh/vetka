@@ -89,12 +89,10 @@
   .metric .lbl{font-size:8.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
   .metric.invite:active .ico{background:rgba(205,255,74,.9);color:#07070a;border-color:rgba(205,255,74,.9);}
 
-  /* Нижний бейдж «смотрят прямо сейчас» — старый дизайн */
   .live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-self:flex-start;}
   .live .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.85);animation:pulse 1.8s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
 
-  /* LIVE в верхнем левом углу */
   .live-top{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px;z-index:10;display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;color:#fff;padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.45);border:1px solid rgba(205,255,74,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none;box-shadow:0 0 12px rgba(205,255,74,.2);font-variant-numeric:tabular-nums;}
   .live-top .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);animation:pulse 1.8s ease-in-out infinite;}
   .live-top.old{color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.08);box-shadow:none;}
@@ -114,9 +112,13 @@
   .meta:empty{display:none;}
   .meta .item{display:inline-flex;align-items:center;gap:5px;}
   .meta i{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.35);}
+
+  /* Адрес места */
+  .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
+
   .actions-row{display:flex;gap:8px;align-items:center;}
 
-  /* Кнопка «Топ вайб» — размер как CTA */
   .top-vibe{pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 0 24px rgba(205,255,74,.35);white-space:nowrap;flex:1;border:none;transition:transform .12s ease, background .2s ease, color .2s ease, box-shadow .2s ease;-webkit-tap-highlight-color:transparent;}
   .top-vibe:active{transform:scale(.98);}
   .top-vibe svg{width:14px;height:14px;flex:none;}
@@ -231,7 +233,6 @@
         }
       }
 
-      // ===== Supabase =====
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
 
@@ -260,7 +261,6 @@
         return diff >= 0 && diff < 2 * 60 * 60 * 1000;
       }
 
-      // ===== Telegram =====
       var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
       function readTgUserFromHash(){
         try {
@@ -283,7 +283,6 @@
         return null;
       }
 
-      // ===== State =====
       var feed = document.getElementById('feed');
       var emptyState = document.getElementById('emptyState');
       var onboarding = document.getElementById('onboarding');
@@ -316,7 +315,6 @@
         toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
       }
 
-      // ===== Загрузка рилсов =====
       async function loadReels(){
         var rows = [];
         try {
@@ -354,6 +352,9 @@
           var liveClass = live ? 'live-top' : 'live-top old';
           var liveDot = live ? '<span class="dot"></span>' : '';
           var baseVotes = parseInt(reel.base_votes, 10) || 0;
+          var placeHtml = reel.place
+            ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
+            : '';
 
           slide.innerHTML =
             '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
@@ -372,6 +373,7 @@
               '<div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">' + t('watching') + '</span></div>' +
               '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
               '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
+              placeHtml +
               '<div class="actions-row">' +
                 '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
                   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>' +
@@ -397,7 +399,6 @@
         bindHandlers();
       }
 
-      // ===== Обновление LIVE-метки =====
       function refreshLiveLabels(){
         slides.forEach(function(slide){
           var live = slide.querySelector('.live-top');
@@ -413,7 +414,6 @@
       }
       setInterval(refreshLiveLabels, 30000);
 
-      // ===== Видео =====
       var WINDOW_FWD = 2;
       function getVideo(idx){
         if (idx < 0 || idx >= slides.length) return null;
@@ -472,7 +472,6 @@
         for (var i = 0; i < all.length; i++) all[i].style.height = vh + 'px';
       }
 
-      // ===== ОНБОРДИНГ (как в исходнике, без изменений) =====
       if (onboarding) {
         var startY = 0, currentY = 0, dragging = false;
         var THRESHOLD = 70;
@@ -560,7 +559,6 @@
 
       applyLang(currentLang);
 
-      // ===== Sound =====
       var soundBtns = [];
       function bindSoundBtns(){
         soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -588,7 +586,6 @@
       }
       function disableSound(){ if (!soundEnabled) return; soundEnabled = false; updateIcons(); var v = getVideo(currentIndex); if (v) { try { v.muted = true; } catch(e){} } }
 
-      // ===== Share =====
       function bindShareBtns(){
         document.querySelectorAll('[data-share]').forEach(function(btn){
           btn.addEventListener('click', function(e){
@@ -611,7 +608,6 @@
         });
       }
 
-      // ===== Топ вайб =====
       function bindTopBtns(){
         document.querySelectorAll('[data-top]').forEach(function(btn){
           btn.addEventListener('click', async function(e){
@@ -662,7 +658,6 @@
         });
       }
 
-      // ===== Viewers =====
       var VIEWERS_PEAK = 200;
       var DAY_CURVE = [{h:0,v:0.15},{h:4,v:0.06},{h:6,v:0.10},{h:8,v:0.28},{h:10,v:0.42},{h:13,v:0.65},{h:16,v:0.72},{h:18,v:0.95},{h:20,v:1.00},{h:22,v:0.85},{h:24,v:0.15}];
       function getDayFactor(){
@@ -715,7 +710,6 @@
         if (el) el.textContent = next;
       }
 
-      // ===== IO =====
       var currentIO = null;
       function initIO(){
         if (currentIO) currentIO.disconnect();
@@ -750,7 +744,6 @@
         slides.forEach(function(s){ slideIO.observe(s); });
       }
 
-      // ===== Запуск ленты =====
       function bootFeed(){
         if (feedBooted) return;
         if (!slides.length) return;
@@ -794,7 +787,6 @@
         });
       }
 
-      // ===== Supabase client =====
       var STORAGE_KEY = EARLY_TG_ID ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID : 'sb-rlkjsjgktyltvxnfyski-auth-token';
       var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { detectSessionInUrl: false, persistSession: true, autoRefreshToken: true, storageKey: STORAGE_KEY } });
 

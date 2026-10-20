@@ -93,7 +93,6 @@
   .live .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.85);animation:pulse 1.8s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
 
-  /* LIVE-бейдж (верхний левый угол) */
   .live-top{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px;z-index:10;display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;color:#fff;padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.45);border:1px solid rgba(205,255,74,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none;box-shadow:0 0 12px rgba(205,255,74,.2);font-variant-numeric:tabular-nums;}
   .live-top .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);animation:pulse 1.8s ease-in-out infinite;}
   .live-top.old{color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.08);box-shadow:none;}
@@ -304,9 +303,9 @@
       }
 
       // 3 состояния бейджа:
-      // 'live'   — 0-2 часа: показываем с точкой и LIVE
-      // 'time'   — 2-24 часа: показываем только время, без LIVE
-      // 'hidden' — >24 часов: бейдж полностью скрыт
+      // 'live'   0-2 часа → LIVE + точка + время
+      // 'time'   2-24 часа → только время, без LIVE
+      // 'hidden' >24 часа → бейдж полностью скрыт
       function getBadgeState(iso){
         var diff = Date.now() - new Date(iso).getTime();
         if (diff < 0) return 'hidden';
@@ -371,12 +370,39 @@
         toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
       }
 
+      // ============================================================
+      // ЗАГРУЗКА: рилсы + все лайки → сортировка по total (base+likes)
+      // ============================================================
       async function loadReels(){
         var rows = [];
+        var likesCount = {};
+
+        // 1. Рилсы
         try {
-          rows = await api('reels', 'select=*&is_active=eq.true&order=published_at.desc&limit=50');
+          rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
           if (!rows) rows = [];
         } catch(e){ console.warn('loadReels error:', e); rows = []; }
+
+        // 2. Все лайки (для подсчёта и сортировки)
+        try {
+          var likesAll = await api('likes', 'select=slide_id');
+          if (likesAll && likesAll.length) {
+            likesAll.forEach(function(l){ if (l.slide_id) likesCount[l.slide_id] = (likesCount[l.slide_id] || 0) + 1; });
+          }
+        } catch(e){ console.warn('likes load error:', e); }
+
+        // 3. Сохраняем в topCounts — чтобы кнопки сразу показывали правильное число
+        topCounts = likesCount;
+
+        // 4. Считаем total (base_votes + real_likes) и сортируем по убыванию
+        rows.forEach(function(r){
+          var base = parseInt(r.base_votes, 10) || 0;
+          var real = likesCount[r.id] || 0;
+          r.__total = base + real;
+        });
+        rows.sort(function(a, b){ return b.__total - a.__total; });
+
+        // 5. Рендерим
         renderReels(rows);
         reelsLoaded = true;
         if (onboardingDismissed) bootFeed();
@@ -419,6 +445,7 @@
           }
 
           var baseVotes = parseInt(reel.base_votes, 10) || 0;
+          var totalVotes = baseVotes + (topCounts[reel.id] || 0);
           var placeHtml = reel.place
             ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
             : '';
@@ -443,7 +470,7 @@
                 '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
                   '<span class="tv-ph">' +
                     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.87l-8.106-13.536a1.914 1.914 0 0 0-3.274 0z"/></svg>' +
-                    '<span class="tv-count" data-count>' + baseVotes + '</span>' +
+                    '<span class="tv-count" data-count>' + totalVotes + '</span>' +
                   '</span>' +
                   '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
                 '</button>' +
@@ -860,20 +887,13 @@
         initViewerCounters();
         setActiveSlide(0);
         refreshTopUI();
-        loadTopsFromSupabase();
+        loadMyVotes();
       }
 
-      async function loadTopsFromSupabase(){
+      // Загружаем ТОЛЬКО мои голоса (для подсветки voted) — сами counts уже загружены в loadReels
+      async function loadMyVotes(){
         try {
           var user = await authReady; if (!user) return;
-          try {
-            var all = await supabaseClient.from('likes').select('slide_id');
-            if (all && all.data) {
-              var counts = {};
-              all.data.forEach(function(r){ if (r.slide_id) counts[r.slide_id] = (counts[r.slide_id] || 0) + 1; });
-              topCounts = counts;
-            }
-          } catch(e){}
           try {
             var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
             if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });

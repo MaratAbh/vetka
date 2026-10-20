@@ -8,7 +8,7 @@
 <title>VETKA</title>
 
 <link rel="preconnect" href="https://telegram.org" crossorigin>
-<link rel="preconnect" href="https://rlkjsjgktyltvxnfyski.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://telegram.org">
 
 <script type="text/javascript" >
    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -41,31 +41,30 @@
   .onboarding{position:fixed;inset:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;}
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
-  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;animation:onbBgFade .4s ease forwards;}
-  @keyframes onbBgFade{to{opacity:1;}}
+  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;transition:transform 1.2s ease,opacity 1.2s ease;}
+  .onb-bg.ready{transform:scale(1);opacity:1;}
   .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
   .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
-  .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.10),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.12),transparent 60%);pointer-events:none;z-index:1;animation:onbGlow 4s ease-in-out infinite;}
-  @keyframes onbGlow{0%,100%{opacity:.55;}50%{opacity:1;}}
-  .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:transparent;z-index:2;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;}
+  .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;z-index:1;}
+  .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#0a0a12;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;}
   .onb-col-up{animation:colUp 60s linear infinite;}
   .onb-col-down{animation:colDown 60s linear infinite;}
   @keyframes colUp{from{transform:translateY(0);}to{transform:translateY(-50%);}}
   @keyframes colDown{from{transform:translateY(-50%);}to{transform:translateY(0);}}
   .onb-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.55) 0%,rgba(7,7,10,.15) 30%,rgba(7,7,10,.35) 55%,rgba(7,7,10,.85) 85%,rgba(7,7,10,.98) 100%);}
   .onb-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(42px + env(safe-area-inset-bottom,0px));z-index:2;pointer-events:none;}
-  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;animation:onbFade .4s ease forwards;}
+  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;animation:onbFade .9s .2s ease forwards;}
   .onb-mark svg{width:100%;height:100%;display:block;}
-  .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);opacity:0;animation:onbFade .4s .06s ease forwards;}
+  .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);opacity:0;animation:onbFade .9s .35s ease forwards;}
   .onb-logo em{font-style:normal;color:#CDFF4A;}
-  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;animation:onbFade .4s .14s ease forwards;}
+  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;animation:onbFade .9s .55s ease forwards;}
   .onb-tag em{font-style:normal;color:#CDFF4A;}
-  .onb-hint{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;animation:onbFade .4s .24s ease forwards;}
+  .onb-hint{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;animation:onbFade .9s .75s ease forwards;}
   .onb-hint i{display:block;width:1.5px;height:34px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));animation:onbHint 2s ease-in-out infinite;}
   @keyframes onbHint{0%{transform:translateY(-10px) scaleY(.3);opacity:0;}45%{opacity:1;}100%{transform:translateY(10px) scaleY(1);opacity:0;}}
   @keyframes onbFade{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 
-  .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;opacity:0;animation:onbFade .4s .08s ease forwards;}
+  .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;opacity:0;animation:onbFade .9s .5s ease forwards;}
   .lang-switch button{background:transparent;border:0;color:rgba(255,255,255,.6);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;padding:6px 11px;border-radius:100px;cursor:pointer;transition:background .2s ease, color .2s ease, transform .12s ease;}
   .lang-switch button.active{background:#CDFF4A;color:#07070a;}
   .lang-switch button:active{transform:scale(.94);}
@@ -98,11 +97,38 @@
   .title-row{display:flex;align-items:center;gap:12px;pointer-events:none;}
   .title-row .title{flex:1;min-width:0;}
 
-  .share-icon{pointer-events:auto;flex:none;width:34px;height:34px;background:transparent;border:0;padding:0;color:#CDFF4A;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s ease, color .15s ease; -webkit-tap-highlight-color:transparent;}
-  .share-icon:active{transform:scale(.85);color:#e0ff6b;}
-  .share-icon svg{width:22px;height:22px;display:block;overflow:visible;}
+  .share-icon{
+    pointer-events:auto;
+    flex:none;
+    width:34px;
+    height:34px;
+    background:transparent;
+    border:0;
+    padding:0;
+    color:#CDFF4A;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform .15s ease, color .15s ease, opacity .15s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .share-icon:active{
+    transform:scale(.85);
+    color:#e0ff6b;
+  }
+  .share-icon svg{
+    width:22px;
+    height:22px;
+    display:block;
+    overflow:visible;
+  }
   .share-icon:active .tip{transform:scale(1.3);}
-  .share-icon .tip{transform-origin:center;transform-box:fill-box;transition:transform .2s cubic-bezier(.34,1.56,.64,1);}
+  .share-icon .tip{
+    transform-origin:center;
+    transform-box:fill-box;
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+  }
 
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
@@ -114,15 +140,60 @@
 
   .actions-row{display:flex;gap:8px;align-items:center;}
 
-  .top-vibe{pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 16px 8px 14px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 0 20px rgba(205,255,74,.32);white-space:nowrap;flex:1;border:none;transition:transform .12s ease, background .2s ease, color .2s ease, box-shadow .2s ease; -webkit-tap-highlight-color:transparent;}
+  .top-vibe{
+    pointer-events:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:8px 16px 8px 14px;
+    border-radius:100px;
+    background:#CDFF4A;
+    color:#07070a;
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+    text-decoration:none;
+    box-shadow:0 0 20px rgba(205,255,74,.32);
+    white-space:nowrap;
+    flex:1;
+    border:none;
+    transition:transform .12s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
   .top-vibe:active{transform:scale(.98);}
 
-  .tv-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;flex:none;line-height:1;}
-  .tv-ph svg{width:13px;height:13px;display:block;overflow:visible;}
-  .tv-count{font-size:10px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
+  .tv-ph{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:1px;
+    flex:none;
+    line-height:1;
+  }
+  .tv-ph svg{
+    width:13px;
+    height:13px;
+    display:block;
+    overflow:visible;
+  }
+  .tv-count{
+    font-size:10px;
+    font-weight:800;
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+    letter-spacing:-.02em;
+  }
+
   .tv-label{font-weight:700;}
 
-  .top-vibe.voted{background:rgba(205,255,74,.14);color:#CDFF4A;box-shadow:inset 0 0 0 1px rgba(205,255,74,.5);}
+  .top-vibe.voted{
+    background:rgba(205,255,74,.14);
+    color:#CDFF4A;
+    box-shadow:inset 0 0 0 1px rgba(205,255,74,.5);
+  }
 
   @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
   .tv-count.pulse{animation:countPulse .45s ease;}
@@ -144,7 +215,7 @@
 <body>
 
   <div class="onboarding" id="onboarding">
-    <div class="onb-bg">
+    <div class="onb-bg" id="onbBg">
       <div class="onb-col onb-col-up">
         <div class="tile"><video muted loop playsinline preload="none"></video></div>
         <div class="tile"><video muted loop playsinline preload="none"></video></div>
@@ -204,61 +275,6 @@
 
   <script>
     (function(){
-      // =========================================================
-      // 0. CONSTANTS
-      // =========================================================
-      var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
-      var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
-
-      // Кэш-ключ поднят до v2 — сбрасываем любые старые битые данные
-      var ONB_CACHE_KEY = 'vetka_onb_videos_v2';
-      var ONB_COUNT = 12;
-
-      // =========================================================
-      // 1. ONBOARDING URLS — ранний fetch + кэш
-      // =========================================================
-      var onbCachedUrls = null;
-      try {
-        var __raw = localStorage.getItem(ONB_CACHE_KEY);
-        if (__raw) {
-          var __parsed = JSON.parse(__raw);
-          if (Array.isArray(__parsed) && __parsed.length) {
-            onbCachedUrls = [];
-            for (var __i = 0; __i < __parsed.length; __i++) {
-              if (typeof __parsed[__i] === 'string' && __parsed[__i]) onbCachedUrls.push(__parsed[__i]);
-            }
-            if (!onbCachedUrls.length) onbCachedUrls = null;
-          }
-        }
-      } catch(e){}
-
-      // Ранний лёгкий fetch — стартует сразу
-      var onbEarlyPromise = (async function(){
-        try {
-          var url = SUPABASE_URL + '/rest/v1/reels?select=video_url&is_active=eq.true&limit=' + (ONB_COUNT * 2);
-          var r = await fetch(url, {
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Accept': 'application/json'
-            }
-          });
-          if (!r.ok) return null;
-          var rows = await r.json();
-          if (!rows || !rows.length) return null;
-          var urls = [];
-          for (var i = 0; i < rows.length; i++) {
-            if (rows[i] && rows[i].video_url) urls.push(rows[i].video_url);
-          }
-          if (!urls.length) return null;
-          try { localStorage.setItem(ONB_CACHE_KEY, JSON.stringify(urls)); } catch(e){}
-          return urls;
-        } catch(e){ return null; }
-      })();
-
-      // =========================================================
-      // 2. I18N
-      // =========================================================
       var I18N = {
         ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
         en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
@@ -289,9 +305,9 @@
         }
       }
 
-      // =========================================================
-      // 3. API + helpers
-      // =========================================================
+      var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
+      var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
+
       async function api(path, query){
         var url = SUPABASE_URL + '/rest/v1/' + path;
         if (query) url += '?' + query;
@@ -320,9 +336,6 @@
         return 'hidden';
       }
 
-      // =========================================================
-      // 4. Telegram user
-      // =========================================================
       var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
       function readTgUserFromHash(){
         try {
@@ -345,57 +358,11 @@
         return null;
       }
 
-      // =========================================================
-      // 5. DOM
-      // =========================================================
       var feed = document.getElementById('feed');
       var emptyState = document.getElementById('emptyState');
       var onboarding = document.getElementById('onboarding');
       var toast = document.getElementById('toast');
 
-      // =========================================================
-      // 6. Onboarding video loader
-      // =========================================================
-      var onbVids = [];
-      var onboardingDismissed = false;
-      var onboardingClosing = false;
-
-      function loadOnbVideos(){
-        if (!onboarding || onboardingDismissed) return;
-        for (var i = 0; i < onbVids.length; i++) {
-          var v = onbVids[i];
-          if (!v || v.dataset.started) continue;
-          var url = v.dataset.src;
-          if (!url) continue;
-          v.dataset.started = '1';
-          v.muted = true;
-          try { v.setAttribute('muted',''); } catch(e){}
-          try { v.setAttribute('playsinline',''); } catch(e){}
-          try { v.setAttribute('webkit-playsinline',''); } catch(e){}
-          try { v.setAttribute('autoplay',''); } catch(e){}
-          try { v.setAttribute('preload','auto'); } catch(e){}
-          v.src = url;
-          try { v.load(); } catch(e){}
-          var p = v.play();
-          if (p && p.catch) p.catch(function(){});
-        }
-      }
-
-      function populateOnbSources(urls){
-        if (!onboarding || onboardingDismissed) return;
-        if (!urls || !urls.length) return;
-        if (!onbVids.length) return;
-        for (var i = 0; i < onbVids.length; i++) {
-          if (onbVids[i] && !onbVids[i].dataset.started && !onbVids[i].dataset.src) {
-            onbVids[i].dataset.src = urls[i % urls.length];
-          }
-        }
-        loadOnbVideos();
-      }
-
-      // =========================================================
-      // 7. State
-      // =========================================================
       var slides = [];
       var videoUrls = [];
       var currentIndex = 0;
@@ -408,8 +375,10 @@
       var tgIdWatchStarted = false;
       var pendingEvents = [];
       var reelsLoaded = false;
+      var onboardingDismissed = false;
       var feedBooted = false;
       var viewerTimersStarted = false;
+      var onboardingClosing = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
@@ -423,9 +392,6 @@
         toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
       }
 
-      // =========================================================
-      // 8. Feed
-      // =========================================================
       async function loadReels(){
         var rows = [];
         var likesCount = {};
@@ -434,26 +400,6 @@
           rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
           if (!rows) rows = [];
         } catch(e){ console.warn('loadReels error:', e); rows = []; }
-
-        // Fallback: если ранний fetch ещё не дал результата, но onboarding ещё жив — заполним из rows
-        try {
-          if (onboarding && !onboardingDismissed && rows.length) {
-            var needPopulate = false;
-            for (var ci = 0; ci < onbVids.length; ci++) {
-              if (!onbVids[ci].dataset.src) { needPopulate = true; break; }
-            }
-            if (needPopulate) {
-              var onbUrls = [];
-              for (var oi = 0; oi < rows.length; oi++) {
-                if (rows[oi] && rows[oi].video_url) onbUrls.push(rows[oi].video_url);
-              }
-              if (onbUrls.length) {
-                populateOnbSources(onbUrls);
-                try { localStorage.setItem(ONB_CACHE_KEY, JSON.stringify(onbUrls)); } catch(e){}
-              }
-            }
-          }
-        } catch(e){}
 
         try {
           var likesAll = await api('likes', 'select=slide_id');
@@ -650,11 +596,11 @@
         onboarding.style.transform = '';
         onboarding.classList.add('gone');
 
-        var onbVidsAll = onboarding.querySelectorAll('video');
-        for (var i = 0; i < onbVidsAll.length; i++) {
-          try { onbVidsAll[i].muted = true; } catch(e){}
-          try { onbVidsAll[i].pause(); } catch(e){}
-          try { onbVidsAll[i].removeAttribute('src'); onbVidsAll[i].load(); } catch(e){}
+        var onbVids = onboarding.querySelectorAll('video');
+        for (var i = 0; i < onbVids.length; i++) {
+          try { onbVids[i].muted = true; } catch(e){}
+          try { onbVids[i].pause(); } catch(e){}
+          try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
         }
 
         onboardingDismissed = true;
@@ -668,25 +614,7 @@
         }, 600);
       }
 
-      // =========================================================
-      // 9. Onboarding init
-      // =========================================================
       if (onboarding) {
-        onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-
-        // Сразу — из кэша
-        if (onbCachedUrls && onbCachedUrls.length) {
-          populateOnbSources(onbCachedUrls);
-        }
-
-        // Параллельно — когда ранний fetch резолвится, добавим недостающие URL
-        onbEarlyPromise.then(function(urls){
-          if (!urls || !urls.length) return;
-          if (!onboarding || onboardingDismissed) return;
-          populateOnbSources(urls);
-        });
-
-        // --- drag / dismiss ---
         var startY = 0, currentY = 0, dragging = false, moved = false;
         var THRESHOLD = 60;
 
@@ -731,18 +659,64 @@
         document.addEventListener('mouseup', onEnd);
 
         onboarding.addEventListener('click', function(e){
-          var el = e.target;
-          if (el && el.closest && el.closest('.lang-switch')) return;
+          if (e.target.closest('.lang-switch')) return;
           if (moved) return;
           dismissOnboarding();
         });
 
-        var kickAll = function(){
+        var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
+        var onbIdx = 0, ONB_BATCH = 3;
+        var onbBg = document.getElementById('onbBg');
+
+        function loadOnbBatch(){
           if (!onboarding) return;
-          onboarding.querySelectorAll('video').forEach(function(v){
-            if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
-          });
-        };
+          var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
+          for (; onbIdx < end; onbIdx++) {
+            (function(v){
+              if (!v || v.dataset.started) return;
+              v.dataset.started = '1';
+              var url = v.dataset.src; if (!url) return;
+              v.muted = true;
+              v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
+              try { v.setAttribute('preload','auto'); } catch(e){}
+              v.src = url; try { v.load(); } catch(e){}
+              var p = v.play(); if (p && p.catch) p.catch(function(){});
+            })(onbVids[onbIdx]);
+          }
+          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
+        }
+
+        // === Загружаем видео ТОЛЬКО из Supabase, показываем тайлы только когда есть URL ===
+        (function loadOnbFromSupabase(attempt){
+          attempt = attempt || 1;
+          api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
+            .then(function(rows){
+              if (!onboarding) return;
+              var urls = [];
+              if (rows && rows.length) {
+                for (var i = 0; i < rows.length; i++) {
+                  if (rows[i] && rows[i].video_url) urls.push(rows[i].video_url);
+                }
+              }
+              if (!urls.length) {
+                if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
+                return;
+              }
+              // Заполняем все 12 тайлов (циклично)
+              for (var j = 0; j < onbVids.length; j++) {
+                onbVids[j].dataset.src = urls[j % urls.length];
+              }
+              // Показываем тайлы (теперь точно с видео) и грузим
+              if (onbBg) onbBg.classList.add('ready');
+              loadOnbBatch();
+            })
+            .catch(function(err){
+              console.warn('onb supabase error:', err);
+              if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
+            });
+        })();
+
+        var kickAll = function(){ if (!onboarding) return; onboarding.querySelectorAll('video').forEach(function(v){ if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } }); };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
         onboarding.addEventListener('click', kickAll, {once:true});
 
@@ -761,9 +735,6 @@
 
       applyLang(currentLang);
 
-      // =========================================================
-      // 10. Sound / share / vote
-      // =========================================================
       var soundBtns = [];
       function bindSoundBtns(){
         soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -865,9 +836,6 @@
         });
       }
 
-      // =========================================================
-      // 11. Viewer counters
-      // =========================================================
       var VIEWERS_PEAK = 200;
       var DAY_CURVE = [{h:0,v:0.15},{h:4,v:0.06},{h:6,v:0.10},{h:8,v:0.28},{h:10,v:0.42},{h:13,v:0.65},{h:16,v:0.72},{h:18,v:0.95},{h:20,v:1.00},{h:22,v:0.85},{h:24,v:0.15}];
       function getDayFactor(){
@@ -920,9 +888,6 @@
         if (el) el.textContent = next;
       }
 
-      // =========================================================
-      // 12. IntersectionObservers
-      // =========================================================
       var currentIO = null;
       function initIO(){
         if (currentIO) currentIO.disconnect();
@@ -993,9 +958,6 @@
         });
       }
 
-      // =========================================================
-      // 13. Supabase auth
-      // =========================================================
       var STORAGE_KEY = EARLY_TG_ID ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID : 'sb-rlkjsjgktyltvxnfyski-auth-token';
       var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { detectSessionInUrl: false, persistSession: true, autoRefreshToken: true, storageKey: STORAGE_KEY } });
 

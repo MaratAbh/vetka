@@ -81,14 +81,6 @@
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
-  .side{position:absolute;right:12px;bottom:calc(280px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;flex-direction:column;align-items:center;gap:18px;pointer-events:none;}
-  .metric{display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:auto;background:transparent;border:0;cursor:pointer;padding:0;color:inherit;}
-  .metric .ico{width:34px;height:34px;border-radius:50%;background:rgba(205,255,74,.14);border:1px solid rgba(205,255,74,.4);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;color:#CDFF4A;transition:transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;}
-  .metric:active .ico{transform:scale(.9);}
-  .metric .ico svg{width:16px;height:16px;}
-  .metric .lbl{font-size:8.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);}
-  .metric.share:active .ico{background:rgba(205,255,74,.9);color:#07070a;border-color:rgba(205,255,74,.9);}
-
   .live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-self:flex-start;}
   .live .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.85);animation:pulse 1.8s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
@@ -101,6 +93,40 @@
 
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
+
+  .title-row{display:flex;align-items:center;gap:12px;pointer-events:none;}
+  .title-row .title{flex:1;min-width:0;}
+
+  /* === Иконка шаринга — диагональная стрелка, лайм === */
+  .share-icon{
+    pointer-events:auto;
+    flex:none;
+    width:34px;
+    height:34px;
+    background:transparent;
+    border:0;
+    padding:0;
+    color:#CDFF4A;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform .12s ease, color .15s ease, filter .2s ease;
+    -webkit-tap-highlight-color:transparent;
+    filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));
+  }
+  .share-icon:active{
+    transform:scale(.85);
+    color:#e0ff6b;
+    filter:drop-shadow(0 0 8px rgba(205,255,74,.9)) drop-shadow(0 1px 3px rgba(0,0,0,.6));
+  }
+  .share-icon svg{
+    width:22px;
+    height:22px;
+    display:block;
+    stroke-width:2.4;
+  }
+
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
   .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);min-height:0;}
@@ -250,9 +276,9 @@
   <script>
     (function(){
       var I18N = {
-        ru: { onboard_tag:'Живая лента событий - <em>смотри, что происходит вокруг тебя прямо сейчас</em>', onboard_hint:'Листай вверх', share:'поделиться', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'Live event feed - <em>see what\'s happening around you right now</em>', onboard_hint:'Swipe up', share:'share', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Feed de eventos en vivo - <em>mira lo que pasa a tu alrededor ahora</em>', onboard_hint:'Desliza hacia arriba', share:'compartir', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Живая лента событий - <em>смотри, что происходит вокруг тебя прямо сейчас</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'Live event feed - <em>see what\'s happening around you right now</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Feed de eventos en vivo - <em>mira lo que pasa a tu alrededor ahora</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -443,15 +469,17 @@
             '<div class="veil"></div>' +
             '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
             '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
-            '<div class="side">' +
-              '<button class="metric share" data-share>' +
-                '<div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>' +
-                '<div class="lbl" data-i18n="share">' + t('share') + '</div>' +
-              '</button>' +
-            '</div>' +
             '<div class="bottom">' +
               '<div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">' + t('watching') + '</span></div>' +
-              '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
+              '<div class="title-row">' +
+                '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
+                '<button class="share-icon" data-share aria-label="Share">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M7 17L17 7"/>' +
+                    '<path d="M8 7h9v9"/>' +
+                  '</svg>' +
+                '</button>' +
+              '</div>' +
               '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
               placeHtml +
               '<div class="actions-row">' +

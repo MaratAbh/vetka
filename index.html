@@ -217,20 +217,20 @@
   <div class="onboarding" id="onboarding">
     <div class="onb-bg">
       <div class="onb-col onb-col-up">
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
       </div>
       <div class="onb-col onb-col-down">
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted loop playsinline preload="none"></video></div>
       </div>
     </div>
 
@@ -363,6 +363,49 @@
       var onboarding = document.getElementById('onboarding');
       var toast = document.getElementById('toast');
 
+      // --- Onboarding video loader (populated from Supabase reels) ---
+      var onbVids = [];
+      var ONB_BATCH = 3;
+      var onbScheduled = false;
+
+      function loadOnbBatch(){
+        if (!onboarding) return;
+        onbScheduled = false;
+        var loaded = 0;
+        for (var i = 0; i < onbVids.length && loaded < ONB_BATCH; i++) {
+          var v = onbVids[i];
+          if (!v || v.dataset.started) continue;
+          var url = v.dataset.src;
+          if (!url) continue;
+          loaded++;
+          v.dataset.started = '1';
+          v.muted = true;
+          v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
+          try { v.setAttribute('preload','auto'); } catch(e){}
+          v.src = url; try { v.load(); } catch(e){}
+          var p = v.play(); if (p && p.catch) p.catch(function(){});
+        }
+        var remaining = false;
+        for (var j = 0; j < onbVids.length; j++) {
+          if (!onbVids[j].dataset.started && onbVids[j].dataset.src) { remaining = true; break; }
+        }
+        if (remaining && loaded > 0) {
+          onbScheduled = true;
+          setTimeout(loadOnbBatch, 500);
+        }
+      }
+
+      function populateOnbSources(urls){
+        if (!onboarding || !urls || !urls.length) return;
+        for (var i = 0; i < onbVids.length; i++) {
+          if (!onbVids[i].dataset.started && !onbVids[i].dataset.src) {
+            onbVids[i].dataset.src = urls[i % urls.length];
+          }
+        }
+        if (!onbScheduled) loadOnbBatch();
+      }
+      // ---------------------------------------------------------------
+
       var slides = [];
       var videoUrls = [];
       var currentIndex = 0;
@@ -400,6 +443,13 @@
           rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
           if (!rows) rows = [];
         } catch(e){ console.warn('loadReels error:', e); rows = []; }
+
+        // Отдаём URL в онбординг сразу, не дожидаясь запроса likes
+        var onbUrls = [];
+        for (var oi = 0; oi < rows.length; oi++) {
+          if (rows[oi] && rows[oi].video_url) onbUrls.push(rows[oi].video_url);
+        }
+        populateOnbSources(onbUrls);
 
         try {
           var likesAll = await api('likes', 'select=slide_id');
@@ -596,11 +646,11 @@
         onboarding.style.transform = '';
         onboarding.classList.add('gone');
 
-        var onbVids = onboarding.querySelectorAll('video');
-        for (var i = 0; i < onbVids.length; i++) {
-          try { onbVids[i].muted = true; } catch(e){}
-          try { onbVids[i].pause(); } catch(e){}
-          try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
+        var onbVidsAll = onboarding.querySelectorAll('video');
+        for (var i = 0; i < onbVidsAll.length; i++) {
+          try { onbVidsAll[i].muted = true; } catch(e){}
+          try { onbVidsAll[i].pause(); } catch(e){}
+          try { onbVidsAll[i].removeAttribute('src'); onbVidsAll[i].load(); } catch(e){}
         }
 
         onboardingDismissed = true;
@@ -615,6 +665,8 @@
       }
 
       if (onboarding) {
+        onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
+
         var startY = 0, currentY = 0, dragging = false, moved = false;
         var THRESHOLD = 60;
 
@@ -663,27 +715,6 @@
           if (moved) return;
           dismissOnboarding();
         });
-
-        var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = 3;
-        function loadOnbBatch(){
-          if (!onboarding) return;
-          var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
-          for (; onbIdx < end; onbIdx++) {
-            (function(v){
-              if (!v || v.dataset.started) return;
-              v.dataset.started = '1';
-              var url = v.dataset.src; if (!url) return;
-              v.muted = true;
-              v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
-              try { v.setAttribute('preload','auto'); } catch(e){}
-              v.src = url; try { v.load(); } catch(e){}
-              var p = v.play(); if (p && p.catch) p.catch(function(){});
-            })(onbVids[onbIdx]);
-          }
-          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
-        }
-        loadOnbBatch();
 
         var kickAll = function(){ if (!onboarding) return; onboarding.querySelectorAll('video').forEach(function(v){ if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } }); };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});

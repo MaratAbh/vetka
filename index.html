@@ -97,7 +97,6 @@
   .title-row{display:flex;align-items:center;gap:12px;pointer-events:none;}
   .title-row .title{flex:1;min-width:0;}
 
-  /* === Иконка шаринга — диагональная стрелка, лайм === */
   .share-icon{
     pointer-events:auto;
     flex:none;
@@ -111,20 +110,24 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    transition:transform .12s ease, color .15s ease, filter .2s ease;
+    transition:transform .15s ease, color .15s ease, opacity .15s ease;
     -webkit-tap-highlight-color:transparent;
-    filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));
   }
   .share-icon:active{
     transform:scale(.85);
     color:#e0ff6b;
-    filter:drop-shadow(0 0 8px rgba(205,255,74,.9)) drop-shadow(0 1px 3px rgba(0,0,0,.6));
   }
   .share-icon svg{
     width:22px;
     height:22px;
     display:block;
-    stroke-width:2.4;
+    overflow:visible;
+  }
+  .share-icon:active .tip{transform:scale(1.3);}
+  .share-icon .tip{
+    transform-origin:center;
+    transform-box:fill-box;
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
   }
 
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
@@ -137,9 +140,6 @@
 
   .actions-row{display:flex;gap:8px;align-items:center;}
 
-  /* ============================================= */
-  /* ===============  ТОП ВАЙБ  ================= */
-  /* ============================================= */
   .top-vibe{
     pointer-events:auto;
     display:flex;
@@ -254,7 +254,7 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Живая лента событий - <em>смотри, что происходит вокруг тебя прямо сейчас</em></div>
+      <div class="onb-tag" data-i18n="onboard_tag">Это вайб-лента. Моменты, события и места - <em>в реальном времени</em></div>
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
@@ -276,9 +276,9 @@
   <script>
     (function(){
       var I18N = {
-        ru: { onboard_tag:'Живая лента событий - <em>смотри, что происходит вокруг тебя прямо сейчас</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'Live event feed - <em>see what\'s happening around you right now</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Feed de eventos en vivo - <em>mira lo que pasa a tu alrededor ahora</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -474,9 +474,9 @@
               '<div class="title-row">' +
                 '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
                 '<button class="share-icon" data-share aria-label="Share">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">' +
-                    '<path d="M7 17L17 7"/>' +
-                    '<path d="M8 7h9v9"/>' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M5.5 19 C 9 13, 12.5 9, 18 5"/>' +
+                    '<circle class="tip" cx="18" cy="5" r="2.3" fill="currentColor" stroke="none"/>' +
                   '</svg>' +
                 '</button>' +
               '</div>' +

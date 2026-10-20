@@ -666,6 +666,7 @@
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
         var onbIdx = 0, ONB_BATCH = 3;
+
         function loadOnbBatch(){
           if (!onboarding) return;
           var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
@@ -683,7 +684,34 @@
           }
           if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
         }
-        loadOnbBatch();
+
+        // === Тянем видео из Supabase reels для онбординга ===
+        (function initOnbVideosFromSupabase(){
+          var fetchPromise = api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
+            .then(function(rows){
+              if (!rows || !rows.length) return null;
+              var urls = [];
+              for (var i = 0; i < rows.length; i++) {
+                if (rows[i] && rows[i].video_url) urls.push(rows[i].video_url);
+              }
+              return urls.length ? urls : null;
+            })
+            .catch(function(){ return null; });
+
+          Promise.race([
+            fetchPromise,
+            new Promise(function(r){ setTimeout(function(){ r(null); }, 900); })
+          ]).then(function(urls){
+            if (!onboarding) return;
+            if (urls && urls.length) {
+              for (var i = 0; i < onbVids.length; i++) {
+                var u = urls[i % urls.length];
+                if (u) onbVids[i].dataset.src = u;
+              }
+            }
+            loadOnbBatch();
+          });
+        })();
 
         var kickAll = function(){ if (!onboarding) return; onboarding.querySelectorAll('video').forEach(function(v){ if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } }); };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});

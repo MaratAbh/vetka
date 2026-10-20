@@ -110,24 +110,20 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    transition:transform .15s ease, color .15s ease, opacity .15s ease;
+    transition:transform .12s ease, color .15s ease, filter .2s ease;
     -webkit-tap-highlight-color:transparent;
+    filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));
   }
   .share-icon:active{
     transform:scale(.85);
     color:#e0ff6b;
+    filter:drop-shadow(0 0 8px rgba(205,255,74,.9)) drop-shadow(0 1px 3px rgba(0,0,0,.6));
   }
   .share-icon svg{
     width:22px;
     height:22px;
     display:block;
-    overflow:visible;
-  }
-  .share-icon:active .tip{transform:scale(1.3);}
-  .share-icon .tip{
-    transform-origin:center;
-    transform-box:fill-box;
-    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+    stroke-width:2.4;
   }
 
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
@@ -140,65 +136,86 @@
 
   .actions-row{display:flex;gap:8px;align-items:center;}
 
+  /* ============================================= */
+  /* ===============  ТОП ВАЙБ  ================= */
+  /* ============================================= */
   .top-vibe{
     pointer-events:auto;
-    display:flex;
+    display:inline-flex;
     align-items:center;
-    justify-content:center;
     gap:8px;
-    padding:8px 16px 8px 14px;
+    padding:9px 15px 9px 13px;
     border-radius:100px;
-    background:#CDFF4A;
-    color:#07070a;
+    background:rgba(255,255,255,0.07);
+    color:rgba(255,255,255,0.92);
     font-family:'Inter',sans-serif;
-    font-size:12px;
+    font-size:12.5px;
     font-weight:600;
     cursor:pointer;
     text-decoration:none;
-    box-shadow:0 0 20px rgba(205,255,74,.32);
     white-space:nowrap;
-    flex:1;
-    border:none;
-    transition:transform .12s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
+    flex:none;
+    align-self:flex-start;
+    border:1px solid rgba(255,255,255,0.14);
+    backdrop-filter:blur(10px) saturate(1.1);
+    -webkit-backdrop-filter:blur(10px) saturate(1.1);
+    transition:transform .16s cubic-bezier(.34,1.56,.64,1),
+               background .22s ease,
+               color .22s ease,
+               border-color .22s ease,
+               box-shadow .22s ease;
     -webkit-tap-highlight-color:transparent;
+    text-shadow:0 1px 2px rgba(0,0,0,.35);
   }
-  .top-vibe:active{transform:scale(.98);}
+  .top-vibe:active{transform:scale(.95);}
 
   .tv-ph{
-    display:flex;
-    flex-direction:column;
+    display:inline-flex;
     align-items:center;
-    justify-content:center;
-    gap:1px;
+    gap:5px;
     flex:none;
     line-height:1;
   }
   .tv-ph svg{
-    width:13px;
-    height:13px;
+    width:15px;
+    height:15px;
     display:block;
     overflow:visible;
+    flex:none;
+    transition:color .22s ease;
   }
   .tv-count{
-    font-size:10px;
-    font-weight:800;
+    font-size:11.5px;
+    font-weight:700;
     line-height:1;
     font-variant-numeric:tabular-nums;
     letter-spacing:-.02em;
+    opacity:.85;
+    transition:opacity .22s ease;
   }
 
-  .tv-label{font-weight:700;}
+  .tv-label{
+    font-weight:700;
+    letter-spacing:-.01em;
+  }
 
   .top-vibe.voted{
-    background:rgba(205,255,74,.14);
+    background:rgba(205,255,74,0.14);
     color:#CDFF4A;
-    box-shadow:inset 0 0 0 1px rgba(205,255,74,.5);
+    border-color:rgba(205,255,74,0.55);
+    box-shadow:0 0 14px rgba(205,255,74,.12);
   }
+  .top-vibe.voted .tv-count{opacity:1;}
 
-  @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
-  .tv-count.pulse{animation:countPulse .45s ease;}
-  @keyframes triPulse{0%{transform:translateY(0);}40%{transform:translateY(-3px);}100%{transform:translateY(0);}}
-  .tv-ph svg.pulse{animation:triPulse .4s ease;}
+  @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.22);}100%{transform:scale(1);}}
+  .tv-count.pulse{animation:countPulse .45s cubic-bezier(.34,1.56,.64,1);}
+
+  @keyframes sparkPulse{
+    0%{transform:scale(1) rotate(0);}
+    40%{transform:scale(1.18) rotate(8deg);}
+    100%{transform:scale(1) rotate(0);}
+  }
+  .tv-ph svg.pulse{animation:sparkPulse .5s cubic-bezier(.34,1.56,.64,1);}
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
@@ -254,7 +271,7 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Это вайб-лента. Моменты, события и места - <em>в реальном времени</em></div>
+      <div class="onb-tag" data-i18n="onboard_tag">Живая лента событий - <em>смотри, что происходит вокруг тебя прямо сейчас</em></div>
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
@@ -271,14 +288,14 @@
     <div class="es-text">Скоро тут появятся рилсы. Загляни позже.</div>
   </div>
 
-  <div class="toast" id="toast">Вайб продвинут ⬆️</div>
+  <div class="toast" id="toast">Ты поднял вайб</div>
 
   <script>
     (function(){
       var I18N = {
-        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Живая лента событий - <em>смотри, что происходит вокруг тебя прямо сейчас</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_active:'Вайб +1', top_ok:'Ты поднял вайб', top_removed:'Вайб снят', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'Live event feed - <em>see what\'s happening around you right now</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_active:'Vibe +1', top_ok:'You boosted the vibe', top_removed:'Vibe removed', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Feed de eventos en vivo - <em>mira lo que pasa a tu alrededor ahora</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_active:'Vibe +1', top_ok:'Subiste el vibe', top_removed:'Vibe retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -474,9 +491,9 @@
               '<div class="title-row">' +
                 '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
                 '<button class="share-icon" data-share aria-label="Share">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
-                    '<path d="M5.5 19 C 9 13, 12.5 9, 18 5"/>' +
-                    '<circle class="tip" cx="18" cy="5" r="2.3" fill="currentColor" stroke="none"/>' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M7 17L17 7"/>' +
+                    '<path d="M8 7h9v9"/>' +
                   '</svg>' +
                 '</button>' +
               '</div>' +
@@ -485,10 +502,13 @@
               '<div class="actions-row">' +
                 '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
                   '<span class="tv-ph">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.87l-8.106-13.536a1.914 1.914 0 0 0-3.274 0z"/></svg>' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                      '<path d="M3 16 Q 8 16, 12 10 T 21 4"/>' +
+                      '<circle cx="21" cy="4" r="1.9" fill="currentColor" stroke="none"/>' +
+                    '</svg>' +
                     '<span class="tv-count" data-count>' + totalVotes + '</span>' +
                   '</span>' +
-                  '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
+                  '<span class="tv-label" data-label>' + t('top_vibe') + '</span>' +
                 '</button>' +
               '</div>' +
             '</div>';
@@ -666,7 +686,6 @@
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
         var onbIdx = 0, ONB_BATCH = 3;
-
         function loadOnbBatch(){
           if (!onboarding) return;
           var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
@@ -684,34 +703,7 @@
           }
           if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
         }
-
-        // === Тянем видео из Supabase reels для онбординга ===
-        (function initOnbVideosFromSupabase(){
-          var fetchPromise = api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
-            .then(function(rows){
-              if (!rows || !rows.length) return null;
-              var urls = [];
-              for (var i = 0; i < rows.length; i++) {
-                if (rows[i] && rows[i].video_url) urls.push(rows[i].video_url);
-              }
-              return urls.length ? urls : null;
-            })
-            .catch(function(){ return null; });
-
-          Promise.race([
-            fetchPromise,
-            new Promise(function(r){ setTimeout(function(){ r(null); }, 900); })
-          ]).then(function(urls){
-            if (!onboarding) return;
-            if (urls && urls.length) {
-              for (var i = 0; i < onbVids.length; i++) {
-                var u = urls[i % urls.length];
-                if (u) onbVids[i].dataset.src = u;
-              }
-            }
-            loadOnbBatch();
-          });
-        })();
+        loadOnbBatch();
 
         var kickAll = function(){ if (!onboarding) return; onboarding.querySelectorAll('video').forEach(function(v){ if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } }); };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
@@ -720,7 +712,11 @@
         var langBtns = document.querySelectorAll('[data-lang]');
         for (var li = 0; li < langBtns.length; li++) {
           (function(b){
-            b.addEventListener('click', function(e){ e.stopPropagation(); applyLang(b.getAttribute('data-lang')); });
+            b.addEventListener('click', function(e){
+              e.stopPropagation();
+              applyLang(b.getAttribute('data-lang'));
+              if (typeof refreshTopUI === 'function' && slides.length) refreshTopUI();
+            });
             b.addEventListener('touchstart', function(e){ e.stopPropagation(); }, {passive:true});
             b.addEventListener('touchend', function(e){ e.stopPropagation(); });
           })(langBtns[li]);
@@ -795,8 +791,8 @@
               showToast(t('top_ok'));
               var cnt = btn.querySelector('[data-count]');
               if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
-              var tri = btn.querySelector('.tv-ph svg');
-              if (tri) { tri.classList.remove('pulse'); void tri.offsetWidth; tri.classList.add('pulse'); }
+              var ico = btn.querySelector('.tv-ph svg');
+              if (ico) { ico.classList.remove('pulse'); void ico.offsetWidth; ico.classList.add('pulse'); }
               try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
             } else {
               delete myTopSlides[id];
@@ -829,7 +825,12 @@
           var count = topCounts[id] || 0;
           var total = base + count; if (total < 0) total = 0;
           var cnt = btn.querySelector('[data-count]'); if (cnt) cnt.textContent = total;
-          if (myTopSlides[id]) btn.classList.add('voted'); else btn.classList.remove('voted');
+
+          var voted = !!myTopSlides[id];
+          var lbl = btn.querySelector('[data-label]');
+          if (lbl) lbl.textContent = voted ? t('top_active') : t('top_vibe');
+
+          if (voted) btn.classList.add('voted'); else btn.classList.remove('voted');
         });
       }
 

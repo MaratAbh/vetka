@@ -702,9 +702,14 @@
                 if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
                 return;
               }
-              // Заполняем все 12 тайлов (циклично)
+              // Заполняем все 12 тайлов так, чтобы левая и правая колонки не дублировались в одном ряду
+              var nUrls = urls.length;
+              var perCol = onbVids.length / 2;
+              var shift = nUrls >= 2 ? Math.max(1, Math.floor(nUrls / 2)) : 0;
               for (var j = 0; j < onbVids.length; j++) {
-                onbVids[j].dataset.src = urls[j % urls.length];
+                var col = j < perCol ? 0 : 1;
+                var row = j % perCol;
+                onbVids[j].dataset.src = urls[(row + col * shift) % nUrls];
               }
               // Показываем тайлы (теперь точно с видео) и грузим
               if (onbBg) onbBg.classList.add('ready');

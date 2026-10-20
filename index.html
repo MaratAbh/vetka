@@ -32,7 +32,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;outline:none;border:0;}
@@ -57,9 +57,9 @@
   .onb-mark svg{width:100%;height:100%;display:block;}
   .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);opacity:0;animation:onbFade .9s .35s ease forwards;}
   .onb-logo em{font-style:normal;color:#CDFF4A;}
-  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(19px,5.4vw,24px);line-height:1.18;letter-spacing:-.025em;color:#fff;max-width:20ch;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;animation:onbFade .9s .55s ease forwards;}
+  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;animation:onbFade .9s .55s ease forwards;}
   .onb-tag em{font-style:normal;color:#CDFF4A;}
-  .onb-hint{margin-top:44px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;animation:onbFade .9s .75s ease forwards;}
+  .onb-hint{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;animation:onbFade .9s .75s ease forwards;}
   .onb-hint i{display:block;width:1.5px;height:34px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));animation:onbHint 2s ease-in-out infinite;}
   @keyframes onbHint{0%{transform:translateY(-10px) scaleY(.3);opacity:0;}45%{opacity:1;}100%{transform:translateY(10px) scaleY(1);opacity:0;}}
   @keyframes onbFade{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
@@ -81,52 +81,99 @@
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
-  .side{position:absolute;right:12px;bottom:calc(200px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;flex-direction:column;align-items:center;gap:18px;pointer-events:none;}
+  .side{position:absolute;right:12px;bottom:calc(280px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;flex-direction:column;align-items:center;gap:18px;pointer-events:none;}
   .metric{display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:auto;background:transparent;border:0;cursor:pointer;padding:0;color:inherit;}
   .metric .ico{width:34px;height:34px;border-radius:50%;background:rgba(205,255,74,.14);border:1px solid rgba(205,255,74,.4);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;color:#CDFF4A;transition:transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;}
   .metric:active .ico{transform:scale(.9);}
   .metric .ico svg{width:16px;height:16px;}
-  .metric .lbl{font-size:8.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
-  .metric.invite:active .ico{background:rgba(205,255,74,.9);color:#07070a;border-color:rgba(205,255,74,.9);}
+  .metric .lbl{font-size:8.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);}
+  .metric.share:active .ico{background:rgba(205,255,74,.9);color:#07070a;border-color:rgba(205,255,74,.9);}
 
   .live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-self:flex-start;}
   .live .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.85);animation:pulse 1.8s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
 
+  /* LIVE-бейдж (верхний левый угол) */
   .live-top{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px;z-index:10;display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;color:#fff;padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.45);border:1px solid rgba(205,255,74,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none;box-shadow:0 0 12px rgba(205,255,74,.2);font-variant-numeric:tabular-nums;}
   .live-top .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);animation:pulse 1.8s ease-in-out infinite;}
   .live-top.old{color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.08);box-shadow:none;}
   .live-top.old .dot{display:none;}
+  .live-top.hidden{display:none;}
 
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
-  .org-badge{display:inline-flex;align-items:center;gap:7px;padding:4px 12px 4px 4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;align-self:flex-start;pointer-events:auto;transition:transform .15s ease,border-color .2s ease;}
-  .org-badge:active{transform:scale(.97);}
-  .org-avatar{width:22px;height:22px;border-radius:50%;padding:1.5px;background:linear-gradient(135deg,#CDFF4A 0%,#7a6cff 100%);flex:none;}
-  .org-avatar .inner{width:100%;height:100%;border-radius:50%;background:#07070a;display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-weight:600;font-size:10px;color:#CDFF4A;}
-  .org-info{text-align:left;padding-right:2px;}
-  .org-name{font-size:11px;font-weight:600;color:#fff;line-height:1.1;}
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
   .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);min-height:0;}
   .meta:empty{display:none;}
-  .meta .item{display:inline-flex;align-items:center;gap:5px;}
-  .meta i{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.35);}
 
-  /* Адрес места */
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
   .actions-row{display:flex;gap:8px;align-items:center;}
 
-  .top-vibe{pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 0 24px rgba(205,255,74,.35);white-space:nowrap;flex:1;border:none;transition:transform .12s ease, background .2s ease, color .2s ease, box-shadow .2s ease;-webkit-tap-highlight-color:transparent;}
+  /* ============================================= */
+  /* ===============  ТОП ВАЙБ  ================= */
+  /* ============================================= */
+  .top-vibe{
+    pointer-events:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:10px 20px 10px 18px;
+    border-radius:100px;
+    background:#CDFF4A;
+    color:#07070a;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    text-decoration:none;
+    box-shadow:0 0 24px rgba(205,255,74,.35);
+    white-space:nowrap;
+    flex:1;
+    border:none;
+    transition:transform .12s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
   .top-vibe:active{transform:scale(.98);}
-  .top-vibe svg{width:14px;height:14px;flex:none;}
-  .top-vibe .tv-label{font-weight:600;}
-  .top-vibe .tv-count{font-weight:700;font-variant-numeric:tabular-nums;min-width:18px;text-align:right;}
-  .top-vibe.voted{background:rgba(205,255,74,.14);color:#CDFF4A;box-shadow:inset 0 0 0 1px rgba(205,255,74,.5);}
+
+  .tv-ph{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:1px;
+    flex:none;
+    line-height:1;
+  }
+  .tv-ph svg{
+    width:15px;
+    height:15px;
+    display:block;
+    overflow:visible;
+  }
+  .tv-count{
+    font-size:11px;
+    font-weight:800;
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+    letter-spacing:-.02em;
+  }
+
+  .tv-label{font-weight:700;}
+
+  .top-vibe.voted{
+    background:rgba(205,255,74,.14);
+    color:#CDFF4A;
+    box-shadow:inset 0 0 0 1px rgba(205,255,74,.5);
+  }
+
   @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
-  .top-vibe .tv-count.pulse{animation:countPulse .45s ease;}
+  .tv-count.pulse{animation:countPulse .45s ease;}
+  @keyframes triPulse{0%{transform:translateY(0);}40%{transform:translateY(-3px);}100%{transform:translateY(0);}}
+  .tv-ph svg.pulse{animation:triPulse .4s ease;}
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
@@ -182,12 +229,12 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Проверенные маршруты событий <em>- под твой вайб</em></div>
+      <div class="onb-tag" data-i18n="onboard_tag">Живая лента событий - <em>смотри, что происходит вокруг тебя прямо сейчас</em></div>
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
 
-  <div class="feed visible" id="feed"></div>
+  <div class="feed" id="feed"></div>
 
   <div class="empty-state" id="emptyState">
     <div class="es-icon">
@@ -204,9 +251,9 @@
   <script>
     (function(){
       var I18N = {
-        ru: { onboard_tag:'Проверенные маршруты событий <em>- под твой вайб</em>', onboard_hint:'Листай вверх', invite:'пригласить', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'Verified event routes <em>- for your vibe</em>', onboard_hint:'Swipe up', invite:'invite', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Rutas de eventos verificadas <em>- para tu vibe</em>', onboard_hint:'Desliza hacia arriba', invite:'invitar', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Живая лента событий - <em>смотри, что происходит вокруг тебя прямо сейчас</em>', onboard_hint:'Листай вверх', share:'поделиться', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'Live event feed - <em>see what\'s happening around you right now</em>', onboard_hint:'Swipe up', share:'share', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Feed de eventos en vivo - <em>mira lo que pasa a tu alrededor ahora</em>', onboard_hint:'Desliza hacia arriba', share:'compartir', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -256,9 +303,16 @@
         return days + ' ' + t('day_ago');
       }
 
-      function isLive(iso){
+      // 3 состояния бейджа:
+      // 'live'   — 0-2 часа: показываем с точкой и LIVE
+      // 'time'   — 2-24 часа: показываем только время, без LIVE
+      // 'hidden' — >24 часов: бейдж полностью скрыт
+      function getBadgeState(iso){
         var diff = Date.now() - new Date(iso).getTime();
-        return diff >= 0 && diff < 2 * 60 * 60 * 1000;
+        if (diff < 0) return 'hidden';
+        if (diff < 2 * 60 * 60 * 1000) return 'live';
+        if (diff < 24 * 60 * 60 * 1000) return 'time';
+        return 'hidden';
       }
 
       var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
@@ -303,10 +357,12 @@
       var onboardingDismissed = false;
       var feedBooted = false;
       var viewerTimersStarted = false;
+      var onboardingClosing = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
-
       var toastTimer;
+      var flushTimer = null;
+
       function showToast(text){
         if (!toast) return;
         toast.textContent = text;
@@ -348,9 +404,20 @@
           slide.className = 'slide';
           slide.dataset.id = reel.id;
 
-          var live = isLive(reel.published_at);
-          var liveClass = live ? 'live-top' : 'live-top old';
-          var liveDot = live ? '<span class="dot"></span>' : '';
+          var badgeState = getBadgeState(reel.published_at);
+          var badgeClass = 'live-top';
+          var badgeInner = '';
+          if (badgeState === 'live') {
+            badgeClass = 'live-top';
+            badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
+          } else if (badgeState === 'time') {
+            badgeClass = 'live-top old';
+            badgeInner = '<span class="live-time">' + timeAgo(reel.published_at) + '</span>';
+          } else {
+            badgeClass = 'live-top hidden';
+            badgeInner = '';
+          }
+
           var baseVotes = parseInt(reel.base_votes, 10) || 0;
           var placeHtml = reel.place
             ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
@@ -359,14 +426,12 @@
           slide.innerHTML =
             '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
             '<div class="veil"></div>' +
-            '<div class="' + liveClass + '" data-published="' + escapeAttr(reel.published_at) + '">' +
-              liveDot + '<span class="live-time">' + (live ? 'LIVE · ' : '') + timeAgo(reel.published_at) + '</span>' +
-            '</div>' +
+            '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
             '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
             '<div class="side">' +
-              '<button class="metric invite" data-share>' +
-                '<div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></div>' +
-                '<div class="lbl" data-i18n="invite">' + t('invite') + '</div>' +
+              '<button class="metric share" data-share>' +
+                '<div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>' +
+                '<div class="lbl" data-i18n="share">' + t('share') + '</div>' +
               '</button>' +
             '</div>' +
             '<div class="bottom">' +
@@ -376,9 +441,11 @@
               placeHtml +
               '<div class="actions-row">' +
                 '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>' +
+                  '<span class="tv-ph">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.87l-8.106-13.536a1.914 1.914 0 0 0-3.274 0z"/></svg>' +
+                    '<span class="tv-count" data-count>' + baseVotes + '</span>' +
+                  '</span>' +
                   '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
-                  '<span class="tv-count" data-count>' + baseVotes + '</span>' +
                 '</button>' +
               '</div>' +
             '</div>';
@@ -399,20 +466,29 @@
         bindHandlers();
       }
 
+      // Обновление бейджа каждые 60 сек
       function refreshLiveLabels(){
         slides.forEach(function(slide){
           var live = slide.querySelector('.live-top');
           if (!live) return;
           var pub = live.getAttribute('data-published');
           if (!pub) return;
-          var isFresh = isLive(pub);
-          live.className = isFresh ? 'live-top' : 'live-top old';
-          live.setAttribute('data-published', pub);
-          var dot = isFresh ? '<span class="dot"></span>' : '';
-          live.innerHTML = dot + '<span class="live-time">' + (isFresh ? 'LIVE · ' : '') + timeAgo(pub) + '</span>';
+
+          var state = getBadgeState(pub);
+
+          if (state === 'live') {
+            live.className = 'live-top';
+            live.innerHTML = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(pub) + '</span>';
+          } else if (state === 'time') {
+            live.className = 'live-top old';
+            live.innerHTML = '<span class="live-time">' + timeAgo(pub) + '</span>';
+          } else {
+            live.className = 'live-top hidden';
+            live.innerHTML = '';
+          }
         });
       }
-      setInterval(refreshLiveLabels, 30000);
+      setInterval(refreshLiveLabels, 60000);
 
       var WINDOW_FWD = 2;
       function getVideo(idx){
@@ -472,41 +548,60 @@
         for (var i = 0; i < all.length; i++) all[i].style.height = vh + 'px';
       }
 
+      function dismissOnboarding(){
+        if (!onboarding || onboardingClosing) return;
+        onboardingClosing = true;
+        onboarding.style.transform = '';
+        onboarding.classList.add('gone');
+
+        var onbVids = onboarding.querySelectorAll('video');
+        for (var i = 0; i < onbVids.length; i++) {
+          try { onbVids[i].muted = true; } catch(e){}
+          try { onbVids[i].pause(); } catch(e){}
+          try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
+        }
+
+        onboardingDismissed = true;
+        layoutReels();
+        slideEnteredAt = Date.now();
+        feed.classList.add('visible');
+        if (reelsLoaded) bootFeed();
+        setTimeout(function(){
+          if (onboarding && onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
+          onboarding = null;
+        }, 600);
+      }
+
       if (onboarding) {
-        var startY = 0, currentY = 0, dragging = false;
-        var THRESHOLD = 70;
-        function onStart(e){ var t = e.touches ? e.touches[0] : e; startY = t.clientY; currentY = startY; dragging = true; onboarding.classList.add('dragging'); }
+        var startY = 0, currentY = 0, dragging = false, moved = false;
+        var THRESHOLD = 60;
+
+        function onStart(e){
+          var pt = e.touches ? e.touches[0] : e;
+          startY = pt.clientY;
+          currentY = startY;
+          dragging = true;
+          moved = false;
+          onboarding.classList.add('dragging');
+        }
         function onMove(e){
           if (!dragging) return;
-          var t = e.touches ? e.touches[0] : e;
-          currentY = t.clientY;
+          var pt = e.touches ? e.touches[0] : e;
+          currentY = pt.clientY;
           var delta = currentY - startY;
-          if (delta < 0) { onboarding.style.transform = 'translateY(' + delta + 'px)'; if (e.cancelable) e.preventDefault(); }
+          if (Math.abs(delta) > 6) moved = true;
+          if (delta < 0) {
+            onboarding.style.transform = 'translateY(' + delta + 'px)';
+            if (e.cancelable) e.preventDefault();
+          }
         }
-        function onEnd(){
+        function onEnd(e){
           if (!dragging) return;
           dragging = false;
           onboarding.classList.remove('dragging');
           var delta = currentY - startY;
           if (delta < -THRESHOLD) {
-            onboarding.style.transform = '';
-            onboarding.classList.add('gone');
-
-            var onbVids = onboarding.querySelectorAll('video');
-            for (var i = 0; i < onbVids.length; i++) {
-              try { onbVids[i].muted = true; } catch(e){}
-              try { onbVids[i].pause(); } catch(e){}
-              try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
-            }
-
-            onboardingDismissed = true;
-            layoutReels();
-            slideEnteredAt = Date.now();
-            if (reelsLoaded) bootFeed();
-            setTimeout(function(){
-              if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-              onboarding = null;
-            }, 600);
+            dismissOnboarding();
           } else {
             onboarding.style.transform = '';
           }
@@ -516,9 +611,16 @@
         onboarding.addEventListener('touchmove', onMove, {passive:false});
         onboarding.addEventListener('touchend', onEnd);
         onboarding.addEventListener('touchcancel', onEnd);
+
         onboarding.addEventListener('mousedown', onStart);
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
+
+        onboarding.addEventListener('click', function(e){
+          if (e.target.closest('.lang-switch')) return;
+          if (moved) return;
+          dismissOnboarding();
+        });
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
         var onbIdx = 0, ONB_BATCH = 3;
@@ -555,6 +657,7 @@
         }
       } else {
         onboardingDismissed = true;
+        feed.classList.add('visible');
       }
 
       applyLang(currentLang);
@@ -590,10 +693,10 @@
         document.querySelectorAll('[data-share]').forEach(function(btn){
           btn.addEventListener('click', function(e){
             e.stopPropagation();
-            if (window.ym) { try { ym(113067752, 'reachGoal', 'invite'); } catch(err){} }
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'share'); } catch(err){} }
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : '';
-            trackEvent('invite', { slide_id: id });
+            trackEvent('share', { slide_id: id });
             var url = TG_MINIAPP_URL;
             if (window.Telegram && window.Telegram.WebApp) {
               try {
@@ -622,6 +725,8 @@
               showToast(t('top_ok'));
               var cnt = btn.querySelector('[data-count]');
               if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
+              var tri = btn.querySelector('.tv-ph svg');
+              if (tri) { tri.classList.remove('pulse'); void tri.offsetWidth; tri.classList.add('pulse'); }
               try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
             } else {
               delete myTopSlides[id];
@@ -748,6 +853,7 @@
         if (feedBooted) return;
         if (!slides.length) return;
         feedBooted = true;
+        feed.classList.add('visible');
         layoutReels();
         initIO();
         initSlideViewsIO();
@@ -837,7 +943,6 @@
         if (pendingEvents.length > 0) flushEvents();
       }
 
-      var flushTimer = null;
       function scheduleFlush(){ if (flushTimer) return; flushTimer = setTimeout(function(){ flushTimer = null; flushEvents(); }, 1500); }
       function trackEvent(type, data){
         pendingEvents.push({ type: type, data: data || {} });

@@ -105,7 +105,7 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  .actions-row{display:flex;gap:8px;align-items:center;}
+  .actions-row{display:flex;gap:8px;align-items:stretch;}
 
   .top-vibe{
     pointer-events:auto;
@@ -114,21 +114,22 @@
     align-items:center;
     justify-content:center;
     gap:8px;
-    height:44px;
-    padding:0 14px;
+    height:48px;
+    padding:0 16px;
     border-radius:100px;
-    background:rgba(10,10,14,.48);
-    color:rgba(255,255,255,.92);
+    background:#fff;
+    color:#07070a;
     font-family:'Inter',sans-serif;
     font-size:13px;
-    font-weight:600;
-    border:1px solid rgba(255,255,255,.14);
+    font-weight:700;
+    letter-spacing:-.01em;
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
-    transition:transform .12s ease, background .2s ease, border-color .2s ease, color .2s ease;
+    transition:transform .12s ease, background .2s ease, color .2s ease;
     white-space:nowrap;
+    border:none;
   }
-  .top-vibe:active{transform:scale(.97);background:rgba(10,10,14,.62);}
+  .top-vibe:active{transform:scale(.97);}
 
   .tv-ph{
     display:inline-flex;
@@ -136,7 +137,7 @@
     justify-content:center;
     flex:none;
     line-height:1;
-    color:#CDFF4A;
+    color:inherit;
   }
   .tv-ph svg{width:14px;height:14px;display:block;overflow:visible;}
 
@@ -150,7 +151,7 @@
     height:20px;
     padding:0 7px;
     border-radius:100px;
-    background:rgba(205,255,74,.16);
+    background:#07070a;
     color:#CDFF4A;
     font-size:11px;
     font-weight:800;
@@ -160,11 +161,6 @@
   }
 
   .top-vibe.voted{
-    background:rgba(205,255,74,.16);
-    border-color:rgba(205,255,74,.6);
-    color:#CDFF4A;
-  }
-  .top-vibe.voted .tv-count{
     background:#CDFF4A;
     color:#07070a;
   }
@@ -181,24 +177,23 @@
     align-items:center;
     justify-content:center;
     gap:7px;
-    height:44px;
+    height:48px;
     padding:0 16px;
     border-radius:100px;
-    background:rgba(10,10,14,.48);
-    color:rgba(255,255,255,.92);
+    background:rgba(20,20,25,.55);
+    color:#fff;
     font-family:'Inter',sans-serif;
     font-size:13px;
     font-weight:600;
-    border:1px solid rgba(255,255,255,.14);
+    letter-spacing:-.01em;
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
-    transition:transform .12s ease, background .2s ease, border-color .2s ease;
+    transition:transform .12s ease, background .2s ease;
     white-space:nowrap;
+    border:1px solid rgba(255,255,255,.2);
   }
-  .share-btn:active{transform:scale(.94);background:rgba(10,10,14,.62);}
+  .share-btn:active{transform:scale(.94);background:rgba(20,20,25,.72);}
   .share-btn svg{width:16px;height:16px;display:block;color:#fff;overflow:visible;flex:none;}
-  .share-btn:active .tip{transform:scale(1.3);}
-  .share-btn .tip{transform-origin:center;transform-box:fill-box;transition:transform .2s cubic-bezier(.34,1.56,.64,1);}
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
@@ -666,28 +661,44 @@
         });
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = onbVids.length;
         var onbBg = document.getElementById('onbBg');
+
+        // Show skeleton grid immediately so user isn't staring at a blank screen
+        if (onbBg) onbBg.classList.add('ready');
+
+        function startOnbVideo(v){
+          if (!v || v.dataset.started) return;
+          var url = v.dataset.src; if (!url) return;
+          v.dataset.started = '1';
+          v.muted = true;
+          v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
+          try { v.setAttribute('preload','auto'); } catch(e){}
+          v.src = url; try { v.load(); } catch(e){}
+          var p = v.play(); if (p && p.catch) p.catch(function(){});
+        }
 
         function loadOnbBatch(){
           if (!onboarding) return;
-          var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
-          for (; onbIdx < end; onbIdx++) {
-            (function(v){
-              if (!v || v.dataset.started) return;
-              v.dataset.started = '1';
-              var url = v.dataset.src; if (!url) return;
-              v.muted = true;
-              v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
-              try { v.setAttribute('preload','auto'); } catch(e){}
-              v.src = url; try { v.load(); } catch(e){}
-              var p = v.play(); if (p && p.catch) p.catch(function(){});
-            })(onbVids[onbIdx]);
+          var mid = onbVids.length / 2;
+          // Priority: first row of each column for instant visual feedback
+          startOnbVideo(onbVids[0]);
+          startOnbVideo(onbVids[mid]);
+          // Stagger the rest so 12 videos don't choke the network at once
+          var rest = [];
+          for (var i = 0; i < onbVids.length; i++) {
+            if (i !== 0 && i !== mid) rest.push(i);
           }
-          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
+          var k = 0;
+          function next(){
+            if (!onboarding || k >= rest.length) return;
+            startOnbVideo(onbVids[rest[k]]);
+            k++;
+            setTimeout(next, 200);
+          }
+          setTimeout(next, 300);
         }
 
-        // === Загружаем видео ТОЛЬКО из Supabase, показываем тайлы только когда есть URL ===
+        // === Загружаем видео ТОЛЬКО из Supabase ===
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
           api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
@@ -700,7 +711,7 @@
                 }
               }
               if (!urls.length) {
-                if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
+                if (attempt < 3) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 800 * attempt);
                 return;
               }
               // Заполняем все 12 тайлов так, чтобы левая и правая колонки не дублировались в одном ряду
@@ -712,13 +723,11 @@
                 var row = j % perCol;
                 onbVids[j].dataset.src = urls[(row + col * shift) % nUrls];
               }
-              // Показываем тайлы (теперь точно с видео) и грузим
-              if (onbBg) onbBg.classList.add('ready');
               loadOnbBatch();
             })
             .catch(function(err){
               console.warn('onb supabase error:', err);
-              if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
+              if (attempt < 3) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 800 * attempt);
             });
         })();
 

@@ -119,17 +119,17 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:10px;
-    padding:10px 20px 10px 18px;
+    gap:8px;
+    padding:8px 16px 8px 14px;
     border-radius:100px;
     background:#CDFF4A;
     color:#07070a;
     font-family:'Inter',sans-serif;
-    font-size:13px;
+    font-size:12px;
     font-weight:600;
     cursor:pointer;
     text-decoration:none;
-    box-shadow:0 0 24px rgba(205,255,74,.35);
+    box-shadow:0 0 20px rgba(205,255,74,.32);
     white-space:nowrap;
     flex:1;
     border:none;
@@ -148,13 +148,13 @@
     line-height:1;
   }
   .tv-ph svg{
-    width:15px;
-    height:15px;
+    width:13px;
+    height:13px;
     display:block;
     overflow:visible;
   }
   .tv-count{
-    font-size:11px;
+    font-size:10px;
     font-weight:800;
     line-height:1;
     font-variant-numeric:tabular-nums;
@@ -302,10 +302,6 @@
         return days + ' ' + t('day_ago');
       }
 
-      // 3 состояния бейджа:
-      // 'live'   0-2 часа → LIVE + точка + время
-      // 'time'   2-24 часа → только время, без LIVE
-      // 'hidden' >24 часа → бейдж полностью скрыт
       function getBadgeState(iso){
         var diff = Date.now() - new Date(iso).getTime();
         if (diff < 0) return 'hidden';
@@ -370,20 +366,15 @@
         toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
       }
 
-      // ============================================================
-      // ЗАГРУЗКА: рилсы + все лайки → сортировка по total (base+likes)
-      // ============================================================
       async function loadReels(){
         var rows = [];
         var likesCount = {};
 
-        // 1. Рилсы
         try {
           rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
           if (!rows) rows = [];
         } catch(e){ console.warn('loadReels error:', e); rows = []; }
 
-        // 2. Все лайки (для подсчёта и сортировки)
         try {
           var likesAll = await api('likes', 'select=slide_id');
           if (likesAll && likesAll.length) {
@@ -391,10 +382,8 @@
           }
         } catch(e){ console.warn('likes load error:', e); }
 
-        // 3. Сохраняем в topCounts — чтобы кнопки сразу показывали правильное число
         topCounts = likesCount;
 
-        // 4. Считаем total (base_votes + real_likes) и сортируем по убыванию
         rows.forEach(function(r){
           var base = parseInt(r.base_votes, 10) || 0;
           var real = likesCount[r.id] || 0;
@@ -402,7 +391,6 @@
         });
         rows.sort(function(a, b){ return b.__total - a.__total; });
 
-        // 5. Рендерим
         renderReels(rows);
         reelsLoaded = true;
         if (onboardingDismissed) bootFeed();
@@ -493,7 +481,6 @@
         bindHandlers();
       }
 
-      // Обновление бейджа каждые 60 сек
       function refreshLiveLabels(){
         slides.forEach(function(slide){
           var live = slide.querySelector('.live-top');
@@ -890,7 +877,6 @@
         loadMyVotes();
       }
 
-      // Загружаем ТОЛЬКО мои голоса (для подсветки voted) — сами counts уже загружены в loadReels
       async function loadMyVotes(){
         try {
           var user = await authReady; if (!user) return;

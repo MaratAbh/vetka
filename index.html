@@ -32,21 +32,38 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;outline:none;border:0;}
-  html,body{background:#07070a;color:#fff;font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;height:100%;-webkit-font-smoothing:antialiased;color-scheme:dark;}
+  *,*::before,*::after{
+    margin:0;padding:0;box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-appearance:none;appearance:none;outline:none;border:0;
+  }
+  html,body{
+    background:#07070a;color:#fff;
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    overflow:hidden;height:100%;
+    -webkit-font-smoothing:antialiased;color-scheme:dark;
+  }
 
   .onboarding{position:fixed;inset:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;}
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
-  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;transition:transform 1.2s ease,opacity 1.2s ease;}
-  .onb-bg.ready{transform:scale(1);opacity:1;}
+  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;}
+  .onb-bg.ready{animation:onbBgFade 1.2s .1s ease forwards;}
+  @keyframes onbBgFade{to{opacity:1;}}
   .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
   .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
   .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;z-index:1;}
-  .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#0a0a12;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;}
+  .onb-col .tile video{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;display:block;
+    background:#0a0a12;
+    transform:translateZ(0);-webkit-transform:translateZ(0);
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    pointer-events:none;
+  }
   .onb-col-up{animation:colUp 60s linear infinite;}
   .onb-col-down{animation:colDown 60s linear infinite;}
   @keyframes colUp{from{transform:translateY(0);}to{transform:translateY(-50%);}}
@@ -57,17 +74,44 @@
   .onb-mark svg{width:100%;height:100%;display:block;}
   .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);opacity:0;animation:onbFade .9s .35s ease forwards;}
   .onb-logo em{font-style:normal;color:#CDFF4A;}
-  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;animation:onbFade .9s .55s ease forwards;}
+  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(19px,5.4vw,24px);line-height:1.18;letter-spacing:-.025em;color:#fff;max-width:20ch;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;animation:onbFade .9s .55s ease forwards;}
   .onb-tag em{font-style:normal;color:#CDFF4A;}
-  .onb-hint{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;animation:onbFade .9s .75s ease forwards;}
+  .onb-hint{margin-top:44px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;animation:onbFade .9s .75s ease forwards;}
   .onb-hint i{display:block;width:1.5px;height:34px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));animation:onbHint 2s ease-in-out infinite;}
   @keyframes onbHint{0%{transform:translateY(-10px) scaleY(.3);opacity:0;}45%{opacity:1;}100%{transform:translateY(10px) scaleY(1);opacity:0;}}
   @keyframes onbFade{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 
-  .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;opacity:0;animation:onbFade .9s .5s ease forwards;}
-  .lang-switch button{background:transparent;border:0;color:rgba(255,255,255,.6);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;padding:6px 11px;border-radius:100px;cursor:pointer;transition:background .2s ease, color .2s ease, transform .12s ease;}
-  .lang-switch button.active{background:#CDFF4A;color:#07070a;}
-  .lang-switch button:active{transform:scale(.94);}
+  .lang-switch{
+    position:absolute;
+    top:calc(20px + env(safe-area-inset-top,0px));
+    right:16px;
+    z-index:10;
+    display:flex;
+    gap:2px;
+    padding:4px;
+    border-radius:100px;
+    background:rgba(0,0,0,.5);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    pointer-events:auto;
+    opacity:0;
+    animation:onbFade .9s .5s ease forwards;
+  }
+  .lang-switch button{
+    background:transparent;
+    border:0;
+    color:rgba(255,255,255,.6);
+    font-family:'Inter',sans-serif;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.08em;
+    padding:6px 11px;
+    border-radius:100px;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease, transform .12s ease;
+  }
+  .lang-switch button.active{ background:#CDFF4A; color:#07070a; }
+  .lang-switch button:active{ transform:scale(.94); }
 
   .feed{position:fixed;inset:0;height:100vh;height:100dvh;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;z-index:1;opacity:0;pointer-events:none;transition:opacity .25s ease;}
   .feed.visible{opacity:1;pointer-events:auto;}
@@ -81,135 +125,141 @@
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
-  .live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-self:flex-start;}
-  .live .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.85);animation:pulse 1.8s ease-in-out infinite;}
-  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
+  .side{
+    position:absolute;
+    right:12px;
+    bottom:calc(200px + env(safe-area-inset-bottom,0px));
+    z-index:5;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+    pointer-events:none;
+  }
+  .metric{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    pointer-events:auto;background:transparent;border:0;cursor:pointer;padding:0;
+    color:inherit;
+  }
+  .metric .ico{
+    width:34px;height:34px;border-radius:50%;
+    background:rgba(205,255,74,.14);
+    border:1px solid rgba(205,255,74,.4);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;color:#CDFF4A;
+    transition:transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .metric:active .ico{transform:scale(.9);}
+  .metric .ico svg{width:16px;height:16px;}
+  .metric .num{font-size:11px;font-weight:600;color:#CDFF4A;text-shadow:0 1px 4px rgba(0,0,0,.6);}
+  .metric .lbl{font-size:8.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
+  .metric.invite:active .ico{
+    background:rgba(205,255,74,.9);
+    color:#07070a;
+    border-color:rgba(205,255,74,.9);
+  }
 
-  .live-top{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px;z-index:10;display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;color:#fff;padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.45);border:1px solid rgba(205,255,74,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none;box-shadow:0 0 12px rgba(205,255,74,.2);font-variant-numeric:tabular-nums;}
-  .live-top .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);animation:pulse 1.8s ease-in-out infinite;}
-  .live-top.old{color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.08);box-shadow:none;}
-  .live-top.old .dot{display:none;}
-  .live-top.hidden{display:none;}
+  .live{
+    display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;
+    color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;
+    background:rgba(0,0,0,.4);
+    border:1px solid rgba(255,255,255,.1);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    align-self:flex-start;
+  }
+  .live .dot{
+    width:5px;height:5px;border-radius:50%;background:#CDFF4A;
+    box-shadow:0 0 8px rgba(205,255,74,.85);
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
 
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
-
-  .title-row{display:flex;align-items:center;gap:12px;pointer-events:none;}
-  .title-row .title{flex:1;min-width:0;}
-
-  .share-icon{
-    pointer-events:auto;
-    flex:none;
-    width:34px;
-    height:34px;
-    background:transparent;
-    border:0;
-    padding:0;
-    color:#CDFF4A;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:transform .15s ease, color .15s ease, opacity .15s ease;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .share-icon:active{
-    transform:scale(.85);
-    color:#e0ff6b;
-  }
-  .share-icon svg{
-    width:22px;
-    height:22px;
-    display:block;
-    overflow:visible;
-  }
-  .share-icon:active .tip{transform:scale(1.3);}
-  .share-icon .tip{
-    transform-origin:center;
-    transform-box:fill-box;
-    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
-  }
-
+  .org-badge{display:inline-flex;align-items:center;gap:7px;padding:4px 12px 4px 4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;align-self:flex-start;pointer-events:auto;transition:transform .15s ease,border-color .2s ease;}
+  .org-badge:active{transform:scale(.97);}
+  .org-avatar{width:22px;height:22px;border-radius:50%;padding:1.5px;background:linear-gradient(135deg,#CDFF4A 0%,#7a6cff 100%);flex:none;}
+  .org-avatar .inner{width:100%;height:100%;border-radius:50%;background:#07070a;display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-weight:600;font-size:10px;color:#CDFF4A;}
+  .org-info{text-align:left;padding-right:2px;}
+  .org-name{font-size:11px;font-weight:600;color:#fff;line-height:1.1;}
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
   .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);min-height:0;}
   .meta:empty{display:none;}
-
-  .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
-
+  .meta .item{display:inline-flex;align-items:center;gap:5px;}
+  .meta i{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.35);}
+  .meta .price{color:#CDFF4A;font-weight:600;}
   .actions-row{display:flex;gap:8px;align-items:center;}
+  .cta{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 0 24px rgba(205,255,74,.35);white-space:nowrap;flex:1;}
+  .cta svg{width:14px;height:14px;flex:none;}
 
-  .top-vibe{
-    pointer-events:auto;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    padding:8px 16px 8px 14px;
-    border-radius:100px;
-    background:#CDFF4A;
-    color:#07070a;
-    font-family:'Inter',sans-serif;
-    font-size:12px;
-    font-weight:600;
-    cursor:pointer;
-    text-decoration:none;
-    box-shadow:0 0 20px rgba(205,255,74,.32);
-    white-space:nowrap;
-    flex:1;
-    border:none;
-    transition:transform .12s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
-    -webkit-tap-highlight-color:transparent;
+  .toast{
+    position:fixed;left:50%;
+    bottom:calc(100px + env(safe-area-inset-bottom,0px));
+    transform:translate(-50%, 20px);
+    z-index:200;
+    padding:12px 20px;border-radius:100px;
+    background:rgba(0,0,0,.88);
+    border:1px solid rgba(205,255,74,.35);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    color:#fff;font-size:13px;font-weight:500;white-space:nowrap;
+    opacity:0;pointer-events:none;
+    transition:opacity .3s ease, transform .3s ease;
+    box-shadow:0 0 24px rgba(205,255,74,.2);
+    display:flex;align-items:center;gap:8px;
+    max-width:calc(100% - 32px);
   }
-  .top-vibe:active{transform:scale(.98);}
-
-  .tv-ph{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:1px;
-    flex:none;
-    line-height:1;
+  .toast::before{
+    content:'';width:6px;height:6px;border-radius:50%;
+    background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;
   }
-  .tv-ph svg{
-    width:13px;
-    height:13px;
-    display:block;
-    overflow:visible;
-  }
-  .tv-count{
-    font-size:10px;
-    font-weight:800;
-    line-height:1;
-    font-variant-numeric:tabular-nums;
-    letter-spacing:-.02em;
-  }
-
-  .tv-label{font-weight:700;}
-
-  .top-vibe.voted{
-    background:rgba(205,255,74,.14);
-    color:#CDFF4A;
-    box-shadow:inset 0 0 0 1px rgba(205,255,74,.5);
-  }
-
-  @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
-  .tv-count.pulse{animation:countPulse .45s ease;}
-  @keyframes triPulse{0%{transform:translateY(0);}40%{transform:translateY(-3px);}100%{transform:translateY(0);}}
-  .tv-ph svg.pulse{animation:triPulse .4s ease;}
-
-  .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
-  .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
   .toast.show{opacity:1;transform:translate(-50%, 0);}
 
-  .empty-state{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;z-index:4;pointer-events:none;opacity:0;transition:opacity .3s ease;}
-  .empty-state.visible{opacity:1;}
-  .empty-state .es-icon{width:64px;height:64px;color:rgba(205,255,74,.35);margin-bottom:20px;}
-  .empty-state .es-icon svg{width:100%;height:100%;}
-  .empty-state .es-title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:20px;line-height:1.2;color:#fff;margin-bottom:10px;}
-  .empty-state .es-text{font-size:13px;line-height:1.5;color:rgba(255,255,255,.45);max-width:28ch;}
+  .profile-screen{position:fixed;inset:0;z-index:500;background:#07070a;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,.24,1);overflow:hidden;pointer-events:none;}
+  .profile-screen.open{transform:translateY(0);pointer-events:auto;}
+  .profile-scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+  .profile-scroll::-webkit-scrollbar{display:none;}
+  .profile-hero{position:relative;min-height:58vh;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:26px;}
+  .hero-bg{position:absolute;inset:0;background:radial-gradient(60% 80% at 30% 30%,rgba(205,255,74,.28),transparent 65%),radial-gradient(70% 70% at 80% 80%,rgba(122,108,255,.38),transparent 65%),radial-gradient(50% 60% at 60% 40%,rgba(255,138,108,.20),transparent 60%),linear-gradient(160deg,#16161e 0%,#08080c 100%);}
+  .hero-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.045) 1px,transparent 1px);background-size:4px 4px;opacity:.7;mix-blend-mode:overlay;}
+  .hero-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.45) 0%,rgba(7,7,10,.05) 40%,rgba(7,7,10,.75) 82%,rgba(7,7,10,1) 100%);}
+  .profile-topnav{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;}
+  .back,.menu{width:36px;height:36px;flex:none;border-radius:50%;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;}
+  .back svg,.menu svg{width:18px;height:18px;}
+  .hero-content{position:relative;z-index:2;padding:0 20px;display:flex;flex-direction:column;align-items:flex-start;}
+  .hero-avatar{width:88px;height:88px;border-radius:50%;padding:3px;background:linear-gradient(135deg,#CDFF4A 0%,#a8d92e 100%);box-shadow:0 0 40px rgba(205,255,74,.35),0 8px 24px rgba(0,0,0,.5);margin-bottom:14px;}
+  .hero-avatar .inner{width:100%;height:100%;border-radius:50%;background:linear-gradient(160deg,#15151c 0%,#06060a 100%);display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-weight:600;font-size:32px;color:#CDFF4A;border:2px solid #07070a;}
+  .name-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .name{font-family:'Unbounded',sans-serif;font-weight:600;font-size:24px;line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.6);}
+  .verified{width:20px;height:20px;flex:none;}
+  .verified svg{width:20px;height:20px;display:block;}
+  .handle{font-size:12.5px;font-weight:500;color:rgba(255,255,255,.55);margin-bottom:12px;}
+  .bio{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.78);margin-bottom:18px;max-width:38ch;}
+  .follow-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 22px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:14.5px;font-weight:600;cursor:pointer;transition:transform .12s ease,background .2s ease,border-color .2s ease;box-shadow:0 0 28px rgba(205,255,74,.32);}
+  .follow-btn:active{transform:scale(.98);}
+  .follow-btn svg{width:16px;height:16px;flex:none;}
+  .follow-btn.followed{background:rgba(205,255,74,.12);color:#CDFF4A;border:1px solid rgba(205,255,74,.4);box-shadow:none;}
+  .org-feed{padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));}
+  .post{background:#07070a;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:14px;margin-bottom:4px;}
+  .post-head{display:flex;align-items:center;gap:10px;padding:12px 16px 10px;}
+  .post-avatar{width:34px;height:34px;border-radius:50%;padding:2px;background:linear-gradient(135deg,#CDFF4A 0%,#7a6cff 100%);flex:none;}
+  .post-avatar .inner{width:100%;height:100%;border-radius:50%;background:#07070a;display:flex;align-items:center;justify-content:center;font-family:'Unbounded',sans-serif;font-weight:600;font-size:14px;color:#CDFF4A;}
+  .post-user{font-size:13px;font-weight:600;color:#fff;line-height:1.2;}
+  .post-user span{display:block;font-size:11px;font-weight:500;color:rgba(255,255,255,.45);margin-top:1px;}
+  .post-media{position:relative;background:#000;aspect-ratio:4/5;overflow:hidden;}
+  .post-media video,.post-media img{width:100%;height:100%;object-fit:cover;display:block;}
+  .post-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .post-carousel::-webkit-scrollbar{display:none;}
+  .post-carousel img{flex:0 0 100%;width:100%;height:100%;scroll-snap-align:start;object-fit:cover;}
+  .carousel-dots{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;gap:5px;z-index:3;pointer-events:none;}
+  .carousel-dots i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4);transition:background .2s ease;}
+  .carousel-dots i.on{background:#CDFF4A;}
+  .post-caption{padding:12px 16px 0;}
+  .post-title{font-size:14.5px;font-weight:600;color:#fff;line-height:1.4;letter-spacing:-.005em;}
+  .post-text{padding:32px 24px 28px;}
+  .post-text .quote{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(20px,6vw,26px);line-height:1.25;letter-spacing:-.025em;color:#fff;}
+  .post-text .quote em{font-style:normal;color:#CDFF4A;}
+  .post-text .by{margin-top:18px;font-size:11.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.35);}
 </style>
 </head>
 <body>
@@ -259,391 +309,895 @@
     </div>
   </div>
 
-  <div class="feed" id="feed"></div>
+  <div class="feed visible" id="feed">
 
-  <div class="empty-state" id="emptyState">
-    <div class="es-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
-      </svg>
+    <div class="slide" id="r1" data-id="r1">
+      <div class="video">
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
+        </svg>
+      </div>
+      <div class="side">
+        <button class="metric" data-like data-base="52">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>52</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
+        </button>
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/><path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
+        </button>
+      </div>
+      <div class="bottom">
+        <div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
+        <div class="title" data-vibe-title></div>
+        <div class="meta" data-vibe-subtitle></div>
+        <div class="org-badge">
+          <div class="org-avatar"><div class="inner">L</div></div>
+          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
+        </div>
+        <div class="actions-row">
+          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
+            <span data-i18n="buy_ticket">Купить билет</span>
+          </a>
+        </div>
+      </div>
     </div>
-    <div class="es-title">Пока пусто</div>
-    <div class="es-text">Скоро тут появятся рилсы. Загляни позже.</div>
+
+    <div class="slide" id="r2" data-id="r2">
+      <div class="video">
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
+        </svg>
+      </div>
+      <div class="side">
+        <button class="metric" data-like data-base="43">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>43</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
+        </button>
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/><path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
+        </button>
+      </div>
+      <div class="bottom">
+        <div class="live" data-weight="0.8"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
+        <div class="title" data-vibe-title></div>
+        <div class="meta" data-vibe-subtitle></div>
+        <div class="org-badge">
+          <div class="org-avatar"><div class="inner">L</div></div>
+          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
+        </div>
+        <div class="actions-row">
+          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
+            <span data-i18n="buy_ticket">Купить билет</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" id="r3" data-id="r3">
+      <div class="video">
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
+        </svg>
+      </div>
+      <div class="side">
+        <button class="metric" data-like data-base="28">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>28</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
+        </button>
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/><path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
+        </button>
+      </div>
+      <div class="bottom">
+        <div class="live" data-weight="1.1"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
+        <div class="title" data-vibe-title></div>
+        <div class="meta" data-vibe-subtitle></div>
+        <div class="org-badge">
+          <div class="org-avatar"><div class="inner">L</div></div>
+          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
+        </div>
+        <div class="actions-row">
+          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
+            <span data-i18n="buy_ticket">Купить билет</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" id="r4" data-id="r4">
+      <div class="video">
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
+        </svg>
+      </div>
+      <div class="side">
+        <button class="metric" data-like data-base="72">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>72</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
+        </button>
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/><path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
+        </button>
+      </div>
+      <div class="bottom">
+        <div class="live" data-weight="1.4"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
+        <div class="title" data-vibe-title></div>
+        <div class="meta" data-vibe-subtitle></div>
+        <div class="org-badge">
+          <div class="org-avatar"><div class="inner">L</div></div>
+          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
+        </div>
+        <div class="actions-row">
+          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
+            <span data-i18n="buy_ticket">Купить билет</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" id="r5" data-id="r5">
+      <div class="video">
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
+        </svg>
+      </div>
+      <div class="side">
+        <button class="metric" data-like data-base="64">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>64</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
+        </button>
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/><path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
+        </button>
+      </div>
+      <div class="bottom">
+        <div class="live" data-weight="0.75"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
+        <div class="title" data-vibe-title></div>
+        <div class="meta" data-vibe-subtitle></div>
+        <div class="org-badge">
+          <div class="org-avatar"><div class="inner">L</div></div>
+          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
+        </div>
+        <div class="actions-row">
+          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
+            <span data-i18n="buy_ticket">Купить билет</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" id="r6" data-id="r6">
+      <div class="video">
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_162746_363.mp4.mov" loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
+        </svg>
+      </div>
+      <div class="side">
+        <button class="metric" data-like data-base="19">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>19</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
+        </button>
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/><path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
+        </button>
+      </div>
+      <div class="bottom">
+        <div class="live" data-weight="1.15"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
+        <div class="title" data-vibe-title></div>
+        <div class="meta" data-vibe-subtitle></div>
+        <div class="org-badge">
+          <div class="org-avatar"><div class="inner">L</div></div>
+          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
+        </div>
+        <div class="actions-row">
+          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
+            <span data-i18n="buy_ticket">Купить билет</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" id="r7" data-id="r7">
+      <div class="video">
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/YouCut_20261002_153045891-compressed.mp4" loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
+        </svg>
+      </div>
+      <div class="side">
+        <button class="metric" data-like data-base="12">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>12</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
+        </button>
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/><path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
+        </button>
+      </div>
+      <div class="bottom">
+        <div class="live" data-weight="0.85"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
+        <div class="title" data-vibe-title></div>
+        <div class="meta" data-vibe-subtitle></div>
+        <div class="org-badge">
+          <div class="org-avatar"><div class="inner">L</div></div>
+          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
+        </div>
+        <div class="actions-row">
+          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
+            <span data-i18n="buy_ticket">Купить билет</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" id="r8" data-id="r8">
+      <div class="video">
+        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_163137_406.mp4" loop playsinline preload="none" muted></video>
+      </div>
+      <div class="veil"></div>
+      <div class="sound-btn" data-sound-btn>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
+        </svg>
+      </div>
+      <div class="side">
+        <button class="metric" data-like data-base="29">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+          <div class="num" data-count>29</div>
+          <div class="lbl" data-i18n="want_go">хочу пойти</div>
+        </button>
+        <button class="metric invite" data-share>
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M19 8v6"/><path d="M22 11h-6"/>
+            </svg>
+          </div>
+          <div class="lbl" data-i18n="invite">пригласить</div>
+        </button>
+      </div>
+      <div class="bottom">
+        <div class="live" data-weight="0.9"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
+        <div class="title" data-vibe-title></div>
+        <div class="meta" data-vibe-subtitle></div>
+        <div class="org-badge">
+          <div class="org-avatar"><div class="inner">L</div></div>
+          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
+        </div>
+        <div class="actions-row">
+          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
+            <span data-i18n="buy_ticket">Купить билет</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <div class="toast" id="toast">Вайб продвинут ⬆️</div>
+  <div class="profile-screen" id="profile">
+    <div class="profile-scroll">
+
+      <div class="profile-hero">
+        <div class="hero-bg"></div>
+        <div class="hero-veil"></div>
+
+        <div class="profile-topnav">
+          <div class="back" id="closeProfile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <div class="menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="hero-content">
+          <div class="hero-avatar"><div class="inner">Б</div></div>
+          <div class="name-row">
+            <div class="name">БАЗА</div>
+            <div class="verified">
+              <svg viewBox="0 0 24 24" fill="#CDFF4A">
+                <path d="M12 1l3 3h4v4l3 3-3 3v4h-4l-3 3-3-3H5v-4l-3-3 3-3V4h4l3-3z"/>
+                <path d="M10.5 15.5L7 12l1.4-1.4 2.1 2.1 5-5L17 9l-6.5 6.5z" fill="#07070a"/>
+              </svg>
+            </div>
+          </div>
+          <div class="handle">@baza · Организатор</div>
+          <div class="bio">Стендап на БАЗЕ — каждый вечер. Проверенные комики, неформаты, музыкальное лото. Каждый вечер — новое событие.</div>
+          <button class="follow-btn" id="followBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            <span>Подписаться</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="org-feed">
+
+        <article class="post">
+          <div class="post-head">
+            <div class="post-avatar"><div class="inner">Б</div></div>
+            <div class="post-user">антресоль&перец<span>3 часа назад</span></div>
+          </div>
+          <div class="post-media">
+            <video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video>
+          </div>
+          <div class="post-caption">
+            <div class="post-title">Пятница выдалась громкой</div>
+          </div>
+        </article>
+
+        <article class="post post-text">
+          <div class="quote">«Мы не знали что сказать — просто <em>орали со сцены</em>. И зал орал вместе с нами.»</div>
+          <div class="by">— гость вечера</div>
+        </article>
+
+        <article class="post">
+          <div class="post-head">
+            <div class="post-avatar"><div class="inner">Б</div></div>
+            <div class="post-user">антресоль&перец<span>вчера</span></div>
+          </div>
+          <div class="post-media">
+            <div class="post-carousel" data-carousel>
+              <img src="https://picsum.photos/id/1080/800/1000" alt="">
+              <img src="https://picsum.photos/id/1074/800/1000" alt="">
+              <img src="https://picsum.photos/id/1062/800/1000" alt="">
+            </div>
+            <div class="carousel-dots"><i class="on"></i><i></i><i></i></div>
+          </div>
+          <div class="post-caption">
+            <div class="post-title">Нас не остановить</div>
+          </div>
+        </article>
+
+        <article class="post">
+          <div class="post-head">
+            <div class="post-avatar"><div class="inner">Б</div></div>
+            <div class="post-user">антресоль&перец<span>2 дня назад</span></div>
+          </div>
+          <div class="post-media">
+            <video src="https://storage.yandexcloud.net/vetkaevets/1000033475-compressed.mp4" muted loop playsinline preload="metadata"></video>
+          </div>
+          <div class="post-caption">
+            <div class="post-title">Музыкальное лото — тот самый момент</div>
+          </div>
+        </article>
+
+        <article class="post post-text">
+          <div class="quote">Пришёл один, ушёл с <em>компанией</em>. Тут это как-то само.</div>
+          <div class="by">— гость вечера</div>
+        </article>
+
+        <article class="post">
+          <div class="post-head">
+            <div class="post-avatar"><div class="inner">Б</div></div>
+            <div class="post-user">антресоль&перец<span>3 дня назад</span></div>
+          </div>
+          <div class="post-media">
+            <video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="none"></video>
+          </div>
+          <div class="post-caption">
+            <div class="post-title">Проверка материала. Каждый вечер — новое</div>
+          </div>
+        </article>
+
+        <article class="post">
+          <div class="post-head">
+            <div class="post-avatar"><div class="inner">Б</div></div>
+            <div class="post-user">антресоль&перец<span>неделю назад</span></div>
+          </div>
+          <div class="post-media">
+            <img src="https://picsum.photos/id/1057/800/1000" alt="">
+          </div>
+          <div class="post-caption">
+            <div class="post-title">Атмосфера, которая не отпускает</div>
+          </div>
+        </article>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Ссылка скопирована</div>
 
   <script>
     (function(){
       var I18N = {
-        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: {
+          onboard_tag:  'Это вайб-лента. Моменты, события и места — <em>в реальном времени</em>',
+          onboard_hint: 'Листай вверх',
+          want_go:      'хочу пойти',
+          invite:       'пригласить',
+          watching:     'смотрят прямо сейчас',
+          buy_ticket:   'Купить билет',
+          notify_btn:   'Получить приглашение',
+          notify_ok:    'Готово! Пришлём в боте 🔔',
+          notify_already:'Уже подписан на уведомления',
+          share_text:   'Пойдём вместе?'
+        },
+        en: {
+          onboard_tag:  'A vibe feed. Moments, places and events — <em>in real time</em>',
+          onboard_hint: 'Swipe up',
+          want_go:      'want to go',
+          invite:       'invite',
+          watching:     'watching now',
+          buy_ticket:   'Buy ticket',
+          notify_btn:   'Get invitation',
+          notify_ok:    'Done! We\'ll ping you in the bot 🔔',
+          notify_already:'Already subscribed',
+          share_text:   'Let\'s go together?'
+        },
+        es: {
+          onboard_tag:  'Un vibe feed. Momentos, lugares y eventos — <em>en tiempo real</em>',
+          onboard_hint: 'Desliza hacia arriba',
+          want_go:      'quiero ir',
+          invite:       'invitar',
+          watching:     'viendo ahora',
+          buy_ticket:   'Comprar entrada',
+          notify_btn:   'Obtener invitación',
+          notify_ok:    '¡Listo! Te avisamos en el bot 🔔',
+          notify_already:'Ya estás suscrito',
+          share_text:   '¿Vamos juntos?'
+        }
       };
 
       var currentLang = 'ru';
       try { currentLang = localStorage.getItem('vetka_lang') || 'ru'; } catch(e){}
       if (!I18N[currentLang]) currentLang = 'ru';
 
-      function t(key){ var d = I18N[currentLang] || I18N.ru; return d[key] != null ? d[key] : (I18N.ru[key] || key); }
+      function t(key){
+        var dict = I18N[currentLang] || I18N.ru;
+        return dict[key] != null ? dict[key] : (I18N.ru[key] || key);
+      }
 
       function applyLang(lang){
         if (!I18N[lang]) lang = 'ru';
         currentLang = lang;
         try { localStorage.setItem('vetka_lang', lang); } catch(e){}
+
         var nodes = document.querySelectorAll('[data-i18n]');
         for (var i = 0; i < nodes.length; i++) {
-          var k = nodes[i].getAttribute('data-i18n');
-          var d = I18N[lang];
-          if (d && d[k] != null) nodes[i].innerHTML = d[k];
+          var key = nodes[i].getAttribute('data-i18n');
+          var dict = I18N[lang];
+          if (dict && dict[key] != null) nodes[i].innerHTML = dict[key];
         }
+
         var btns = document.querySelectorAll('[data-lang]');
         for (var j = 0; j < btns.length; j++) {
           var b = btns[j];
           if (b.getAttribute('data-lang') === lang) b.classList.add('active');
           else b.classList.remove('active');
         }
+
+        if (APP_SETTINGS.mode === 'archive' || APP_SETTINGS.mode === 'teaser') {
+          var ctaTxts = document.querySelectorAll('[data-cta] [data-i18n="buy_ticket"]');
+          for (var k = 0; k < ctaTxts.length; k++) {
+            ctaTxts[k].textContent = t('notify_btn');
+          }
+        }
       }
 
+      var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
+
+      function readTgUserFromHash(){
+        try {
+          var h = location.hash || '';
+          var m = h.match(/tgWebAppData=([^&]+)/);
+          if (m && m[1]) {
+            var params = new URLSearchParams(decodeURIComponent(m[1]));
+            var userJson = params.get('user');
+            if (userJson) {
+              var u = JSON.parse(userJson);
+              if (u && u.id) return u;
+            }
+          }
+        } catch(e){}
+        return null;
+      }
+
+      function buildProfileUrl(u){
+        if (!u) return null;
+        if (u.username) return 'https://t.me/' + u.username;
+        return 'tg://user?id=' + u.id;
+      }
+
+      var EARLY_TG_USER = readTgUserFromHash();
+      var EARLY_TG_ID   = EARLY_TG_USER ? String(EARLY_TG_USER.id) : null;
+
+      function readTgUser(){
+        if (EARLY_TG_USER) return EARLY_TG_USER;
+        try {
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
+            return tg.initDataUnsafe.user;
+          }
+        } catch(e){}
+        return null;
+      }
+
+      var feed = document.getElementById('feed');
+      var onboarding = document.getElementById('onboarding');
+
+      // ====== SUPABASE (нужен сразу, чтобы грузить онбординг-видео) ======
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
 
       async function api(path, query){
         var url = SUPABASE_URL + '/rest/v1/' + path;
         if (query) url += '?' + query;
-        var r = await fetch(url, { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Accept': 'application/json' } });
+        var r = await fetch(url, {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Accept': 'application/json'
+          }
+        });
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.json();
       }
 
-      function timeAgo(iso){
-        var diff = Date.now() - new Date(iso).getTime();
-        var mins = Math.floor(diff / 60000);
-        if (mins < 1) return t('just_now');
-        if (mins < 60) return mins + ' ' + t('min_ago');
-        var hours = Math.floor(mins / 60);
-        if (hours < 24) return hours + ' ' + t('hour_ago');
-        var days = Math.floor(hours / 24);
-        if (days === 1) return t('yesterday');
-        return days + ' ' + t('day_ago');
+      var APP_SETTINGS = {
+        mode: 'live',
+        cta_text: null,
+        cta_url: null
+      };
+
+      function applyAppSettings(s){
+        if (!s) return;
+        APP_SETTINGS = Object.assign({}, APP_SETTINGS, s);
+
+        var ctaBtns = document.querySelectorAll('[data-cta]');
+        var isArchive = s.mode === 'archive' || s.mode === 'teaser';
+        for (var i = 0; i < ctaBtns.length; i++) {
+          var btn = ctaBtns[i];
+          var txt = btn.querySelector('[data-i18n="buy_ticket"]');
+          if (txt) {
+            if (isArchive) txt.textContent = t('notify_btn');
+            else if (s.cta_text) txt.textContent = s.cta_text;
+          }
+          if (isArchive) {
+            btn.removeAttribute('href');
+            btn.removeAttribute('target');
+          } else if (s.cta_url) {
+            btn.setAttribute('href', s.cta_url);
+            btn.setAttribute('target', '_blank');
+          }
+        }
       }
 
-      function getBadgeState(iso){
-        var diff = Date.now() - new Date(iso).getTime();
-        if (diff < 0) return 'hidden';
-        if (diff < 2 * 60 * 60 * 1000) return 'live';
-        if (diff < 24 * 60 * 60 * 1000) return 'time';
-        return 'hidden';
-      }
-
-      var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
-      function readTgUserFromHash(){
+      async function loadAppSettings(){
         try {
-          var h = location.hash || '';
-          var m = h.match(/tgWebAppData=([^&]+)/);
-          if (m && m[1]) {
-            var p = new URLSearchParams(decodeURIComponent(m[1]));
-            var uj = p.get('user');
-            if (uj) { var u = JSON.parse(uj); if (u && u.id) return u; }
-          }
-        } catch(e){}
-        return null;
-      }
-      function buildProfileUrl(u){ if (!u) return null; if (u.username) return 'https://t.me/' + u.username; return 'tg://user?id=' + u.id; }
-      var EARLY_TG_USER = readTgUserFromHash();
-      var EARLY_TG_ID = EARLY_TG_USER ? String(EARLY_TG_USER.id) : null;
-      function readTgUser(){
-        if (EARLY_TG_USER) return EARLY_TG_USER;
-        try { var tg = window.Telegram && window.Telegram.WebApp; if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) return tg.initDataUnsafe.user; } catch(e){}
-        return null;
+          var s = await api('app_settings', 'select=*&id=eq.1&limit=1');
+          if (s && s[0]) applyAppSettings(s[0]);
+        } catch(e){ console.warn('settings load error', e); }
       }
 
-      var feed = document.getElementById('feed');
-      var emptyState = document.getElementById('emptyState');
-      var onboarding = document.getElementById('onboarding');
-      var toast = document.getElementById('toast');
-
-      var slides = [];
-      var videoUrls = [];
-      var currentIndex = 0;
-      var slideEnteredAt = 0;
-      var soundEnabled = false;
-      var myTopSlides = {};
-      var topCounts = {};
-      var trackedSlideViews = {};
-      var flushing = false;
-      var tgIdWatchStarted = false;
-      var pendingEvents = [];
-      var reelsLoaded = false;
-      var onboardingDismissed = false;
-      var feedBooted = false;
-      var viewerTimersStarted = false;
-      var onboardingClosing = false;
-
-      var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
-      var toastTimer;
-      var flushTimer = null;
-
-      function showToast(text){
-        if (!toast) return;
-        toast.textContent = text;
-        toast.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
-      }
-
-      async function loadReels(){
-        var rows = [];
-        var likesCount = {};
-
+      async function loadSlidesConfig(){
         try {
-          rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
-          if (!rows) rows = [];
-        } catch(e){ console.warn('loadReels error:', e); rows = []; }
+          var rows = await api('slides_config', 'select=slide_id,vibe_title,vibe_subtitle&is_active=eq.true');
+          if (!rows || !rows.length) return;
+          var map = {};
+          rows.forEach(function(r){ map[r.slide_id] = r; });
 
-        try {
-          var likesAll = await api('likes', 'select=slide_id');
-          if (likesAll && likesAll.length) {
-            likesAll.forEach(function(l){ if (l.slide_id) likesCount[l.slide_id] = (likesCount[l.slide_id] || 0) + 1; });
-          }
-        } catch(e){ console.warn('likes load error:', e); }
-
-        topCounts = likesCount;
-
-        rows.forEach(function(r){
-          var base = parseInt(r.base_votes, 10) || 0;
-          var real = likesCount[r.id] || 0;
-          r.__total = base + real;
-        });
-        rows.sort(function(a, b){ return b.__total - a.__total; });
-
-        renderReels(rows);
-        reelsLoaded = true;
-        if (onboardingDismissed) bootFeed();
-      }
-
-      function escapeHtml(s){
-        return String(s).replace(/[&<>"']/g, function(c){
-          return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
-        });
-      }
-      function escapeAttr(s){ return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
-
-      function renderReels(reels){
-        feed.innerHTML = '';
-        if (!reels || reels.length === 0) {
-          emptyState.classList.add('visible');
-          slides = [];
-          videoUrls = [];
-          return;
-        }
-        emptyState.classList.remove('visible');
-
-        reels.forEach(function(reel){
-          var slide = document.createElement('div');
-          slide.className = 'slide';
-          slide.dataset.id = reel.id;
-
-          var badgeState = getBadgeState(reel.published_at);
-          var badgeClass = 'live-top';
-          var badgeInner = '';
-          if (badgeState === 'live') {
-            badgeClass = 'live-top';
-            badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
-          } else if (badgeState === 'time') {
-            badgeClass = 'live-top old';
-            badgeInner = '<span class="live-time">' + timeAgo(reel.published_at) + '</span>';
-          } else {
-            badgeClass = 'live-top hidden';
-            badgeInner = '';
-          }
-
-          var baseVotes = parseInt(reel.base_votes, 10) || 0;
-          var totalVotes = baseVotes + (topCounts[reel.id] || 0);
-          var placeHtml = reel.place
-            ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
-            : '';
-
-          slide.innerHTML =
-            '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
-            '<div class="veil"></div>' +
-            '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
-            '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
-            '<div class="bottom">' +
-              '<div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">' + t('watching') + '</span></div>' +
-              '<div class="title-row">' +
-                '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
-                '<button class="share-icon" data-share aria-label="Share">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
-                    '<path d="M5.5 19 C 9 13, 12.5 9, 18 5"/>' +
-                    '<circle class="tip" cx="18" cy="5" r="2.3" fill="currentColor" stroke="none"/>' +
-                  '</svg>' +
-                '</button>' +
-              '</div>' +
-              '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
-              placeHtml +
-              '<div class="actions-row">' +
-                '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
-                  '<span class="tv-ph">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.87l-8.106-13.536a1.914 1.914 0 0 0-3.274 0z"/></svg>' +
-                    '<span class="tv-count" data-count>' + totalVotes + '</span>' +
-                  '</span>' +
-                  '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
-                '</button>' +
-              '</div>' +
-            '</div>';
-
-          feed.appendChild(slide);
-        });
-
-        slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
-        videoUrls = [];
-        slides.forEach(function(s, i){
-          var v = s.querySelector('video');
-          videoUrls[i] = v ? (v.dataset.src || null) : null;
-          if (v && v.parentNode) {
-            try { v.muted = true; v.pause(); v.removeAttribute('src'); v.load(); v.parentNode.removeChild(v); } catch(e){}
-          }
-        });
-
-        bindHandlers();
-      }
-
-      function refreshLiveLabels(){
-        slides.forEach(function(slide){
-          var live = slide.querySelector('.live-top');
-          if (!live) return;
-          var pub = live.getAttribute('data-published');
-          if (!pub) return;
-
-          var state = getBadgeState(pub);
-
-          if (state === 'live') {
-            live.className = 'live-top';
-            live.innerHTML = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(pub) + '</span>';
-          } else if (state === 'time') {
-            live.className = 'live-top old';
-            live.innerHTML = '<span class="live-time">' + timeAgo(pub) + '</span>';
-          } else {
-            live.className = 'live-top hidden';
-            live.innerHTML = '';
-          }
-        });
-      }
-      setInterval(refreshLiveLabels, 60000);
-
-      var WINDOW_FWD = 2;
-      function getVideo(idx){
-        if (idx < 0 || idx >= slides.length) return null;
-        var c = slides[idx].querySelector('.video');
-        return c ? c.querySelector('video') : null;
-      }
-      function rebuildVideoFor(idx, autoplay, prime){
-        if (idx < 0 || idx >= slides.length) return null;
-        var url = videoUrls[idx]; if (!url) return null;
-        var container = slides[idx].querySelector('.video'); if (!container) return null;
-        var old = container.querySelector('video');
-        if (old) {
-          if (prime && old.readyState < 2 && old.networkState !== 2) {
-            try { var op = old.play(); if (op && op.then) op.then(function(){ try { old.pause(); old.currentTime = 0; } catch(e){} }).catch(function(){}); } catch(e){}
-          }
-          return old;
-        }
-        var v = document.createElement('video');
-        v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('loop',''); v.setAttribute('preload','auto');
-        v.muted = true; v.src = url; v.dataset.src = url; container.appendChild(v);
-        if (autoplay) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
-        else if (prime) {
-          try {
-            var pp = v.play();
-            if (pp && pp.then) pp.then(function(){ try { v.pause(); v.currentTime = 0; } catch(e){} }).catch(function(){});
-            else { try { v.pause(); v.currentTime = 0; } catch(e){} }
-          } catch(e){}
-        }
-        return v;
-      }
-      function setActiveSlide(idx){
-        if (!slides.length) return;
-        for (var i = 0; i < slides.length; i++) {
-          var v0 = getVideo(i); if (!v0) continue;
-          try { v0.muted = true; } catch(e){}
-          if (i !== idx) { try { v0.pause(); } catch(e){} try { v0.currentTime = 0; } catch(e){} }
-        }
-        var cur = getVideo(idx);
-        if (!cur) { rebuildVideoFor(idx, false, false); cur = getVideo(idx); }
-        if (cur) {
-          cur.muted = true;
-          try { cur.currentTime = 0; } catch(e){}
-          var p = cur.play();
-          var unmute = function(){ if (!soundEnabled) return; try { cur.muted = false; cur.volume = 1; } catch(e){} };
-          if (p && p.then) p.then(unmute).catch(function(){});
-          else requestAnimationFrame(unmute);
-        }
-        for (var k = 1; k <= WINDOW_FWD; k++) { var ni = idx + k; if (ni < slides.length) rebuildVideoFor(ni, false, true); }
+          slides.forEach(function(slide){
+            var id = slide.dataset.id;
+            var cfg = map[id];
+            if (!cfg) return;
+            var tEl = slide.querySelector('[data-vibe-title]');
+            var sEl = slide.querySelector('[data-vibe-subtitle]');
+            if (tEl && cfg.vibe_title)    tEl.textContent = cfg.vibe_title;
+            if (sEl && cfg.vibe_subtitle) sEl.textContent = cfg.vibe_subtitle;
+          });
+        } catch(e){ console.warn('slides_config load error', e); }
       }
 
       function layoutReels(){
         var vh = window.innerHeight;
         if (!vh || vh < 100) return;
         feed.style.height = vh + 'px';
-        var all = feed.querySelectorAll('.slide');
-        for (var i = 0; i < all.length; i++) all[i].style.height = vh + 'px';
+        var allSlides = feed.querySelectorAll('.slide');
+        for (var i = 0; i < allSlides.length; i++) allSlides[i].style.height = vh + 'px';
       }
 
-      function dismissOnboarding(){
-        if (!onboarding || onboardingClosing) return;
-        onboardingClosing = true;
-        onboarding.style.transform = '';
-        onboarding.classList.add('gone');
+      var WINDOW_BACK = 1;
+      var WINDOW_FWD  = 2;
 
-        var onbVids = onboarding.querySelectorAll('video');
-        for (var i = 0; i < onbVids.length; i++) {
-          try { onbVids[i].muted = true; } catch(e){}
-          try { onbVids[i].pause(); } catch(e){}
-          try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
+      var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
+
+      var videoUrls = [];
+      slides.forEach(function(s, i){
+        var v = s.querySelector('video');
+        videoUrls[i] = v ? (v.dataset.src || v.getAttribute('src') || null) : null;
+        if (v && v.parentNode) {
+          try {
+            v.muted = true;
+            v.pause();
+            v.removeAttribute('src');
+            v.load();
+            v.parentNode.removeChild(v);
+          } catch(e){}
+        }
+      });
+
+      function getVideo(idx){
+        if (idx < 0 || idx >= slides.length) return null;
+        var container = slides[idx].querySelector('.video');
+        return container ? container.querySelector('video') : null;
+      }
+
+      function rebuildVideoFor(idx, autoplay, prime){
+        if (idx < 0 || idx >= slides.length) return null;
+        var url = videoUrls[idx];
+        if (!url) return null;
+        var container = slides[idx].querySelector('.video');
+        if (!container) return null;
+
+        var old = container.querySelector('video');
+        if (old) {
+          if (prime && old.readyState < 2 && old.networkState !== 2) {
+            try {
+              var op = old.play();
+              if (op && op.then) {
+                op.then(function(){ try { old.pause(); old.currentTime = 0; } catch(e){} })
+                       .catch(function(){});
+              }
+            } catch(e){}
+          }
+          return old;
         }
 
-        onboardingDismissed = true;
-        layoutReels();
-        slideEnteredAt = Date.now();
-        feed.classList.add('visible');
-        if (reelsLoaded) bootFeed();
-        setTimeout(function(){
-          if (onboarding && onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-          onboarding = null;
-        }, 600);
+        var v = document.createElement('video');
+        v.setAttribute('playsinline', '');
+        v.setAttribute('webkit-playsinline', '');
+        v.setAttribute('loop', '');
+        v.setAttribute('preload', 'auto');
+        v.muted = true;
+        v.src = url;
+        v.dataset.src = url;
+        container.appendChild(v);
+
+        if (autoplay) {
+          var p = v.play();
+          if (p && p.catch) p.catch(function(){});
+        } else if (prime) {
+          try {
+            var pp = v.play();
+            if (pp && pp.then) {
+              pp.then(function(){ try { v.pause(); v.currentTime = 0; } catch(e){} })
+                     .catch(function(){});
+            } else {
+              try { v.pause(); v.currentTime = 0; } catch(e){}
+            }
+          } catch(e){}
+        }
+        return v;
       }
 
+      function reviveVideo(idx, autoplayAfter){
+        if (idx < 0 || idx >= slides.length) return null;
+        var baseUrl = videoUrls[idx];
+        if (!baseUrl) return null;
+        var container = slides[idx].querySelector('.video');
+        if (!container) return null;
+
+        var old = container.querySelector('video');
+        if (old) {
+          try { old.muted = true; } catch(e){}
+          try { old.pause(); } catch(e){}
+          try { old.removeAttribute('src'); old.load(); } catch(e){}
+          try { container.removeChild(old); } catch(e){}
+        }
+
+        var busted = baseUrl + (baseUrl.indexOf('?') === -1 ? '?' : '&') + '_r=' + Date.now();
+        var v = document.createElement('video');
+        v.setAttribute('playsinline', '');
+        v.setAttribute('webkit-playsinline', '');
+        v.setAttribute('loop', '');
+        v.setAttribute('preload', 'auto');
+        v.muted = true;
+        v.src = busted;
+        v.dataset.src = baseUrl;
+        container.appendChild(v);
+        try { v.load(); } catch(e){}
+
+        if (autoplayAfter) {
+          try { v.currentTime = 0; } catch(e){}
+          var p = v.play();
+          if (p && p.catch) p.catch(function(){});
+        }
+        return v;
+      }
+
+      var watchdogTimer = null;
+      function armWatchdog(idx){
+        if (watchdogTimer) { clearTimeout(watchdogTimer); watchdogTimer = null; }
+        watchdogTimer = setTimeout(function(){
+          watchdogTimer = null;
+          if (idx !== currentIndex) return;
+          var v = getVideo(idx);
+          if (!v) return;
+          if (!v.paused && v.currentTime > 0.1) return;
+          if (v.networkState === 2) { armWatchdog(idx); return; }
+          reviveVideo(idx, true);
+        }, 5000);
+      }
+
+      function setActiveSlide(idx){
+        for (var i = 0; i < slides.length; i++) {
+          var v0 = getVideo(i);
+          if (!v0) continue;
+          try { v0.muted = true; } catch(e){}
+          if (i !== idx) {
+            try { v0.pause(); } catch(e){}
+            try { v0.currentTime = 0; } catch(e){}
+          }
+        }
+
+        var cur = getVideo(idx);
+        if (!cur) {
+          rebuildVideoFor(idx, false, false);
+          cur = getVideo(idx);
+        }
+        if (cur) {
+          cur.muted = true;
+          try { cur.currentTime = 0; } catch(e){}
+          var p = cur.play();
+          var unmute = function(){
+            if (!soundEnabled) return;
+            try { cur.muted = false; cur.volume = 1; } catch(e){}
+          };
+          if (p && p.then) {
+            p.then(unmute).catch(function(){});
+          } else {
+            requestAnimationFrame(unmute);
+          }
+        }
+
+        for (var k = 1; k <= WINDOW_FWD; k++) {
+          var ni = idx + k;
+          if (ni < slides.length) rebuildVideoFor(ni, false, true);
+        }
+
+        armWatchdog(idx);
+      }
+
+      // ====== ОНБОРДИНГ ======
       if (onboarding) {
-        var startY = 0, currentY = 0, dragging = false, moved = false;
-        var THRESHOLD = 60;
+        var startY = 0, currentY = 0, dragging = false;
+        var THRESHOLD = 70;
 
         function onStart(e){
-          var pt = e.touches ? e.touches[0] : e;
-          startY = pt.clientY;
+          var t = e.touches ? e.touches[0] : e;
+          startY = t.clientY;
           currentY = startY;
           dragging = true;
-          moved = false;
           onboarding.classList.add('dragging');
         }
         function onMove(e){
           if (!dragging) return;
-          var pt = e.touches ? e.touches[0] : e;
-          currentY = pt.clientY;
+          var t = e.touches ? e.touches[0] : e;
+          currentY = t.clientY;
           var delta = currentY - startY;
-          if (Math.abs(delta) > 6) moved = true;
           if (delta < 0) {
             onboarding.style.transform = 'translateY(' + delta + 'px)';
             if (e.cancelable) e.preventDefault();
           }
         }
-        function onEnd(e){
+        function onEnd(){
           if (!dragging) return;
           dragging = false;
           onboarding.classList.remove('dragging');
           var delta = currentY - startY;
           if (delta < -THRESHOLD) {
-            dismissOnboarding();
+            onboarding.style.transform = '';
+            onboarding.classList.add('gone');
+
+            var onbVids = onboarding.querySelectorAll('video');
+            for (var i = 0; i < onbVids.length; i++) {
+              try { onbVids[i].muted = true; } catch(e){}
+              try { onbVids[i].pause(); } catch(e){}
+              try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
+            }
+
+            layoutReels();
+            slideEnteredAt = Date.now();
+            setActiveSlide(0);
+            setTimeout(function(){
+              if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
+              onboarding = null;
+            }, 600);
           } else {
             onboarding.style.transform = '';
           }
@@ -658,15 +1212,9 @@
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
 
-        onboarding.addEventListener('click', function(e){
-          if (e.target.closest('.lang-switch')) return;
-          if (moved) return;
-          dismissOnboarding();
-        });
-
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = 3;
-        var onbBg = document.getElementById('onbBg');
+        var onbIdx = 0;
+        var ONB_BATCH = 3;
 
         function loadOnbBatch(){
           if (!onboarding) return;
@@ -675,19 +1223,30 @@
             (function(v){
               if (!v || v.dataset.started) return;
               v.dataset.started = '1';
-              var url = v.dataset.src; if (!url) return;
+              var url = v.dataset.src;
+              if (!url) return;
               v.muted = true;
-              v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
+              v.setAttribute('muted','');
+              v.setAttribute('playsinline','');
+              v.setAttribute('webkit-playsinline','');
+              v.setAttribute('autoplay','');
               try { v.setAttribute('preload','auto'); } catch(e){}
-              v.src = url; try { v.load(); } catch(e){}
-              var p = v.play(); if (p && p.catch) p.catch(function(){});
+              v.src = url;
+              try { v.load(); } catch(e){}
+              var p = v.play();
+              if (p && p.catch) p.catch(function(){});
             })(onbVids[onbIdx]);
           }
-          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
+          if (onbIdx < onbVids.length) {
+            setTimeout(loadOnbBatch, 500);
+          }
         }
 
-        // === Загружаем видео ТОЛЬКО из Supabase, показываем тайлы только когда есть URL ===
-        (function loadOnbFromSupabase(attempt){
+        // === Загрузка видео для онбординга ТОЛЬКО из Supabase ===
+        // Та же анимация onbBgFade запускается только после того, как видео готовы.
+        var onbBg = document.getElementById('onbBg');
+
+        function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
           api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
             .then(function(rows){
@@ -699,322 +1258,80 @@
                 }
               }
               if (!urls.length) {
-                if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
+                if (attempt < 6) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 300 * attempt);
                 return;
               }
-              // Заполняем все 12 тайлов (циклично)
+
+              // Заполняем все 12 тайлов (циклично, если видео меньше 12)
               for (var j = 0; j < onbVids.length; j++) {
                 onbVids[j].dataset.src = urls[j % urls.length];
               }
-              // Показываем тайлы (теперь точно с видео) и грузим
-              if (onbBg) onbBg.classList.add('ready');
+
+              // Загружаем и запускаем воспроизведение
               loadOnbBatch();
+
+              // Как только первое видео готово — запускаем ту же анимацию onbBgFade
+              var firstVid = onbVids[0];
+              if (firstVid && onbBg) {
+                var fired = false;
+                var fire = function(){
+                  if (fired) return;
+                  fired = true;
+                  onbBg.classList.add('ready');
+                };
+                firstVid.addEventListener('loadeddata', fire, {once:true});
+                // Страховка: не ждём дольше 700мс
+                setTimeout(fire, 700);
+              } else if (onbBg) {
+                onbBg.classList.add('ready');
+              }
             })
             .catch(function(err){
-              console.warn('onb supabase error:', err);
-              if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
+              console.warn('onb supabase error (attempt ' + attempt + '):', err);
+              if (attempt < 6) {
+                setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 300 * attempt);
+              }
             });
-        })();
+        }
 
-        var kickAll = function(){ if (!onboarding) return; onboarding.querySelectorAll('video').forEach(function(v){ if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } }); };
+        loadOnbFromSupabase(1);
+
+        var kickAll = function(){
+          if (!onboarding) return;
+          onboarding.querySelectorAll('video').forEach(function(v){
+            if (v.paused) {
+              var p = v.play();
+              if (p && p.catch) p.catch(function(){});
+            }
+          });
+        };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
         onboarding.addEventListener('click', kickAll, {once:true});
 
         var langBtns = document.querySelectorAll('[data-lang]');
         for (var li = 0; li < langBtns.length; li++) {
           (function(b){
-            b.addEventListener('click', function(e){ e.stopPropagation(); applyLang(b.getAttribute('data-lang')); });
+            b.addEventListener('click', function(e){
+              e.stopPropagation();
+              applyLang(b.getAttribute('data-lang'));
+            });
             b.addEventListener('touchstart', function(e){ e.stopPropagation(); }, {passive:true});
             b.addEventListener('touchend', function(e){ e.stopPropagation(); });
           })(langBtns[li]);
         }
-      } else {
-        onboardingDismissed = true;
-        feed.classList.add('visible');
       }
 
       applyLang(currentLang);
 
-      var soundBtns = [];
-      function bindSoundBtns(){
-        soundBtns = feed.querySelectorAll('[data-sound-btn]');
-        soundBtns.forEach(function(btn){
-          btn.addEventListener('click', function(e){
-            e.stopPropagation();
-            if (soundEnabled) disableSound(); else enableSound();
-          });
-        });
-        updateIcons();
-      }
-      function updateIcons(){
-        soundBtns.forEach(function(btn){
-          var svg = btn.querySelector('svg'); if (!svg) return;
-          if (soundEnabled) { btn.classList.add('on'); svg.innerHTML = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 7a7 7 0 0 1 0 10"/>'; }
-          else { btn.classList.remove('on'); svg.innerHTML = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>'; }
-        });
-      }
-      function enableSound(){
-        if (soundEnabled) return;
-        soundEnabled = true; updateIcons();
-        var v = getVideo(currentIndex);
-        if (v) { var p = v.play(); var unmute = function(){ try { v.muted = false; v.volume = 1; } catch(e){} }; if (p && p.then) p.then(unmute).catch(function(){}); else unmute(); }
-        trackEvent('sound_on', {});
-      }
-      function disableSound(){ if (!soundEnabled) return; soundEnabled = false; updateIcons(); var v = getVideo(currentIndex); if (v) { try { v.muted = true; } catch(e){} } }
-
-      function bindShareBtns(){
-        document.querySelectorAll('[data-share]').forEach(function(btn){
-          btn.addEventListener('click', function(e){
-            e.stopPropagation();
-            if (window.ym) { try { ym(113067752, 'reachGoal', 'share'); } catch(err){} }
-            var slide = btn.closest('.slide');
-            var id = slide ? slide.dataset.id : '';
-            trackEvent('share', { slide_id: id });
-            var url = TG_MINIAPP_URL;
-            if (window.Telegram && window.Telegram.WebApp) {
-              try {
-                var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(t('share_text'));
-                window.Telegram.WebApp.openTelegramLink(shareUrl);
-              } catch(err){ copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }); }
-              return;
-            }
-            if (navigator.share) { navigator.share({ title: 'VETKA', text: t('share_text'), url: url }).catch(function(){ copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }); }); }
-            else { copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }).catch(function(){ showToast('Не удалось скопировать'); }); }
-          });
-        });
-      }
-
-      function bindTopBtns(){
-        document.querySelectorAll('[data-top]').forEach(function(btn){
-          btn.addEventListener('click', async function(e){
-            e.stopPropagation();
-            var slide = btn.closest('.slide');
-            var id = slide ? slide.dataset.id : null; if (!id) return;
-            var wasVoted = !!myTopSlides[id];
-            var nowVoted = !wasVoted;
-            if (nowVoted) {
-              myTopSlides[id] = true;
-              topCounts[id] = (topCounts[id] || 0) + 1;
-              showToast(t('top_ok'));
-              var cnt = btn.querySelector('[data-count]');
-              if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
-              var tri = btn.querySelector('.tv-ph svg');
-              if (tri) { tri.classList.remove('pulse'); void tri.offsetWidth; tri.classList.add('pulse'); }
-              try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
-            } else {
-              delete myTopSlides[id];
-              topCounts[id] = Math.max(0, (topCounts[id] || 0) - 1);
-              showToast(t('top_removed'));
-            }
-            refreshTopUI();
-            if (window.ym) { try { ym(113067752, 'reachGoal', 'top_vibe'); } catch(err){} }
-            trackEvent('top_vibe', { slide_id: id, voted: nowVoted });
-            try {
-              var user = await authReady; if (!user) return;
-              if (nowVoted) await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
-              else await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
-            } catch(err){}
-          });
-        });
-      }
-
-      function bindHandlers(){
-        bindSoundBtns();
-        bindShareBtns();
-        bindTopBtns();
-      }
-
-      function refreshTopUI(){
-        slides.forEach(function(slide){
-          var id = slide.dataset.id; if (!id) return;
-          var btn = slide.querySelector('[data-top]'); if (!btn) return;
-          var base = parseInt(btn.dataset.base || '0', 10) || 0;
-          var count = topCounts[id] || 0;
-          var total = base + count; if (total < 0) total = 0;
-          var cnt = btn.querySelector('[data-count]'); if (cnt) cnt.textContent = total;
-          if (myTopSlides[id]) btn.classList.add('voted'); else btn.classList.remove('voted');
-        });
-      }
-
-      var VIEWERS_PEAK = 200;
-      var DAY_CURVE = [{h:0,v:0.15},{h:4,v:0.06},{h:6,v:0.10},{h:8,v:0.28},{h:10,v:0.42},{h:13,v:0.65},{h:16,v:0.72},{h:18,v:0.95},{h:20,v:1.00},{h:22,v:0.85},{h:24,v:0.15}];
-      function getDayFactor(){
-        var d = new Date(); var tt = d.getHours() + d.getMinutes()/60;
-        for (var i = 0; i < DAY_CURVE.length-1; i++) {
-          var a = DAY_CURVE[i], b = DAY_CURVE[i+1];
-          if (tt >= a.h && tt <= b.h) { var k = (tt-a.h)/(b.h-a.h); return a.v + (b.v-a.v)*k; }
-        }
-        return 0.15;
-      }
-      function targetFor(weight){ var base = VIEWERS_PEAK * getDayFactor() * weight; var noise = 1 + (Math.random()-0.5)*0.24; return Math.max(1, Math.round(base*noise)); }
-
-      function initViewerCounters(){
-        if (viewerTimersStarted) return;
-        viewerTimersStarted = true;
-        slides.forEach(function(s){
-          var lv = s.querySelector('.bottom .live');
-          if (!lv) return;
-          var w = parseFloat(lv.dataset.weight || '1') || 1;
-          var target = targetFor(w);
-          lv.dataset.current = target;
-          var el = lv.querySelector('[data-viewers]');
-          if (el) el.textContent = target;
-          (function(slide){
-            function scheduleNext(){
-              var delay = 6000 + Math.random()*8000;
-              setTimeout(function(){
-                if (!document.body.contains(slide)) return;
-                tickViewer(slide);
-                scheduleNext();
-              }, delay);
-            }
-            scheduleNext();
-          })(s);
-        });
-      }
-      function tickViewer(slide){
-        var lv = slide.querySelector('.bottom .live');
-        if (!lv) return;
-        var w = parseFloat(lv.dataset.weight || '1') || 1;
-        var cur = parseInt(lv.dataset.current || '0', 10) || 0;
-        var target = targetFor(w);
-        var diff = target - cur;
-        var step;
-        if (Math.abs(diff) >= 8) { var dir = diff > 0 ? 1 : -1; step = dir * (1 + Math.floor(Math.random()*3)); }
-        else { step = Math.random() < 0.65 ? (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random()*2)) : 0; }
-        var next = Math.max(1, cur + step);
-        lv.dataset.current = next;
-        var el = lv.querySelector('[data-viewers]');
-        if (el) el.textContent = next;
-      }
-
-      var currentIO = null;
-      function initIO(){
-        if (currentIO) currentIO.disconnect();
-        if (!feed) return;
-        currentIO = new IntersectionObserver(function(entries){
-          var best = null, bestRatio = 0;
-          entries.forEach(function(e){ if (e.isIntersecting && e.intersectionRatio > bestRatio) { bestRatio = e.intersectionRatio; best = e.target; } });
-          if (best && bestRatio > 0.55) {
-            var idx = slides.indexOf(best);
-            if (idx !== -1 && idx !== currentIndex) {
-              flushDwell(currentIndex);
-              currentIndex = idx;
-              slideEnteredAt = Date.now();
-              setActiveSlide(idx);
-            }
-          }
-        }, { root: feed, threshold: [0.1, 0.55, 0.9] });
-        slides.forEach(function(s){ currentIO.observe(s); });
-      }
-
-      var slideIO = null;
-      function initSlideViewsIO(){
-        if (slideIO) slideIO.disconnect();
-        slideIO = new IntersectionObserver(function(entries){
-          entries.forEach(function(e){
-            if (e.isIntersecting && e.intersectionRatio > 0.5) {
-              var slideId = e.target.dataset.id;
-              if (slideId && !trackedSlideViews[slideId]) { trackedSlideViews[slideId] = true; trackEvent('slide_view', { slide_id: slideId }); }
-            }
-          });
-        }, { root: feed, threshold: [0, 0.55, 0.9] });
-        slides.forEach(function(s){ slideIO.observe(s); });
-      }
-
-      function bootFeed(){
-        if (feedBooted) return;
-        if (!slides.length) return;
-        feedBooted = true;
-        feed.classList.add('visible');
-        layoutReels();
-        initIO();
-        initSlideViewsIO();
-        initViewerCounters();
-        setActiveSlide(0);
-        refreshTopUI();
-        loadMyVotes();
-      }
-
-      async function loadMyVotes(){
-        try {
-          var user = await authReady; if (!user) return;
-          try {
-            var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
-            if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });
-          } catch(e){}
-          refreshTopUI();
-        } catch(e){}
-      }
-
-      function copyToClipboard(text){
-        if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
-        return new Promise(function(resolve, reject){
-          try {
-            var ta = document.createElement('textarea');
-            ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'absolute'; ta.style.left = '-9999px';
-            document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); resolve();
-          } catch(e){ reject(e); }
-        });
-      }
-
-      var STORAGE_KEY = EARLY_TG_ID ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID : 'sb-rlkjsjgktyltvxnfyski-auth-token';
-      var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { detectSessionInUrl: false, persistSession: true, autoRefreshToken: true, storageKey: STORAGE_KEY } });
-
-      function readTgId(){ var u = readTgUser(); return u ? String(u.id) : null; }
-      function getAnonId(){
-        var key = EARLY_TG_ID ? 'vetka_anon_id_' + EARLY_TG_ID : 'vetka_anon_id';
-        var id = null; try { id = localStorage.getItem(key); } catch(e){}
-        if (!id) { id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now()); try { localStorage.setItem(key, id); } catch(e){} }
-        return id;
-      }
-
-      var authReady = (async function(){
-        var hasStored = false; try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
-        if (hasStored) {
-          for (var i = 0; i < 15; i++) {
-            try { var s = await supabaseClient.auth.getSession(); if (s.data && s.data.session && s.data.session.user) return s.data.session.user; } catch(e){}
-            await new Promise(function(r){ setTimeout(r, 200); });
-          }
-        }
-        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) return null; return r.data.user; }
-        catch(e){ return null; }
-      })();
-
-      function startTgIdWatch(){
-        if (tgIdWatchStarted) return;
-        tgIdWatchStarted = true;
-        var tries = 0;
-        var iv = setInterval(function(){
-          tries++;
-          if (readTgId()) { clearInterval(iv); flushEvents(); }
-          else if (tries >= 25) { clearInterval(iv); flushEvents(); }
-        }, 200);
-        setTimeout(flushEvents, 5200);
-      }
-
-      async function flushEvents(){
-        if (flushing) return;
-        if (pendingEvents.length === 0) return;
-        flushing = true;
-        var batch = pendingEvents.slice(); pendingEvents = [];
-        try {
-          var user = await authReady; if (!user) { flushing = false; return; }
-          var tgId = readTgId(); var anonId = getAnonId();
-          var rows = batch.map(function(e){ return { user_id: user.id, tg_id: tgId, anon_id: anonId, event_type: e.type, event_data: e.data, session_id: SESSION_ID }; });
-          await supabaseClient.from('events').insert(rows);
-        } catch(e){}
-        flushing = false;
-        if (pendingEvents.length > 0) flushEvents();
-      }
-
-      function scheduleFlush(){ if (flushTimer) return; flushTimer = setTimeout(function(){ flushTimer = null; flushEvents(); }, 1500); }
-      function trackEvent(type, data){
-        pendingEvents.push({ type: type, data: data || {} });
-        if (readTgId()) scheduleFlush();
-        else if (window.Telegram && window.Telegram.WebApp) startTgIdWatch();
-        else scheduleFlush();
-      }
+      var soundBtns = feed.querySelectorAll('[data-sound-btn]');
+      var soundEnabled = false;
+      var profile = document.getElementById('profile');
+      var openBtns = document.querySelectorAll('[data-open-profile]');
+      var closeBtn = document.getElementById('closeProfile');
+      var scrollEndTracked = false;
+      var currentIndex = 0;
+      var slideEnteredAt = 0;
+      var toast = document.getElementById('toast');
 
       function flushDwell(idx){
         if (idx < 0 || idx >= slides.length) return;
@@ -1026,21 +1343,403 @@
         if (slideId) trackEvent('slide_dwell', { slide_id: slideId, duration_ms: dur });
       }
 
-      document.addEventListener('visibilitychange', function(){
-        if (document.hidden) { flushDwell(currentIndex); flushEvents(); } else { slideEnteredAt = Date.now(); }
+      var myLikedSlides = {};
+      var likeCounts = {};
+
+      var VIEWERS_PEAK = 200;
+      var DAY_CURVE = [
+        {h: 0,  v: 0.15},
+        {h: 4,  v: 0.06},
+        {h: 6,  v: 0.10},
+        {h: 8,  v: 0.28},
+        {h: 10, v: 0.42},
+        {h: 13, v: 0.65},
+        {h: 16, v: 0.72},
+        {h: 18, v: 0.95},
+        {h: 20, v: 1.00},
+        {h: 22, v: 0.85},
+        {h: 24, v: 0.15}
+      ];
+
+      function getDayFactor(){
+        var d = new Date();
+        var t = d.getHours() + d.getMinutes() / 60;
+        for (var i = 0; i < DAY_CURVE.length - 1; i++) {
+          var a = DAY_CURVE[i], b = DAY_CURVE[i+1];
+          if (t >= a.h && t <= b.h) {
+            var k = (t - a.h) / (b.h - a.h);
+            return a.v + (b.v - a.v) * k;
+          }
+        }
+        return 0.15;
+      }
+
+      function targetFor(weight){
+        var factor = getDayFactor();
+        var base = VIEWERS_PEAK * factor * weight;
+        var noise = 1 + (Math.random() - 0.5) * 0.24;
+        var n = Math.round(base * noise);
+        return Math.max(1, n);
+      }
+
+      function initViewerCounters(){
+        slides.forEach(function(s, i){
+          var live = s.querySelector('.live');
+          if (!live) return;
+          var w = parseFloat(live.dataset.weight || '1') || 1;
+          var target = targetFor(w);
+          live.dataset.current = target;
+          var el = live.querySelector('[data-viewers]');
+          if (el) el.textContent = target;
+
+          (function(slide){
+            function scheduleNext(){
+              var delay = 6000 + Math.random() * 8000;
+              setTimeout(function(){
+                tickViewer(slide);
+                scheduleNext();
+              }, delay);
+            }
+            scheduleNext();
+          })(s);
+        });
+      }
+
+      function tickViewer(slide){
+        var live = slide.querySelector('.live');
+        if (!live) return;
+        var w = parseFloat(live.dataset.weight || '1') || 1;
+        var cur = parseInt(live.dataset.current || '0', 10) || 0;
+        var target = targetFor(w);
+        var diff = target - cur;
+        var step;
+
+        if (Math.abs(diff) >= 8) {
+          var dir = diff > 0 ? 1 : -1;
+          step = dir * (1 + Math.floor(Math.random() * 3));
+        } else {
+          if (Math.random() < 0.65) {
+            step = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random() * 2));
+          } else {
+            step = 0;
+          }
+        }
+        var next = Math.max(1, cur + step);
+        live.dataset.current = next;
+        var el = live.querySelector('[data-viewers]');
+        if (el) el.textContent = next;
+      }
+
+      initViewerCounters();
+
+      var io = new IntersectionObserver(function(entries){
+        var best = null, bestRatio = 0;
+        entries.forEach(function(e){
+          if (e.isIntersecting && e.intersectionRatio > bestRatio) {
+            bestRatio = e.intersectionRatio;
+            best = e.target;
+          }
+        });
+        if (best && bestRatio > 0.55) {
+          var idx = slides.indexOf(best);
+          if (idx !== -1 && idx !== currentIndex) {
+            flushDwell(currentIndex);
+            currentIndex = idx;
+            slideEnteredAt = Date.now();
+            setActiveSlide(idx);
+            if (idx === slides.length - 1 && !scrollEndTracked) {
+              scrollEndTracked = true;
+              if (window.ym) { try { ym(113067752, 'reachGoal', 'scroll_end'); } catch(err){} }
+              trackEvent('scroll_end', { slide_id: slides[idx].dataset.id });
+            }
+          }
+        }
+      }, { root: feed, threshold: [0.1, 0.55, 0.9] });
+      slides.forEach(function(s){ io.observe(s); });
+
+      function updateIcons(){
+        soundBtns.forEach(function(btn){
+          var svg = btn.querySelector('svg');
+          if (!svg) return;
+          if (soundEnabled) {
+            btn.classList.add('on');
+            svg.innerHTML = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 7a7 7 0 0 1 0 10"/>';
+          } else {
+            btn.classList.remove('on');
+            svg.innerHTML = '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>';
+          }
+        });
+      }
+      function enableSound(){
+        if (soundEnabled) return;
+        soundEnabled = true; updateIcons();
+        var v = getVideo(currentIndex);
+        if (v) {
+          var p = v.play();
+          var unmute = function(){
+            try { v.muted = false; v.volume = 1; } catch(e){}
+          };
+          if (p && p.then) { p.then(unmute).catch(function(){}); }
+          else { unmute(); }
+        }
+        trackEvent('sound_on', {});
+      }
+      function disableSound(){
+        if (!soundEnabled) return;
+        soundEnabled = false; updateIcons();
+        var v = getVideo(currentIndex);
+        if (v) { try { v.muted = true; } catch(e){} }
+      }
+      soundBtns.forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          if (soundEnabled) disableSound(); else enableSound();
+        });
       });
-      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
-      window.addEventListener('resize', layoutReels);
+      updateIcons();
 
-      authReady.then(function(u){
-        if (!u) return;
-        trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
-        setTimeout(function(){ trackEvent('visit', {}); }, 5000);
+      var notifyInFlight = false;
+      async function subscribeNotify(){
+        if (notifyInFlight) return;
+        notifyInFlight = true;
+        try {
+          var tgUser = readTgUser();
+          var tgId = tgUser ? String(tgUser.id) : null;
+          if (!tgId) { showToast(t('notify_already')); return; }
+
+          var existing = await api('users', 'select=wants_notify&tg_id=eq.' + encodeURIComponent(tgId) + '&limit=1');
+          if (existing && existing[0] && existing[0].wants_notify === true) {
+            showToast(t('notify_already'));
+            notifyInFlight = false;
+            return;
+          }
+
+          await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ wants_notify: true })
+          });
+
+          showToast(t('notify_ok'));
+          trackEvent('notify_subscribe', {});
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'notify_subscribe'); } catch(err){} }
+        } catch(e) {
+          console.warn('subscribeNotify error:', e);
+          showToast('—');
+        } finally {
+          notifyInFlight = false;
+        }
+      }
+
+      document.querySelectorAll('[data-cta]').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          var slide = btn.closest('.slide');
+          var slideId = slide ? slide.dataset.id : null;
+          var isArchive = APP_SETTINGS.mode === 'archive' || APP_SETTINGS.mode === 'teaser';
+
+          if (isArchive) {
+            e.preventDefault();
+            subscribeNotify();
+            return;
+          }
+
+          trackEvent('cta_click', { slide_id: slideId });
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'cta_click'); } catch(err){} }
+        });
       });
 
-      loadReels();
-    })();
-  </script>
+      function refreshLikeUI(){
+        slides.forEach(function(slide){
+          var id = slide.dataset.id;
+          if (!id) return;
+          var metric = slide.querySelector('[data-like]');
+          if (!metric) return;
+          var base = parseInt(metric.dataset.base || '0', 10) || 0;
+          var count = likeCounts[id] || 0;
+          var total = base + count;
+          if (total < 0) total = 0;
+          var cnt = metric.querySelector('[data-count]');
+          if (cnt) cnt.textContent = total;
+          var ico = metric.querySelector('.ico');
+          if (myLikedSlides[id]) {
+            metric.classList.add('liked');
+            if (ico) {
+              ico.style.background = 'rgba(205,255,74,.9)';
+              ico.style.color = '#07070a';
+              ico.style.borderColor = 'rgba(205,255,74,.9)';
+            }
+          } else {
+            metric.classList.remove('liked');
+            if (ico) {
+              ico.style.background = '';
+              ico.style.color = '';
+              ico.style.borderColor = '';
+            }
+          }
+        });
+      }
 
-</body>
-</html>
+      document.querySelectorAll('[data-like]').forEach(function(btn){
+        btn.addEventListener('click', async function(e){
+          e.stopPropagation();
+          var slide = btn.closest('.slide');
+          var id = slide ? slide.dataset.id : null;
+          if (!id) return;
+          var wasLiked = !!myLikedSlides[id];
+          var nowLiked = !wasLiked;
+
+          if (nowLiked) {
+            myLikedSlides[id] = true;
+            likeCounts[id] = (likeCounts[id] || 0) + 1;
+          } else {
+            delete myLikedSlides[id];
+            likeCounts[id] = Math.max(0, (likeCounts[id] || 0) - 1);
+          }
+          refreshLikeUI();
+
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'want_go'); } catch(err){} }
+          trackEvent('like', { slide_id: id, liked: nowLiked });
+
+          try {
+            var user = await authReady;
+            if (!user) return;
+            if (nowLiked) {
+              await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
+            } else {
+              await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
+            }
+          } catch(err){ console.warn('like db error:', err); }
+        });
+      });
+
+      async function loadLikesFromSupabase(){
+        try {
+          var user = await authReady;
+          if (!user) return;
+          try {
+            var all = await supabaseClient.from('likes').select('slide_id');
+            if (all && all.data) {
+              var counts = {};
+              all.data.forEach(function(r){
+                if (r.slide_id) counts[r.slide_id] = (counts[r.slide_id] || 0) + 1;
+              });
+              likeCounts = counts;
+            }
+          } catch(e){ console.warn('all likes load error:', e); }
+          try {
+            var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
+            if (mine && mine.data) {
+              mine.data.forEach(function(r){ if (r.slide_id) myLikedSlides[r.slide_id] = true; });
+            }
+          } catch(e){ console.warn('my likes load error:', e); }
+          refreshLikeUI();
+        } catch(e){ console.warn('loadLikes error:', e); }
+      }
+
+      var toastTimer;
+      function showToast(text){
+        if (!toast) return;
+        toast.textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+      }
+      function copyToClipboard(text){
+        if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+        return new Promise(function(resolve, reject){
+          try {
+            var ta = document.createElement('textarea');
+            ta.value = text; ta.setAttribute('readonly', '');
+            ta.style.position = 'absolute'; ta.style.left = '-9999px';
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); document.body.removeChild(ta);
+            resolve();
+          } catch(e){ reject(e); }
+        });
+      }
+      document.querySelectorAll('[data-share]').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation();
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'invite'); } catch(err){} }
+          var slide = btn.closest('.slide');
+          var id = slide ? slide.dataset.id : '';
+          trackEvent('invite', { slide_id: id });
+
+          var url = TG_MINIAPP_URL;
+
+          if (window.Telegram && window.Telegram.WebApp) {
+            try {
+              var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(t('share_text'));
+              window.Telegram.WebApp.openTelegramLink(shareUrl);
+            } catch(err){
+              copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
+            }
+            return;
+          }
+
+          if (navigator.share) {
+            navigator.share({ title: 'VETKA', text: t('share_text'), url: url }).catch(function(){
+              copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
+            });
+          } else {
+            copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }).catch(function(){ showToast('Не удалось скопировать'); });
+          }
+        });
+      });
+
+      function openByHash(){
+        var hash = location.hash.replace('#', '');
+        if (!hash) return false;
+        var target = document.getElementById(hash);
+        if (!target) return false;
+        setTimeout(function(){
+          try { target.scrollIntoView({behavior: 'auto', block: 'start'}); } catch(e){
+            target.scrollIntoView();
+          }
+        }, 80);
+        return true;
+      }
+
+      function openProfile(){
+        if (window.ym) { try { ym(113067752, 'reachGoal', 'open_profile'); } catch(err){} }
+        trackUser('profile_view');
+        trackEvent('profile_open', {});
+        profile.classList.add('open');
+        flushDwell(currentIndex);
+        for (var i = 0; i < slides.length; i++) {
+          var v = getVideo(i);
+          if (v) { try { v.muted = true; v.pause(); } catch(e){} }
+        }
+      }
+      function closeProfile(){
+        profile.classList.remove('open');
+        slideEnteredAt = Date.now();
+        setActiveSlide(currentIndex);
+      }
+      openBtns.forEach(function(btn){
+        btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); });
+      });
+      closeBtn.addEventListener('click', function(e){ e.stopPropagation(); closeProfile(); });
+
+      var followBtn = document.getElementById('followBtn');
+      var followed = false;
+      followBtn.addEventListener('click', function(){
+        followed = !followed;
+        if (window.ym) { try { ym(113067752, 'reachGoal', 'follow'); } catch(err){} }
+        trackUser('follow', { orgName: 'БАЗА' });
+        trackEvent('follow', { following: followed });
+        if (followed) {
+          followBtn.classList.add('followed');
+          followBtn.querySelector('span').textContent = 'Вы подписаны';
+          followBtn.querySelector('svg').innerHTML = '<path d="M20 6L9 17l-5-5"/>';
+        } else {
+          followBtn.classList.remove('followed');
+          followBtn.querySelector('span').textContent = 'Подписаться';
+          followBtn.querySelector('svg').innerHTML = '<path d="M12 5v14"/><path d="M5 12h14"/>';
+        }
+      });

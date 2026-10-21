@@ -99,39 +99,6 @@
   .title-row{display:flex;align-items:center;gap:12px;pointer-events:none;}
   .title-row .title{flex:1;min-width:0;}
 
-  .share-icon{
-    pointer-events:auto;
-    flex:none;
-    width:34px;
-    height:34px;
-    background:transparent;
-    border:0;
-    padding:0;
-    color:#CDFF4A;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:transform .15s ease, color .15s ease, opacity .15s ease;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .share-icon:active{
-    transform:scale(.85);
-    color:#e0ff6b;
-  }
-  .share-icon svg{
-    width:22px;
-    height:22px;
-    display:block;
-    overflow:visible;
-  }
-  .share-icon:active .tip{transform:scale(1.3);}
-  .share-icon .tip{
-    transform-origin:center;
-    transform-box:fill-box;
-    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
-  }
-
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
   .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);min-height:0;}
@@ -140,20 +107,44 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  /* НОВЫЙ ДИЗАЙН КНОПКИ ТОП ВАЙБ (СБОКУ КАК В ТИКТОКЕ) */
+  /* НОВАЯ КНОПКА ЛОКАЦИИ ПО ЦЕНТРУ */
+  .loc-btn {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px 22px;
+    border-radius: 100px;
+    background: #CDFF4A;
+    color: #07070a;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: center;
+    margin-top: 6px;
+    box-shadow: 0 4px 20px rgba(205,255,74,.35);
+    transition: transform .12s ease, background .2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .loc-btn:active { transform: scale(.96); }
+  .loc-btn svg { width: 16px; height: 16px; flex: none; }
+
+  /* ПРАВАЯ КОЛОНКА С КНОПКАМИ */
   .actions-row {
     position: absolute;
     right: 14px;
-    bottom: 150px;
+    bottom: 170px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 18px;
     pointer-events: none;
     z-index: 10;
   }
 
-  .top-vibe {
+  .top-vibe, .share-btn {
     pointer-events: auto;
     display: flex;
     flex-direction: column;
@@ -167,9 +158,9 @@
     transition: transform .12s ease;
     -webkit-tap-highlight-color: transparent;
   }
-  .top-vibe:active { transform: scale(.88); }
+  .top-vibe:active, .share-btn:active { transform: scale(.88); }
 
-  .tv-ph {
+  .tv-ph, .ico-ph {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -180,15 +171,17 @@
     border: 1px solid rgba(255,255,255,0.18);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    color: #CDFF4A;
     transition: background .2s ease, border-color .2s ease, color .2s ease;
   }
-  .tv-ph svg {
+  .tv-ph svg, .ico-ph svg {
     width: 22px;
     height: 22px;
     display: block;
     overflow: visible;
   }
+
+  .tv-ph { color: #CDFF4A; }
+  .ico-ph { color: #fff; }
 
   .tv-count {
     font-family: 'Inter', sans-serif;
@@ -200,7 +193,7 @@
     text-shadow: 0 1px 4px rgba(0,0,0,0.8);
   }
 
-  .tv-label {
+  .tv-label, .lbl {
     font-family: 'Inter', sans-serif;
     font-size: 10.5px;
     font-weight: 600;
@@ -298,9 +291,9 @@
   <script>
     (function(){
       var I18N = {
-        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', loc_btn:'Где это?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', loc_btn:'Where is it?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', loc_btn:'¿Dónde es?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -495,22 +488,31 @@
               '<div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">' + t('watching') + '</span></div>' +
               '<div class="title-row">' +
                 '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
-                '<button class="share-icon" data-share aria-label="Share">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
-                    '<path d="M5.5 19 C 9 13, 12.5 9, 18 5"/>' +
-                    '<circle class="tip" cx="18" cy="5" r="2.3" fill="currentColor" stroke="none"/>' +
-                  '</svg>' +
-                '</button>' +
               '</div>' +
               '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
               placeHtml +
+              '<button class="loc-btn" data-loc>' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+                '<span data-i18n="loc_btn">' + t('loc_btn') + '</span>' +
+              '</button>' +
               '<div class="actions-row">' +
                 '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
                   '<span class="tv-ph">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.87l-8.106-13.536a1.914 1.914 0 0 0-3.274 0z"/></svg>' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>' +
                   '</span>' +
                   '<span class="tv-count" data-count>' + totalVotes + '</span>' +
                   '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
+                '</button>' +
+                '<button class="share-btn" data-share aria-label="Share">' +
+                  '<span class="ico-ph">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>' +
+                      '<circle cx="9" cy="7" r="4"/>' +
+                      '<path d="M19 8v6"/>' +
+                      '<path d="M22 11h-6"/>' +
+                    '</svg>' +
+                  '</span>' +
+                  '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
                 '</button>' +
               '</div>' +
             '</div>';

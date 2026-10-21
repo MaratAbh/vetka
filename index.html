@@ -697,7 +697,7 @@
         });
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = 3;
+        var onbIdx = 0, ONB_BATCH = 6; // Увеличили батч
         var onbBg = document.getElementById('onbBg');
 
         var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
@@ -718,56 +718,64 @@
               var p = v.play(); if (p && p.catch) p.catch(function(){});
             })(onbVids[targetIdx]);
           }
-          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
+          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 100); // Уменьшили задержку
         }
 
-        // ОПТИМИЗАЦИЯ: Используем кешированные данные вместо второго запроса
-        fetchAppData().then(function(data){
-          if (!onboarding) return;
-          var rows = data.reels;
-          var seen = {};
-          var urls = [];
-          
-          if (rows && rows.length) {
-            for (var i = 0; i < rows.length && urls.length < 12; i++) {
-              var u = rows[i] && rows[i].video_url;
-              if (u && !seen[u]) { seen[u] = 1; urls.push(u); }
-            }
-          }
+        // ОПТИМИЗАЦИЯ: Легкий запрос только для видео онбординга, без лайков
+        (function loadOnbFromSupabase(attempt){
+          attempt = attempt || 1;
+          api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
+            .then(function(rows){
+              if (!onboarding) return;
+              var seen = {};
+              var urls = [];
+              if (rows && rows.length) {
+                for (var i = 0; i < rows.length; i++) {
+                  var u = rows[i] && rows[i].video_url;
+                  if (u && !seen[u]) { seen[u] = 1; urls.push(u); }
+                }
+              }
+              if (!urls.length) {
+                if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
+                return;
+              }
 
-          if (!urls.length) return;
+              var n = urls.length;
+              var left = [];
+              var right = [];
 
-          var n = urls.length;
-          var left = [];
-          var right = [];
+              if (n >= 6) {
+                left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
+                right = [urls[3], urls[4], urls[5], urls[3], urls[4], urls[5]];
+              } else if (n === 5) {
+                left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
+                right = [urls[3], urls[4], urls[3], urls[4], urls[3], urls[4]];
+              } else if (n === 4) {
+                left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
+                right = [urls[2], urls[3], urls[2], urls[3], urls[2], urls[3]];
+              } else if (n === 3) {
+                left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
+                right = [urls[1], urls[2], urls[0], urls[1], urls[2], urls[0]];
+              } else if (n === 2) {
+                left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
+                right = [urls[1], urls[0], urls[1], urls[0], urls[1], urls[0]];
+              } else {
+                left = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
+                right = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
+              }
 
-          if (n >= 6) {
-            left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-            right = [urls[3], urls[4], urls[5], urls[3], urls[4], urls[5]];
-          } else if (n === 5) {
-            left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-            right = [urls[3], urls[4], urls[3], urls[4], urls[3], urls[4]];
-          } else if (n === 4) {
-            left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
-            right = [urls[2], urls[3], urls[2], urls[3], urls[2], urls[3]];
-          } else if (n === 3) {
-            left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-            right = [urls[1], urls[2], urls[0], urls[1], urls[2], urls[0]];
-          } else if (n === 2) {
-            left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
-            right = [urls[1], urls[0], urls[1], urls[0], urls[1], urls[0]];
-          } else {
-            left = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
-            right = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
-          }
+              for (var j = 0; j < 6; j++) {
+                onbVids[j].dataset.src = left[j];
+                onbVids[j + 6].dataset.src = right[j];
+              }
 
-          for (var j = 0; j < 6; j++) {
-            onbVids[j].dataset.src = left[j];
-            onbVids[j + 6].dataset.src = right[j];
-          }
-
-          loadOnbBatch();
-        });
+              loadOnbBatch();
+            })
+            .catch(function(err){
+              console.warn('onb supabase error:', err);
+              if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
+            });
+        })();
 
         var kickAll = function(){ if (!onboarding) return; onboarding.querySelectorAll('video').forEach(function(v){ if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } }); };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
@@ -823,11 +831,7 @@
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : '';
             trackEvent('share', { slide_id: id });
-            
-            // ДОБАВЛЕНО: передача ID ролика через ?startapp=
             var url = TG_MINIAPP_URL;
-            if (id) url += '?startapp=' + encodeURIComponent(id);
-
             if (window.Telegram && window.Telegram.WebApp) {
               try {
                 var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(t('share_text'));
@@ -1118,32 +1122,9 @@
         initIO();
         initSlideViewsIO();
         initViewerCounters();
-        
-        // ДОБАВЛЕНО: Обработка глубоких ссылок (start_param)
-        var startParam = null;
-        try { 
-          startParam = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.start_param; 
-        } catch(e){}
-        
-        var startIdx = 0;
-        if (startParam) {
-          for (var i = 0; i < slides.length; i++) {
-            if (slides[i].dataset.id === startParam) {
-              startIdx = i;
-              break;
-            }
-          }
-        }
-
-        setActiveSlide(startIdx);
+        setActiveSlide(0);
         refreshTopUI();
         loadMyVotes();
-        
-        if (startIdx > 0) {
-          setTimeout(function(){
-             feed.scrollTop = startIdx * window.innerHeight;
-          }, 50);
-        }
       }
 
       async function loadMyVotes(){

@@ -9,6 +9,8 @@
 
 <link rel="preconnect" href="https://telegram.org" crossorigin>
 <link rel="dns-prefetch" href="https://telegram.org">
+<link rel="preconnect" href="https://rlkjsjgktyltvxnfyski.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://rlkjsjgktyltvxnfyski.supabase.co">
 
 <script type="text/javascript" >
    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -41,8 +43,8 @@
   .onboarding{position:fixed;inset:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;}
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
-  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;transition:transform 1.2s ease,opacity 1.2s ease;}
-  .onb-bg.ready{transform:scale(1);opacity:1;}
+  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;opacity:0;animation:onbBgFade 1.2s .1s ease forwards;}
+  @keyframes onbBgFade{to{opacity:1;}}
   .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
   .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
   .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;z-index:1;}
@@ -665,7 +667,7 @@
         });
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = onbVids.length;
+        var onbIdx = 0, ONB_BATCH = 3;
         var onbBg = document.getElementById('onbBg');
 
         function loadOnbBatch(){
@@ -686,13 +688,12 @@
           if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
         }
 
-        // === Загружаем видео ТОЛЬКО из Supabase, показываем тайлы только когда есть URL ===
+        // === Загружаем видео ТОЛЬКО из Supabase, раскладка без дублей в ряду ===
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
-          api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=50')
+          api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=20')
             .then(function(rows){
               if (!onboarding) return;
-              // Дедупликация: собираем только уникальные video_url (до 12 штук)
               var seen = {};
               var urls = [];
               if (rows && rows.length) {
@@ -705,8 +706,7 @@
                 if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
                 return;
               }
-              // Раскладка: левая колонка row % N, правая (row + shift) % N.
-              // При N >= 12 все 12 тайлов уникальны. При N < 12 — сдвиг максимально разводит дубли.
+              // Раскладка: левая колонка row % N, правая (row + shift) % N
               var nUrls = urls.length;
               var perCol = onbVids.length / 2;
               var shift = nUrls >= 2 ? Math.max(1, Math.floor(nUrls / 2)) : 0;
@@ -715,8 +715,6 @@
                 var row = j % perCol;
                 onbVids[j].dataset.src = urls[(row + col * shift) % nUrls];
               }
-              // Показываем тайлы (теперь точно с видео) и грузим
-              if (onbBg) onbBg.classList.add('ready');
               loadOnbBatch();
             })
             .catch(function(err){

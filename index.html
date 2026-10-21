@@ -140,67 +140,174 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  .actions-row{display:flex;gap:8px;align-items:center;}
-
-  .top-vibe{
-    pointer-events:auto;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    padding:8px 16px 8px 14px;
-    border-radius:100px;
-    background:#CDFF4A;
-    color:#07070a;
-    font-family:'Inter',sans-serif;
-    font-size:12px;
-    font-weight:600;
-    cursor:pointer;
-    text-decoration:none;
-    box-shadow:0 0 20px rgba(205,255,74,.32);
-    white-space:nowrap;
-    flex:1;
-    border:none;
-    transition:transform .12s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .top-vibe:active{transform:scale(.98);}
-
-  .tv-ph{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:1px;
-    flex:none;
-    line-height:1;
-  }
-  .tv-ph svg{
-    width:13px;
-    height:13px;
-    display:block;
-    overflow:visible;
-  }
-  .tv-count{
-    font-size:10px;
-    font-weight:800;
-    line-height:1;
-    font-variant-numeric:tabular-nums;
-    letter-spacing:-.02em;
+  /* ========== VETKA TOP VIBE BUTTON ========== */
+  .actions-row {
+    position: absolute;
+    right: 14px;
+    bottom: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    pointer-events: none;
+    z-index: 10;
   }
 
-  .tv-label{font-weight:700;}
+  .top-vibe {
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    transition: transform .12s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .top-vibe:active { transform: scale(.9); }
 
-  .top-vibe.voted{
-    background:rgba(205,255,74,.14);
-    color:#CDFF4A;
-    box-shadow:inset 0 0 0 1px rgba(205,255,74,.5);
+  .tv-ph {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(10,10,14,.55);
+    border: 1px solid rgba(205,255,74,.22);
+    backdrop-filter: blur(14px) saturate(1.3);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    color: #CDFF4A;
+    transition:
+      background .25s ease,
+      border-color .25s ease,
+      color .25s ease,
+      box-shadow .35s ease;
+    box-shadow:
+      0 4px 14px rgba(0,0,0,.4),
+      inset 0 1px 0 rgba(255,255,255,.06);
   }
 
-  @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
-  .tv-count.pulse{animation:countPulse .45s ease;}
-  @keyframes triPulse{0%{transform:translateY(0);}40%{transform:translateY(-3px);}100%{transform:translateY(0);}}
-  .tv-ph svg.pulse{animation:triPulse .4s ease;}
+  .tv-icon {
+    width: 26px;
+    height: 26px;
+    display: block;
+    overflow: visible;
+  }
+  .tv-icon .tv-wave {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity .2s ease, transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .tv-icon .tv-beam {
+    fill: currentColor;
+    opacity: 0;
+    transform: scaleY(.05);
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    transition: opacity .2s ease, transform .3s cubic-bezier(.2,.9,.3,1.4);
+  }
+  .tv-icon .tv-spark {
+    fill: currentColor;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform .35s cubic-bezier(.2,.9,.3,1.4);
+  }
+
+  /* press / voted: waves collapse into beam */
+  .top-vibe.pressing .tv-wave,
+  .top-vibe.voted    .tv-wave {
+    opacity: 0;
+    transform: scaleX(.15);
+  }
+  .top-vibe.pressing .tv-beam,
+  .top-vibe.voted    .tv-beam {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  .top-vibe.pressing .tv-spark {
+    transform: scale(1.4) rotate(45deg);
+  }
+
+  .tv-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 4px rgba(0,0,0,.8);
+    transition: color .25s ease;
+    display: inline-block;
+  }
+  .tv-count.pulse {
+    animation: countPulse .42s cubic-bezier(.2,.9,.3,1.5);
+  }
+  @keyframes countPulse {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  .tv-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: rgba(255,255,255,.85);
+    text-shadow: 0 1px 4px rgba(0,0,0,.8);
+    letter-spacing: .02em;
+    transition: color .25s ease;
+    text-align: center;
+    max-width: 74px;
+    line-height: 1.2;
+  }
+
+  .top-vibe.voted .tv-ph {
+    background: #CDFF4A;
+    border-color: #CDFF4A;
+    color: #07070a;
+    box-shadow:
+      0 0 20px rgba(205,255,74,.55),
+      0 0 42px rgba(205,255,74,.22),
+      0 4px 14px rgba(0,0,0,.4),
+      inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .top-vibe.voted .tv-count { color: #CDFF4A; }
+  .top-vibe.voted .tv-label { color: #CDFF4A; }
+
+  .tv-burst {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 50%;
+    overflow: visible;
+  }
+  .tv-particle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #CDFF4A;
+    box-shadow: 0 0 6px rgba(205,255,74,.9);
+    transform: translate(-50%,-50%);
+    animation: tvParticleFly .65s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  @keyframes tvParticleFly {
+    0%   { transform: translate(-50%,-50%) rotate(var(--a)) translateX(0)   scale(1); opacity: 1; }
+    70%  { opacity: 1; }
+    100% { transform: translate(-50%,-50%) rotate(var(--a)) translateX(34px) scale(0); opacity: 0; }
+  }
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
@@ -485,11 +592,17 @@
               '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
               placeHtml +
               '<div class="actions-row">' +
-                '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
+                '<button class="top-vibe" data-top data-base="' + baseVotes + '" aria-label="' + t('top_vibe') + '">' +
                   '<span class="tv-ph">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.87l-8.106-13.536a1.914 1.914 0 0 0-3.274 0z"/></svg>' +
-                    '<span class="tv-count" data-count>' + totalVotes + '</span>' +
+                    '<svg class="tv-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">' +
+                      '<path class="tv-wave" d="M7 20 Q14 15 21 20"/>' +
+                      '<path class="tv-wave" d="M9 16 Q14 11.5 19 16"/>' +
+                      '<path class="tv-wave" d="M11 12 Q14 9 17 12"/>' +
+                      '<rect class="tv-beam" x="13" y="4" width="2" height="20" rx="1"/>' +
+                      '<path class="tv-spark" d="M20 4 L20.9 6 L22.9 6.9 L20.9 7.8 L20 9.8 L19.1 7.8 L17.1 6.9 L19.1 6 Z"/>' +
+                    '</svg>' +
                   '</span>' +
+                  '<span class="tv-count" data-count>' + totalVotes + '</span>' +
                   '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
                 '</button>' +
               '</div>' +
@@ -670,7 +783,6 @@
         var onbIdx = 0, ONB_BATCH = 3;
         var onbBg = document.getElementById('onbBg');
 
-        // Порядок загрузки: сначала видимые тайлы левой (0,1,2) и правой (9,10,11) колонок
         var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
 
         function loadOnbBatch(){
@@ -692,7 +804,6 @@
           if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
         }
 
-        // === ИДЕАЛЬНАЯ РАСКЛАДКА ДЛЯ БЕСШОВНОЙ АНИМАЦИИ ===
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
           api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
@@ -816,23 +927,67 @@
         });
       }
 
+      function spawnVibeParticles(btn){
+        var host = btn.querySelector('.tv-ph');
+        if (!host) return;
+        var old = host.querySelector('.tv-burst');
+        if (old && old.parentNode) old.parentNode.removeChild(old);
+
+        var burst = document.createElement('div');
+        burst.className = 'tv-burst';
+        var total = 10;
+        for (var i = 0; i < total; i++) {
+          var p = document.createElement('span');
+          p.className = 'tv-particle';
+          p.style.setProperty('--a', ((360 / total) * i + 18) + 'deg');
+          p.style.animationDelay = (Math.random() * 60) + 'ms';
+          var size = 3 + Math.random() * 3;
+          p.style.width = size + 'px';
+          p.style.height = size + 'px';
+          burst.appendChild(p);
+        }
+        host.appendChild(burst);
+        setTimeout(function(){ if (burst.parentNode) burst.parentNode.removeChild(burst); }, 900);
+      }
+
       function bindTopBtns(){
         document.querySelectorAll('[data-top]').forEach(function(btn){
+          var pressTimer = null;
+
+          btn.addEventListener('pointerdown', function(){
+            btn.classList.add('pressing');
+            if (pressTimer) clearTimeout(pressTimer);
+            pressTimer = setTimeout(function(){
+              btn.classList.remove('pressing');
+              pressTimer = null;
+            }, 400);
+          });
+          ['pointerleave','pointercancel'].forEach(function(ev){
+            btn.addEventListener(ev, function(){
+              if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+              btn.classList.remove('pressing');
+            });
+          });
+
           btn.addEventListener('click', async function(e){
             e.stopPropagation();
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : null; if (!id) return;
             var wasVoted = !!myTopSlides[id];
             var nowVoted = !wasVoted;
+
             if (nowVoted) {
               myTopSlides[id] = true;
               topCounts[id] = (topCounts[id] || 0) + 1;
               showToast(t('top_ok'));
+              spawnVibeParticles(btn);
               var cnt = btn.querySelector('[data-count]');
               if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
-              var tri = btn.querySelector('.tv-ph svg');
-              if (tri) { tri.classList.remove('pulse'); void tri.offsetWidth; tri.classList.add('pulse'); }
-              try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
+              try {
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+                  window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+              } catch(err){}
             } else {
               delete myTopSlides[id];
               topCounts[id] = Math.max(0, (topCounts[id] || 0) - 1);
@@ -983,8 +1138,7 @@
         if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
         return new Promise(function(resolve, reject){
           try {
-            var ta = document.createElement('textarea');
-            ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'absolute'; ta.style.left = '-9999px';
+            var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'absolute'; ta.style.left = '-9999px';
             document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); resolve();
           } catch(e){ reject(e); }
         });

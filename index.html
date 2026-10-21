@@ -887,49 +887,56 @@
       }
 
       function requestUserLocation() {
-        return new Promise(async function(resolve, reject) {
-          if (!window.Telegram || !window.Telegram.WebApp || !window.Telegram.WebApp.LocationManager) {
-            alert('Ошибка: Этот Telegram не поддерживает LocationManager.');
+        return new Promise(function(resolve, reject) {
+          var lm = window.Telegram?.WebApp?.LocationManager;
+
+          if (!lm) {
+            alert('Ошибка: LocationManager не найден в этом Telegram.');
             reject('LocationManager not found');
             return;
           }
 
-          var lm = window.Telegram.WebApp.LocationManager;
-
-          // 1. СНАЧАЛА монтируем менеджер (это асинхронный шаг)
-          try {
-            await lm.mount();
-          } catch (e) {
-            alert('Ошибка инициализации LocationManager: ' + e);
-            reject('Mount failed');
+          // Вариант 1: Новый API (mount + requestLocation)
+          if (typeof lm.mount === 'function' && typeof lm.requestLocation === 'function') {
+            lm.mount().then(function() {
+              if (!lm.isSupported) {
+                alert('Ошибка: Геолокация не поддерживается на этом устройстве.');
+                reject('Not supported');
+                return;
+              }
+              lm.requestLocation().then(function(loc) {
+                if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
+                else reject('Denied');
+              }).catch(reject);
+            }).catch(function(e) {
+              alert('Ошибка инициализации: ' + e);
+              reject(e);
+            });
             return;
           }
 
-          // 2. ТЕПЕРЬ проверяем поддержку
-          if (!lm.isSupported) {
-            alert('Ошибка: Геолокация не поддерживается на этом устройстве или в этой версии Telegram.');
-            reject('Location not supported after mount');
+          // Вариант 2: Старый API (init + getLocation)
+          if (typeof lm.init === 'function' && typeof lm.getLocation === 'function') {
+            lm.init(function() {
+              lm.getLocation(function(loc) {
+                if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
+                else reject('Denied');
+              });
+            });
             return;
           }
 
-          // 3. Если разрешение уже запрашивалось — открываем настройки
-          if (lm.isAccessRequested) {
-            alert('Вы уже запрашивали геолокацию. Откроем настройки, чтобы включить её вручную.');
-            lm.openSettings();
-            reject('Settings opened');
+          // Вариант 3: Прямой вызов requestLocation (без mount)
+          if (typeof lm.requestLocation === 'function') {
+            lm.requestLocation().then(function(loc) {
+              if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
+              else reject('Denied');
+            }).catch(reject);
             return;
           }
 
-          // 4. Запрашиваем координаты
-          lm.requestLocation().then(function(loc) {
-            if (loc) {
-              resolve({ lat: loc.latitude, lng: loc.longitude });
-            } else {
-              reject('Location denied');
-            }
-          }).catch(function(err) {
-            reject(err);
-          });
+          alert('Ошибка: В этом Telegram не найден подходящий метод для геолокации.');
+          reject('No suitable method');
         });
       }
 
@@ -980,7 +987,6 @@
             var reelId = slide ? slide.dataset.id : null;
             var destCoords = btn.getAttribute('data-location');
             
-            // Вытаскиваем название и место прямо из DOM ролика
             var reelTitle = slide.querySelector('.title') ? slide.querySelector('.title').textContent.trim() : '';
             var reelPlace = slide.querySelector('.place') ? slide.querySelector('.place').textContent.trim() : '';
 

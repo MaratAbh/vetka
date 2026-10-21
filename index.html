@@ -670,10 +670,14 @@
         var onbIdx = 0, ONB_BATCH = 3;
         var onbBg = document.getElementById('onbBg');
 
+        // Порядок загрузки: сначала видимые тайлы левой (0,1,2) и правой (9,10,11) колонок
+        var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
+
         function loadOnbBatch(){
           if (!onboarding) return;
           var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
           for (; onbIdx < end; onbIdx++) {
+            var targetIdx = loadOrder[onbIdx] !== undefined ? loadOrder[onbIdx] : onbIdx;
             (function(v){
               if (!v || v.dataset.started) return;
               v.dataset.started = '1';
@@ -683,7 +687,7 @@
               try { v.setAttribute('preload','auto'); } catch(e){}
               v.src = url; try { v.load(); } catch(e){}
               var p = v.play(); if (p && p.catch) p.catch(function(){});
-            })(onbVids[onbIdx]);
+            })(onbVids[targetIdx]);
           }
           if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
         }
@@ -711,7 +715,6 @@
               var left = [];
               var right = [];
 
-              // Гарантируем, что левая и правая колонки не пересекаются
               if (n >= 6) {
                 left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
                 right = [urls[3], urls[4], urls[5], urls[3], urls[4], urls[5]];

@@ -83,7 +83,16 @@
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
-  .live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-self:flex-start;}
+  /* ИЗМЕНЕНО: без фона и обводки */
+  .live{
+    display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;
+    color:rgba(255,255,255,.85);
+    padding:0;
+    background:transparent;
+    border:none;
+    align-self:flex-start;
+    text-shadow:0 1px 4px rgba(0,0,0,.8);
+  }
   .live .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.85);animation:pulse 1.8s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
 
@@ -107,14 +116,14 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  /* НОВАЯ КНОПКА ЛОКАЦИИ ПО ЦЕНТРУ */
+  /* ИЗМЕНЕНО: Кнопка локации стала длиннее */
   .loc-btn {
     pointer-events: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 7px;
-    padding: 12px 22px;
+    padding: 12px 36px;
     border-radius: 100px;
     background: #CDFF4A;
     color: #07070a;
@@ -131,7 +140,7 @@
   .loc-btn:active { transform: scale(.96); }
   .loc-btn svg { width: 16px; height: 16px; flex: none; }
 
-  /* ПРАВАЯ КОЛОНКА С КНОПКАМИ */
+  /* ПРАВАЯ КОЛОНКА С КНОПКАМИ (ИЗМЕНЕНО ПОД СТИЛЬ VETKA) */
   .actions-row {
     position: absolute;
     right: 14px;
@@ -139,7 +148,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
+    gap: 20px;
     pointer-events: none;
     z-index: 10;
   }
@@ -164,24 +173,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: rgba(20,20,25,0.55);
-    border: 1px solid rgba(255,255,255,0.18);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: background .2s ease, border-color .2s ease, color .2s ease;
+    width: 32px;
+    height: 32px;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+    transition: color .2s ease;
   }
-  .tv-ph svg, .ico-ph svg {
-    width: 22px;
-    height: 22px;
-    display: block;
-    overflow: visible;
-  }
-
+  
   .tv-ph { color: #CDFF4A; }
   .ico-ph { color: #fff; }
+
+  .tv-ph svg, .ico-ph svg {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
 
   .tv-count {
     font-family: 'Inter', sans-serif;
@@ -202,11 +210,7 @@
     letter-spacing: 0.02em;
   }
 
-  .top-vibe.voted .tv-ph {
-    background: #CDFF4A;
-    border-color: #CDFF4A;
-    color: #07070a;
-  }
+  .top-vibe.voted .tv-ph { color: #CDFF4A; }
   .top-vibe.voted .tv-count { color: #CDFF4A; }
   .top-vibe.voted .tv-label { color: #CDFF4A; }
 
@@ -291,9 +295,9 @@
   <script>
     (function(){
       var I18N = {
-        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', loc_btn:'Где это?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', loc_btn:'Where is it?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', loc_btn:'¿Dónde es?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', loc_btn:'Смотреть маршрут', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', loc_btn:'View route', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', loc_btn:'Ver ruta', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -498,7 +502,7 @@
               '<div class="actions-row">' +
                 '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
                   '<span class="tv-ph">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>' +
+                    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L4 12h5v9h6v-9h5L12 3z"/></svg>' +
                   '</span>' +
                   '<span class="tv-count" data-count>' + totalVotes + '</span>' +
                   '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +

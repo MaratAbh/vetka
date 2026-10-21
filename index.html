@@ -896,12 +896,17 @@
             return;
           }
 
-          // Вариант 1: Новый API (mount + requestLocation)
           if (typeof lm.mount === 'function' && typeof lm.requestLocation === 'function') {
             lm.mount().then(function() {
               if (!lm.isSupported) {
                 alert('Ошибка: Геолокация не поддерживается на этом устройстве.');
                 reject('Not supported');
+                return;
+              }
+              if (lm.isAccessRequested) {
+                alert('Вы уже запрашивали геолокацию. Откроем настройки, чтобы включить её.');
+                lm.openSettings();
+                reject('Settings opened');
                 return;
               }
               lm.requestLocation().then(function(loc) {
@@ -915,7 +920,6 @@
             return;
           }
 
-          // Вариант 2: Старый API (init + getLocation)
           if (typeof lm.init === 'function' && typeof lm.getLocation === 'function') {
             lm.init(function() {
               lm.getLocation(function(loc) {
@@ -926,7 +930,6 @@
             return;
           }
 
-          // Вариант 3: Прямой вызов requestLocation (без mount)
           if (typeof lm.requestLocation === 'function') {
             lm.requestLocation().then(function(loc) {
               if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
@@ -940,13 +943,10 @@
         });
       }
 
-      async function saveUserLocation(lat, lng, reelId, reelTitle, reelPlace) {
+      async function saveUserLocation(lat, lng, reelId, reelTitle, reelPlace, destCoords) {
         try {
           var user = await authReady;
-          if (!user) {
-            alert('Ошибка: Нет сессии Supabase.');
-            return;
-          }
+          if (!user) return;
 
           var tgUser = readTgUser();
           var tgId = tgUser ? String(tgUser.id) : null;
@@ -966,16 +966,15 @@
             reel_title: reelTitle,
             reel_place: reelPlace,
             latitude: lat,
-            longitude: lng
+            longitude: lng,
+            destination_coords: destCoords, // Точка Б
+            route_created_at: new Date().toISOString() // Время построения
           }]);
           
-          if (error) {
-            alert('Ошибка Supabase: ' + error.message);
-          } else {
-            alert('УСПЕХ! Данные ('+firstName+' @'+username+') сохранены.');
-          }
+          if (error) console.warn('Ошибка Supabase:', error.message);
+          else showToast('Геопозиция сохранена');
         } catch(e) {
-          alert('Критическая ошибка: ' + e.message);
+          console.warn('Критическая ошибка сохранения:', e);
         }
       }
 
@@ -991,12 +990,19 @@
             var reelPlace = slide.querySelector('.place') ? slide.querySelector('.place').textContent.trim() : '';
 
             if (!destCoords) { showToast('Адрес не указан'); return; }
-            openYandexRoute(destCoords);
 
-            try {
-              var userCoords = await requestUserLocation();
-              saveUserLocation(userCoords.lat, userCoords.lng, reelId, reelTitle, reelPlace);
-            } catch(err) { console.log('GPS не получен:', err); }
+            var userAgreed = confirm('Для построения точного маршрута поделитесь вашей геопозицией.');
+            
+            if (userAgreed) {
+              try {
+                var userCoords = await requestUserLocation();
+                await saveUserLocation(userCoords.lat, userCoords.lng, reelId, reelTitle, reelPlace, destCoords);
+                openYandexRoute(destCoords);
+              } catch(err) {
+                console.log('GPS не получен:', err);
+                openYandexRoute(destCoords);
+              }
+            }
           });
         });
       }

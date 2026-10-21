@@ -823,7 +823,11 @@
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : '';
             trackEvent('share', { slide_id: id });
+            
+            // ДОБАВЛЕНО: передача ID ролика через ?startapp=
             var url = TG_MINIAPP_URL;
+            if (id) url += '?startapp=' + encodeURIComponent(id);
+
             if (window.Telegram && window.Telegram.WebApp) {
               try {
                 var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(t('share_text'));
@@ -1114,9 +1118,32 @@
         initIO();
         initSlideViewsIO();
         initViewerCounters();
-        setActiveSlide(0);
+        
+        // ДОБАВЛЕНО: Обработка глубоких ссылок (start_param)
+        var startParam = null;
+        try { 
+          startParam = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.start_param; 
+        } catch(e){}
+        
+        var startIdx = 0;
+        if (startParam) {
+          for (var i = 0; i < slides.length; i++) {
+            if (slides[i].dataset.id === startParam) {
+              startIdx = i;
+              break;
+            }
+          }
+        }
+
+        setActiveSlide(startIdx);
         refreshTopUI();
         loadMyVotes();
+        
+        if (startIdx > 0) {
+          setTimeout(function(){
+             feed.scrollTop = startIdx * window.innerHeight;
+          }, 50);
+        }
       }
 
       async function loadMyVotes(){

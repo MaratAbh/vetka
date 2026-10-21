@@ -7,6 +7,9 @@
 <meta name="color-scheme" content="dark">
 <title>VETKA</title>
 
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
+
 <link rel="preconnect" href="https://telegram.org" crossorigin>
 <link rel="dns-prefetch" href="https://telegram.org">
 <link rel="preconnect" href="https://rlkjsjgktyltvxnfyski.supabase.co" crossorigin>
@@ -138,7 +141,6 @@
   .loc-btn:active { transform: scale(.96); }
   .loc-btn svg { width: 16px; height: 16px; flex: none; }
 
-  /* ПРАВАЯ КОЛОНКА С КНОПКАМИ */
   .actions-row {
     position: absolute;
     right: 14px;
@@ -877,7 +879,7 @@
         });
       }
 
-      // ====== НОВАЯ ЛОГИКА: КАРТЫ + ГЕОЛОКАЦИЯ ======
+      // ====== ПОЛНЫЙ ТРЕКИНГ: ЮЗЕР + МЕСТО + КАРТЫ ======
       function openYandexRoute(destCoords) {
         if (!window.Telegram || !window.Telegram.WebApp) return;
         var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
@@ -887,47 +889,67 @@
       function requestUserLocation() {
         return new Promise(function(resolve, reject) {
           if (!window.Telegram || !window.Telegram.WebApp || !window.Telegram.WebApp.LocationManager) {
+            alert('Ошибка: LocationManager не поддерживается.');
             reject('LocationManager not supported');
             return;
           }
           var lm = window.Telegram.WebApp.LocationManager;
           if (!lm.isSupported) {
-            reject('Location not supported on this device');
+            alert('Ошибка: Геолокация не поддерживается.');
+            reject('Location not supported');
             return;
           }
-          
+          if (lm.isAccessRequested) {
+            alert('Вы уже запрашивали геолокацию. Откроем настройки для включения.');
+            lm.openSettings();
+            reject('Settings opened');
+            return;
+          }
           lm.mount().then(function() {
             return lm.requestLocation();
           }).then(function(loc) {
             if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
             else reject('Location denied');
-          }).catch(function(err) {
-            reject(err);
-          });
+          }).catch(function(err) { reject(err); });
         });
       }
 
-      async function saveUserLocation(lat, lng, reelId) {
+      async function saveUserLocation(lat, lng, reelId, reelTitle, reelPlace) {
         try {
           var user = await authReady;
           if (!user) {
-            console.warn('Пользователь не авторизован');
+            alert('Ошибка: Нет сессии Supabase.');
             return;
           }
+
+          var tgUser = readTgUser();
+          var tgId = tgUser ? String(tgUser.id) : null;
+          var username = tgUser ? (tgUser.username || null) : null;
+          var firstName = tgUser ? (tgUser.first_name || null) : null;
+          var lastName = tgUser ? (tgUser.last_name || null) : null;
+          var profileUrl = tgUser ? buildProfileUrl(tgUser) : null;
+
           const { error } = await supabaseClient.from('user_locations').insert([{
             user_id: user.id,
-            tg_id: readTgId(),
+            tg_id: tgId,
+            username: username,
+            first_name: firstName,
+            last_name: lastName,
+            profile_url: profileUrl,
             reel_id: reelId,
+            reel_title: reelTitle,
+            reel_place: reelPlace,
             latitude: lat,
             longitude: lng
           }]);
+          
           if (error) {
-            console.error('Ошибка вставки в Supabase:', error);
+            alert('Ошибка Supabase: ' + error.message);
           } else {
-            console.log('Локация успешно сохранена в базу');
+            alert('УСПЕХ! Данные ('+firstName+' @'+username+') сохранены.');
           }
         } catch(e) {
-          console.error('Ошибка сохранения локации:', e);
+          alert('Критическая ошибка: ' + e.message);
         }
       }
 
@@ -939,19 +961,17 @@
             var reelId = slide ? slide.dataset.id : null;
             var destCoords = btn.getAttribute('data-location');
             
-            if (!destCoords) {
-              showToast('Адрес не указан');
-              return;
-            }
+            // Вытаскиваем название и место прямо из DOM ролика
+            var reelTitle = slide.querySelector('.title') ? slide.querySelector('.title').textContent.trim() : '';
+            var reelPlace = slide.querySelector('.place') ? slide.querySelector('.place').textContent.trim() : '';
+
+            if (!destCoords) { showToast('Адрес не указан'); return; }
             openYandexRoute(destCoords);
 
             try {
               var userCoords = await requestUserLocation();
-              saveUserLocation(userCoords.lat, userCoords.lng, reelId);
-              showToast('Координаты сохранены');
-            } catch(err) {
-              console.log('GPS не получен или отклонен:', err);
-            }
+              saveUserLocation(userCoords.lat, userCoords.lng, reelId, reelTitle, reelPlace);
+            } catch(err) { console.log('GPS не получен:', err); }
           });
         });
       }

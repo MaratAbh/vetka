@@ -887,30 +887,49 @@
       }
 
       function requestUserLocation() {
-        return new Promise(function(resolve, reject) {
+        return new Promise(async function(resolve, reject) {
           if (!window.Telegram || !window.Telegram.WebApp || !window.Telegram.WebApp.LocationManager) {
-            alert('Ошибка: LocationManager не поддерживается.');
-            reject('LocationManager not supported');
+            alert('Ошибка: Этот Telegram не поддерживает LocationManager.');
+            reject('LocationManager not found');
             return;
           }
+
           var lm = window.Telegram.WebApp.LocationManager;
-          if (!lm.isSupported) {
-            alert('Ошибка: Геолокация не поддерживается.');
-            reject('Location not supported');
+
+          // 1. СНАЧАЛА монтируем менеджер (это асинхронный шаг)
+          try {
+            await lm.mount();
+          } catch (e) {
+            alert('Ошибка инициализации LocationManager: ' + e);
+            reject('Mount failed');
             return;
           }
+
+          // 2. ТЕПЕРЬ проверяем поддержку
+          if (!lm.isSupported) {
+            alert('Ошибка: Геолокация не поддерживается на этом устройстве или в этой версии Telegram.');
+            reject('Location not supported after mount');
+            return;
+          }
+
+          // 3. Если разрешение уже запрашивалось — открываем настройки
           if (lm.isAccessRequested) {
-            alert('Вы уже запрашивали геолокацию. Откроем настройки для включения.');
+            alert('Вы уже запрашивали геолокацию. Откроем настройки, чтобы включить её вручную.');
             lm.openSettings();
             reject('Settings opened');
             return;
           }
-          lm.mount().then(function() {
-            return lm.requestLocation();
-          }).then(function(loc) {
-            if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
-            else reject('Location denied');
-          }).catch(function(err) { reject(err); });
+
+          // 4. Запрашиваем координаты
+          lm.requestLocation().then(function(loc) {
+            if (loc) {
+              resolve({ lat: loc.latitude, lng: loc.longitude });
+            } else {
+              reject('Location denied');
+            }
+          }).catch(function(err) {
+            reject(err);
+          });
         });
       }
 

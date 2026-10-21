@@ -83,7 +83,6 @@
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
-  /* ИЗМЕНЕНО: без фона и обводки */
   .live{
     display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;
     color:rgba(255,255,255,.85);
@@ -116,7 +115,6 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  /* ИЗМЕНЕНО: Кнопка локации стала длиннее */
   .loc-btn {
     pointer-events: auto;
     display: inline-flex;
@@ -140,7 +138,7 @@
   .loc-btn:active { transform: scale(.96); }
   .loc-btn svg { width: 16px; height: 16px; flex: none; }
 
-  /* ПРАВАЯ КОЛОНКА С КНОПКАМИ (ИЗМЕНЕНО ПОД СТИЛЬ VETKA) */
+  /* ПРАВАЯ КОЛОНКА С КНОПКАМИ (СТИЛЬ КАК В ПРИМЕРЕ) */
   .actions-row {
     position: absolute;
     right: 14px;
@@ -148,7 +146,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 18px;
     pointer-events: none;
     z-index: 10;
   }
@@ -159,58 +157,63 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 0;
-    transition: transform .12s ease;
-    -webkit-tap-highlight-color: transparent;
+    color: inherit;
   }
-  .top-vibe:active, .share-btn:active { transform: scale(.88); }
 
   .tv-ph, .ico-ph {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(205,255,74,.14);
+    border: 1px solid rgba(205,255,74,.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 0;
-    background: transparent;
-    border: none;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-    transition: color .2s ease;
+    color: #CDFF4A;
+    transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
   }
   
-  .tv-ph { color: #CDFF4A; }
-  .ico-ph { color: #fff; }
+  .top-vibe:active .tv-ph, .share-btn:active .ico-ph { 
+    transform: scale(.9); 
+  }
 
   .tv-ph svg, .ico-ph svg {
-    width: 28px;
-    height: 28px;
+    width: 16px;
+    height: 16px;
     display: block;
   }
 
   .tv-count {
     font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 800;
-    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    color: #CDFF4A;
     line-height: 1;
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    text-shadow: 0 1px 4px rgba(0,0,0,.6);
   }
 
   .tv-label, .lbl {
     font-family: 'Inter', sans-serif;
-    font-size: 10.5px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.85);
-    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-    letter-spacing: 0.02em;
+    font-size: 8.5px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.5);
+    text-align: center;
   }
 
-  .top-vibe.voted .tv-ph { color: #CDFF4A; }
+  .top-vibe.voted .tv-ph {
+    background: rgba(205,255,74,.9);
+    color: #07070a;
+    border-color: rgba(205,255,74,.9);
+  }
   .top-vibe.voted .tv-count { color: #CDFF4A; }
   .top-vibe.voted .tv-label { color: #CDFF4A; }
 

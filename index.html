@@ -410,6 +410,8 @@
         return days + ' ' + t('day_ago');
       }
 
+      // LIVE-бейдж показывается ровно 24 часа с момента публикации.
+      // После 24h бейджа нет вообще - рилс остаётся в ленте как обычный контент.
       var LIVE_WINDOW_MS = 24 * 60 * 60 * 1000;
       function getBadgeState(iso){
         var diff = Date.now() - new Date(iso).getTime();
@@ -942,18 +944,51 @@
         try { window.open(url, '_blank', 'noopener,noreferrer'); } catch(e){ location.href = url; }
       }
 
+      // ===== Геолокация с кешем =====
+      // Первый клик - запрашиваем разрешение. Дальше в течение 30 минут
+      // координаты берутся из localStorage, без диалогов.
+      var GEO_CACHE_KEY = 'vetka_geo_v1';
+      var GEO_CACHE_TTL = 30 * 60 * 1000; // 30 минут
+
+      function getCachedCoords() {
+        try {
+          var raw = localStorage.getItem(GEO_CACHE_KEY);
+          if (!raw) return null;
+          var c = JSON.parse(raw);
+          if (!c || typeof c.lat !== 'number' || typeof c.lng !== 'number') return null;
+          if (Date.now() - c.ts > GEO_CACHE_TTL) return null;
+          return { lat: c.lat, lng: c.lng };
+        } catch(e) { return null; }
+      }
+
+      function setCachedCoords(lat, lng) {
+        try {
+          localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ lat: lat, lng: lng, ts: Date.now() }));
+        } catch(e){}
+      }
+
+      async function getPermissionState() {
+        try {
+          if (navigator.permissions && navigator.permissions.query) {
+            var st = await navigator.permissions.query({ name: 'geolocation' });
+            return st.state;
+          }
+        } catch(e){}
+        return 'unknown';
+      }
+
       function requestUserLocation() {
         return new Promise(function(resolve, reject){
           if (!navigator.geolocation) { reject(new Error('Geolocation not supported')); return; }
           navigator.geolocation.getCurrentPosition(
             function(p){ resolve({ lat: p.coords.latitude, lng: p.coords.longitude }); },
             function(err){ reject(err); },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 5 * 60 * 1000 }
           );
         });
       }
 
-      async function saveUserLocation(lat, lng, reelId, reelTitle, reelPlace, destCoords) {
+      async function saveUserLocation(lat, lng, reelId, reelTitle, reelPlace, destCoords, geoSource) {
         try {
           var user = await authReady;
           if (!user) return;
@@ -965,6 +1000,8 @@
           var lastName = tgUser ? (tgUser.last_name || null) : null;
           var profileUrl = tgUser ? buildProfileUrl(tgUser) : null;
 
+          // NOTE: tg_id берётся с клиента. Для продакшена нужна верификация
+          // initData на бэкенде (HMAC) + RLS, иначе tg_id можно подделать.
           await supabaseClient.from('user_locations').insert([{
             user_id: user.id,
             tg_id: tgId,
@@ -979,6 +1016,7 @@
             longitude: lng,
             destination_coords: destCoords,
             consent_given: true,
+            geo_source: geoSource || 'unknown',
             route_created_at: new Date().toISOString()
           }]);
         } catch(e) {
@@ -993,25 +1031,57 @@
             var slide = btn.closest('.slide');
             var reelId = slide ? slide.dataset.id : null;
             var destCoords = btn.getAttribute('data-location');
-
             var reelTitle = slide.querySelector('.title') ? slide.querySelector('.title').textContent.trim() : '';
             var reelPlace = slide.querySelector('.place') ? slide.querySelector('.place').textContent.trim() : '';
 
             if (!destCoords) { showToast('Адрес не указан'); return; }
 
-            // Прежний текст согласия
-            var userAgreed = confirm('Для построения точного маршрута поделитесь вашей геопозицией.');
+            // 1. Есть свежий кеш (< 30 мин) - молча используем, карту открываем сразу
+            var cached = getCachedCoords();
+            if (cached) {
+              openYandexRoute(destCoords);
+              saveUserLocation(cached.lat, cached.lng, reelId, reelTitle, reelPlace, destCoords, 'cache');
+              return;
+            }
 
+            // 2. Кеша нет - смотрим состояние разрешения
+            var perm = await getPermissionState();
+
+            if (perm === 'granted') {
+              // Разрешение уже есть - получаем молча, без confirm
+              try {
+                var coords = await requestUserLocation();
+                setCachedCoords(coords.lat, coords.lng);
+                openYandexRoute(destCoords);
+                saveUserLocation(coords.lat, coords.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
+              } catch(err) {
+                console.log('GPS silent fail:', err);
+                openYandexRoute(destCoords);
+              }
+              return;
+            }
+
+            if (perm === 'denied') {
+              // Пользователь ранее запретил - не мучаем
+              openYandexRoute(destCoords);
+              return;
+            }
+
+            // 3. Первый раз (или 'unknown') - спрашиваем
+            var userAgreed = confirm('Разрешить VETKA использовать вашу геопозицию? Это нужно один раз — чтобы строить маршруты и улучшать рекомендации.');
             if (userAgreed) {
               try {
-                var userCoords = await requestUserLocation();
-                await saveUserLocation(userCoords.lat, userCoords.lng, reelId, reelTitle, reelPlace, destCoords);
+                var coords2 = await requestUserLocation();
+                setCachedCoords(coords2.lat, coords2.lng);
+                openYandexRoute(destCoords);
+                saveUserLocation(coords2.lat, coords2.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
               } catch(err) {
-                console.log('GPS not available:', err);
+                console.log('GPS fail:', err);
+                openYandexRoute(destCoords);
               }
+            } else {
+              openYandexRoute(destCoords);
             }
-            // Маршрут открываем в любом случае
-            openYandexRoute(destCoords);
           });
         });
       }

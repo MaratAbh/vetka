@@ -178,6 +178,15 @@
     display: block;
   }
 
+  /* ===== Новый символ для кнопки «Топ вайб» ===== */
+  .tv-ph .tv-icon{width:26px;height:26px;display:block;overflow:visible;}
+  .tv-icon .tv-wave{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;transform-box:fill-box;transform-origin:center;transition:opacity .2s ease,transform .3s cubic-bezier(.4,0,.2,1);}
+  .tv-icon .tv-beam{fill:currentColor;opacity:0;transform:scaleY(.05);transform-box:fill-box;transform-origin:center bottom;transition:opacity .2s ease,transform .3s cubic-bezier(.2,.9,.3,1.4);}
+  .tv-icon .tv-spark{fill:currentColor;transform-box:fill-box;transform-origin:center;transition:transform .35s cubic-bezier(.2,.9,.3,1.4);}
+  .top-vibe.voted .tv-wave{opacity:0;transform:scaleX(.15);}
+  .top-vibe.voted .tv-beam{opacity:1;transform:scaleY(1);}
+  /* =============================================== */
+
   .tv-count {
     font-family: 'Inter', sans-serif;
     font-size: 11px;
@@ -503,7 +512,13 @@
               '<div class="actions-row">' +
                 '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
                   '<span class="tv-ph">' +
-                    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L4 12h5v9h6v-9h5L12 3z"/></svg>' +
+                    '<svg class="tv-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">' +
+                      '<path class="tv-wave" d="M7 20 Q14 15 21 20"/>' +
+                      '<path class="tv-wave" d="M9 16 Q14 11.5 19 16"/>' +
+                      '<path class="tv-wave" d="M11 12 Q14 9 17 12"/>' +
+                      '<rect class="tv-beam" x="13" y="4" width="2" height="20" rx="1"/>' +
+                      '<path class="tv-spark" d="M20 4 L20.9 6 L22.9 6.9 L20.9 7.8 L20 9.8 L19.1 7.8 L17.1 6.9 L19.1 6 Z"/>' +
+                    '</svg>' +
                   '</span>' +
                   '<span class="tv-count" data-count>' + totalVotes + '</span>' +
                   '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
@@ -1167,8 +1182,7 @@
         if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
         return new Promise(function(resolve, reject){
           try {
-            var ta = document.createElement('textarea');
-            ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'absolute'; ta.style.left = '-9999px';
+            var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'absolute'; ta.style.left = '-9999px';
             document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); resolve();
           } catch(e){ reject(e); }
         });

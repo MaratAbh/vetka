@@ -26,31 +26,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-  :root { --onb-gap: 6px; }
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;outline:none;border:0;}
   html,body{background:#07070a;color:#fff;font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;height:100%;-webkit-font-smoothing:antialiased;color-scheme:dark;overscroll-behavior:none;}
 
   .onboarding{position:fixed;inset:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;overscroll-behavior:none;}
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
-  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:var(--onb-gap);opacity:0;animation:onbBgFade 1.2s .1s ease forwards;}
+  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;opacity:0;animation:onbBgFade 1.2s .1s ease forwards;}
   @keyframes onbBgFade{to{opacity:1;}}
-  .onb-col{display:flex;flex-direction:column;gap:var(--onb-gap);will-change:transform;}
+  .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
   .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
   .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;z-index:1;}
   .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#0a0a12;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;}
   .onb-col-up{animation:colUp 60s linear infinite;}
   .onb-col-down{animation:colDown 60s linear infinite;}
-  /* -50% от высоты колонки = 3 тайла. Но из-за gap'ов это чуть-чуть меньше,
-     поэтому компенсируем половинкой gap'а - получается идеально бесшовно. */
-  @keyframes colUp{
-    from{transform:translateY(0);}
-    to{transform:translateY(calc(-50% - (var(--onb-gap) / 2)));}
-  }
-  @keyframes colDown{
-    from{transform:translateY(calc(-50% - (var(--onb-gap) / 2)));}
-    to{transform:translateY(0);}
-  }
+  @keyframes colUp{from{transform:translateY(0);}to{transform:translateY(-50%);}}
+  @keyframes colDown{from{transform:translateY(-50%);}to{transform:translateY(0);}}
   .onb-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.55) 0%,rgba(7,7,10,.15) 30%,rgba(7,7,10,.35) 55%,rgba(7,7,10,.85) 85%,rgba(7,7,10,.98) 100%);}
   .onb-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(42px + env(safe-area-inset-bottom,0px));z-index:2;pointer-events:none;}
   .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;animation:onbFade .9s .2s ease forwards;}
@@ -743,10 +734,9 @@
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
         var onbIdx = 0, ONB_BATCH = 6;
 
-        // 12 тайлов всего: 6 в левой колонке + 6 в правой.
-        // Загружаем в порядке: сначала по одному в каждую колонку сверху вниз,
-        // чтобы первые два видео появились как можно раньше.
-        var loadOrder = [0, 6, 1, 7, 2, 8, 3, 9, 4, 10, 5, 11];
+        // Проверенный порядок: чередуем левую/правую колонки,
+        // начиная с верхних тайлов. 12 индексов = 6 левых + 6 правых.
+        var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
 
         function loadOnbBatch(){
           if (!onboarding) return;
@@ -772,52 +762,55 @@
           api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
             .then(function(rows){
               if (!onboarding) return;
-              var seen = {};
-              var urls = [];
-              if (rows && rows.length) {
-                for (var i = 0; i < rows.length; i++) {
-                  var u = rows[i] && rows[i].video_url;
-                  if (u && !seen[u]) { seen[u] = 1; urls.push(u); }
+              try {
+                var seen = {};
+                var urls = [];
+                if (rows && rows.length) {
+                  for (var i = 0; i < rows.length; i++) {
+                    var u = rows[i] && rows[i].video_url;
+                    if (u && !seen[u]) { seen[u] = 1; urls.push(u); }
+                  }
                 }
-              }
-              if (!urls.length) {
-                if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
-                return;
-              }
+                if (!urls.length) {
+                  if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
+                  return;
+                }
 
-              var n = urls.length;
-              var left = [];
-              var right = [];
+                var n = urls.length;
+                var left = [];
+                var right = [];
 
-              // Паттерн для каждой колонки: [A, B, C, A, B, C].
-              // Это даёт период 3 тайла — идеально для -50% анимации.
-              if (n >= 6) {
-                left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-                right = [urls[3], urls[4], urls[5], urls[3], urls[4], urls[5]];
-              } else if (n === 5) {
-                left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-                right = [urls[3], urls[4], urls[3], urls[4], urls[3], urls[4]];
-              } else if (n === 4) {
-                left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
-                right = [urls[2], urls[3], urls[2], urls[3], urls[2], urls[3]];
-              } else if (n === 3) {
-                left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-                right = [urls[1], urls[2], urls[0], urls[1], urls[2], urls[0]];
-              } else if (n === 2) {
-                left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
-                right = [urls[1], urls[0], urls[1], urls[0], urls[1], urls[0]];
-              } else {
-                left = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
-                right = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
+                if (n >= 6) {
+                  left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
+                  right = [urls[3], urls[4], urls[5], urls[3], urls[4], urls[5]];
+                } else if (n === 5) {
+                  left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
+                  right = [urls[3], urls[4], urls[3], urls[4], urls[3], urls[4]];
+                } else if (n === 4) {
+                  left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
+                  right = [urls[2], urls[3], urls[2], urls[3], urls[2], urls[3]];
+                } else if (n === 3) {
+                  left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
+                  right = [urls[1], urls[2], urls[0], urls[1], urls[2], urls[0]];
+                } else if (n === 2) {
+                  left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
+                  right = [urls[1], urls[0], urls[1], urls[0], urls[1], urls[0]];
+                } else {
+                  left = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
+                  right = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
+                }
+
+                // onbVids = 12 штук: индексы 0-5 = левая колонка, 6-11 = правая.
+                if (onbVids.length >= 12) {
+                  for (var j = 0; j < 6; j++) {
+                    onbVids[j].dataset.src = left[j];
+                    onbVids[j + 6].dataset.src = right[j];
+                  }
+                  loadOnbBatch();
+                }
+              } catch(err){
+                console.warn('loadOnbFromSupabase parse error:', err);
               }
-
-              // 12 тайлов всего: индексы 0-5 = левая колонка, 6-11 = правая.
-              for (var j = 0; j < 6; j++) {
-                onbVids[j].dataset.src = left[j];
-                onbVids[j + 6].dataset.src = right[j];
-              }
-
-              loadOnbBatch();
             })
             .catch(function(err){
               console.warn('onb supabase error:', err);
@@ -831,21 +824,6 @@
         };
         onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
         onboarding.addEventListener('click', kickAll, {once:true});
-
-        // Пауза/резюм онбординг-видео при сворачивании Telegram.
-        // Не жрём батарею в фоне и не дёргаемся при возврате.
-        document.addEventListener('visibilitychange', function(){
-          if (!onboarding) return;
-          var vids = onboarding.querySelectorAll('video');
-          if (document.hidden) {
-            for (var i = 0; i < vids.length; i++) { try { vids[i].pause(); } catch(e){} }
-          } else {
-            for (var i = 0; i < vids.length; i++) {
-              var v = vids[i];
-              if (v.src && v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
-            }
-          }
-        });
 
         var langBtns = document.querySelectorAll('[data-lang]');
         for (var li = 0; li < langBtns.length; li++) {
@@ -1016,442 +994,4 @@
       function queueLocationItem(item) {
         try {
           var q = readLocQueue();
-          for (var i = 0; i < q.length; i++) { if (q[i].client_event_id === item.client_event_id) return; }
-          q.push(item);
-          if (q.length > 200) q = q.slice(-200);
-          writeLocQueue(q);
-        } catch(e) { console.warn('queueLocationItem fail:', e); }
-      }
-
-      async function flushLocationQueue() {
-        var q = readLocQueue();
-        if (!q.length) return;
-
-        var token = null;
-        var userId = null;
-        try {
-          var s = await supabaseClient.auth.getSession();
-          if (s && s.data && s.data.session && s.data.session.access_token) {
-            token = s.data.session.access_token;
-            userId = s.data.session.user.id;
-          }
-        } catch(e){}
-
-        if (!token) {
-          try {
-            var anon = await supabaseClient.auth.signInAnonymously();
-            if (anon.error) { console.warn('flush: anon fail', anon.error.message); return; }
-            var s2 = await supabaseClient.auth.getSession();
-            if (s2 && s2.data && s2.data.session) {
-              token = s2.data.session.access_token;
-              userId = s2.data.session.user.id;
-            }
-          } catch(e){ return; }
-        }
-        if (!token || !userId) return;
-
-        var tgUser = readTgUser();
-        q = readLocQueue();
-
-        for (var i = 0; i < q.length; i++) {
-          var it = q[i];
-          if (!it || !it.client_event_id) continue;
-          try {
-            var body = [{
-              client_event_id: it.client_event_id,
-              user_id: userId,
-              tg_id: tgUser ? String(tgUser.id) : null,
-              username: tgUser ? (tgUser.username || null) : null,
-              first_name: tgUser ? (tgUser.first_name || null) : null,
-              last_name: tgUser ? (tgUser.last_name || null) : null,
-              profile_url: tgUser ? buildProfileUrl(tgUser) : null,
-              reel_id: it.reel_id,
-              reel_title: it.reel_title,
-              reel_place: it.reel_place,
-              latitude: it.lat,
-              longitude: it.lng,
-              destination_coords: it.dest_coords,
-              consent_given: true,
-              geo_source: it.geo_source,
-              route_created_at: it.ts_iso
-            }];
-
-            var res = await fetch(SUPABASE_URL + '/rest/v1/user_locations', {
-              method: 'POST',
-              headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-              },
-              body: JSON.stringify(body),
-              keepalive: true
-            });
-
-            if (res.ok || res.status === 409) {
-              removeFromQueueById(it.client_event_id);
-            } else {
-              var txt = '';
-              try { txt = await res.text(); } catch(e){}
-              console.warn('flush failed:', res.status, txt);
-            }
-          } catch(e) {
-            console.warn('flush exception:', e);
-          }
-        }
-      }
-
-      function saveUserLocationAsync(lat, lng, reelId, reelTitle, reelPlace, destCoords, geoSource) {
-        var item = {
-          client_event_id: uuid(),
-          lat: (typeof lat === 'number' && isFinite(lat)) ? lat : null,
-          lng: (typeof lng === 'number' && isFinite(lng)) ? lng : null,
-          reel_id: reelId,
-          reel_title: reelTitle,
-          reel_place: reelPlace,
-          dest_coords: destCoords,
-          geo_source: geoSource || 'unknown',
-          ts_iso: new Date().toISOString(),
-          ts: Date.now()
-        };
-        queueLocationItem(item);
-        flushLocationQueue();
-      }
-
-      function bindLocBtns() {
-        document.querySelectorAll('[data-loc]').forEach(function(btn) {
-          btn.addEventListener('click', async function(e) {
-            e.stopPropagation();
-            var slide = btn.closest('.slide');
-            var reelId = slide ? slide.dataset.id : null;
-            var destCoords = btn.getAttribute('data-location');
-            var reelTitle = slide.querySelector('.title') ? slide.querySelector('.title').textContent.trim() : '';
-            var reelPlace = slide.querySelector('.place') ? slide.querySelector('.place').textContent.trim() : '';
-
-            if (!destCoords) { showToast('Адрес не указан'); return; }
-
-            var cached = getCachedCoords();
-            if (cached) {
-              saveUserLocationAsync(cached.lat, cached.lng, reelId, reelTitle, reelPlace, destCoords, 'cache');
-              openYandexRoute(destCoords);
-              return;
-            }
-
-            var userAgreed = confirm('Для построения точного маршрута поделитесь вашей геопозицией.');
-            if (!userAgreed) {
-              saveUserLocationAsync(null, null, reelId, reelTitle, reelPlace, destCoords, 'user_declined');
-              openYandexRoute(destCoords);
-              return;
-            }
-
-            var coords = null;
-            try {
-              coords = await Promise.race([
-                requestUserLocation(),
-                new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('gps timeout')); }, 5000); })
-              ]);
-            } catch(err) {
-              console.log('GPS fail:', err && err.message ? err.message : err);
-            }
-
-            if (coords) {
-              setCachedCoords(coords.lat, coords.lng);
-              saveUserLocationAsync(coords.lat, coords.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
-            } else {
-              saveUserLocationAsync(null, null, reelId, reelTitle, reelPlace, destCoords, 'gps_failed');
-            }
-
-            openYandexRoute(destCoords);
-          });
-        });
-      }
-
-      function bindHandlers(){
-        bindSoundBtns();
-        bindShareBtns();
-        bindTopBtns();
-        bindLocBtns();
-      }
-
-      function refreshTopUI(){
-        slides.forEach(function(slide){
-          var id = slide.dataset.id; if (!id) return;
-          var btn = slide.querySelector('[data-top]'); if (!btn) return;
-          var base = parseInt(btn.dataset.base || '0', 10) || 0;
-          var count = topCounts[id] || 0;
-          var total = base + count; if (total < 0) total = 0;
-          var cnt = btn.querySelector('[data-count]'); if (cnt) cnt.textContent = total;
-          if (myTopSlides[id]) btn.classList.add('voted'); else btn.classList.remove('voted');
-        });
-      }
-
-      var currentIO = null;
-      function initIO(){
-        if (currentIO) currentIO.disconnect();
-        if (!feed) return;
-        currentIO = new IntersectionObserver(function(entries){
-          var best = null, bestRatio = 0;
-          entries.forEach(function(e){ if (e.isIntersecting && e.intersectionRatio > bestRatio) { bestRatio = e.intersectionRatio; best = e.target; } });
-          if (best && bestRatio > 0.55) {
-            var idx = slides.indexOf(best);
-            if (idx !== -1 && idx !== currentIndex) {
-              flushDwell(currentIndex);
-              currentIndex = idx;
-              slideEnteredAt = Date.now();
-              setActiveSlide(idx);
-            }
-          }
-        }, { root: feed, threshold: [0.1, 0.55, 0.9] });
-        slides.forEach(function(s){ currentIO.observe(s); });
-      }
-
-      var slideIO = null;
-      function initSlideViewsIO(){
-        if (slideIO) slideIO.disconnect();
-        slideIO = new IntersectionObserver(function(entries){
-          entries.forEach(function(e){
-            if (e.isIntersecting && e.intersectionRatio > 0.5) {
-              var slideId = e.target.dataset.id;
-              if (slideId && !trackedSlideViews[slideId]) { trackedSlideViews[slideId] = true; trackEvent('slide_view', { slide_id: slideId }); }
-            }
-          });
-        }, { root: feed, threshold: [0, 0.55, 0.9] });
-        slides.forEach(function(s){ slideIO.observe(s); });
-      }
-
-      function bootFeed(){
-        if (feedBooted) return;
-        if (!slides.length) return;
-        feedBooted = true;
-        feed.classList.add('visible');
-        layoutReels();
-
-        var startParam = null;
-        try {
-          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-            startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
-          }
-        } catch(e){}
-
-        var startIdx = 0;
-        if (startParam) {
-          for (var i = 0; i < slides.length; i++) {
-            if (slides[i].dataset.id === startParam) { startIdx = i; break; }
-          }
-        }
-
-        currentIndex = startIdx;
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(startIdx);
-        refreshTopUI();
-
-        if (startIdx > 0) {
-          setTimeout(function(){
-            try { if (feed) feed.scrollTop = startIdx * feed.clientHeight; } catch(e){}
-          }, 250);
-        }
-      }
-
-      async function refreshReels(){
-        if (refreshing) return;
-        if (!reelsLoaded) return;
-        if (document.hidden) return;
-        if (!onboardingDismissed) return;
-        refreshing = true;
-        try {
-          var rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
-          if (!rows) rows = [];
-          var likesAll = [];
-          try { likesAll = await api('likes', 'select=slide_id') || []; } catch(e){}
-          var newLikes = {};
-          likesAll.forEach(function(l){ if (l.slide_id) newLikes[l.slide_id] = (newLikes[l.slide_id] || 0) + 1; });
-
-          rows.forEach(function(r){
-            var base = parseInt(r.base_votes, 10) || 0;
-            r.__total = base + (newLikes[r.id] || 0);
-          });
-          rows.sort(function(a, b){ return b.__total - a.__total; });
-
-          var oldIds = slides.map(function(s){ return s.dataset.id; }).join('|');
-          var newIds = rows.map(function(r){ return r.id; }).join('|');
-
-          if (oldIds === newIds) {
-            topCounts = newLikes;
-            refreshTopUI();
-            return;
-          }
-
-          var curId = slides[currentIndex] ? slides[currentIndex].dataset.id : null;
-          if (currentIO) { currentIO.disconnect(); currentIO = null; }
-          if (slideIO) { slideIO.disconnect(); slideIO = null; }
-
-          topCounts = newLikes;
-          renderReels(rows);
-          reelsLoaded = true;
-
-          var newIdx = 0;
-          if (curId) {
-            for (var i = 0; i < slides.length; i++) {
-              if (slides[i].dataset.id === curId) { newIdx = i; break; }
-            }
-          }
-          currentIndex = newIdx;
-          initIO();
-          initSlideViewsIO();
-          setActiveSlide(newIdx);
-          refreshTopUI();
-
-          requestAnimationFrame(function(){
-            try { if (feed) feed.scrollTop = newIdx * feed.clientHeight; } catch(e){}
-          });
-
-          layoutReels();
-        } catch(e) {
-          console.warn('refresh error:', e);
-        } finally {
-          refreshing = false;
-        }
-      }
-
-      function copyToClipboard(text){
-        if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
-        return new Promise(function(resolve, reject){
-          try {
-            var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'absolute'; ta.style.left = '-9999px';
-            document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); resolve();
-          } catch(e){ reject(e); }
-        });
-      }
-
-      var STORAGE_KEY = EARLY_TG_ID ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID : 'sb-rlkjsjgktyltvxnfyski-auth-token';
-      var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { detectSessionInUrl: false, persistSession: true, autoRefreshToken: true, storageKey: STORAGE_KEY } });
-
-      function readTgId(){ var u = readTgUser(); return u ? String(u.id) : null; }
-      function getAnonId(){
-        var key = EARLY_TG_ID ? 'vetka_anon_id_' + EARLY_TG_ID : 'vetka_anon_id';
-        var id = null; try { id = localStorage.getItem(key); } catch(e){}
-        if (!id) { id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now()); try { localStorage.setItem(key, id); } catch(e){} }
-        return id;
-      }
-
-      var authReady = (async function(){
-        var hasStored = false; try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
-        if (hasStored) {
-          for (var i = 0; i < 15; i++) {
-            try { var s = await supabaseClient.auth.getSession(); if (s.data && s.data.session && s.data.session.user) return s.data.session.user; } catch(e){}
-            await new Promise(function(r){ setTimeout(r, 200); });
-          }
-        }
-        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) { console.warn('anon auth error:', r.error.message); return null; } return r.data.user; }
-        catch(e){ console.warn('anon auth exception:', e); return null; }
-      })();
-
-      function startTgIdWatch(){
-        if (tgIdWatchStarted) return;
-        tgIdWatchStarted = true;
-        var tries = 0;
-        var iv = setInterval(function(){
-          tries++;
-          if (readTgId()) { clearInterval(iv); flushEvents(); }
-          else if (tries >= 25) { clearInterval(iv); flushEvents(); }
-        }, 200);
-        setTimeout(flushEvents, 5200);
-      }
-
-      async function flushEvents(){
-        if (flushing) return;
-        if (pendingEvents.length === 0) return;
-        flushing = true;
-        var batch = pendingEvents.slice(); pendingEvents = [];
-        try {
-          var user = await authReady; if (!user) { flushing = false; return; }
-          var tgId = readTgId(); var anonId = getAnonId();
-          var rows = batch.map(function(e){ return { user_id: user.id, tg_id: tgId, anon_id: anonId, event_type: e.type, event_data: e.data, session_id: SESSION_ID }; });
-          await supabaseClient.from('events').insert(rows);
-        } catch(e){}
-        flushing = false;
-        if (pendingEvents.length > 0) flushEvents();
-      }
-
-      function scheduleFlush(){ if (flushTimer) return; flushTimer = setTimeout(function(){ flushTimer = null; flushEvents(); }, 1500); }
-      function trackEvent(type, data){
-        pendingEvents.push({ type: type, data: data || {} });
-        if (readTgId()) scheduleFlush();
-        else if (window.Telegram && window.Telegram.WebApp) startTgIdWatch();
-        else scheduleFlush();
-      }
-
-      function flushDwell(idx){
-        if (idx < 0 || idx >= slides.length) return;
-        if (!slideEnteredAt) return;
-        var dur = Date.now() - slideEnteredAt;
-        slideEnteredAt = 0;
-        if (dur < 500 || dur > 30 * 60 * 1000) return;
-        var slideId = slides[idx].dataset.id;
-        if (slideId) trackEvent('slide_dwell', { slide_id: slideId, duration_ms: dur });
-      }
-
-      document.addEventListener('visibilitychange', function(){
-        if (document.hidden) { flushDwell(currentIndex); flushEvents(); }
-        else { slideEnteredAt = Date.now(); }
-      });
-      window.addEventListener('pagehide', function(){
-        flushDwell(currentIndex);
-        flushEvents();
-        flushLocationQueue();
-      });
-      window.addEventListener('resize', layoutReels);
-
-      retryBtn.addEventListener('click', function(){ location.reload(); });
-
-      authReady.then(function(u){
-        if (!u) return;
-        trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
-      });
-
-      async function initFeed(retryCount){
-        retryCount = retryCount || 0;
-        try {
-          var data = await fetchAppData();
-          topCounts = data.likes;
-          renderReels(data.reels);
-          reelsLoaded = true;
-
-          try {
-            var user = await Promise.race([
-              authReady,
-              new Promise(function(r){ setTimeout(function(){ r(null); }, 2500); })
-            ]);
-            if (user) {
-              try {
-                var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
-                if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });
-              } catch(e){}
-            }
-          } catch(e){}
-
-          refreshTopUI();
-          if (onboardingDismissed) bootFeed();
-          setInterval(refreshReels, 60000);
-
-          // Очередь координат: не мешаем онбордингу и первым секундам фида
-          setTimeout(flushLocationQueue, 10000);
-          setInterval(flushLocationQueue, 60000);
-
-        } catch (err) {
-          console.warn('initFeed error:', err);
-          if (retryCount < 3) {
-            setTimeout(function(){ initFeed(retryCount + 1); }, 1500 * (retryCount + 1));
-          } else {
-            showEmptyState('Не удалось загрузить', 'Проверьте соединение и попробуйте снова.', true);
-          }
-        }
-      }
-      initFeed(0);
-
-    })();
-  </script>
-
-</body>
-</html>
+          for (var i = 0; i < q.length;

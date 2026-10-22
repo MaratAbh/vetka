@@ -294,8 +294,6 @@
   <script>
     (function(){
       // ===== Telegram WebApp init =====
-      // ВАЖНО: НЕ вызываем enableClosingConfirmation() - иначе Telegram
-      // показывает "Изменения могут быть потеряны" при каждом закрытии.
       (function initTg(){
         function tryInit(){
           var tg = window.Telegram && window.Telegram.WebApp;
@@ -366,9 +364,6 @@
         }
       }
 
-      // NOTE (backend TODO): нужны RLS на таблицах reels/likes/user_locations/events.
-      // Также TODO: верификация Telegram initData через HMAC на Edge Function.
-
       var appDataPromise = null;
       function fetchAppData() {
         if (appDataPromise) return appDataPromise;
@@ -410,7 +405,6 @@
         return days + ' ' + t('day_ago');
       }
 
-      // LIVE-бейдж показывается ровно 24 часа с момента публикации.
       var LIVE_WINDOW_MS = 24 * 60 * 60 * 1000;
       function getBadgeState(iso){
         var diff = Date.now() - new Date(iso).getTime();
@@ -465,6 +459,7 @@
       var feedBooted = false;
       var onboardingClosing = false;
       var refreshing = false;
+      var locFlushInProgress = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
@@ -594,7 +589,6 @@
           if (!live) return;
           var pub = live.getAttribute('data-published');
           if (!pub) return;
-
           var state = getBadgeState(pub);
           if (state === 'live') {
             live.className = 'live-top';
@@ -944,10 +938,8 @@
       }
 
       // ===== Геолокация с кешем =====
-      // Первый клик - запрашиваем разрешение. Дальше в течение 30 минут
-      // координаты берутся из localStorage, без диалогов.
       var GEO_CACHE_KEY = 'vetka_geo_v1';
-      var GEO_CACHE_TTL = 30 * 60 * 1000; // 30 минут
+      var GEO_CACHE_TTL = 30 * 60 * 1000;
 
       function getCachedCoords() {
         try {
@@ -961,19 +953,7 @@
       }
 
       function setCachedCoords(lat, lng) {
-        try {
-          localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ lat: lat, lng: lng, ts: Date.now() }));
-        } catch(e){}
-      }
-
-      async function getPermissionState() {
-        try {
-          if (navigator.permissions && navigator.permissions.query) {
-            var st = await navigator.permissions.query({ name: 'geolocation' });
-            return st.state;
-          }
-        } catch(e){}
-        return 'unknown';
+        try { localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ lat: lat, lng: lng, ts: Date.now() })); } catch(e){}
       }
 
       function requestUserLocation() {
@@ -987,44 +967,133 @@
         });
       }
 
-      async function saveUserLocation(lat, lng, reelId, reelTitle, reelPlace, destCoords, geoSource) {
+      // ===== Очередь сохранений координат =====
+      // Каждый клик СНАЧАЛА пишется в localStorage, потом fire-and-forget
+      // отправляется в Supabase с keepalive. Если не ушло - остаётся в очереди
+      // и досылается при следующем открытии приложения.
+      var LOC_QUEUE_KEY = 'vetka_loc_queue_v1';
+
+      function queueLocationItem(item) {
         try {
-          var user = await authReady;
-          if (!user) {
-            console.warn('saveUserLocation: authReady = null');
-            showToast('Нет сессии — координаты не сохранены');
-            return;
-          }
+          var q = [];
+          try { q = JSON.parse(localStorage.getItem(LOC_QUEUE_KEY) || '[]'); } catch(e){ q = []; }
+          q.push(item);
+          if (q.length > 200) q = q.slice(-200); // защита от разбухания
+          localStorage.setItem(LOC_QUEUE_KEY, JSON.stringify(q));
+          console.log('queued location:', item.reel_id, item.geo_source, 'queue size:', q.length);
+        } catch(e) { console.warn('queueLocationItem fail:', e); }
+      }
 
-          var tgUser = readTgUser();
-          var res = await supabaseClient.from('user_locations').insert([{
-            user_id: user.id,
-            tg_id: tgUser ? String(tgUser.id) : null,
-            username: tgUser ? (tgUser.username || null) : null,
-            first_name: tgUser ? (tgUser.first_name || null) : null,
-            last_name: tgUser ? (tgUser.last_name || null) : null,
-            profile_url: tgUser ? buildProfileUrl(tgUser) : null,
-            reel_id: reelId,
-            reel_title: reelTitle,
-            reel_place: reelPlace,
-            latitude: lat,
-            longitude: lng,
-            destination_coords: destCoords,
-            consent_given: true,
-            geo_source: geoSource || 'unknown',
-            route_created_at: new Date().toISOString()
-          }]);
+      function readLocQueue() {
+        try { return JSON.parse(localStorage.getItem(LOC_QUEUE_KEY) || '[]'); } catch(e){ return []; }
+      }
 
-          if (res && res.error) {
-            console.error('user_locations insert FAILED:', res.error);
-            showToast('DB: ' + res.error.message);
-          } else {
-            console.log('user_locations insert OK', { reel_id: reelId, geo_source: geoSource });
-          }
-        } catch(e) {
-          console.error('saveUserLocation exception:', e);
-          showToast('Ошибка: ' + (e && e.message ? e.message : String(e)));
+      function writeLocQueue(q) {
+        try { localStorage.setItem(LOC_QUEUE_KEY, JSON.stringify(q)); } catch(e){}
+      }
+
+      async function flushLocationQueue() {
+        if (locFlushInProgress) return;
+        var q = readLocQueue();
+        if (!q.length) return;
+
+        var session = null;
+        try {
+          var s = await supabaseClient.auth.getSession();
+          session = s && s.data ? s.data.session : null;
+        } catch(e){}
+
+        if (!session || !session.access_token || !session.user) {
+          // Нет сессии - попробуем анонимно
+          try {
+            var anon = await supabaseClient.auth.signInAnonymously();
+            if (anon.error) { console.warn('flush: anon auth fail', anon.error.message); return; }
+            var s2 = await supabaseClient.auth.getSession();
+            session = s2 && s2.data ? s2.data.session : null;
+          } catch(e){ return; }
         }
+
+        if (!session || !session.access_token) return;
+
+        locFlushInProgress = true;
+        var token = session.access_token;
+        var user = session.user;
+        var tgUser = readTgUser();
+        var remaining = [];
+
+        for (var i = 0; i < q.length; i++) {
+          var it = q[i];
+          try {
+            var body = [{
+              user_id: user.id,
+              tg_id: tgUser ? String(tgUser.id) : null,
+              username: tgUser ? (tgUser.username || null) : null,
+              first_name: tgUser ? (tgUser.first_name || null) : null,
+              last_name: tgUser ? (tgUser.last_name || null) : null,
+              profile_url: tgUser ? buildProfileUrl(tgUser) : null,
+              reel_id: it.reel_id,
+              reel_title: it.reel_title,
+              reel_place: it.reel_place,
+              latitude: it.lat,
+              longitude: it.lng,
+              destination_coords: it.dest_coords,
+              consent_given: true,
+              geo_source: it.geo_source,
+              route_created_at: it.ts_iso
+            }];
+
+            var res = await fetch(SUPABASE_URL + '/rest/v1/user_locations', {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify(body),
+              keepalive: true
+            });
+
+            if (!res.ok) {
+              var errTxt = '';
+              try { errTxt = await res.text(); } catch(e){}
+              console.warn('insert failed:', res.status, errTxt);
+              // 400/401/403 - не будем ретраить бесконечно
+              if (res.status >= 500 || res.status === 429) {
+                remaining.push(it);
+              } else {
+                console.error('dropping invalid item:', it);
+              }
+            } else {
+              console.log('insert OK:', it.reel_id, it.geo_source);
+            }
+          } catch(e) {
+            console.warn('insert exception:', e);
+            remaining.push(it);
+          }
+        }
+
+        writeLocQueue(remaining);
+        locFlushInProgress = false;
+        console.log('flush done. remaining:', remaining.length);
+      }
+
+      // Fire-and-forget запись: сразу в очередь + попытка отправить
+      function saveUserLocationAsync(lat, lng, reelId, reelTitle, reelPlace, destCoords, geoSource) {
+        var item = {
+          lat: (typeof lat === 'number' && isFinite(lat)) ? lat : null,
+          lng: (typeof lng === 'number' && isFinite(lng)) ? lng : null,
+          reel_id: reelId,
+          reel_title: reelTitle,
+          reel_place: reelPlace,
+          dest_coords: destCoords,
+          geo_source: geoSource || 'unknown',
+          ts_iso: new Date().toISOString(),
+          ts: Date.now()
+        };
+        queueLocationItem(item);
+        // Не ждём - открываем карту. Очередь досылается фоном.
+        flushLocationQueue();
       }
 
       function bindLocBtns() {
@@ -1039,47 +1108,41 @@
 
             if (!destCoords) { showToast('Адрес не указан'); return; }
 
-            // 1. Есть свежий кеш (< 30 мин) - СНАЧАЛА сохраняем, потом открываем карту
+            // 1. Есть свежий кеш - мгновенно пишем в очередь и открываем карту
             var cached = getCachedCoords();
             if (cached) {
-              try {
-                await saveUserLocation(cached.lat, cached.lng, reelId, reelTitle, reelPlace, destCoords, 'cache');
-              } catch(err) { console.warn('save cache fail:', err); }
+              saveUserLocationAsync(cached.lat, cached.lng, reelId, reelTitle, reelPlace, destCoords, 'cache');
               openYandexRoute(destCoords);
               return;
             }
 
-            // 2. Кеша нет - смотрим состояние разрешения
-            var perm = await getPermissionState();
-
-            if (perm === 'granted') {
-              try {
-                var coords = await requestUserLocation();
-                setCachedCoords(coords.lat, coords.lng);
-                await saveUserLocation(coords.lat, coords.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
-              } catch(err) {
-                console.log('GPS silent fail:', err);
-              }
-              openYandexRoute(destCoords);
-              return;
-            }
-
-            if (perm === 'denied') {
-              openYandexRoute(destCoords);
-              return;
-            }
-
-            // 3. Первый раз (или 'unknown') - спрашиваем
+            // 2. Кеша нет - спрашиваем разрешение и пробуем GPS (макс 5 сек)
             var userAgreed = confirm('Для построения точного маршрута поделитесь вашей геопозицией.');
-            if (userAgreed) {
-              try {
-                var coords2 = await requestUserLocation();
-                setCachedCoords(coords2.lat, coords2.lng);
-                await saveUserLocation(coords2.lat, coords2.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
-              } catch(err) {
-                console.log('GPS fail:', err);
-              }
+
+            if (!userAgreed) {
+              // Сохраняем факт клика без координат - чтобы видеть намерение
+              saveUserLocationAsync(null, null, reelId, reelTitle, reelPlace, destCoords, 'user_declined');
+              openYandexRoute(destCoords);
+              return;
             }
+
+            var coords = null;
+            try {
+              coords = await Promise.race([
+                requestUserLocation(),
+                new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('gps timeout')); }, 5000); })
+              ]);
+            } catch(err) {
+              console.log('GPS fail:', err && err.message ? err.message : err);
+            }
+
+            if (coords) {
+              setCachedCoords(coords.lat, coords.lng);
+              saveUserLocationAsync(coords.lat, coords.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
+            } else {
+              saveUserLocationAsync(null, null, reelId, reelTitle, reelPlace, destCoords, 'gps_failed');
+            }
+
             openYandexRoute(destCoords);
           });
         });
@@ -1312,14 +1375,13 @@
       }
 
       document.addEventListener('visibilitychange', function(){
-        if (document.hidden) { flushDwell(currentIndex); flushEvents(); } else { slideEnteredAt = Date.now(); }
+        if (document.hidden) { flushDwell(currentIndex); flushEvents(); flushLocationQueue(); }
+        else { slideEnteredAt = Date.now(); flushLocationQueue(); }
       });
-      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
+      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); flushLocationQueue(); });
       window.addEventListener('resize', layoutReels);
 
-      retryBtn.addEventListener('click', function(){
-        location.reload();
-      });
+      retryBtn.addEventListener('click', function(){ location.reload(); });
 
       authReady.then(function(u){
         if (!u) return;
@@ -1348,10 +1410,12 @@
           } catch(e){}
 
           refreshTopUI();
-
           if (onboardingDismissed) bootFeed();
-
           setInterval(refreshReels, 60000);
+
+          // После загрузки фида - досылаем накопленную очередь координат
+          setTimeout(flushLocationQueue, 1500);
+          setInterval(flushLocationQueue, 30000);
 
         } catch (err) {
           console.warn('initFeed error:', err);

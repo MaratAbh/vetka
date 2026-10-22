@@ -14,7 +14,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<!-- Скрипт Telegram подключаем асинхронно, чтобы он не блокировал рендер -->
 <script>
   (function(){
     var s = document.createElement('script');
@@ -284,7 +283,6 @@
 
   <div class="toast" id="toast">Вайб продвинут ⬆️</div>
 
-  <!-- Переносим тяжелые скрипты в конец, чтобы они не блокировали загрузку интерфейса -->
   <script type="text/javascript" >
      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
      m[i].l=1*new Date();
@@ -505,7 +503,7 @@
               '<div class="actions-row">' +
                 '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
                   '<span class="tv-ph">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 A 4 4 0 0 1 8 14"/><path d="M4 18 A 8 8 0 0 1 12 10"/><path d="M4 18 A 12 12 0 0 1 16 6"/><path d="M19 3 L20 5 L22 6 L20 7 L19 9 L18 7 L16 6 L18 5 Z" fill="currentColor" stroke="none"/></svg>' +
+                    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L4 12h5v9h6v-9h5L12 3z"/></svg>' +
                   '</span>' +
                   '<span class="tv-count" data-count>' + totalVotes + '</span>' +
                   '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
@@ -880,7 +878,6 @@
         });
       }
 
-      // ====== ПОЛНЫЙ ТРЕКИНГ: ЮЗЕР + МЕСТО + КАРТЫ ======
       function openYandexRoute(destCoords) {
         if (!window.Telegram || !window.Telegram.WebApp) return;
         var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
@@ -1007,7 +1004,6 @@
           });
         });
       }
-      // ===========================================
 
       function bindHandlers(){
         bindSoundBtns();
@@ -1121,6 +1117,7 @@
         feed.classList.add('visible');
         layoutReels();
         
+        // Обработка deep link (startapp) ДО запуска observers
         var startParam = null;
         try {
           if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
@@ -1145,6 +1142,7 @@
         refreshTopUI();
         loadMyVotes();
         
+        // Скролл к нужному слайду (без scrollIntoView, только scrollTop)
         if (startIdx > 0) {
           setTimeout(function(){
             try {

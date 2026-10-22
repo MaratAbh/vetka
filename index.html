@@ -411,7 +411,6 @@
       }
 
       // LIVE-бейдж показывается ровно 24 часа с момента публикации.
-      // После 24h бейджа нет вообще - рилс остаётся в ленте как обычный контент.
       var LIVE_WINDOW_MS = 24 * 60 * 60 * 1000;
       function getBadgeState(iso){
         var diff = Date.now() - new Date(iso).getTime();
@@ -991,24 +990,20 @@
       async function saveUserLocation(lat, lng, reelId, reelTitle, reelPlace, destCoords, geoSource) {
         try {
           var user = await authReady;
-          if (!user) return;
+          if (!user) {
+            console.warn('saveUserLocation: authReady = null');
+            showToast('Нет сессии — координаты не сохранены');
+            return;
+          }
 
           var tgUser = readTgUser();
-          var tgId = tgUser ? String(tgUser.id) : null;
-          var username = tgUser ? (tgUser.username || null) : null;
-          var firstName = tgUser ? (tgUser.first_name || null) : null;
-          var lastName = tgUser ? (tgUser.last_name || null) : null;
-          var profileUrl = tgUser ? buildProfileUrl(tgUser) : null;
-
-          // NOTE: tg_id берётся с клиента. Для продакшена нужна верификация
-          // initData на бэкенде (HMAC) + RLS, иначе tg_id можно подделать.
-          await supabaseClient.from('user_locations').insert([{
+          var res = await supabaseClient.from('user_locations').insert([{
             user_id: user.id,
-            tg_id: tgId,
-            username: username,
-            first_name: firstName,
-            last_name: lastName,
-            profile_url: profileUrl,
+            tg_id: tgUser ? String(tgUser.id) : null,
+            username: tgUser ? (tgUser.username || null) : null,
+            first_name: tgUser ? (tgUser.first_name || null) : null,
+            last_name: tgUser ? (tgUser.last_name || null) : null,
+            profile_url: tgUser ? buildProfileUrl(tgUser) : null,
             reel_id: reelId,
             reel_title: reelTitle,
             reel_place: reelPlace,
@@ -1019,8 +1014,16 @@
             geo_source: geoSource || 'unknown',
             route_created_at: new Date().toISOString()
           }]);
+
+          if (res && res.error) {
+            console.error('user_locations insert FAILED:', res.error);
+            showToast('DB: ' + res.error.message);
+          } else {
+            console.log('user_locations insert OK', { reel_id: reelId, geo_source: geoSource });
+          }
         } catch(e) {
-          console.warn('saveUserLocation error:', e);
+          console.error('saveUserLocation exception:', e);
+          showToast('Ошибка: ' + (e && e.message ? e.message : String(e)));
         }
       }
 
@@ -1036,11 +1039,13 @@
 
             if (!destCoords) { showToast('Адрес не указан'); return; }
 
-            // 1. Есть свежий кеш (< 30 мин) - молча используем, карту открываем сразу
+            // 1. Есть свежий кеш (< 30 мин) - СНАЧАЛА сохраняем, потом открываем карту
             var cached = getCachedCoords();
             if (cached) {
+              try {
+                await saveUserLocation(cached.lat, cached.lng, reelId, reelTitle, reelPlace, destCoords, 'cache');
+              } catch(err) { console.warn('save cache fail:', err); }
               openYandexRoute(destCoords);
-              saveUserLocation(cached.lat, cached.lng, reelId, reelTitle, reelPlace, destCoords, 'cache');
               return;
             }
 
@@ -1048,21 +1053,18 @@
             var perm = await getPermissionState();
 
             if (perm === 'granted') {
-              // Разрешение уже есть - получаем молча, без confirm
               try {
                 var coords = await requestUserLocation();
                 setCachedCoords(coords.lat, coords.lng);
-                openYandexRoute(destCoords);
-                saveUserLocation(coords.lat, coords.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
+                await saveUserLocation(coords.lat, coords.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
               } catch(err) {
                 console.log('GPS silent fail:', err);
-                openYandexRoute(destCoords);
               }
+              openYandexRoute(destCoords);
               return;
             }
 
             if (perm === 'denied') {
-              // Пользователь ранее запретил - не мучаем
               openYandexRoute(destCoords);
               return;
             }
@@ -1073,15 +1075,12 @@
               try {
                 var coords2 = await requestUserLocation();
                 setCachedCoords(coords2.lat, coords2.lng);
-                openYandexRoute(destCoords);
-                saveUserLocation(coords2.lat, coords2.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
+                await saveUserLocation(coords2.lat, coords2.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
               } catch(err) {
                 console.log('GPS fail:', err);
-                openYandexRoute(destCoords);
               }
-            } else {
-              openYandexRoute(destCoords);
             }
+            openYandexRoute(destCoords);
           });
         });
       }
@@ -1234,16 +1233,6 @@
         }
       }
 
-      async function loadMyVotes(){
-        try {
-          var user = await authReady; if (!user) return;
-          try {
-            var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
-            if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });
-          } catch(e){}
-        } catch(e){}
-      }
-
       function copyToClipboard(text){
         if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
         return new Promise(function(resolve, reject){
@@ -1273,8 +1262,8 @@
             await new Promise(function(r){ setTimeout(r, 200); });
           }
         }
-        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) return null; return r.data.user; }
-        catch(e){ return null; }
+        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) { console.warn('anon auth error:', r.error.message); return null; } return r.data.user; }
+        catch(e){ console.warn('anon auth exception:', e); return null; }
       })();
 
       function startTgIdWatch(){

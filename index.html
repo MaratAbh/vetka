@@ -11,10 +11,18 @@
 <link rel="dns-prefetch" href="https://telegram.org">
 <link rel="preconnect" href="https://rlkjsjgktyltvxnfyski.supabase.co" crossorigin>
 <link rel="dns-prefetch" href="https://rlkjsjgktyltvxnfyski.supabase.co">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<!-- Скрипт Telegram подключаем асинхронно, чтобы он не блокировал рендер -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+   ym(113067752, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/113067752" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   (function(){
     var s = document.createElement('script');
@@ -24,6 +32,8 @@
   })();
 </script>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
@@ -73,15 +83,7 @@
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
-  .live{
-    display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;
-    color:rgba(255,255,255,.85);
-    padding:0;
-    background:transparent;
-    border:none;
-    align-self:flex-start;
-    text-shadow:0 1px 4px rgba(0,0,0,.8);
-  }
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;color:rgba(255,255,255,.75);padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-self:flex-start;}
   .live .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.85);animation:pulse 1.8s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
 
@@ -97,6 +99,39 @@
   .title-row{display:flex;align-items:center;gap:12px;pointer-events:none;}
   .title-row .title{flex:1;min-width:0;}
 
+  .share-icon{
+    pointer-events:auto;
+    flex:none;
+    width:34px;
+    height:34px;
+    background:transparent;
+    border:0;
+    padding:0;
+    color:#CDFF4A;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform .15s ease, color .15s ease, opacity .15s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .share-icon:active{
+    transform:scale(.85);
+    color:#e0ff6b;
+  }
+  .share-icon svg{
+    width:22px;
+    height:22px;
+    display:block;
+    overflow:visible;
+  }
+  .share-icon:active .tip{transform:scale(1.3);}
+  .share-icon .tip{
+    transform-origin:center;
+    transform-box:fill-box;
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+  }
+
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
   .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);min-height:0;}
@@ -105,111 +140,174 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  .loc-btn {
-    pointer-events: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 12px 36px;
-    border-radius: 100px;
-    background: #CDFF4A;
-    color: #07070a;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    align-self: center;
-    margin-top: 6px;
-    box-shadow: 0 4px 20px rgba(205,255,74,.35);
-    transition: transform .12s ease, background .2s ease;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .loc-btn:active { transform: scale(.96); }
-  .loc-btn svg { width: 16px; height: 16px; flex: none; }
-
+  /* ========== VETKA TOP VIBE BUTTON ========== */
   .actions-row {
     position: absolute;
     right: 14px;
-    bottom: 170px;
+    bottom: 150px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
     pointer-events: none;
     z-index: 10;
   }
 
-  .top-vibe, .share-btn {
+  .top-vibe {
     pointer-events: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 0;
-    color: inherit;
+    position: relative;
+    transition: transform .12s ease;
+    -webkit-tap-highlight-color: transparent;
   }
+  .top-vibe:active { transform: scale(.9); }
 
-  .tv-ph, .ico-ph {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: rgba(205,255,74,.14);
-    border: 1px solid rgba(205,255,74,.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  .tv-ph {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(10,10,14,.55);
+    border: 1px solid rgba(205,255,74,.22);
+    backdrop-filter: blur(14px) saturate(1.3);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
     color: #CDFF4A;
-    transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
-  }
-  
-  .top-vibe:active .tv-ph, .share-btn:active .ico-ph { 
-    transform: scale(.9); 
+    transition:
+      background .25s ease,
+      border-color .25s ease,
+      color .25s ease,
+      box-shadow .35s ease;
+    box-shadow:
+      0 4px 14px rgba(0,0,0,.4),
+      inset 0 1px 0 rgba(255,255,255,.06);
   }
 
-  .tv-ph svg, .ico-ph svg {
-    width: 16px;
-    height: 16px;
+  .tv-icon {
+    width: 26px;
+    height: 26px;
     display: block;
+    overflow: visible;
+  }
+  .tv-icon .tv-wave {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity .2s ease, transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .tv-icon .tv-beam {
+    fill: currentColor;
+    opacity: 0;
+    transform: scaleY(.05);
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    transition: opacity .2s ease, transform .3s cubic-bezier(.2,.9,.3,1.4);
+  }
+  .tv-icon .tv-spark {
+    fill: currentColor;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform .35s cubic-bezier(.2,.9,.3,1.4);
+  }
+
+  /* press / voted: waves collapse into beam */
+  .top-vibe.pressing .tv-wave,
+  .top-vibe.voted    .tv-wave {
+    opacity: 0;
+    transform: scaleX(.15);
+  }
+  .top-vibe.pressing .tv-beam,
+  .top-vibe.voted    .tv-beam {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  .top-vibe.pressing .tv-spark {
+    transform: scale(1.4) rotate(45deg);
   }
 
   .tv-count {
     font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    color: #CDFF4A;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
     line-height: 1;
-    text-shadow: 0 1px 4px rgba(0,0,0,.6);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 4px rgba(0,0,0,.8);
+    transition: color .25s ease;
+    display: inline-block;
+  }
+  .tv-count.pulse {
+    animation: countPulse .42s cubic-bezier(.2,.9,.3,1.5);
+  }
+  @keyframes countPulse {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
   }
 
-  .tv-label, .lbl {
+  .tv-label {
     font-family: 'Inter', sans-serif;
-    font-size: 8.5px;
-    font-weight: 500;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,.5);
+    font-size: 10.5px;
+    font-weight: 600;
+    color: rgba(255,255,255,.85);
+    text-shadow: 0 1px 4px rgba(0,0,0,.8);
+    letter-spacing: .02em;
+    transition: color .25s ease;
     text-align: center;
+    max-width: 74px;
+    line-height: 1.2;
   }
 
   .top-vibe.voted .tv-ph {
-    background: rgba(205,255,74,.9);
+    background: #CDFF4A;
+    border-color: #CDFF4A;
     color: #07070a;
-    border-color: rgba(205,255,74,.9);
+    box-shadow:
+      0 0 20px rgba(205,255,74,.55),
+      0 0 42px rgba(205,255,74,.22),
+      0 4px 14px rgba(0,0,0,.4),
+      inset 0 1px 0 rgba(255,255,255,.4);
   }
   .top-vibe.voted .tv-count { color: #CDFF4A; }
   .top-vibe.voted .tv-label { color: #CDFF4A; }
 
-  @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
-  .tv-count.pulse{animation:countPulse .45s ease;}
-  @keyframes triPulse{0%{transform:translateY(0);}40%{transform:translateY(-3px);}100%{transform:translateY(0);}}
-  .tv-ph svg.pulse{animation:triPulse .4s ease;}
+  .tv-burst {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 50%;
+    overflow: visible;
+  }
+  .tv-particle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #CDFF4A;
+    box-shadow: 0 0 6px rgba(205,255,74,.9);
+    transform: translate(-50%,-50%);
+    animation: tvParticleFly .65s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  @keyframes tvParticleFly {
+    0%   { transform: translate(-50%,-50%) rotate(var(--a)) translateX(0)   scale(1); opacity: 1; }
+    70%  { opacity: 1; }
+    100% { transform: translate(-50%,-50%) rotate(var(--a)) translateX(34px) scale(0); opacity: 0; }
+  }
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
@@ -284,25 +382,12 @@
 
   <div class="toast" id="toast">Вайб продвинут ⬆️</div>
 
-  <!-- Переносим тяжелые скрипты в конец, чтобы они не блокировали загрузку интерфейса -->
-  <script type="text/javascript" >
-     (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-     m[i].l=1*new Date();
-     for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-     k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-     (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-     ym(113067752, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
-  </script>
-  <noscript><div><img src="https://mc.yandex.ru/watch/113067752" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
     (function(){
       var I18N = {
-        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', loc_btn:'Смотреть маршрут', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', loc_btn:'View route', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', loc_btn:'Ver ruta', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -338,34 +423,6 @@
         var r = await fetch(url, { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Accept': 'application/json' } });
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.json();
-      }
-
-      var appDataPromise = null;
-      function fetchAppData() {
-        if (appDataPromise) return appDataPromise;
-        appDataPromise = (async function(){
-          var rows = [];
-          var likesCount = {};
-          try {
-            rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
-            if (!rows) rows = [];
-          } catch(e){ console.warn('reels error:', e); rows = []; }
-          try {
-            var likesAll = await api('likes', 'select=slide_id');
-            if (likesAll && likesAll.length) {
-              likesAll.forEach(function(l){ if (l.slide_id) likesCount[l.slide_id] = (likesCount[l.slide_id] || 0) + 1; });
-            }
-          } catch(e){ console.warn('likes error:', e); }
-          
-          rows.forEach(function(r){
-            var base = parseInt(r.base_votes, 10) || 0;
-            var real = likesCount[r.id] || 0;
-            r.__total = base + real;
-          });
-          rows.sort(function(a, b){ return b.__total - a.__total; });
-          return { reels: rows, likes: likesCount };
-        })();
-        return appDataPromise;
       }
 
       function timeAgo(iso){
@@ -444,6 +501,36 @@
         toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
       }
 
+      async function loadReels(){
+        var rows = [];
+        var likesCount = {};
+
+        try {
+          rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
+          if (!rows) rows = [];
+        } catch(e){ console.warn('loadReels error:', e); rows = []; }
+
+        try {
+          var likesAll = await api('likes', 'select=slide_id');
+          if (likesAll && likesAll.length) {
+            likesAll.forEach(function(l){ if (l.slide_id) likesCount[l.slide_id] = (likesCount[l.slide_id] || 0) + 1; });
+          }
+        } catch(e){ console.warn('likes load error:', e); }
+
+        topCounts = likesCount;
+
+        rows.forEach(function(r){
+          var base = parseInt(r.base_votes, 10) || 0;
+          var real = likesCount[r.id] || 0;
+          r.__total = base + real;
+        });
+        rows.sort(function(a, b){ return b.__total - a.__total; });
+
+        renderReels(rows);
+        reelsLoaded = true;
+        if (onboardingDismissed) bootFeed();
+      }
+
       function escapeHtml(s){
         return String(s).replace(/[&<>"']/g, function(c){
           return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
@@ -495,31 +582,22 @@
               '<div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">' + t('watching') + '</span></div>' +
               '<div class="title-row">' +
                 '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
+                '<button class="share-icon" data-share aria-label="Share">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M5.5 19 C 9 13, 12.5 9, 18 5"/>' +
+                    '<circle class="tip" cx="18" cy="5" r="2.3" fill="currentColor" stroke="none"/>' +
+                  '</svg>' +
+                '</button>' +
               '</div>' +
               '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
               placeHtml +
-              '<button class="loc-btn" data-loc data-location="' + escapeAttr(reel.location_coords || '') + '">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
-                '<span data-i18n="loc_btn">' + t('loc_btn') + '</span>' +
-              '</button>' +
               '<div class="actions-row">' +
-                '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
+                '<button class="top-vibe" data-top data-base="' + baseVotes + '" aria-label="' + t('top_vibe') + '">' +
                   '<span class="tv-ph">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 A 4 4 0 0 1 8 14"/><path d="M4 18 A 8 8 0 0 1 12 10"/><path d="M4 18 A 12 12 0 0 1 16 6"/><path d="M19 3 L20 5 L22 6 L20 7 L19 9 L18 7 L16 6 L18 5 Z" fill="currentColor" stroke="none"/></svg>' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 A 4 4 0 0 1 8 14"/><path d="M4 18 A 8 8 0 0 1 12 10"/><path d="M4 18 A 12 12 0 0 1 16 6"/><path d="M19 3 L20 5 L22 6 L20 7 L19 9 L18 7 L16 6 L18 5 Z" fill="currentColor" stroke="none"/></svg>' +
                   '</span>' +
                   '<span class="tv-count" data-count>' + totalVotes + '</span>' +
                   '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
-                '</button>' +
-                '<button class="share-btn" data-share aria-label="Share">' +
-                  '<span class="ico-ph">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>' +
-                      '<circle cx="9" cy="7" r="4"/>' +
-                      '<path d="M19 8v6"/>' +
-                      '<path d="M22 11h-6"/>' +
-                    '</svg>' +
-                  '</span>' +
-                  '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
                 '</button>' +
               '</div>' +
             '</div>';
@@ -696,7 +774,7 @@
         });
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = 6;
+        var onbIdx = 0, ONB_BATCH = 3;
         var onbBg = document.getElementById('onbBg');
 
         var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
@@ -717,7 +795,7 @@
               var p = v.play(); if (p && p.catch) p.catch(function(){});
             })(onbVids[targetIdx]);
           }
-          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 100);
+          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
         }
 
         (function loadOnbFromSupabase(attempt){
@@ -829,10 +907,7 @@
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : '';
             trackEvent('share', { slide_id: id });
-            
             var url = TG_MINIAPP_URL;
-            if (id) url += '?startapp=' + encodeURIComponent(id);
-
             if (window.Telegram && window.Telegram.WebApp) {
               try {
                 var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(t('share_text'));
@@ -880,140 +955,10 @@
         });
       }
 
-      // ====== ПОЛНЫЙ ТРЕКИНГ: ЮЗЕР + МЕСТО + КАРТЫ ======
-      function openYandexRoute(destCoords) {
-        if (!window.Telegram || !window.Telegram.WebApp) return;
-        var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
-        window.Telegram.WebApp.openLink(url);
-      }
-
-      function requestUserLocation() {
-        return new Promise(function(resolve, reject) {
-          var lm = window.Telegram?.WebApp?.LocationManager;
-
-          if (!lm) {
-            alert('Ошибка: LocationManager не найден в этом Telegram.');
-            reject('LocationManager not found');
-            return;
-          }
-
-          if (typeof lm.mount === 'function' && typeof lm.requestLocation === 'function') {
-            lm.mount().then(function() {
-              if (!lm.isSupported) {
-                alert('Ошибка: Геолокация не поддерживается на этом устройстве.');
-                reject('Not supported');
-                return;
-              }
-              if (lm.isAccessRequested) {
-                alert('Вы уже запрашивали геолокацию. Откроем настройки, чтобы включить её.');
-                lm.openSettings();
-                reject('Settings opened');
-                return;
-              }
-              lm.requestLocation().then(function(loc) {
-                if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
-                else reject('Denied');
-              }).catch(reject);
-            }).catch(function(e) {
-              alert('Ошибка инициализации: ' + e);
-              reject(e);
-            });
-            return;
-          }
-
-          if (typeof lm.init === 'function' && typeof lm.getLocation === 'function') {
-            lm.init(function() {
-              lm.getLocation(function(loc) {
-                if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
-                else reject('Denied');
-              });
-            });
-            return;
-          }
-
-          if (typeof lm.requestLocation === 'function') {
-            lm.requestLocation().then(function(loc) {
-              if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
-              else reject('Denied');
-            }).catch(reject);
-            return;
-          }
-
-          alert('Ошибка: В этом Telegram не найден подходящий метод для геолокации.');
-          reject('No suitable method');
-        });
-      }
-
-      async function saveUserLocation(lat, lng, reelId, reelTitle, reelPlace, destCoords) {
-        try {
-          var user = await authReady;
-          if (!user) return;
-
-          var tgUser = readTgUser();
-          var tgId = tgUser ? String(tgUser.id) : null;
-          var username = tgUser ? (tgUser.username || null) : null;
-          var firstName = tgUser ? (tgUser.first_name || null) : null;
-          var lastName = tgUser ? (tgUser.last_name || null) : null;
-          var profileUrl = tgUser ? buildProfileUrl(tgUser) : null;
-
-          const { error } = await supabaseClient.from('user_locations').insert([{
-            user_id: user.id,
-            tg_id: tgId,
-            username: username,
-            first_name: firstName,
-            last_name: lastName,
-            profile_url: profileUrl,
-            reel_id: reelId,
-            reel_title: reelTitle,
-            reel_place: reelPlace,
-            latitude: lat,
-            longitude: lng,
-            destination_coords: destCoords,
-            route_created_at: new Date().toISOString()
-          }]);
-          
-          if (error) console.warn('Ошибка Supabase:', error.message);
-          else showToast('Геопозиция сохранена');
-        } catch(e) {
-          console.warn('Критическая ошибка сохранения:', e);
-        }
-      }
-
-      function bindLocBtns() {
-        document.querySelectorAll('[data-loc]').forEach(function(btn) {
-          btn.addEventListener('click', async function(e) {
-            e.stopPropagation();
-            var slide = btn.closest('.slide');
-            var reelId = slide ? slide.dataset.id : null;
-            var destCoords = btn.getAttribute('data-location');
-            
-            var reelTitle = slide.querySelector('.title') ? slide.querySelector('.title').textContent.trim() : '';
-            var reelPlace = slide.querySelector('.place') ? slide.querySelector('.place').textContent.trim() : '';
-
-            if (!destCoords) { showToast('Адрес не указан'); return; }
-
-            var userAgreed = confirm('Для построения точного маршрута поделитесь вашей геопозицией.');
-            
-            if (userAgreed) {
-              try {
-                var userCoords = await requestUserLocation();
-                await saveUserLocation(userCoords.lat, userCoords.lng, reelId, reelTitle, reelPlace, destCoords);
-                openYandexRoute(destCoords);
-              } catch(err) {
-                console.log('GPS не получен:', err);
-                openYandexRoute(destCoords);
-              }
-            }
-          });
-        });
-      }
-      // ===========================================
-
       function bindHandlers(){
         bindSoundBtns();
         bindShareBtns();
         bindTopBtns();
-        bindLocBtns();
       }
 
       function refreshTopUI(){
@@ -1120,38 +1065,12 @@
         feedBooted = true;
         feed.classList.add('visible');
         layoutReels();
-        
-        var startParam = null;
-        try {
-          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-            startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
-          }
-        } catch(e){}
-        
-        var startIdx = 0;
-        if (startParam) {
-          for (var i = 0; i < slides.length; i++) {
-            if (slides[i].dataset.id === startParam) {
-              startIdx = i;
-              break;
-            }
-          }
-        }
-
         initIO();
         initSlideViewsIO();
         initViewerCounters();
-        setActiveSlide(startIdx);
+        setActiveSlide(0);
         refreshTopUI();
         loadMyVotes();
-        
-        if (startIdx > 0) {
-          setTimeout(function(){
-            try {
-              if (feed) feed.scrollTop = startIdx * feed.clientHeight;
-            } catch(e) {}
-          }, 250);
-        }
       }
 
       async function loadMyVotes(){
@@ -1169,8 +1088,7 @@
         if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
         return new Promise(function(resolve, reject){
           try {
-            var ta = document.createElement('textarea');
-            ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'absolute'; ta.style.left = '-9999px';
+            var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'absolute'; ta.style.left = '-9999px';
             document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); resolve();
           } catch(e){ reject(e); }
         });
@@ -1256,13 +1174,7 @@
         setTimeout(function(){ trackEvent('visit', {}); }, 5000);
       });
 
-      fetchAppData().then(function(data){
-        topCounts = data.likes;
-        renderReels(data.reels);
-        reelsLoaded = true;
-        if (onboardingDismissed) bootFeed();
-      });
-
+      loadReels();
     })();
   </script>
 

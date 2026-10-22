@@ -14,7 +14,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<!-- Скрипт Telegram подключаем асинхронно, чтобы он не блокировал рендер -->
 <script>
   (function(){
     var s = document.createElement('script');
@@ -97,39 +96,6 @@
   .title-row{display:flex;align-items:center;gap:12px;pointer-events:none;}
   .title-row .title{flex:1;min-width:0;}
 
-  .share-icon{
-    pointer-events:auto;
-    flex:none;
-    width:34px;
-    height:34px;
-    background:transparent;
-    border:0;
-    padding:0;
-    color:#CDFF4A;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:transform .15s ease, color .15s ease, opacity .15s ease;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .share-icon:active{
-    transform:scale(.85);
-    color:#e0ff6b;
-  }
-  .share-icon svg{
-    width:22px;
-    height:22px;
-    display:block;
-    overflow:visible;
-  }
-  .share-icon:active .tip{transform:scale(1.3);}
-  .share-icon .tip{
-    transform-origin:center;
-    transform-box:fill-box;
-    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
-  }
-
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
   .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);min-height:0;}
@@ -161,173 +127,88 @@
   .loc-btn:active { transform: scale(.96); }
   .loc-btn svg { width: 16px; height: 16px; flex: none; }
 
-  /* ========== VETKA TOP VIBE BUTTON ========== */
   .actions-row {
     position: absolute;
     right: 14px;
-    bottom: 150px;
+    bottom: 170px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 18px;
     pointer-events: none;
     z-index: 10;
   }
 
-  .top-vibe {
+  .top-vibe, .share-btn {
     pointer-events: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 0;
-    position: relative;
-    transition: transform .12s ease;
-    -webkit-tap-highlight-color: transparent;
+    color: inherit;
   }
-  .top-vibe:active { transform: scale(.9); }
 
-  .tv-ph {
-    position: relative;
+  .tv-ph, .ico-ph {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(205,255,74,.14);
+    border: 1px solid rgba(205,255,74,.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: rgba(10,10,14,.55);
-    border: 1px solid rgba(205,255,74,.22);
-    backdrop-filter: blur(14px) saturate(1.3);
-    -webkit-backdrop-filter: blur(14px) saturate(1.3);
     color: #CDFF4A;
-    transition:
-      background .25s ease,
-      border-color .25s ease,
-      color .25s ease,
-      box-shadow .35s ease;
-    box-shadow:
-      0 4px 14px rgba(0,0,0,.4),
-      inset 0 1px 0 rgba(255,255,255,.06);
+    transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  
+  .top-vibe:active .tv-ph, .share-btn:active .ico-ph { 
+    transform: scale(.9); 
   }
 
-  .tv-icon {
-    width: 26px;
-    height: 26px;
+  .tv-ph svg, .ico-ph svg {
+    width: 16px;
+    height: 16px;
     display: block;
-    overflow: visible;
-  }
-  .tv-icon .tv-wave {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    transform-box: fill-box;
-    transform-origin: center;
-    transition: opacity .2s ease, transform .3s cubic-bezier(.4,0,.2,1);
-  }
-  .tv-icon .tv-beam {
-    fill: currentColor;
-    opacity: 0;
-    transform: scaleY(.05);
-    transform-box: fill-box;
-    transform-origin: center bottom;
-    transition: opacity .2s ease, transform .3s cubic-bezier(.2,.9,.3,1.4);
-  }
-  .tv-icon .tv-spark {
-    fill: currentColor;
-    transform-box: fill-box;
-    transform-origin: center;
-    transition: transform .35s cubic-bezier(.2,.9,.3,1.4);
-  }
-
-  .top-vibe.pressing .tv-wave,
-  .top-vibe.voted    .tv-wave {
-    opacity: 0;
-    transform: scaleX(.15);
-  }
-  .top-vibe.pressing .tv-beam,
-  .top-vibe.voted    .tv-beam {
-    opacity: 1;
-    transform: scaleY(1);
-  }
-  .top-vibe.pressing .tv-spark {
-    transform: scale(1.4) rotate(45deg);
   }
 
   .tv-count {
     font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 800;
-    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    color: #CDFF4A;
     line-height: 1;
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 1px 4px rgba(0,0,0,.8);
-    transition: color .25s ease;
-    display: inline-block;
-  }
-  .tv-count.pulse {
-    animation: countPulse .42s cubic-bezier(.2,.9,.3,1.5);
-  }
-  @keyframes countPulse {
-    0%   { transform: scale(1); }
-    40%  { transform: scale(1.2); }
-    100% { transform: scale(1); }
+    text-shadow: 0 1px 4px rgba(0,0,0,.6);
   }
 
-  .tv-label {
+  .tv-label, .lbl {
     font-family: 'Inter', sans-serif;
-    font-size: 10.5px;
-    font-weight: 600;
-    color: rgba(255,255,255,.85);
-    text-shadow: 0 1px 4px rgba(0,0,0,.8);
-    letter-spacing: .02em;
-    transition: color .25s ease;
+    font-size: 8.5px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.5);
     text-align: center;
-    max-width: 74px;
-    line-height: 1.2;
   }
 
   .top-vibe.voted .tv-ph {
-    background: #CDFF4A;
-    border-color: #CDFF4A;
+    background: rgba(205,255,74,.9);
     color: #07070a;
-    box-shadow:
-      0 0 20px rgba(205,255,74,.55),
-      0 0 42px rgba(205,255,74,.22),
-      0 4px 14px rgba(0,0,0,.4),
-      inset 0 1px 0 rgba(255,255,255,.4);
+    border-color: rgba(205,255,74,.9);
   }
   .top-vibe.voted .tv-count { color: #CDFF4A; }
   .top-vibe.voted .tv-label { color: #CDFF4A; }
 
-  .tv-burst {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    border-radius: 50%;
-    overflow: visible;
-  }
-  .tv-particle {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: #CDFF4A;
-    box-shadow: 0 0 6px rgba(205,255,74,.9);
-    transform: translate(-50%,-50%);
-    animation: tvParticleFly .65s cubic-bezier(.2,.7,.3,1) forwards;
-  }
-  @keyframes tvParticleFly {
-    0%   { transform: translate(-50%,-50%) rotate(var(--a)) translateX(0)   scale(1); opacity: 1; }
-    70%  { opacity: 1; }
-    100% { transform: translate(-50%,-50%) rotate(var(--a)) translateX(34px) scale(0); opacity: 0; }
-  }
+  @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
+  .tv-count.pulse{animation:countPulse .45s ease;}
+  @keyframes triPulse{0%{transform:translateY(0);}40%{transform:translateY(-3px);}100%{transform:translateY(0);}}
+  .tv-ph svg.pulse{animation:triPulse .4s ease;}
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
@@ -612,28 +493,31 @@
               '<div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">' + t('watching') + '</span></div>' +
               '<div class="title-row">' +
                 '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
-                '<button class="share-icon" data-share aria-label="Share">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
-                    '<path d="M5.5 19 C 9 13, 12.5 9, 18 5"/>' +
-                    '<circle class="tip" cx="18" cy="5" r="2.3" fill="currentColor" stroke="none"/>' +
-                  '</svg>' +
-                '</button>' +
               '</div>' +
               '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
               placeHtml +
+              '<button class="loc-btn" data-loc data-location="' + escapeAttr(reel.location_coords || '') + '">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+                '<span data-i18n="loc_btn">' + t('loc_btn') + '</span>' +
+              '</button>' +
               '<div class="actions-row">' +
-                '<button class="top-vibe" data-top data-base="' + baseVotes + '" aria-label="' + t('top_vibe') + '">' +
+                '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
                   '<span class="tv-ph">' +
-                    '<svg class="tv-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">' +
-                      '<path class="tv-wave" d="M7 20 Q14 15 21 20"/>' +
-                      '<path class="tv-wave" d="M9 16 Q14 11.5 19 16"/>' +
-                      '<path class="tv-wave" d="M11 12 Q14 9 17 12"/>' +
-                      '<rect class="tv-beam" x="13" y="4" width="2" height="20" rx="1"/>' +
-                      '<path class="tv-spark" d="M20 4 L20.9 6 L22.9 6.9 L20.9 7.8 L20 9.8 L19.1 7.8 L17.1 6.9 L19.1 6 Z"/>' +
-                    '</svg>' +
+                    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L4 12h5v9h6v-9h5L12 3z"/></svg>' +
                   '</span>' +
                   '<span class="tv-count" data-count>' + totalVotes + '</span>' +
                   '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
+                '</button>' +
+                '<button class="share-btn" data-share aria-label="Share">' +
+                  '<span class="ico-ph">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>' +
+                      '<circle cx="9" cy="7" r="4"/>' +
+                      '<path d="M19 8v6"/>' +
+                      '<path d="M22 11h-6"/>' +
+                    '</svg>' +
+                  '</span>' +
+                  '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
                 '</button>' +
               '</div>' +
             '</div>';
@@ -960,67 +844,23 @@
         });
       }
 
-      function spawnVibeParticles(btn){
-        var host = btn.querySelector('.tv-ph');
-        if (!host) return;
-        var old = host.querySelector('.tv-burst');
-        if (old && old.parentNode) old.parentNode.removeChild(old);
-
-        var burst = document.createElement('div');
-        burst.className = 'tv-burst';
-        var total = 10;
-        for (var i = 0; i < total; i++) {
-          var p = document.createElement('span');
-          p.className = 'tv-particle';
-          p.style.setProperty('--a', ((360 / total) * i + 18) + 'deg');
-          p.style.animationDelay = (Math.random() * 60) + 'ms';
-          var size = 3 + Math.random() * 3;
-          p.style.width = size + 'px';
-          p.style.height = size + 'px';
-          burst.appendChild(p);
-        }
-        host.appendChild(burst);
-        setTimeout(function(){ if (burst.parentNode) burst.parentNode.removeChild(burst); }, 900);
-      }
-
       function bindTopBtns(){
         document.querySelectorAll('[data-top]').forEach(function(btn){
-          var pressTimer = null;
-
-          btn.addEventListener('pointerdown', function(){
-            btn.classList.add('pressing');
-            if (pressTimer) clearTimeout(pressTimer);
-            pressTimer = setTimeout(function(){
-              btn.classList.remove('pressing');
-              pressTimer = null;
-            }, 400);
-          });
-          ['pointerleave','pointercancel'].forEach(function(ev){
-            btn.addEventListener(ev, function(){
-              if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
-              btn.classList.remove('pressing');
-            });
-          });
-
           btn.addEventListener('click', async function(e){
             e.stopPropagation();
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : null; if (!id) return;
             var wasVoted = !!myTopSlides[id];
             var nowVoted = !wasVoted;
-
             if (nowVoted) {
               myTopSlides[id] = true;
               topCounts[id] = (topCounts[id] || 0) + 1;
               showToast(t('top_ok'));
-              spawnVibeParticles(btn);
               var cnt = btn.querySelector('[data-count]');
               if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
-              try {
-                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
-                  window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-                }
-              } catch(err){}
+              var tri = btn.querySelector('.tv-ph svg');
+              if (tri) { tri.classList.remove('pulse'); void tri.offsetWidth; tri.classList.add('pulse'); }
+              try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
             } else {
               delete myTopSlides[id];
               topCounts[id] = Math.max(0, (topCounts[id] || 0) - 1);
@@ -1034,6 +874,133 @@
               if (nowVoted) await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
               else await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
             } catch(err){}
+          });
+        });
+      }
+
+      function openYandexRoute(destCoords) {
+        if (!window.Telegram || !window.Telegram.WebApp) return;
+        var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
+        window.Telegram.WebApp.openLink(url);
+      }
+
+      function requestUserLocation() {
+        return new Promise(function(resolve, reject) {
+          var lm = window.Telegram?.WebApp?.LocationManager;
+
+          if (!lm) {
+            alert('Ошибка: LocationManager не найден в этом Telegram.');
+            reject('LocationManager not found');
+            return;
+          }
+
+          if (typeof lm.mount === 'function' && typeof lm.requestLocation === 'function') {
+            lm.mount().then(function() {
+              if (!lm.isSupported) {
+                alert('Ошибка: Геолокация не поддерживается на этом устройстве.');
+                reject('Not supported');
+                return;
+              }
+              if (lm.isAccessRequested) {
+                alert('Вы уже запрашивали геолокацию. Откроем настройки, чтобы включить её.');
+                lm.openSettings();
+                reject('Settings opened');
+                return;
+              }
+              lm.requestLocation().then(function(loc) {
+                if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
+                else reject('Denied');
+              }).catch(reject);
+            }).catch(function(e) {
+              alert('Ошибка инициализации: ' + e);
+              reject(e);
+            });
+            return;
+          }
+
+          if (typeof lm.init === 'function' && typeof lm.getLocation === 'function') {
+            lm.init(function() {
+              lm.getLocation(function(loc) {
+                if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
+                else reject('Denied');
+              });
+            });
+            return;
+          }
+
+          if (typeof lm.requestLocation === 'function') {
+            lm.requestLocation().then(function(loc) {
+              if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
+              else reject('Denied');
+            }).catch(reject);
+            return;
+          }
+
+          alert('Ошибка: В этом Telegram не найден подходящий метод для геолокации.');
+          reject('No suitable method');
+        });
+      }
+
+      async function saveUserLocation(lat, lng, reelId, reelTitle, reelPlace, destCoords) {
+        try {
+          var user = await authReady;
+          if (!user) return;
+
+          var tgUser = readTgUser();
+          var tgId = tgUser ? String(tgUser.id) : null;
+          var username = tgUser ? (tgUser.username || null) : null;
+          var firstName = tgUser ? (tgUser.first_name || null) : null;
+          var lastName = tgUser ? (tgUser.last_name || null) : null;
+          var profileUrl = tgUser ? buildProfileUrl(tgUser) : null;
+
+          const { error } = await supabaseClient.from('user_locations').insert([{
+            user_id: user.id,
+            tg_id: tgId,
+            username: username,
+            first_name: firstName,
+            last_name: lastName,
+            profile_url: profileUrl,
+            reel_id: reelId,
+            reel_title: reelTitle,
+            reel_place: reelPlace,
+            latitude: lat,
+            longitude: lng,
+            destination_coords: destCoords,
+            route_created_at: new Date().toISOString()
+          }]);
+          
+          if (error) console.warn('Ошибка Supabase:', error.message);
+          else showToast('Геопозиция сохранена');
+        } catch(e) {
+          console.warn('Критическая ошибка сохранения:', e);
+        }
+      }
+
+      function bindLocBtns() {
+        document.querySelectorAll('[data-loc]').forEach(function(btn) {
+          btn.addEventListener('click', async function(e) {
+            e.stopPropagation();
+            var slide = btn.closest('.slide');
+            var reelId = slide ? slide.dataset.id : null;
+            var destCoords = btn.getAttribute('data-location');
+            
+            var reelTitle = slide.querySelector('.title') ? slide.querySelector('.title').textContent.trim() : '';
+            var reelPlace = slide.querySelector('.place') ? slide.querySelector('.place').textContent.trim() : '';
+
+            if (!destCoords) { showToast('Адрес не указан'); return; }
+
+            var userAgreed = confirm('Для построения точного маршрута поделитесь вашей геопозицией.');
+            
+            if (userAgreed) {
+              try {
+                var userCoords = await requestUserLocation();
+                await saveUserLocation(userCoords.lat, userCoords.lng, reelId, reelTitle, reelPlace, destCoords);
+                openYandexRoute(destCoords);
+              } catch(err) {
+                console.log('GPS не получен:', err);
+                openYandexRoute(destCoords);
+              }
+            }
           });
         });
       }
@@ -1150,6 +1117,7 @@
         feed.classList.add('visible');
         layoutReels();
         
+        // Обработка deep link (startapp) ДО запуска observers
         var startParam = null;
         try {
           if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
@@ -1174,6 +1142,7 @@
         refreshTopUI();
         loadMyVotes();
         
+        // Скролл к нужному слайду (без scrollIntoView, только scrollTop)
         if (startIdx > 0) {
           setTimeout(function(){
             try {

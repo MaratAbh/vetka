@@ -1068,7 +1068,7 @@
             }
 
             // 3. Первый раз (или 'unknown') - спрашиваем
-            var userAgreed = confirm('Разрешить VETKA использовать вашу геопозицию? Это нужно один раз — чтобы строить маршруты и улучшать рекомендации.');
+            var userAgreed = confirm('Для построения точного маршрута поделитесь вашей геопозицией.');
             if (userAgreed) {
               try {
                 var coords2 = await requestUserLocation();

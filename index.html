@@ -14,7 +14,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<!-- Скрипт Telegram подключаем асинхронно, чтобы он не блокировал рендер -->
 <script>
   (function(){
     var s = document.createElement('script');
@@ -284,7 +283,6 @@
 
   <div class="toast" id="toast">Вайб продвинут ⬆️</div>
 
-  <!-- Переносим тяжелые скрипты в конец, чтобы они не блокировали загрузку интерфейса -->
   <script type="text/javascript" >
      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
      m[i].l=1*new Date();
@@ -880,7 +878,6 @@
         });
       }
 
-      // ====== ПОЛНЫЙ ТРЕКИНГ: ЮЗЕР + МЕСТО + КАРТЫ ======
       function openYandexRoute(destCoords) {
         if (!window.Telegram || !window.Telegram.WebApp) return;
         var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
@@ -1007,7 +1004,6 @@
           });
         });
       }
-      // ===========================================
 
       function bindHandlers(){
         bindSoundBtns();
@@ -1120,17 +1116,16 @@
         feedBooted = true;
         feed.classList.add('visible');
         layoutReels();
-        initIO();
-        initSlideViewsIO();
-        initViewerCounters();
         
-        // ПРОВЕРКА: Если открыли по ссылке (deep link), ищем нужный ролик
-        var startIdx = 0;
+        // Обработка deep link (startapp) ДО запуска observers
         var startParam = null;
         try {
-          startParam = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.start_param;
+          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+            startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
+          }
         } catch(e){}
         
+        var startIdx = 0;
         if (startParam) {
           for (var i = 0; i < slides.length; i++) {
             if (slides[i].dataset.id === startParam) {
@@ -1140,19 +1135,20 @@
           }
         }
 
+        initIO();
+        initSlideViewsIO();
+        initViewerCounters();
         setActiveSlide(startIdx);
         refreshTopUI();
         loadMyVotes();
         
-        // Если это deep link - плавно скроллим к нему (без ломки scroll-snap)
+        // Скролл к нужному слайду (без scrollIntoView, только scrollTop)
         if (startIdx > 0) {
           setTimeout(function(){
             try {
-              if (slides[startIdx]) {
-                slides[startIdx].scrollIntoView({ behavior: 'auto', block: 'start' });
-              }
+              if (feed) feed.scrollTop = startIdx * feed.clientHeight;
             } catch(e) {}
-          }, 200);
+          }, 250);
         }
       }
 

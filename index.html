@@ -27,9 +27,9 @@
 
 <style>
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;outline:none;border:0;}
-  html,body{background:#07070a;color:#fff;font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;height:100%;-webkit-font-smoothing:antialiased;color-scheme:dark;}
+  html,body{background:#07070a;color:#fff;font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;height:100%;-webkit-font-smoothing:antialiased;color-scheme:dark;overscroll-behavior:none;}
 
-  .onboarding{position:fixed;inset:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;}
+  .onboarding{position:fixed;inset:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;overscroll-behavior:none;}
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
   .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;opacity:0;animation:onbBgFade 1.2s .1s ease forwards;}
@@ -60,7 +60,7 @@
   .lang-switch button.active{background:#CDFF4A;color:#07070a;}
   .lang-switch button:active{transform:scale(.94);}
 
-  .feed{position:fixed;inset:0;height:100vh;height:100dvh;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;z-index:1;opacity:0;pointer-events:none;transition:opacity .25s ease;}
+  .feed{position:fixed;inset:0;height:100vh;height:100dvh;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;z-index:1;opacity:0;pointer-events:none;transition:opacity .25s ease;overscroll-behavior:none;}
   .feed.visible{opacity:1;pointer-events:auto;}
   .feed::-webkit-scrollbar{display:none;}
   .slide{position:relative;height:100vh;height:100dvh;width:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#000;}
@@ -72,20 +72,9 @@
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
   .sound-btn.on{color:rgba(255,255,255,.7);}
 
-  .live{
-    display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:500;
-    color:rgba(255,255,255,.85);
-    padding:0;
-    background:transparent;
-    border:none;
-    align-self:flex-start;
-    text-shadow:0 1px 4px rgba(0,0,0,.8);
-  }
-  .live .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.85);animation:pulse 1.8s ease-in-out infinite;}
-  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
-
   .live-top{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px;z-index:10;display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;color:#fff;padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.45);border:1px solid rgba(205,255,74,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none;box-shadow:0 0 12px rgba(205,255,74,.2);font-variant-numeric:tabular-nums;}
   .live-top .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);animation:pulse 1.8s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
   .live-top.old{color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.08);box-shadow:none;}
   .live-top.old .dot{display:none;}
   .live-top.hidden{display:none;}
@@ -152,6 +141,7 @@
     padding: 0;
     color: inherit;
   }
+  .top-vibe:disabled, .share-btn:disabled { opacity: .65; cursor: default; }
 
   .tv-ph, .ico-ph {
     width: 34px;
@@ -167,9 +157,9 @@
     color: #CDFF4A;
     transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
   }
-  
-  .top-vibe:active .tv-ph, .share-btn:active .ico-ph { 
-    transform: scale(.9); 
+
+  .top-vibe:active .tv-ph, .share-btn:active .ico-ph {
+    transform: scale(.9);
   }
 
   .tv-ph svg, .ico-ph svg {
@@ -178,12 +168,10 @@
     display: block;
   }
 
-  /* ===== Новый символ для кнопки «Топ вайб» ===== */
   .tv-ph .tv-icon{width:26px;height:26px;display:block;overflow:visible;}
   .tv-icon .tv-wave{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;transform-box:fill-box;transform-origin:center;transition:opacity .2s ease,transform .3s cubic-bezier(.4,0,.2,1);}
   .tv-icon .tv-beam{fill:currentColor;opacity:0;transform:scaleY(.05);transform-box:fill-box;transform-origin:center bottom;transition:opacity .2s ease,transform .3s cubic-bezier(.2,.9,.3,1.4);}
   .tv-icon .tv-spark{fill:currentColor;transform-box:fill-box;transform-origin:center;transition:transform .35s cubic-bezier(.2,.9,.3,1.4);}
-  /* =============================================== */
 
   .tv-count {
     font-family: 'Inter', sans-serif;
@@ -222,11 +210,13 @@
   .toast.show{opacity:1;transform:translate(-50%, 0);}
 
   .empty-state{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;z-index:4;pointer-events:none;opacity:0;transition:opacity .3s ease;}
-  .empty-state.visible{opacity:1;}
+  .empty-state.visible{opacity:1;pointer-events:auto;}
   .empty-state .es-icon{width:64px;height:64px;color:rgba(205,255,74,.35);margin-bottom:20px;}
   .empty-state .es-icon svg{width:100%;height:100%;}
   .empty-state .es-title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:20px;line-height:1.2;color:#fff;margin-bottom:10px;}
   .empty-state .es-text{font-size:13px;line-height:1.5;color:rgba(255,255,255,.45);max-width:28ch;}
+  .empty-state .retry-btn{margin-top:22px;padding:12px 28px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(205,255,74,.35);transition:transform .12s ease;}
+  .empty-state .retry-btn:active{transform:scale(.96);}
 </style>
 </head>
 <body>
@@ -284,13 +274,14 @@
         <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
       </svg>
     </div>
-    <div class="es-title">Пока пусто</div>
-    <div class="es-text">Скоро тут появятся рилсы. Загляни позже.</div>
+    <div class="es-title" id="esTitle">Пока пусто</div>
+    <div class="es-text" id="esText">Скоро тут появятся рилсы. Загляни позже.</div>
+    <button class="retry-btn" id="retryBtn" type="button" style="display:none;">Попробовать снова</button>
   </div>
 
   <div class="toast" id="toast">Вайб продвинут ⬆️</div>
 
-  <script type="text/javascript" >
+  <script type="text/javascript">
      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
      m[i].l=1*new Date();
      for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
@@ -304,10 +295,32 @@
 
   <script>
     (function(){
+      // ===== Telegram WebApp init (сразу, до всего) =====
+      (function initTg(){
+        function tryInit(){
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if (!tg) return false;
+          try { tg.ready(); } catch(e){}
+          try { tg.expand(); } catch(e){}
+          try { tg.setHeaderColor && tg.setHeaderColor('#07070a'); } catch(e){}
+          try { tg.setBackgroundColor && tg.setBackgroundColor('#07070a'); } catch(e){}
+          try { tg.disableVerticalSwipes && tg.disableVerticalSwipes(); } catch(e){}
+          try { tg.enableClosingConfirmation && tg.enableClosingConfirmation(); } catch(e){}
+          return true;
+        }
+        if (!tryInit()) {
+          var n = 0;
+          var iv = setInterval(function(){
+            n++;
+            if (tryInit() || n > 40) clearInterval(iv);
+          }, 100);
+        }
+      })();
+
       var I18N = {
-        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', watching:'смотрят прямо сейчас', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', loc_btn:'Смотреть маршрут', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', watching:'watching now', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', loc_btn:'View route', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', watching:'viendo ahora', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', loc_btn:'Ver ruta', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', loc_btn:'Смотреть маршрут', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', loc_btn:'View route', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', loc_btn:'Ver ruta', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -337,13 +350,29 @@
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
 
-      async function api(path, query){
-        var url = SUPABASE_URL + '/rest/v1/' + path;
-        if (query) url += '?' + query;
-        var r = await fetch(url, { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Accept': 'application/json' } });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
+      async function api(path, query, timeoutMs){
+        var ctrl = new AbortController();
+        var timer = setTimeout(function(){ try { ctrl.abort(); } catch(e){} }, timeoutMs || 12000);
+        try {
+          var url = SUPABASE_URL + '/rest/v1/' + path;
+          if (query) url += '?' + query;
+          var r = await fetch(url, {
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Accept': 'application/json' },
+            signal: ctrl.signal
+          });
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return await r.json();
+        } finally {
+          clearTimeout(timer);
+        }
       }
+
+      // NOTE (backend TODO): нужны RLS на таблицах reels/likes/user_locations/events.
+      // reels/likes - SELECT для всех; likes INSERT/DELETE только auth.uid() = user_id;
+      // user_locations INSERT/SELECT только auth.uid() = user_id;
+      // events INSERT только auth.uid() = user_id.
+      // Также TODO: верификация Telegram initData через HMAC на Edge Function
+      // перед записью в user_locations - иначе tg_id можно подделать с клиента.
 
       var appDataPromise = null;
       function fetchAppData() {
@@ -354,14 +383,14 @@
           try {
             rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
             if (!rows) rows = [];
-          } catch(e){ console.warn('reels error:', e); rows = []; }
+          } catch(e){ console.warn('reels error:', e); throw e; }
           try {
             var likesAll = await api('likes', 'select=slide_id');
             if (likesAll && likesAll.length) {
               likesAll.forEach(function(l){ if (l.slide_id) likesCount[l.slide_id] = (likesCount[l.slide_id] || 0) + 1; });
             }
           } catch(e){ console.warn('likes error:', e); }
-          
+
           rows.forEach(function(r){
             var base = parseInt(r.base_votes, 10) || 0;
             var real = likesCount[r.id] || 0;
@@ -370,6 +399,7 @@
           rows.sort(function(a, b){ return b.__total - a.__total; });
           return { reels: rows, likes: likesCount };
         })();
+        appDataPromise.catch(function(){ appDataPromise = null; });
         return appDataPromise;
       }
 
@@ -385,12 +415,13 @@
         return days + ' ' + t('day_ago');
       }
 
+      // LIVE-бейдж живёт 24 часа (по концепции "в течение суток лайв, потом просто рилс")
+      var LIVE_WINDOW_MS = 24 * 60 * 60 * 1000;
       function getBadgeState(iso){
         var diff = Date.now() - new Date(iso).getTime();
         if (diff < 0) return 'hidden';
-        if (diff < 2 * 60 * 60 * 1000) return 'live';
-        if (diff < 24 * 60 * 60 * 1000) return 'time';
-        return 'hidden';
+        if (diff < LIVE_WINDOW_MS) return 'live';
+        return 'time';
       }
 
       var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
@@ -417,6 +448,9 @@
 
       var feed = document.getElementById('feed');
       var emptyState = document.getElementById('emptyState');
+      var esTitle = document.getElementById('esTitle');
+      var esText = document.getElementById('esText');
+      var retryBtn = document.getElementById('retryBtn');
       var onboarding = document.getElementById('onboarding');
       var toast = document.getElementById('toast');
 
@@ -434,8 +468,8 @@
       var reelsLoaded = false;
       var onboardingDismissed = false;
       var feedBooted = false;
-      var viewerTimersStarted = false;
       var onboardingClosing = false;
+      var refreshing = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
@@ -449,22 +483,37 @@
         toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
       }
 
+      function showEmptyState(title, text, showRetry){
+        esTitle.textContent = title || 'Пока пусто';
+        esText.textContent = text || 'Скоро тут появятся рилсы. Загляни позже.';
+        if (showRetry) retryBtn.style.display = ''; else retryBtn.style.display = 'none';
+        emptyState.classList.add('visible');
+      }
+      function hideEmptyState(){ emptyState.classList.remove('visible'); }
+
       function escapeHtml(s){
         return String(s).replace(/[&<>"']/g, function(c){
           return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
         });
       }
-      function escapeAttr(s){ return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+      function escapeAttr(s){
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+      }
 
       function renderReels(reels){
         feed.innerHTML = '';
         if (!reels || reels.length === 0) {
-          emptyState.classList.add('visible');
+          showEmptyState('Пока пусто', 'Скоро тут появятся рилсы. Загляни позже.', false);
           slides = [];
           videoUrls = [];
           return;
         }
-        emptyState.classList.remove('visible');
+        hideEmptyState();
 
         reels.forEach(function(reel){
           var slide = document.createElement('div');
@@ -497,7 +546,6 @@
             '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
             '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
             '<div class="bottom">' +
-              '<div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">' + t('watching') + '</span></div>' +
               '<div class="title-row">' +
                 '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
               '</div>' +
@@ -679,7 +727,7 @@
             if (e.cancelable) e.preventDefault();
           }
         }
-        function onEnd(e){
+        function onEnd(){
           if (!dragging) return;
           dragging = false;
           onboarding.classList.remove('dragging');
@@ -708,7 +756,6 @@
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
         var onbIdx = 0, ONB_BATCH = 6;
-        var onbBg = document.getElementById('onbBg');
 
         var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
 
@@ -840,7 +887,7 @@
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : '';
             trackEvent('share', { slide_id: id });
-            
+
             var url = TG_MINIAPP_URL;
             if (id) url += '?startapp=' + encodeURIComponent(id);
 
@@ -848,8 +895,8 @@
               try {
                 var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(t('share_text'));
                 window.Telegram.WebApp.openTelegramLink(shareUrl);
-              } catch(err){ copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }); }
-              return;
+                return;
+              } catch(err){}
             }
             if (navigator.share) { navigator.share({ title: 'VETKA', text: t('share_text'), url: url }).catch(function(){ copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }); }); }
             else { copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }).catch(function(){ showToast('Не удалось скопировать'); }); }
@@ -861,96 +908,66 @@
         document.querySelectorAll('[data-top]').forEach(function(btn){
           btn.addEventListener('click', async function(e){
             e.stopPropagation();
+            if (btn.disabled) return;
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : null; if (!id) return;
+
+            btn.disabled = true;
             var wasVoted = !!myTopSlides[id];
             var nowVoted = !wasVoted;
-            if (nowVoted) {
-              myTopSlides[id] = true;
-              topCounts[id] = (topCounts[id] || 0) + 1;
-              showToast(t('top_ok'));
-              var cnt = btn.querySelector('[data-count]');
-              if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
-              var tri = btn.querySelector('.tv-ph svg');
-              if (tri) { tri.classList.remove('pulse'); void tri.offsetWidth; tri.classList.add('pulse'); }
-              try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
-            } else {
-              delete myTopSlides[id];
-              topCounts[id] = Math.max(0, (topCounts[id] || 0) - 1);
-              showToast(t('top_removed'));
-            }
-            refreshTopUI();
-            if (window.ym) { try { ym(113067752, 'reachGoal', 'top_vibe'); } catch(err){} }
-            trackEvent('top_vibe', { slide_id: id, voted: nowVoted });
+
             try {
-              var user = await authReady; if (!user) return;
-              if (nowVoted) await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
-              else await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
-            } catch(err){}
+              if (nowVoted) {
+                myTopSlides[id] = true;
+                topCounts[id] = (topCounts[id] || 0) + 1;
+                showToast(t('top_ok'));
+                var cnt = btn.querySelector('[data-count]');
+                if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
+                var tri = btn.querySelector('.tv-ph svg');
+                if (tri) { tri.classList.remove('pulse'); void tri.offsetWidth; tri.classList.add('pulse'); }
+                try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
+              } else {
+                delete myTopSlides[id];
+                topCounts[id] = Math.max(0, (topCounts[id] || 0) - 1);
+                showToast(t('top_removed'));
+              }
+              refreshTopUI();
+              if (window.ym) { try { ym(113067752, 'reachGoal', 'top_vibe'); } catch(err){} }
+              trackEvent('top_vibe', { slide_id: id, voted: nowVoted });
+
+              try {
+                var user = await authReady; if (!user) return;
+                if (nowVoted) await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
+                else await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
+              } catch(err){ console.warn('vote sync error:', err); }
+            } finally {
+              btn.disabled = false;
+            }
           });
         });
       }
 
       function openYandexRoute(destCoords) {
-        if (!window.Telegram || !window.Telegram.WebApp) return;
         var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
-        window.Telegram.WebApp.openLink(url);
+        try {
+          if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
+            window.Telegram.WebApp.openLink(url);
+            return;
+          }
+        } catch(e){}
+        try { window.open(url, '_blank', 'noopener,noreferrer'); } catch(e){ location.href = url; }
       }
 
+      // navigator.geolocation - стандартный браузерный API. Внутри Telegram работает
+      // (разрешение спросит ОС). LocationManager в публичном SDK Telegram НЕ существует.
       function requestUserLocation() {
-        return new Promise(function(resolve, reject) {
-          var lm = window.Telegram?.WebApp?.LocationManager;
-
-          if (!lm) {
-            alert('Ошибка: LocationManager не найден в этом Telegram.');
-            reject('LocationManager not found');
-            return;
-          }
-
-          if (typeof lm.mount === 'function' && typeof lm.requestLocation === 'function') {
-            lm.mount().then(function() {
-              if (!lm.isSupported) {
-                alert('Ошибка: Геолокация не поддерживается на этом устройстве.');
-                reject('Not supported');
-                return;
-              }
-              if (lm.isAccessRequested) {
-                alert('Вы уже запрашивали геолокацию. Откроем настройки, чтобы включить её.');
-                lm.openSettings();
-                reject('Settings opened');
-                return;
-              }
-              lm.requestLocation().then(function(loc) {
-                if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
-                else reject('Denied');
-              }).catch(reject);
-            }).catch(function(e) {
-              alert('Ошибка инициализации: ' + e);
-              reject(e);
-            });
-            return;
-          }
-
-          if (typeof lm.init === 'function' && typeof lm.getLocation === 'function') {
-            lm.init(function() {
-              lm.getLocation(function(loc) {
-                if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
-                else reject('Denied');
-              });
-            });
-            return;
-          }
-
-          if (typeof lm.requestLocation === 'function') {
-            lm.requestLocation().then(function(loc) {
-              if (loc) resolve({ lat: loc.latitude, lng: loc.longitude });
-              else reject('Denied');
-            }).catch(reject);
-            return;
-          }
-
-          alert('Ошибка: В этом Telegram не найден подходящий метод для геолокации.');
-          reject('No suitable method');
+        return new Promise(function(resolve, reject){
+          if (!navigator.geolocation) { reject(new Error('Geolocation not supported')); return; }
+          navigator.geolocation.getCurrentPosition(
+            function(p){ resolve({ lat: p.coords.latitude, lng: p.coords.longitude }); },
+            function(err){ reject(err); },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+          );
         });
       }
 
@@ -966,7 +983,9 @@
           var lastName = tgUser ? (tgUser.last_name || null) : null;
           var profileUrl = tgUser ? buildProfileUrl(tgUser) : null;
 
-          const { error } = await supabaseClient.from('user_locations').insert([{
+          // NOTE: tg_id берётся с клиента. Для продакшена нужна верификация
+          // initData на бэкенде (HMAC) + RLS, иначе tg_id можно подделать.
+          await supabaseClient.from('user_locations').insert([{
             user_id: user.id,
             tg_id: tgId,
             username: username,
@@ -979,13 +998,11 @@
             latitude: lat,
             longitude: lng,
             destination_coords: destCoords,
+            consent_given: true,
             route_created_at: new Date().toISOString()
           }]);
-          
-          if (error) console.warn('Ошибка Supabase:', error.message);
-          else showToast('Геопозиция сохранена');
         } catch(e) {
-          console.warn('Критическая ошибка сохранения:', e);
+          console.warn('saveUserLocation error:', e);
         }
       }
 
@@ -996,24 +1013,28 @@
             var slide = btn.closest('.slide');
             var reelId = slide ? slide.dataset.id : null;
             var destCoords = btn.getAttribute('data-location');
-            
+
             var reelTitle = slide.querySelector('.title') ? slide.querySelector('.title').textContent.trim() : '';
             var reelPlace = slide.querySelector('.place') ? slide.querySelector('.place').textContent.trim() : '';
 
             if (!destCoords) { showToast('Адрес не указан'); return; }
 
-            var userAgreed = confirm('Для построения точного маршрута поделитесь вашей геопозицией.');
-            
+            // Простое явное согласие. Для полноценной 152-ФЗ нужно отдельное
+            // окно с чекбоксом и ссылкой на политику + отзыв согласия.
+            var userAgreed = confirm(
+              'VETKA сохранит вашу геопозицию, чтобы построить маршрут до места и улучшить рекомендации. Продолжить?'
+            );
+
             if (userAgreed) {
               try {
                 var userCoords = await requestUserLocation();
                 await saveUserLocation(userCoords.lat, userCoords.lng, reelId, reelTitle, reelPlace, destCoords);
-                openYandexRoute(destCoords);
               } catch(err) {
-                console.log('GPS не получен:', err);
-                openYandexRoute(destCoords);
+                console.log('GPS not available:', err);
               }
             }
+            // Маршрут открываем в любом случае - геолокация не обязательна
+            openYandexRoute(destCoords);
           });
         });
       }
@@ -1035,58 +1056,6 @@
           var cnt = btn.querySelector('[data-count]'); if (cnt) cnt.textContent = total;
           if (myTopSlides[id]) btn.classList.add('voted'); else btn.classList.remove('voted');
         });
-      }
-
-      var VIEWERS_PEAK = 200;
-      var DAY_CURVE = [{h:0,v:0.15},{h:4,v:0.06},{h:6,v:0.10},{h:8,v:0.28},{h:10,v:0.42},{h:13,v:0.65},{h:16,v:0.72},{h:18,v:0.95},{h:20,v:1.00},{h:22,v:0.85},{h:24,v:0.15}];
-      function getDayFactor(){
-        var d = new Date(); var tt = d.getHours() + d.getMinutes()/60;
-        for (var i = 0; i < DAY_CURVE.length-1; i++) {
-          var a = DAY_CURVE[i], b = DAY_CURVE[i+1];
-          if (tt >= a.h && tt <= b.h) { var k = (tt-a.h)/(b.h-a.h); return a.v + (b.v-a.v)*k; }
-        }
-        return 0.15;
-      }
-      function targetFor(weight){ var base = VIEWERS_PEAK * getDayFactor() * weight; var noise = 1 + (Math.random()-0.5)*0.24; return Math.max(1, Math.round(base*noise)); }
-
-      function initViewerCounters(){
-        if (viewerTimersStarted) return;
-        viewerTimersStarted = true;
-        slides.forEach(function(s){
-          var lv = s.querySelector('.bottom .live');
-          if (!lv) return;
-          var w = parseFloat(lv.dataset.weight || '1') || 1;
-          var target = targetFor(w);
-          lv.dataset.current = target;
-          var el = lv.querySelector('[data-viewers]');
-          if (el) el.textContent = target;
-          (function(slide){
-            function scheduleNext(){
-              var delay = 6000 + Math.random()*8000;
-              setTimeout(function(){
-                if (!document.body.contains(slide)) return;
-                tickViewer(slide);
-                scheduleNext();
-              }, delay);
-            }
-            scheduleNext();
-          })(s);
-        });
-      }
-      function tickViewer(slide){
-        var lv = slide.querySelector('.bottom .live');
-        if (!lv) return;
-        var w = parseFloat(lv.dataset.weight || '1') || 1;
-        var cur = parseInt(lv.dataset.current || '0', 10) || 0;
-        var target = targetFor(w);
-        var diff = target - cur;
-        var step;
-        if (Math.abs(diff) >= 8) { var dir = diff > 0 ? 1 : -1; step = dir * (1 + Math.floor(Math.random()*3)); }
-        else { step = Math.random() < 0.65 ? (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random()*2)) : 0; }
-        var next = Math.max(1, cur + step);
-        lv.dataset.current = next;
-        var el = lv.querySelector('[data-viewers]');
-        if (el) el.textContent = next;
       }
 
       var currentIO = null;
@@ -1129,39 +1098,94 @@
         feedBooted = true;
         feed.classList.add('visible');
         layoutReels();
-        
-        // Обработка deep link (startapp) ДО запуска observers
+
         var startParam = null;
         try {
           if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
             startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
           }
         } catch(e){}
-        
+
         var startIdx = 0;
         if (startParam) {
           for (var i = 0; i < slides.length; i++) {
-            if (slides[i].dataset.id === startParam) {
-              startIdx = i;
-              break;
-            }
+            if (slides[i].dataset.id === startParam) { startIdx = i; break; }
           }
         }
 
+        currentIndex = startIdx;
         initIO();
         initSlideViewsIO();
-        initViewerCounters();
         setActiveSlide(startIdx);
         refreshTopUI();
-        loadMyVotes();
-        
-        // Скролл к нужному слайду (без scrollIntoView, только scrollTop)
+
         if (startIdx > 0) {
           setTimeout(function(){
-            try {
-              if (feed) feed.scrollTop = startIdx * feed.clientHeight;
-            } catch(e) {}
+            try { if (feed) feed.scrollTop = startIdx * feed.clientHeight; } catch(e){}
           }, 250);
+        }
+      }
+
+      // Периодическое обновление ленты: подтягиваем новые рилсы и голоса.
+      // Если состав ленты не изменился - просто обновляем счётчики.
+      async function refreshReels(){
+        if (refreshing) return;
+        if (!reelsLoaded) return;
+        if (document.hidden) return;
+        if (!onboardingDismissed) return;
+        refreshing = true;
+        try {
+          var rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
+          if (!rows) rows = [];
+          var likesAll = [];
+          try { likesAll = await api('likes', 'select=slide_id') || []; } catch(e){}
+          var newLikes = {};
+          likesAll.forEach(function(l){ if (l.slide_id) newLikes[l.slide_id] = (newLikes[l.slide_id] || 0) + 1; });
+
+          rows.forEach(function(r){
+            var base = parseInt(r.base_votes, 10) || 0;
+            r.__total = base + (newLikes[r.id] || 0);
+          });
+          rows.sort(function(a, b){ return b.__total - a.__total; });
+
+          var oldIds = slides.map(function(s){ return s.dataset.id; }).join('|');
+          var newIds = rows.map(function(r){ return r.id; }).join('|');
+
+          if (oldIds === newIds) {
+            topCounts = newLikes;
+            refreshTopUI();
+            return;
+          }
+
+          var curId = slides[currentIndex] ? slides[currentIndex].dataset.id : null;
+          if (currentIO) { currentIO.disconnect(); currentIO = null; }
+          if (slideIO) { slideIO.disconnect(); slideIO = null; }
+
+          topCounts = newLikes;
+          renderReels(rows);
+          reelsLoaded = true;
+
+          var newIdx = 0;
+          if (curId) {
+            for (var i = 0; i < slides.length; i++) {
+              if (slides[i].dataset.id === curId) { newIdx = i; break; }
+            }
+          }
+          currentIndex = newIdx;
+          initIO();
+          initSlideViewsIO();
+          setActiveSlide(newIdx);
+          refreshTopUI();
+
+          requestAnimationFrame(function(){
+            try { if (feed) feed.scrollTop = newIdx * feed.clientHeight; } catch(e){}
+          });
+
+          layoutReels();
+        } catch(e) {
+          console.warn('refresh error:', e);
+        } finally {
+          refreshing = false;
         }
       }
 
@@ -1172,7 +1196,6 @@
             var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
             if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });
           } catch(e){}
-          refreshTopUI();
         } catch(e){}
       }
 
@@ -1260,18 +1283,56 @@
       window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
       window.addEventListener('resize', layoutReels);
 
+      retryBtn.addEventListener('click', function(){
+        location.reload();
+      });
+
       authReady.then(function(u){
         if (!u) return;
         trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
-        setTimeout(function(){ trackEvent('visit', {}); }, 5000);
       });
 
-      fetchAppData().then(function(data){
-        topCounts = data.likes;
-        renderReels(data.reels);
-        reelsLoaded = true;
-        if (onboardingDismissed) bootFeed();
-      });
+      // ===== Инициализация ленты =====
+      async function initFeed(retryCount){
+        retryCount = retryCount || 0;
+        try {
+          var data = await fetchAppData();
+          topCounts = data.likes;
+          renderReels(data.reels);
+          reelsLoaded = true;
+
+          // Заранее подгружаем голоса пользователя, чтобы не было
+          // "флеша" кнопки Топ вайб при старте.
+          try {
+            var user = await Promise.race([
+              authReady,
+              new Promise(function(r){ setTimeout(function(){ r(null); }, 2500); })
+            ]);
+            if (user) {
+              try {
+                var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
+                if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });
+              } catch(e){}
+            }
+          } catch(e){}
+
+          refreshTopUI();
+
+          if (onboardingDismissed) bootFeed();
+
+          // Авто-обновление: новые рилсы и голоса каждые 60 сек
+          setInterval(refreshReels, 60000);
+
+        } catch (err) {
+          console.warn('initFeed error:', err);
+          if (retryCount < 3) {
+            setTimeout(function(){ initFeed(retryCount + 1); }, 1500 * (retryCount + 1));
+          } else {
+            showEmptyState('Не удалось загрузить', 'Проверьте соединение и попробуйте снова.', true);
+          }
+        }
+      }
+      initFeed(0);
 
     })();
   </script>

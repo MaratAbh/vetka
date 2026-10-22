@@ -284,6 +284,7 @@
 
   <div class="toast" id="toast">Вайб продвинут ⬆️</div>
 
+  <!-- Переносим тяжелые скрипты в конец, чтобы они не блокировали загрузку интерфейса -->
   <script type="text/javascript" >
      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
      m[i].l=1*new Date();
@@ -504,7 +505,7 @@
               '<div class="actions-row">' +
                 '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
                   '<span class="tv-ph">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 A 4 4 0 0 1 8 14"/><path d="M4 18 A 8 8 0 0 1 12 10"/><path d="M4 18 A 12 12 0 0 1 16 6"/><path d="M19 3 L20 5 L22 6 L20 7 L19 9 L18 7 L16 6 L18 5 Z" fill="currentColor" stroke="none"/></svg>' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 A 4 4 0 0 1 8 14"/><path d="M4 18 A 8 8 0 0 1 12 10"/><path d="M4 18 A 12 12 0 0 1 16 6"/><path d="M19 3 L20 5 L22 6 L20 7 L19 9 L18 7 L16 6 L18 5 Z" fill="currentColor" stroke="none"/></svg>' +
                   '</span>' +
                   '<span class="tv-count" data-count>' + totalVotes + '</span>' +
                   '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +

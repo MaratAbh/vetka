@@ -75,8 +75,6 @@
   .live-top{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px;z-index:10;display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;color:#fff;padding:5px 9px;border-radius:100px;background:rgba(0,0,0,.45);border:1px solid rgba(205,255,74,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none;box-shadow:0 0 12px rgba(205,255,74,.2);font-variant-numeric:tabular-nums;}
   .live-top .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);animation:pulse 1.8s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
-  .live-top.old{color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.08);box-shadow:none;}
-  .live-top.old .dot{display:none;}
   .live-top.hidden{display:none;}
 
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
@@ -295,7 +293,9 @@
 
   <script>
     (function(){
-      // ===== Telegram WebApp init (сразу, до всего) =====
+      // ===== Telegram WebApp init =====
+      // ВАЖНО: НЕ вызываем enableClosingConfirmation() - иначе Telegram
+      // показывает "Изменения могут быть потеряны" при каждом закрытии.
       (function initTg(){
         function tryInit(){
           var tg = window.Telegram && window.Telegram.WebApp;
@@ -305,7 +305,6 @@
           try { tg.setHeaderColor && tg.setHeaderColor('#07070a'); } catch(e){}
           try { tg.setBackgroundColor && tg.setBackgroundColor('#07070a'); } catch(e){}
           try { tg.disableVerticalSwipes && tg.disableVerticalSwipes(); } catch(e){}
-          try { tg.enableClosingConfirmation && tg.enableClosingConfirmation(); } catch(e){}
           return true;
         }
         if (!tryInit()) {
@@ -368,11 +367,7 @@
       }
 
       // NOTE (backend TODO): нужны RLS на таблицах reels/likes/user_locations/events.
-      // reels/likes - SELECT для всех; likes INSERT/DELETE только auth.uid() = user_id;
-      // user_locations INSERT/SELECT только auth.uid() = user_id;
-      // events INSERT только auth.uid() = user_id.
-      // Также TODO: верификация Telegram initData через HMAC на Edge Function
-      // перед записью в user_locations - иначе tg_id можно подделать с клиента.
+      // Также TODO: верификация Telegram initData через HMAC на Edge Function.
 
       var appDataPromise = null;
       function fetchAppData() {
@@ -415,13 +410,12 @@
         return days + ' ' + t('day_ago');
       }
 
-      // LIVE-бейдж живёт 24 часа (по концепции "в течение суток лайв, потом просто рилс")
       var LIVE_WINDOW_MS = 24 * 60 * 60 * 1000;
       function getBadgeState(iso){
         var diff = Date.now() - new Date(iso).getTime();
         if (diff < 0) return 'hidden';
         if (diff < LIVE_WINDOW_MS) return 'live';
-        return 'time';
+        return 'hidden';
       }
 
       var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
@@ -521,17 +515,11 @@
           slide.dataset.id = reel.id;
 
           var badgeState = getBadgeState(reel.published_at);
-          var badgeClass = 'live-top';
+          var badgeClass = 'live-top hidden';
           var badgeInner = '';
           if (badgeState === 'live') {
             badgeClass = 'live-top';
             badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
-          } else if (badgeState === 'time') {
-            badgeClass = 'live-top old';
-            badgeInner = '<span class="live-time">' + timeAgo(reel.published_at) + '</span>';
-          } else {
-            badgeClass = 'live-top hidden';
-            badgeInner = '';
           }
 
           var baseVotes = parseInt(reel.base_votes, 10) || 0;
@@ -607,13 +595,9 @@
           if (!pub) return;
 
           var state = getBadgeState(pub);
-
           if (state === 'live') {
             live.className = 'live-top';
             live.innerHTML = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(pub) + '</span>';
-          } else if (state === 'time') {
-            live.className = 'live-top old';
-            live.innerHTML = '<span class="live-time">' + timeAgo(pub) + '</span>';
           } else {
             live.className = 'live-top hidden';
             live.innerHTML = '';
@@ -958,8 +942,6 @@
         try { window.open(url, '_blank', 'noopener,noreferrer'); } catch(e){ location.href = url; }
       }
 
-      // navigator.geolocation - стандартный браузерный API. Внутри Telegram работает
-      // (разрешение спросит ОС). LocationManager в публичном SDK Telegram НЕ существует.
       function requestUserLocation() {
         return new Promise(function(resolve, reject){
           if (!navigator.geolocation) { reject(new Error('Geolocation not supported')); return; }
@@ -983,8 +965,6 @@
           var lastName = tgUser ? (tgUser.last_name || null) : null;
           var profileUrl = tgUser ? buildProfileUrl(tgUser) : null;
 
-          // NOTE: tg_id берётся с клиента. Для продакшена нужна верификация
-          // initData на бэкенде (HMAC) + RLS, иначе tg_id можно подделать.
           await supabaseClient.from('user_locations').insert([{
             user_id: user.id,
             tg_id: tgId,
@@ -1019,11 +999,8 @@
 
             if (!destCoords) { showToast('Адрес не указан'); return; }
 
-            // Простое явное согласие. Для полноценной 152-ФЗ нужно отдельное
-            // окно с чекбоксом и ссылкой на политику + отзыв согласия.
-            var userAgreed = confirm(
-              'VETKA сохранит вашу геопозицию, чтобы построить маршрут до места и улучшить рекомендации. Продолжить?'
-            );
+            // Прежний текст согласия
+            var userAgreed = confirm('Для построения точного маршрута поделитесь вашей геопозицией.');
 
             if (userAgreed) {
               try {
@@ -1033,7 +1010,7 @@
                 console.log('GPS not available:', err);
               }
             }
-            // Маршрут открываем в любом случае - геолокация не обязательна
+            // Маршрут открываем в любом случае
             openYandexRoute(destCoords);
           });
         });
@@ -1126,8 +1103,6 @@
         }
       }
 
-      // Периодическое обновление ленты: подтягиваем новые рилсы и голоса.
-      // Если состав ленты не изменился - просто обновляем счётчики.
       async function refreshReels(){
         if (refreshing) return;
         if (!reelsLoaded) return;
@@ -1292,7 +1267,6 @@
         trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
       });
 
-      // ===== Инициализация ленты =====
       async function initFeed(retryCount){
         retryCount = retryCount || 0;
         try {
@@ -1301,8 +1275,6 @@
           renderReels(data.reels);
           reelsLoaded = true;
 
-          // Заранее подгружаем голоса пользователя, чтобы не было
-          // "флеша" кнопки Топ вайб при старте.
           try {
             var user = await Promise.race([
               authReady,
@@ -1320,7 +1292,6 @@
 
           if (onboardingDismissed) bootFeed();
 
-          // Авто-обновление: новые рилсы и голоса каждые 60 сек
           setInterval(refreshReels, 60000);
 
         } catch (err) {

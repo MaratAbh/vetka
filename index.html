@@ -340,7 +340,6 @@
         return r.json();
       }
 
-      // ОПТИМИЗАЦИЯ: Запрашиваем данные 1 раз и кешируем Promise
       var appDataPromise = null;
       function fetchAppData() {
         if (appDataPromise) return appDataPromise;
@@ -831,7 +830,6 @@
             var id = slide ? slide.dataset.id : '';
             trackEvent('share', { slide_id: id });
             
-            // ДОБАВЛЕНО: передача ID ролика
             var url = TG_MINIAPP_URL;
             if (id) url += '?startapp=' + encodeURIComponent(id);
 
@@ -1126,13 +1124,13 @@
         initSlideViewsIO();
         initViewerCounters();
         
-        // ДОБАВЛЕНО: Обработка глубоких ссылок (start_param)
+        // ПРОВЕРКА: Если открыли по ссылке (deep link), ищем нужный ролик
+        var startIdx = 0;
         var startParam = null;
-        try { 
-          startParam = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.start_param; 
+        try {
+          startParam = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.start_param;
         } catch(e){}
         
-        var startIdx = 0;
         if (startParam) {
           for (var i = 0; i < slides.length; i++) {
             if (slides[i].dataset.id === startParam) {
@@ -1146,16 +1144,15 @@
         refreshTopUI();
         loadMyVotes();
         
+        // Если это deep link - плавно скроллим к нему (без ломки scroll-snap)
         if (startIdx > 0) {
           setTimeout(function(){
-             if (slides[startIdx]) {
-                feed.style.scrollSnapType = 'none'; // Отключаем привязку для мгновенной прокрутки
-                feed.scrollTop = startIdx * window.innerHeight;
-                setTimeout(function(){
-                  feed.style.scrollSnapType = ''; // Включаем обратно
-                }, 100);
-             }
-          }, 100);
+            try {
+              if (slides[startIdx]) {
+                slides[startIdx].scrollIntoView({ behavior: 'auto', block: 'start' });
+              }
+            } catch(e) {}
+          }, 200);
         }
       }
 
@@ -1261,7 +1258,6 @@
         setTimeout(function(){ trackEvent('visit', {}); }, 5000);
       });
 
-      // Запуск загрузки данных
       fetchAppData().then(function(data){
         topCounts = data.likes;
         renderReels(data.reels);

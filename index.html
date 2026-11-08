@@ -349,9 +349,9 @@
       })();
 
       var I18N = {
-        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', notify_btn:'Получить приглашение', notify_ok:'Готово! Пришлём в боте 🔔', notify_already:'Уже подписан на уведомления', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', notify_btn:'Get invitation', notify_ok:'Done! We\'ll ping you in the bot 🔔', notify_already:'Already subscribed', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', notify_btn:'Obtener invitación', notify_ok:'¡Listo! Te avisamos en el bot 🔔', notify_already:'Ya estás suscrito', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', notify_btn:'Следить за вайбом', notify_ok:'Готово! Пришлём в боте 🔔', notify_already:'Уже подписан на уведомления', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', notify_btn:'Follow this vibe', notify_ok:'Done! We\'ll ping you in the bot 🔔', notify_already:'Already subscribed', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', notify_btn:'Seguir este vibe', notify_ok:'¡Listo! Te avisamos en el bot 🔔', notify_already:'Ya estás suscrito', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -568,7 +568,10 @@
               '</div>' +
               '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
               placeHtml +
-              '<button class="loc-btn" data-notify type="button">' +
+              '<button class="loc-btn" data-notify type="button" ' +
+                'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+                'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+                'data-place="' + escapeAttr(reel.place || '') + '">' +
                 '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>' +
                 '<span data-i18n="notify_btn">' + t('notify_btn') + '</span>' +
               '</button>' +
@@ -771,7 +774,6 @@
 
         var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
 
-        // ===== Готовность: ждём все видео, но не дольше 3 секунд =====
         var onbReadyShown = false;
         var onbReadyCount = 0;
         var onbRequired = onbVids.length;
@@ -798,7 +800,6 @@
           v.addEventListener('error', fire, { once: true });
         }
 
-        // Страховка: не ждём дольше 3 секунд
         onbMaxWaitTimer = setTimeout(function(){
           console.warn('onboarding: fallback show after 3s, loaded', onbReadyCount, '/', onbRequired);
           showOnboardingReady();
@@ -1001,26 +1002,21 @@
         });
       }
 
-      // ===== Подписка на уведомления =====
+      // ===== Подписка на уведомления + запись в subscriptions =====
       var notifyInFlight = false;
-      async function subscribeNotify(btn){
+      async function subscribeNotify(btn, reelId, vibeTitle, place){
         if (notifyInFlight) return;
         notifyInFlight = true;
         if (btn) btn.disabled = true;
         try {
+          var user = await authReady;
+          if (!user) { showToast('Нужна авторизация'); return; }
+
           var tgUser = readTgUser();
           var tgId = tgUser ? String(tgUser.id) : null;
-          if (!tgId) {
-            showToast(t('notify_already'));
-            return;
-          }
+          if (!tgId) { showToast(t('notify_already')); return; }
 
-          var existing = await api('users', 'select=wants_notify&tg_id=eq.' + encodeURIComponent(tgId) + '&limit=1');
-          if (existing && existing[0] && existing[0].wants_notify === true) {
-            showToast(t('notify_already'));
-            return;
-          }
-
+          // 1) Флаг «хочет уведомления вообще»
           await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
             method: 'PATCH',
             headers: {
@@ -1032,8 +1028,28 @@
             body: JSON.stringify({ wants_notify: true })
           });
 
+          // 2) Подписка на конкретный вайб
+          if (reelId) {
+            await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                'Content-Type': 'application/json',
+                'Prefer': 'resolution=ignore-duplicates,return=minimal'
+              },
+              body: JSON.stringify([{
+                user_id: user.id,
+                tg_id: tgId,
+                reel_id: reelId,
+                vibe_title: vibeTitle || null,
+                place: place || null
+              }])
+            });
+          }
+
           showToast(t('notify_ok'));
-          trackEvent('notify_subscribe', {});
+          trackEvent('notify_subscribe', { reel_id: reelId, vibe_title: vibeTitle, place: place });
           if (window.ym) { try { ym(113067752, 'reachGoal', 'notify_subscribe'); } catch(err){} }
         } catch(err) {
           console.warn('subscribeNotify error:', err);
@@ -1049,7 +1065,10 @@
           btn.__bound = true;
           btn.addEventListener('click', function(e){
             e.stopPropagation();
-            subscribeNotify(btn);
+            var reelId = btn.getAttribute('data-reel-id') || null;
+            var vibeTitle = btn.getAttribute('data-vibe-title') || null;
+            var place = btn.getAttribute('data-place') || null;
+            subscribeNotify(btn, reelId, vibeTitle, place);
           });
         });
       }

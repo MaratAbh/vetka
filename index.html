@@ -130,8 +130,10 @@
     box-shadow: 0 4px 20px rgba(205,255,74,.35);
     transition: transform .12s ease, background .2s ease;
     -webkit-tap-highlight-color: transparent;
+    border: 0;
   }
   .loc-btn:active { transform: scale(.96); }
+  .loc-btn:disabled { opacity: .6; cursor: default; }
   .loc-btn svg { width: 16px; height: 16px; flex: none; }
 
   .actions-row {
@@ -347,9 +349,9 @@
       })();
 
       var I18N = {
-        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', loc_btn:'Смотреть маршрут', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', loc_btn:'View route', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', loc_btn:'Ver ruta', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', notify_btn:'Получить приглашение', notify_ok:'Готово! Пришлём в боте 🔔', notify_already:'Уже подписан на уведомления', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', notify_btn:'Get invitation', notify_ok:'Done! We\'ll ping you in the bot 🔔', notify_already:'Already subscribed', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', notify_btn:'Obtener invitación', notify_ok:'¡Listo! Te avisamos en el bot 🔔', notify_already:'Ya estás suscrito', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -566,9 +568,9 @@
               '</div>' +
               '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
               placeHtml +
-              '<button class="loc-btn" data-loc data-location="' + escapeAttr(reel.location_coords || '') + '">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
-                '<span data-i18n="loc_btn">' + t('loc_btn') + '</span>' +
+              '<button class="loc-btn" data-notify type="button">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>' +
+                '<span data-i18n="notify_btn">' + t('notify_btn') + '</span>' +
               '</button>' +
               '<div class="actions-row">' +
                 '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
@@ -769,10 +771,10 @@
 
         var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
 
-        // ===== Готовность: ждём ВСЕ видео, не только 2 =====
+        // ===== Готовность: ждём все видео, но не дольше 3 секунд =====
         var onbReadyShown = false;
         var onbReadyCount = 0;
-        var onbRequired = onbVids.length; // 12
+        var onbRequired = onbVids.length;
         var onbMaxWaitTimer = null;
 
         function showOnboardingReady(){
@@ -796,11 +798,11 @@
           v.addEventListener('error', fire, { once: true });
         }
 
-        // Страховка: если за 8 секунд не все загрузились — показываем что есть
+        // Страховка: не ждём дольше 3 секунд
         onbMaxWaitTimer = setTimeout(function(){
-          console.warn('onboarding: fallback show after 8s, loaded', onbReadyCount, '/', onbRequired);
+          console.warn('onboarding: fallback show after 3s, loaded', onbReadyCount, '/', onbRequired);
           showOnboardingReady();
-        }, 8000);
+        }, 3000);
 
         function loadOnbBatch(){
           if (!onboarding) return;
@@ -816,7 +818,6 @@
               try { v.setAttribute('preload','auto'); } catch(e){}
               v.src = url; try { v.load(); } catch(e){}
               var p = v.play(); if (p && p.catch) p.catch(function(){});
-              // Отслеживаем ВСЕ видео, а не только первые 4
               watchVideoReady(v);
             })(onbVids[targetIdx]);
           }
@@ -1000,211 +1001,55 @@
         });
       }
 
-      function openYandexRoute(destCoords) {
-        var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
+      // ===== Подписка на уведомления =====
+      var notifyInFlight = false;
+      async function subscribeNotify(btn){
+        if (notifyInFlight) return;
+        notifyInFlight = true;
+        if (btn) btn.disabled = true;
         try {
-          if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
-            window.Telegram.WebApp.openLink(url);
+          var tgUser = readTgUser();
+          var tgId = tgUser ? String(tgUser.id) : null;
+          if (!tgId) {
+            showToast(t('notify_already'));
             return;
           }
-        } catch(e){}
-        try { window.open(url, '_blank', 'noopener,noreferrer'); } catch(e){ location.href = url; }
-      }
 
-      var GEO_CACHE_KEY = 'vetka_geo_v1';
-      var GEO_CACHE_TTL = 30 * 60 * 1000;
-
-      function getCachedCoords() {
-        try {
-          var raw = localStorage.getItem(GEO_CACHE_KEY);
-          if (!raw) return null;
-          var c = JSON.parse(raw);
-          if (!c || typeof c.lat !== 'number' || typeof c.lng !== 'number') return null;
-          if (Date.now() - c.ts > GEO_CACHE_TTL) return null;
-          return { lat: c.lat, lng: c.lng };
-        } catch(e) { return null; }
-      }
-      function setCachedCoords(lat, lng) {
-        try { localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ lat: lat, lng: lng, ts: Date.now() })); } catch(e){}
-      }
-      function requestUserLocation() {
-        return new Promise(function(resolve, reject){
-          if (!navigator.geolocation) { reject(new Error('Geolocation not supported')); return; }
-          navigator.geolocation.getCurrentPosition(
-            function(p){ resolve({ lat: p.coords.latitude, lng: p.coords.longitude }); },
-            function(err){ reject(err); },
-            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-          );
-        });
-      }
-
-      var LOC_QUEUE_KEY = 'vetka_loc_queue_v1';
-      function uuid(){
-        try { if (crypto && crypto.randomUUID) return crypto.randomUUID(); } catch(e){}
-        return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
-      }
-      function readLocQueue() {
-        try { return JSON.parse(localStorage.getItem(LOC_QUEUE_KEY) || '[]'); } catch(e){ return []; }
-      }
-      function writeLocQueue(q) {
-        try { localStorage.setItem(LOC_QUEUE_KEY, JSON.stringify(q)); } catch(e){}
-      }
-      function removeFromQueueById(id) {
-        try {
-          var q = readLocQueue();
-          var filtered = q.filter(function(it){ return it.client_event_id !== id; });
-          if (filtered.length !== q.length) writeLocQueue(filtered);
-        } catch(e){}
-      }
-      function queueLocationItem(item) {
-        try {
-          var q = readLocQueue();
-          for (var i = 0; i < q.length; i++) { if (q[i].client_event_id === item.client_event_id) return; }
-          q.push(item);
-          if (q.length > 200) q = q.slice(-200);
-          writeLocQueue(q);
-        } catch(e) { console.warn('queueLocationItem fail:', e); }
-      }
-
-      async function flushLocationQueue() {
-        var q = readLocQueue();
-        if (!q.length) return;
-
-        var token = null;
-        var userId = null;
-        try {
-          var s = await supabaseClient.auth.getSession();
-          if (s && s.data && s.data.session && s.data.session.access_token) {
-            token = s.data.session.access_token;
-            userId = s.data.session.user.id;
+          var existing = await api('users', 'select=wants_notify&tg_id=eq.' + encodeURIComponent(tgId) + '&limit=1');
+          if (existing && existing[0] && existing[0].wants_notify === true) {
+            showToast(t('notify_already'));
+            return;
           }
-        } catch(e){}
 
-        if (!token) {
-          try {
-            var anon = await supabaseClient.auth.signInAnonymously();
-            if (anon.error) { console.warn('flush: anon fail', anon.error.message); return; }
-            var s2 = await supabaseClient.auth.getSession();
-            if (s2 && s2.data && s2.data.session) {
-              token = s2.data.session.access_token;
-              userId = s2.data.session.user.id;
-            }
-          } catch(e){ return; }
-        }
-        if (!token || !userId) return;
+          await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ wants_notify: true })
+          });
 
-        var tgUser = readTgUser();
-        q = readLocQueue();
-
-        for (var i = 0; i < q.length; i++) {
-          var it = q[i];
-          if (!it || !it.client_event_id) continue;
-          try {
-            var body = [{
-              client_event_id: it.client_event_id,
-              user_id: userId,
-              tg_id: tgUser ? String(tgUser.id) : null,
-              username: tgUser ? (tgUser.username || null) : null,
-              first_name: tgUser ? (tgUser.first_name || null) : null,
-              last_name: tgUser ? (tgUser.last_name || null) : null,
-              profile_url: tgUser ? buildProfileUrl(tgUser) : null,
-              reel_id: it.reel_id,
-              reel_title: it.reel_title,
-              reel_place: it.reel_place,
-              latitude: it.lat,
-              longitude: it.lng,
-              destination_coords: it.dest_coords,
-              consent_given: true,
-              geo_source: it.geo_source,
-              route_created_at: it.ts_iso
-            }];
-
-            var res = await fetch(SUPABASE_URL + '/rest/v1/user_locations', {
-              method: 'POST',
-              headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-              },
-              body: JSON.stringify(body),
-              keepalive: true
-            });
-
-            if (res.ok || res.status === 409) {
-              removeFromQueueById(it.client_event_id);
-            } else {
-              var txt = '';
-              try { txt = await res.text(); } catch(e){}
-              console.warn('flush failed:', res.status, txt);
-            }
-          } catch(e) {
-            console.warn('flush exception:', e);
-          }
+          showToast(t('notify_ok'));
+          trackEvent('notify_subscribe', {});
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'notify_subscribe'); } catch(err){} }
+        } catch(err) {
+          console.warn('subscribeNotify error:', err);
+        } finally {
+          notifyInFlight = false;
+          if (btn) btn.disabled = false;
         }
       }
 
-      function saveUserLocationAsync(lat, lng, reelId, reelTitle, reelPlace, destCoords, geoSource) {
-        var item = {
-          client_event_id: uuid(),
-          lat: (typeof lat === 'number' && isFinite(lat)) ? lat : null,
-          lng: (typeof lng === 'number' && isFinite(lng)) ? lng : null,
-          reel_id: reelId,
-          reel_title: reelTitle,
-          reel_place: reelPlace,
-          dest_coords: destCoords,
-          geo_source: geoSource || 'unknown',
-          ts_iso: new Date().toISOString(),
-          ts: Date.now()
-        };
-        queueLocationItem(item);
-        flushLocationQueue();
-      }
-
-      function bindLocBtns() {
-        document.querySelectorAll('[data-loc]').forEach(function(btn) {
-          btn.addEventListener('click', async function(e) {
+      function bindNotifyBtns(){
+        document.querySelectorAll('[data-notify]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', function(e){
             e.stopPropagation();
-            var slide = btn.closest('.slide');
-            var reelId = slide ? slide.dataset.id : null;
-            var destCoords = btn.getAttribute('data-location');
-            var reelTitle = slide.querySelector('.title') ? slide.querySelector('.title').textContent.trim() : '';
-            var reelPlace = slide.querySelector('.place') ? slide.querySelector('.place').textContent.trim() : '';
-
-            if (!destCoords) { showToast('Адрес не указан'); return; }
-
-            var cached = getCachedCoords();
-            if (cached) {
-              saveUserLocationAsync(cached.lat, cached.lng, reelId, reelTitle, reelPlace, destCoords, 'cache');
-              openYandexRoute(destCoords);
-              return;
-            }
-
-            var userAgreed = confirm('Для построения точного маршрута поделитесь вашей геопозицией.');
-            if (!userAgreed) {
-              saveUserLocationAsync(null, null, reelId, reelTitle, reelPlace, destCoords, 'user_declined');
-              openYandexRoute(destCoords);
-              return;
-            }
-
-            var coords = null;
-            try {
-              coords = await Promise.race([
-                requestUserLocation(),
-                new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('gps timeout')); }, 5000); })
-              ]);
-            } catch(err) {
-              console.log('GPS fail:', err && err.message ? err.message : err);
-            }
-
-            if (coords) {
-              setCachedCoords(coords.lat, coords.lng);
-              saveUserLocationAsync(coords.lat, coords.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
-            } else {
-              saveUserLocationAsync(null, null, reelId, reelTitle, reelPlace, destCoords, 'gps_failed');
-            }
-
-            openYandexRoute(destCoords);
+            subscribeNotify(btn);
           });
         });
       }
@@ -1213,7 +1058,7 @@
         bindSoundBtns();
         bindShareBtns();
         bindTopBtns();
-        bindLocBtns();
+        bindNotifyBtns();
       }
 
       function refreshTopUI(){
@@ -1439,11 +1284,7 @@
         if (document.hidden) { flushDwell(currentIndex); flushEvents(); }
         else { slideEnteredAt = Date.now(); }
       });
-      window.addEventListener('pagehide', function(){
-        flushDwell(currentIndex);
-        flushEvents();
-        flushLocationQueue();
-      });
+      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
       window.addEventListener('resize', layoutReels);
 
       retryBtn.addEventListener('click', function(){ location.reload(); });
@@ -1477,9 +1318,6 @@
           refreshTopUI();
           if (onboardingDismissed) bootFeed();
           setInterval(refreshReels, 60000);
-
-          setTimeout(flushLocationQueue, 10000);
-          setInterval(flushLocationQueue, 60000);
 
         } catch (err) {
           console.warn('initFeed error:', err);

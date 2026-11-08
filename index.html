@@ -187,9 +187,6 @@
   .title:empty{display:none;}
   .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);min-height:0;}
   .meta:empty{display:none;}
-  .meta .item{display:inline-flex;align-items:center;gap:5px;}
-  .meta i{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.35);}
-  .meta .price{color:#CDFF4A;font-weight:600;}
   .actions-row{display:flex;gap:8px;align-items:center;}
   .cta{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 0 24px rgba(205,255,74,.35);white-space:nowrap;flex:1;}
   .cta svg{width:14px;height:14px;flex:none;}
@@ -310,369 +307,13 @@
     </div>
   </div>
 
-  <div class="feed visible" id="feed">
-
-    <div class="slide" id="r1" data-id="r1">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184103_639.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="side">
-        <button class="metric" data-like data-base="52">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>52</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
-        <button class="metric invite" data-share>
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M19 8v6"/><path d="M22 11h-6"/>
-            </svg>
-          </div>
-          <div class="lbl" data-i18n="invite">пригласить</div>
-        </button>
-      </div>
-      <div class="bottom">
-        <div class="live" data-weight="1.0"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
-        <div class="title" data-vibe-title></div>
-        <div class="meta" data-vibe-subtitle></div>
-        <div class="org-badge">
-          <div class="org-avatar"><div class="inner">L</div></div>
-          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r2" data-id="r2">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184153_248-compressed.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="side">
-        <button class="metric" data-like data-base="43">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>43</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
-        <button class="metric invite" data-share>
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M19 8v6"/><path d="M22 11h-6"/>
-            </svg>
-          </div>
-          <div class="lbl" data-i18n="invite">пригласить</div>
-        </button>
-      </div>
-      <div class="bottom">
-        <div class="live" data-weight="0.8"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
-        <div class="title" data-vibe-title></div>
-        <div class="meta" data-vibe-subtitle></div>
-        <div class="org-badge">
-          <div class="org-avatar"><div class="inner">L</div></div>
-          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r3" data-id="r3">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184611_967-compressed.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="side">
-        <button class="metric" data-like data-base="28">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>28</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
-        <button class="metric invite" data-share>
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M19 8v6"/><path d="M22 11h-6"/>
-            </svg>
-          </div>
-          <div class="lbl" data-i18n="invite">пригласить</div>
-        </button>
-      </div>
-      <div class="bottom">
-        <div class="live" data-weight="1.1"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
-        <div class="title" data-vibe-title></div>
-        <div class="meta" data-vibe-subtitle></div>
-        <div class="org-badge">
-          <div class="org-avatar"><div class="inner">L</div></div>
-          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r4" data-id="r4">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_184200_749.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="side">
-        <button class="metric" data-like data-base="72">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>72</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
-        <button class="metric invite" data-share>
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M19 8v6"/><path d="M22 11h-6"/>
-            </svg>
-          </div>
-          <div class="lbl" data-i18n="invite">пригласить</div>
-        </button>
-      </div>
-      <div class="bottom">
-        <div class="live" data-weight="1.4"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
-        <div class="title" data-vibe-title></div>
-        <div class="meta" data-vibe-subtitle></div>
-        <div class="org-badge">
-          <div class="org-avatar"><div class="inner">L</div></div>
-          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r5" data-id="r5">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/%D0%9C%D0%BE%D0%B9%20%D1%84%D0%B8%D0%BB%D1%8C%D0%BC%2017-compressed.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="side">
-        <button class="metric" data-like data-base="64">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>64</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
-        <button class="metric invite" data-share>
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M19 8v6"/><path d="M22 11h-6"/>
-            </svg>
-          </div>
-          <div class="lbl" data-i18n="invite">пригласить</div>
-        </button>
-      </div>
-      <div class="bottom">
-        <div class="live" data-weight="0.75"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
-        <div class="title" data-vibe-title></div>
-        <div class="meta" data-vibe-subtitle></div>
-        <div class="org-badge">
-          <div class="org-avatar"><div class="inner">L</div></div>
-          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r6" data-id="r6">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_162746_363.mp4.mov" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="side">
-        <button class="metric" data-like data-base="19">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>19</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
-        <button class="metric invite" data-share>
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M19 8v6"/><path d="M22 11h-6"/>
-            </svg>
-          </div>
-          <div class="lbl" data-i18n="invite">пригласить</div>
-        </button>
-      </div>
-      <div class="bottom">
-        <div class="live" data-weight="1.15"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
-        <div class="title" data-vibe-title></div>
-        <div class="meta" data-vibe-subtitle></div>
-        <div class="org-badge">
-          <div class="org-avatar"><div class="inner">L</div></div>
-          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r7" data-id="r7">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/YouCut_20261002_153045891-compressed.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="side">
-        <button class="metric" data-like data-base="12">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>12</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
-        <button class="metric invite" data-share>
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M19 8v6"/><path d="M22 11h-6"/>
-            </svg>
-          </div>
-          <div class="lbl" data-i18n="invite">пригласить</div>
-        </button>
-      </div>
-      <div class="bottom">
-        <div class="live" data-weight="0.85"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
-        <div class="title" data-vibe-title></div>
-        <div class="meta" data-vibe-subtitle></div>
-        <div class="org-badge">
-          <div class="org-avatar"><div class="inner">L</div></div>
-          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="slide" id="r8" data-id="r8">
-      <div class="video">
-        <video data-src="https://storage.yandexcloud.net/vetkaevets/VID_20261002_163137_406.mp4" loop playsinline preload="none" muted></video>
-      </div>
-      <div class="veil"></div>
-      <div class="sound-btn" data-sound-btn>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>
-        </svg>
-      </div>
-      <div class="side">
-        <button class="metric" data-like data-base="29">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
-          <div class="num" data-count>29</div>
-          <div class="lbl" data-i18n="want_go">хочу пойти</div>
-        </button>
-        <button class="metric invite" data-share>
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M19 8v6"/><path d="M22 11h-6"/>
-            </svg>
-          </div>
-          <div class="lbl" data-i18n="invite">пригласить</div>
-        </button>
-      </div>
-      <div class="bottom">
-        <div class="live" data-weight="0.9"><span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">смотрят прямо сейчас</span></div>
-        <div class="title" data-vibe-title></div>
-        <div class="meta" data-vibe-subtitle></div>
-        <div class="org-badge">
-          <div class="org-avatar"><div class="inner">L</div></div>
-          <div class="org-info"><div class="org-name">LaVidaLoca</div></div>
-        </div>
-        <div class="actions-row">
-          <a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>
-            <span data-i18n="buy_ticket">Купить билет</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-  </div>
+  <div class="feed visible" id="feed"></div>
 
   <div class="profile-screen" id="profile">
     <div class="profile-scroll">
-
       <div class="profile-hero">
         <div class="hero-bg"></div>
         <div class="hero-veil"></div>
-
         <div class="profile-topnav">
           <div class="back" id="closeProfile">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -683,7 +324,6 @@
             </svg>
           </div>
         </div>
-
         <div class="hero-content">
           <div class="hero-avatar"><div class="inner">Б</div></div>
           <div class="name-row">
@@ -703,9 +343,7 @@
           </button>
         </div>
       </div>
-
       <div class="org-feed">
-
         <article class="post">
           <div class="post-head">
             <div class="post-avatar"><div class="inner">Б</div></div>
@@ -718,12 +356,10 @@
             <div class="post-title">Пятница выдалась громкой</div>
           </div>
         </article>
-
         <article class="post post-text">
           <div class="quote">«Мы не знали что сказать — просто <em>орали со сцены</em>. И зал орал вместе с нами.»</div>
           <div class="by">— гость вечера</div>
         </article>
-
         <article class="post">
           <div class="post-head">
             <div class="post-avatar"><div class="inner">Б</div></div>
@@ -741,7 +377,6 @@
             <div class="post-title">Нас не остановить</div>
           </div>
         </article>
-
         <article class="post">
           <div class="post-head">
             <div class="post-avatar"><div class="inner">Б</div></div>
@@ -754,40 +389,11 @@
             <div class="post-title">Музыкальное лото — тот самый момент</div>
           </div>
         </article>
-
         <article class="post post-text">
           <div class="quote">Пришёл один, ушёл с <em>компанией</em>. Тут это как-то само.</div>
           <div class="by">— гость вечера</div>
         </article>
-
-        <article class="post">
-          <div class="post-head">
-            <div class="post-avatar"><div class="inner">Б</div></div>
-            <div class="post-user">антресоль&перец<span>3 дня назад</span></div>
-          </div>
-          <div class="post-media">
-            <video src="https://storage.yandexcloud.net/vetkaevets/1000033487-compressed.mp4" muted loop playsinline preload="metadata"></video>
-          </div>
-          <div class="post-caption">
-            <div class="post-title">Проверка материала. Каждый вечер — новое</div>
-          </div>
-        </article>
-
-        <article class="post">
-          <div class="post-head">
-            <div class="post-avatar"><div class="inner">Б</div></div>
-            <div class="post-user">антресоль&перец<span>неделю назад</span></div>
-          </div>
-          <div class="post-media">
-            <img src="https://picsum.photos/id/1057/800/1000" alt="">
-          </div>
-          <div class="post-caption">
-            <div class="post-title">Атмосфера, которая не отпускает</div>
-          </div>
-        </article>
-
       </div>
-
     </div>
   </div>
 
@@ -795,7 +401,7 @@
 
   <script>
     (function(){
-      // ====== i18n (RU / EN / ES) ======
+      // ====== i18n ======
       var I18N = {
         ru: {
           onboard_tag:  'Выбери поток событий под свой вайб — <em>а мы подскажем, куда пойти</em>',
@@ -863,15 +469,11 @@
           else b.classList.remove('active');
         }
 
-        if (APP_SETTINGS.mode === 'archive' || APP_SETTINGS.mode === 'teaser') {
-          var ctaTxts = document.querySelectorAll('[data-cta] [data-i18n="buy_ticket"]');
-          for (var k = 0; k < ctaTxts.length; k++) {
-            ctaTxts[k].textContent = t('notify_btn');
-          }
-        }
+        // Обновить тексты CTA (архивный режим)
+        refreshCTAText();
       }
 
-      // ====== TELEGRAM MINI APP ======
+      // ====== TELEGRAM ======
       var TG_MINIAPP_URL = 'https://t.me/vetkaevent_bot';
 
       function readTgUserFromHash(){
@@ -912,35 +514,18 @@
 
       var feed = document.getElementById('feed');
       var onboarding = document.getElementById('onboarding');
+      var toast = document.getElementById('toast');
+      var profile = document.getElementById('profile');
+      var closeBtn = document.getElementById('closeProfile');
+      var followBtn = document.getElementById('followBtn');
 
-      // ====== НАСТРОЙКИ ПРИЛОЖЕНИЯ ======
-      var APP_SETTINGS = {
-        mode: 'live',
-        cta_text: null,
-        cta_url: null
-      };
+      // ====== НАСТРОЙКИ ======
+      var APP_SETTINGS = { mode: 'live', cta_text: null, cta_url: null };
 
       function applyAppSettings(s){
         if (!s) return;
         APP_SETTINGS = Object.assign({}, APP_SETTINGS, s);
-
-        var ctaBtns = document.querySelectorAll('[data-cta]');
-        var isArchive = s.mode === 'archive' || s.mode === 'teaser';
-        for (var i = 0; i < ctaBtns.length; i++) {
-          var btn = ctaBtns[i];
-          var txt = btn.querySelector('[data-i18n="buy_ticket"]');
-          if (txt) {
-            if (isArchive) txt.textContent = t('notify_btn');
-            else if (s.cta_text) txt.textContent = s.cta_text;
-          }
-          if (isArchive) {
-            btn.removeAttribute('href');
-            btn.removeAttribute('target');
-          } else if (s.cta_url) {
-            btn.setAttribute('href', s.cta_url);
-            btn.setAttribute('target', '_blank');
-          }
-        }
+        refreshCTAText();
       }
 
       async function loadAppSettings(){
@@ -950,52 +535,114 @@
         } catch(e){ console.warn('settings load error', e); }
       }
 
-      // ====== ВАЙБЫ (slides_config) ======
-      // Теперь подтягиваем из базы и video_url тоже.
-      async function loadSlidesConfig(){
-        try {
-          var rows = await api('slides_config', 'select=slide_id,vibe_title,vibe_subtitle,video_url&is_active=eq.true&order=sort_order.asc');
-          if (!rows || !rows.length) return;
-          var map = {};
-          rows.forEach(function(r){ map[r.slide_id] = r; });
-
-          slides.forEach(function(slide, idx){
-            var id = slide.dataset.id;
-            var cfg = map[id];
-            if (!cfg) return;
-
-            var tEl = slide.querySelector('[data-vibe-title]');
-            var sEl = slide.querySelector('[data-vibe-subtitle]');
-            if (tEl && cfg.vibe_title)    tEl.textContent = cfg.vibe_title;
-            if (sEl && cfg.vibe_subtitle) sEl.textContent = cfg.vibe_subtitle;
-
-            // Видео из базы (если задано и отличается от текущего)
-            if (cfg.video_url && cfg.video_url !== videoUrls[idx]) {
-              var newUrl = cfg.video_url;
-              videoUrls[idx] = newUrl;
-
-              var existing = getVideo(idx);
-              if (existing) {
-                if (idx === currentIndex && !existing.paused) {
-                  reviveVideo(idx, true);
-                } else {
-                  try {
-                    existing.muted = true;
-                    existing.pause();
-                    existing.removeAttribute('src');
-                    existing.load();
-                  } catch(e){}
-                  existing.src = newUrl;
-                  existing.dataset.src = newUrl;
-                  try { existing.load(); } catch(e){}
-                }
-              }
-            }
-          });
-        } catch(e){ console.warn('slides_config load error', e); }
+      function refreshCTAText(){
+        var ctaBtns = feed.querySelectorAll('[data-cta]');
+        var isArchive = APP_SETTINGS.mode === 'archive' || APP_SETTINGS.mode === 'teaser';
+        for (var i = 0; i < ctaBtns.length; i++) {
+          var btn = ctaBtns[i];
+          var txt = btn.querySelector('[data-i18n="buy_ticket"]');
+          if (txt) {
+            if (isArchive) txt.textContent = t('notify_btn');
+            else if (APP_SETTINGS.cta_text) txt.textContent = APP_SETTINGS.cta_text;
+            else txt.textContent = t('buy_ticket');
+          }
+          if (isArchive) {
+            btn.removeAttribute('href');
+            btn.removeAttribute('target');
+          } else {
+            btn.setAttribute('href', APP_SETTINGS.cta_url || 'https://qtickets.ru/event/260719');
+            btn.setAttribute('target', '_blank');
+          }
+        }
       }
 
-      // ====== БАЗОВАЯ РАБОТА С ВИДЕО ======
+      // ====== SUPABASE ======
+      var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
+      var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
+
+      async function api(path, query){
+        var url = SUPABASE_URL + '/rest/v1/' + path;
+        if (query) url += '?' + query;
+        var r = await fetch(url, {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Accept': 'application/json'
+          }
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      }
+
+      var STORAGE_KEY = EARLY_TG_ID
+        ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID
+        : 'sb-rlkjsjgktyltvxnfyski-auth-token';
+
+      var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { detectSessionInUrl: false, persistSession: true, autoRefreshToken: true, storageKey: STORAGE_KEY }
+      });
+
+      function readTgId(){ var u = readTgUser(); return u ? String(u.id) : null; }
+      function getAnonId(){
+        var key = EARLY_TG_ID ? 'vetka_anon_id_' + EARLY_TG_ID : 'vetka_anon_id';
+        var id = null;
+        try { id = localStorage.getItem(key); } catch(e){}
+        if (!id) {
+          id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+          try { localStorage.setItem(key, id); } catch(e){}
+        }
+        return id;
+      }
+
+      var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+
+      var authReady = (async function(){
+        var hasStored = false;
+        try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
+        if (hasStored) {
+          for (var i = 0; i < 15; i++) {
+            try {
+              var s = await supabaseClient.auth.getSession();
+              if (s.data && s.data.session && s.data.session.user) return s.data.session.user;
+            } catch(e){}
+            await new Promise(function(r){ setTimeout(r, 200); });
+          }
+        }
+        try {
+          var r = await supabaseClient.auth.signInAnonymously();
+          if (r.error) { console.warn('Auth error:', r.error); return null; }
+          return r.data.user;
+        } catch(e) { console.warn('Auth error:', e); return null; }
+      })();
+
+      // ====== СОСТОЯНИЕ ======
+      var slides = [];
+      var videoUrls = [];
+      var currentIndex = 0;
+      var slideEnteredAt = 0;
+      var soundEnabled = false;
+      var soundBtns = [];
+      var myLikedSlides = {};
+      var likeCounts = {};
+      var scrollEndTracked = false;
+      var trackedSlideViews = {};
+
+      // ====== ESCAPE ======
+      function escapeHtml(s){
+        return String(s).replace(/[&<>"']/g, function(c){
+          return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
+        });
+      }
+      function escapeAttr(s){
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+      }
+
+      // ====== ВИДЕО ======
       function layoutReels(){
         var vh = window.innerHeight;
         if (!vh || vh < 100) return;
@@ -1004,25 +651,7 @@
         for (var i = 0; i < allSlides.length; i++) allSlides[i].style.height = vh + 'px';
       }
 
-      var WINDOW_BACK = 1;
-      var WINDOW_FWD  = 2;
-
-      var slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
-
-      var videoUrls = [];
-      slides.forEach(function(s, i){
-        var v = s.querySelector('video');
-        videoUrls[i] = v ? (v.dataset.src || v.getAttribute('src') || null) : null;
-        if (v && v.parentNode) {
-          try {
-            v.muted = true;
-            v.pause();
-            v.removeAttribute('src');
-            v.load();
-            v.parentNode.removeChild(v);
-          } catch(e){}
-        }
-      });
+      var WINDOW_FWD = 2;
 
       function getVideo(idx){
         if (idx < 0 || idx >= slides.length) return null;
@@ -1137,7 +766,6 @@
             try { v0.currentTime = 0; } catch(e){}
           }
         }
-
         var cur = getVideo(idx);
         if (!cur) {
           rebuildVideoFor(idx, false, false);
@@ -1151,200 +779,41 @@
             if (!soundEnabled) return;
             try { cur.muted = false; cur.volume = 1; } catch(e){}
           };
-          if (p && p.then) {
-            p.then(unmute).catch(function(){});
-          } else {
-            requestAnimationFrame(unmute);
-          }
+          if (p && p.then) { p.then(unmute).catch(function(){}); }
+          else { requestAnimationFrame(unmute); }
         }
-
         for (var k = 1; k <= WINDOW_FWD; k++) {
           var ni = idx + k;
           if (ni < slides.length) rebuildVideoFor(ni, false, true);
         }
-
         armWatchdog(idx);
       }
 
-      // ====== ОНБОРДИНГ ======
-      if (onboarding) {
-        var startY = 0, currentY = 0, dragging = false;
-        var THRESHOLD = 70;
-
-        function onStart(e){
-          var t = e.touches ? e.touches[0] : e;
-          startY = t.clientY;
-          currentY = startY;
-          dragging = true;
-          onboarding.classList.add('dragging');
-        }
-        function onMove(e){
-          if (!dragging) return;
-          var t = e.touches ? e.touches[0] : e;
-          currentY = t.clientY;
-          var delta = currentY - startY;
-          if (delta < 0) {
-            onboarding.style.transform = 'translateY(' + delta + 'px)';
-            if (e.cancelable) e.preventDefault();
-          }
-        }
-        function onEnd(){
-          if (!dragging) return;
-          dragging = false;
-          onboarding.classList.remove('dragging');
-          var delta = currentY - startY;
-          if (delta < -THRESHOLD) {
-            onboarding.style.transform = '';
-            onboarding.classList.add('gone');
-
-            var onbVids = onboarding.querySelectorAll('video');
-            for (var i = 0; i < onbVids.length; i++) {
-              try { onbVids[i].muted = true; } catch(e){}
-              try { onbVids[i].pause(); } catch(e){}
-              try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
-            }
-
-            layoutReels();
-            slideEnteredAt = Date.now();
-            setActiveSlide(0);
-            setTimeout(function(){
-              if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-              onboarding = null;
-            }, 600);
-          } else {
-            onboarding.style.transform = '';
-          }
-        }
-
-        onboarding.addEventListener('touchstart', onStart, {passive:true});
-        onboarding.addEventListener('touchmove', onMove, {passive:false});
-        onboarding.addEventListener('touchend', onEnd);
-        onboarding.addEventListener('touchcancel', onEnd);
-
-        onboarding.addEventListener('mousedown', onStart);
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onEnd);
-
-        var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0;
-        var ONB_BATCH = 3;
-
-        function loadOnbBatch(){
-          if (!onboarding) return;
-          var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
-          for (; onbIdx < end; onbIdx++) {
-            (function(v){
-              if (!v || v.dataset.started) return;
-              v.dataset.started = '1';
-              var url = v.dataset.src;
-              if (!url) return;
-              v.muted = true;
-              v.setAttribute('muted','');
-              v.setAttribute('playsinline','');
-              v.setAttribute('webkit-playsinline','');
-              v.setAttribute('autoplay','');
-              try { v.setAttribute('preload','auto'); } catch(e){}
-              v.src = url;
-              try { v.load(); } catch(e){}
-              var p = v.play();
-              if (p && p.catch) p.catch(function(){});
-            })(onbVids[onbIdx]);
-          }
-          if (onbIdx < onbVids.length) {
-            setTimeout(loadOnbBatch, 500);
-          }
-        }
-        loadOnbBatch();
-
-        var kickAll = function(){
-          if (!onboarding) return;
-          onboarding.querySelectorAll('video').forEach(function(v){
-            if (v.paused) {
-              var p = v.play();
-              if (p && p.catch) p.catch(function(){});
-            }
-          });
-        };
-        onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
-        onboarding.addEventListener('click', kickAll, {once:true});
-
-        var langBtns = document.querySelectorAll('[data-lang]');
-        for (var li = 0; li < langBtns.length; li++) {
-          (function(b){
-            b.addEventListener('click', function(e){
-              e.stopPropagation();
-              applyLang(b.getAttribute('data-lang'));
-            });
-            b.addEventListener('touchstart', function(e){ e.stopPropagation(); }, {passive:true});
-            b.addEventListener('touchend', function(e){ e.stopPropagation(); });
-          })(langBtns[li]);
-        }
-      }
-
-      applyLang(currentLang);
-
-      // ====== ОСТАЛЬНАЯ ЛОГИКА ======
-      var soundBtns = feed.querySelectorAll('[data-sound-btn]');
-      var soundEnabled = false;
-      var profile = document.getElementById('profile');
-      var openBtns = document.querySelectorAll('[data-open-profile]');
-      var closeBtn = document.getElementById('closeProfile');
-      var scrollEndTracked = false;
-      var currentIndex = 0;
-      var slideEnteredAt = 0;
-      var toast = document.getElementById('toast');
-
-      function flushDwell(idx){
-        if (idx < 0 || idx >= slides.length) return;
-        if (!slideEnteredAt) return;
-        var dur = Date.now() - slideEnteredAt;
-        slideEnteredAt = 0;
-        if (dur < 500 || dur > 30 * 60 * 1000) return;
-        var slideId = slides[idx].dataset.id;
-        if (slideId) trackEvent('slide_dwell', { slide_id: slideId, duration_ms: dur });
-      }
-
-      var myLikedSlides = {};
-      var likeCounts = {};
-
+      // ====== VIEWERS ======
       var VIEWERS_PEAK = 200;
       var DAY_CURVE = [
-        {h: 0,  v: 0.15},
-        {h: 4,  v: 0.06},
-        {h: 6,  v: 0.10},
-        {h: 8,  v: 0.28},
-        {h: 10, v: 0.42},
-        {h: 13, v: 0.65},
-        {h: 16, v: 0.72},
-        {h: 18, v: 0.95},
-        {h: 20, v: 1.00},
-        {h: 22, v: 0.85},
-        {h: 24, v: 0.15}
+        {h: 0, v:0.15},{h:4,v:0.06},{h:6,v:0.10},{h:8,v:0.28},{h:10,v:0.42},
+        {h:13,v:0.65},{h:16,v:0.72},{h:18,v:0.95},{h:20,v:1.00},{h:22,v:0.85},{h:24,v:0.15}
       ];
-
       function getDayFactor(){
         var d = new Date();
-        var t = d.getHours() + d.getMinutes() / 60;
+        var tt = d.getHours() + d.getMinutes() / 60;
         for (var i = 0; i < DAY_CURVE.length - 1; i++) {
           var a = DAY_CURVE[i], b = DAY_CURVE[i+1];
-          if (t >= a.h && t <= b.h) {
-            var k = (t - a.h) / (b.h - a.h);
+          if (tt >= a.h && tt <= b.h) {
+            var k = (tt - a.h) / (b.h - a.h);
             return a.v + (b.v - a.v) * k;
           }
         }
         return 0.15;
       }
-
       function targetFor(weight){
-        var factor = getDayFactor();
-        var base = VIEWERS_PEAK * factor * weight;
+        var base = VIEWERS_PEAK * getDayFactor() * weight;
         var noise = 1 + (Math.random() - 0.5) * 0.24;
-        var n = Math.round(base * noise);
-        return Math.max(1, n);
+        return Math.max(1, Math.round(base * noise));
       }
-
       function initViewerCounters(){
-        slides.forEach(function(s, i){
+        slides.forEach(function(s){
           var live = s.querySelector('.live');
           if (!live) return;
           var w = parseFloat(live.dataset.weight || '1') || 1;
@@ -1352,7 +821,6 @@
           live.dataset.current = target;
           var el = live.querySelector('[data-viewers]');
           if (el) el.textContent = target;
-
           (function(slide){
             function scheduleNext(){
               var delay = 6000 + Math.random() * 8000;
@@ -1365,7 +833,6 @@
           })(s);
         });
       }
-
       function tickViewer(slide){
         var live = slide.querySelector('.live');
         if (!live) return;
@@ -1374,7 +841,6 @@
         var target = targetFor(w);
         var diff = target - cur;
         var step;
-
         if (Math.abs(diff) >= 8) {
           var dir = diff > 0 ? 1 : -1;
           step = dir * (1 + Math.floor(Math.random() * 3));
@@ -1391,33 +857,7 @@
         if (el) el.textContent = next;
       }
 
-      initViewerCounters();
-
-      var io = new IntersectionObserver(function(entries){
-        var best = null, bestRatio = 0;
-        entries.forEach(function(e){
-          if (e.isIntersecting && e.intersectionRatio > bestRatio) {
-            bestRatio = e.intersectionRatio;
-            best = e.target;
-          }
-        });
-        if (best && bestRatio > 0.55) {
-          var idx = slides.indexOf(best);
-          if (idx !== -1 && idx !== currentIndex) {
-            flushDwell(currentIndex);
-            currentIndex = idx;
-            slideEnteredAt = Date.now();
-            setActiveSlide(idx);
-            if (idx === slides.length - 1 && !scrollEndTracked) {
-              scrollEndTracked = true;
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'scroll_end'); } catch(err){} }
-              trackEvent('scroll_end', { slide_id: slides[idx].dataset.id });
-            }
-          }
-        }
-      }, { root: feed, threshold: [0.1, 0.55, 0.9] });
-      slides.forEach(function(s){ io.observe(s); });
-
+      // ====== SOUND ======
       function updateIcons(){
         soundBtns.forEach(function(btn){
           var svg = btn.querySelector('svg');
@@ -1437,9 +877,7 @@
         var v = getVideo(currentIndex);
         if (v) {
           var p = v.play();
-          var unmute = function(){
-            try { v.muted = false; v.volume = 1; } catch(e){}
-          };
+          var unmute = function(){ try { v.muted = false; v.volume = 1; } catch(e){} };
           if (p && p.then) { p.then(unmute).catch(function(){}); }
           else { unmute(); }
         }
@@ -1451,72 +889,8 @@
         var v = getVideo(currentIndex);
         if (v) { try { v.muted = true; } catch(e){} }
       }
-      soundBtns.forEach(function(btn){
-        btn.addEventListener('click', function(e){
-          e.stopPropagation();
-          if (soundEnabled) disableSound(); else enableSound();
-        });
-      });
-      updateIcons();
 
-      // ====== ПОДПИСКА НА УВЕДОМЛЕНИЯ ======
-      var notifyInFlight = false;
-      async function subscribeNotify(){
-        if (notifyInFlight) return;
-        notifyInFlight = true;
-        try {
-          var tgUser = readTgUser();
-          var tgId = tgUser ? String(tgUser.id) : null;
-          if (!tgId) { showToast(t('notify_already')); return; }
-
-          var existing = await api('users', 'select=wants_notify&tg_id=eq.' + encodeURIComponent(tgId) + '&limit=1');
-          if (existing && existing[0] && existing[0].wants_notify === true) {
-            showToast(t('notify_already'));
-            notifyInFlight = false;
-            return;
-          }
-
-          await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
-            method: 'PATCH',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify({ wants_notify: true })
-          });
-
-          showToast(t('notify_ok'));
-          trackEvent('notify_subscribe', {});
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'notify_subscribe'); } catch(err){} }
-        } catch(e) {
-          console.warn('subscribeNotify error:', e);
-          showToast('—');
-        } finally {
-          notifyInFlight = false;
-        }
-      }
-
-      // ====== ОБРАБОТКА CTA ======
-      document.querySelectorAll('[data-cta]').forEach(function(btn){
-        btn.addEventListener('click', function(e){
-          var slide = btn.closest('.slide');
-          var slideId = slide ? slide.dataset.id : null;
-          var isArchive = APP_SETTINGS.mode === 'archive' || APP_SETTINGS.mode === 'teaser';
-
-          if (isArchive) {
-            e.preventDefault();
-            subscribeNotify();
-            return;
-          }
-
-          trackEvent('cta_click', { slide_id: slideId });
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'cta_click'); } catch(err){} }
-        });
-      });
-
-      // ====== ЛАЙКИ / ШЕРИНГ / ПРОФИЛЬ / SUPABASE / TRACKING ======
+      // ====== LIKES UI ======
       function refreshLikeUI(){
         slides.forEach(function(slide){
           var id = slide.dataset.id;
@@ -1548,39 +922,6 @@
         });
       }
 
-      document.querySelectorAll('[data-like]').forEach(function(btn){
-        btn.addEventListener('click', async function(e){
-          e.stopPropagation();
-          var slide = btn.closest('.slide');
-          var id = slide ? slide.dataset.id : null;
-          if (!id) return;
-          var wasLiked = !!myLikedSlides[id];
-          var nowLiked = !wasLiked;
-
-          if (nowLiked) {
-            myLikedSlides[id] = true;
-            likeCounts[id] = (likeCounts[id] || 0) + 1;
-          } else {
-            delete myLikedSlides[id];
-            likeCounts[id] = Math.max(0, (likeCounts[id] || 0) - 1);
-          }
-          refreshLikeUI();
-
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'want_go'); } catch(err){} }
-          trackEvent('like', { slide_id: id, liked: nowLiked });
-
-          try {
-            var user = await authReady;
-            if (!user) return;
-            if (nowLiked) {
-              await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
-            } else {
-              await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
-            }
-          } catch(err){ console.warn('like db error:', err); }
-        });
-      });
-
       async function loadLikesFromSupabase(){
         try {
           var user = await authReady;
@@ -1605,6 +946,7 @@
         } catch(e){ console.warn('loadLikes error:', e); }
       }
 
+      // ====== TOAST ======
       var toastTimer;
       function showToast(text){
         if (!toast) return;
@@ -1626,152 +968,312 @@
           } catch(e){ reject(e); }
         });
       }
-      document.querySelectorAll('[data-share]').forEach(function(btn){
-        btn.addEventListener('click', function(e){
-          e.stopPropagation();
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'invite'); } catch(err){} }
-          var slide = btn.closest('.slide');
-          var id = slide ? slide.dataset.id : '';
-          trackEvent('invite', { slide_id: id });
 
-          var url = TG_MINIAPP_URL;
-
-          if (window.Telegram && window.Telegram.WebApp) {
-            try {
-              var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(t('share_text'));
-              window.Telegram.WebApp.openTelegramLink(shareUrl);
-            } catch(err){
-              copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
-            }
+      // ====== NOTIFY ======
+      var notifyInFlight = false;
+      async function subscribeNotify(){
+        if (notifyInFlight) return;
+        notifyInFlight = true;
+        try {
+          var tgUser = readTgUser();
+          var tgId = tgUser ? String(tgUser.id) : null;
+          if (!tgId) { showToast(t('notify_already')); return; }
+          var existing = await api('users', 'select=wants_notify&tg_id=eq.' + encodeURIComponent(tgId) + '&limit=1');
+          if (existing && existing[0] && existing[0].wants_notify === true) {
+            showToast(t('notify_already'));
+            notifyInFlight = false;
             return;
           }
-
-          if (navigator.share) {
-            navigator.share({ title: 'VETKA', text: t('share_text'), url: url }).catch(function(){
-              copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
-            });
-          } else {
-            copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }).catch(function(){ showToast('Не удалось скопировать'); });
-          }
-        });
-      });
-
-      function openByHash(){
-        var hash = location.hash.replace('#', '');
-        if (!hash) return false;
-        var target = document.getElementById(hash);
-        if (!target) return false;
-        setTimeout(function(){
-          try { target.scrollIntoView({behavior: 'auto', block: 'start'}); } catch(e){
-            target.scrollIntoView();
-          }
-        }, 80);
-        return true;
-      }
-
-      function openProfile(){
-        if (window.ym) { try { ym(113067752, 'reachGoal', 'open_profile'); } catch(err){} }
-        trackUser('profile_view');
-        trackEvent('profile_open', {});
-        profile.classList.add('open');
-        flushDwell(currentIndex);
-        for (var i = 0; i < slides.length; i++) {
-          var v = getVideo(i);
-          if (v) { try { v.muted = true; v.pause(); } catch(e){} }
+          await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ wants_notify: true })
+          });
+          showToast(t('notify_ok'));
+          trackEvent('notify_subscribe', {});
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'notify_subscribe'); } catch(err){} }
+        } catch(e) {
+          console.warn('subscribeNotify error:', e);
+          showToast('—');
+        } finally {
+          notifyInFlight = false;
         }
       }
-      function closeProfile(){
-        profile.classList.remove('open');
+
+      // ====== BIND SLIDE HANDLERS ======
+      function bindSlideHandlers(){
+        // Sound
+        soundBtns = feed.querySelectorAll('[data-sound-btn]');
+        soundBtns.forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', function(e){
+            e.stopPropagation();
+            if (soundEnabled) disableSound(); else enableSound();
+          });
+        });
+        updateIcons();
+
+        // Like
+        feed.querySelectorAll('[data-like]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', async function(e){
+            e.stopPropagation();
+            var slide = btn.closest('.slide');
+            var id = slide ? slide.dataset.id : null;
+            if (!id) return;
+            var wasLiked = !!myLikedSlides[id];
+            var nowLiked = !wasLiked;
+            if (nowLiked) {
+              myLikedSlides[id] = true;
+              likeCounts[id] = (likeCounts[id] || 0) + 1;
+            } else {
+              delete myLikedSlides[id];
+              likeCounts[id] = Math.max(0, (likeCounts[id] || 0) - 1);
+            }
+            refreshLikeUI();
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'want_go'); } catch(err){} }
+            trackEvent('like', { slide_id: id, liked: nowLiked });
+            try {
+              var user = await authReady;
+              if (!user) return;
+              if (nowLiked) {
+                await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
+              } else {
+                await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
+              }
+            } catch(err){ console.warn('like db error:', err); }
+          });
+        });
+
+        // Share
+        feed.querySelectorAll('[data-share]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', function(e){
+            e.stopPropagation();
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'invite'); } catch(err){} }
+            var slide = btn.closest('.slide');
+            var id = slide ? slide.dataset.id : '';
+            trackEvent('invite', { slide_id: id });
+
+            var url = TG_MINIAPP_URL;
+
+            if (window.Telegram && window.Telegram.WebApp) {
+              try {
+                var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(t('share_text'));
+                window.Telegram.WebApp.openTelegramLink(shareUrl);
+              } catch(err){
+                copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
+              }
+              return;
+            }
+
+            if (navigator.share) {
+              navigator.share({ title: 'VETKA', text: t('share_text'), url: url }).catch(function(){
+                copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); });
+              });
+            } else {
+              copyToClipboard(url).then(function(){ showToast('Ссылка скопирована'); }).catch(function(){ showToast('Не удалось скопировать'); });
+            }
+          });
+        });
+
+        // CTA
+        feed.querySelectorAll('[data-cta]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', function(e){
+            var slide = btn.closest('.slide');
+            var slideId = slide ? slide.dataset.id : null;
+            var isArchive = APP_SETTINGS.mode === 'archive' || APP_SETTINGS.mode === 'teaser';
+            if (isArchive) {
+              e.preventDefault();
+              subscribeNotify();
+              return;
+            }
+            trackEvent('cta_click', { slide_id: slideId });
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'cta_click'); } catch(err){} }
+          });
+        });
+      }
+
+      // ====== RENDER REELS ======
+      function renderReels(reels){
+        feed.innerHTML = '';
+        if (!reels || !reels.length) {
+          slides = []; videoUrls = [];
+          return;
+        }
+
+        reels.forEach(function(reel){
+          var slide = document.createElement('div');
+          slide.className = 'slide';
+          slide.dataset.id = reel.id;
+
+          var baseVotes = parseInt(reel.base_votes, 10) || 0;
+          var vibeTitle = reel.vibe_title || '';
+          var vibeSubtitle = reel.vibe_subtitle || '';
+          var weight = (1.0 + Math.random() * 0.5).toFixed(2);
+
+          slide.innerHTML =
+            '<div class="video">' +
+              '<video data-src="' + escapeAttr(reel.video_url || '') + '" loop playsinline preload="none" muted></video>' +
+            '</div>' +
+            '<div class="veil"></div>' +
+            '<div class="sound-btn" data-sound-btn>' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/>' +
+              '</svg>' +
+            '</div>' +
+            '<div class="side">' +
+              '<button class="metric" data-like data-base="' + baseVotes + '">' +
+                '<div class="ico">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>' +
+                  '</svg>' +
+                '</div>' +
+                '<div class="num" data-count>' + baseVotes + '</div>' +
+                '<div class="lbl" data-i18n="want_go">' + t('want_go') + '</div>' +
+              '</button>' +
+              '<button class="metric invite" data-share>' +
+                '<div class="ico">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>' +
+                    '<circle cx="9" cy="7" r="4"/>' +
+                    '<path d="M19 8v6"/><path d="M22 11h-6"/>' +
+                  '</svg>' +
+                '</div>' +
+                '<div class="lbl" data-i18n="invite">' + t('invite') + '</div>' +
+              '</button>' +
+            '</div>' +
+            '<div class="bottom">' +
+              '<div class="live" data-weight="' + weight + '">' +
+                '<span class="dot"></span><span data-viewers>—</span>&nbsp;<span data-i18n="watching">' + t('watching') + '</span>' +
+              '</div>' +
+              '<div class="title" data-vibe-title>' + escapeHtml(vibeTitle) + '</div>' +
+              '<div class="meta" data-vibe-subtitle>' + escapeHtml(vibeSubtitle) + '</div>' +
+              '<div class="org-badge">' +
+                '<div class="org-avatar"><div class="inner">L</div></div>' +
+                '<div class="org-info"><div class="org-name">LaVidaLoca</div></div>' +
+              '</div>' +
+              '<div class="actions-row">' +
+                '<a class="cta" data-cta href="https://qtickets.ru/event/260719" target="_blank">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/>' +
+                  '</svg>' +
+                  '<span data-i18n="buy_ticket">' + t('buy_ticket') + '</span>' +
+                '</a>' +
+              '</div>' +
+            '</div>';
+
+          feed.appendChild(slide);
+        });
+
+        slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
+        videoUrls = [];
+        slides.forEach(function(s, i){
+          var v = s.querySelector('video');
+          videoUrls[i] = v ? (v.dataset.src || null) : null;
+          if (v && v.parentNode) {
+            try {
+              v.muted = true;
+              v.pause();
+              v.removeAttribute('src');
+              v.load();
+              v.parentNode.removeChild(v);
+            } catch(e){}
+          }
+        });
+
+        bindSlideHandlers();
+        refreshCTAText();
+        refreshLikeUI();
+        initViewerCounters();
+        initObservers();
+        layoutReels();
+
+        try { feed.scrollTop = 0; feed.scrollTo(0, 0); } catch(e){}
+
+        currentIndex = 0;
         slideEnteredAt = Date.now();
-        setActiveSlide(currentIndex);
-      }
-      openBtns.forEach(function(btn){
-        btn.addEventListener('click', function(e){ e.stopPropagation(); openProfile(); });
-      });
-      closeBtn.addEventListener('click', function(e){ e.stopPropagation(); closeProfile(); });
+        setActiveSlide(0);
 
-      var followBtn = document.getElementById('followBtn');
-      var followed = false;
-      followBtn.addEventListener('click', function(){
-        followed = !followed;
-        if (window.ym) { try { ym(113067752, 'reachGoal', 'follow'); } catch(err){} }
-        trackUser('follow', { orgName: 'БАЗА' });
-        trackEvent('follow', { following: followed });
-        if (followed) {
-          followBtn.classList.add('followed');
-          followBtn.querySelector('span').textContent = 'Вы подписаны';
-          followBtn.querySelector('svg').innerHTML = '<path d="M20 6L9 17l-5-5"/>';
-        } else {
-          followBtn.classList.remove('followed');
-          followBtn.querySelector('span').textContent = 'Подписаться';
-          followBtn.querySelector('svg').innerHTML = '<path d="M12 5v14"/><path d="M5 12h14"/>';
+        var n = Math.min(3, slides.length);
+        for (var i = 0; i < n; i++) {
+          if (!getVideo(i)) rebuildVideoFor(i, false, true);
         }
-      });
 
-      var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
-      var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
+        openByHash();
+      }
 
-      async function api(path, query){
-        var url = SUPABASE_URL + '/rest/v1/' + path;
-        if (query) url += '?' + query;
-        var r = await fetch(url, {
-          headers: {
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-            'Accept': 'application/json'
+      // ====== OBSERVERS ======
+      var io = null;
+      var slideIO = null;
+
+      function initObservers(){
+        if (io) io.disconnect();
+        io = new IntersectionObserver(function(entries){
+          var best = null, bestRatio = 0;
+          entries.forEach(function(e){
+            if (e.isIntersecting && e.intersectionRatio > bestRatio) {
+              bestRatio = e.intersectionRatio;
+              best = e.target;
+            }
+          });
+          if (best && bestRatio > 0.55) {
+            var idx = slides.indexOf(best);
+            if (idx !== -1 && idx !== currentIndex) {
+              flushDwell(currentIndex);
+              currentIndex = idx;
+              slideEnteredAt = Date.now();
+              setActiveSlide(idx);
+              if (idx === slides.length - 1 && !scrollEndTracked) {
+                scrollEndTracked = true;
+                if (window.ym) { try { ym(113067752, 'reachGoal', 'scroll_end'); } catch(err){} }
+                trackEvent('scroll_end', { slide_id: slides[idx].dataset.id });
+              }
+            }
           }
-        });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
+        }, { root: feed, threshold: [0.1, 0.55, 0.9] });
+        slides.forEach(function(s){ io.observe(s); });
+
+        if (slideIO) slideIO.disconnect();
+        slideIO = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            if (e.isIntersecting && e.intersectionRatio > 0.5) {
+              var slideId = e.target.dataset.id;
+              if (slideId && !trackedSlideViews[slideId]) {
+                trackedSlideViews[slideId] = true;
+                trackEvent('slide_view', { slide_id: slideId });
+              }
+            }
+          });
+        }, { root: feed, threshold: [0, 0.55, 0.9] });
+        slides.forEach(function(s){ slideIO.observe(s); });
       }
 
-      var STORAGE_KEY = EARLY_TG_ID
-        ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID
-        : 'sb-rlkjsjgktyltvxnfyski-auth-token';
-
-      var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        auth: { detectSessionInUrl: false, persistSession: true, autoRefreshToken: true, storageKey: STORAGE_KEY }
-      });
-
-      function readTgId(){
-        var u = readTgUser();
-        return u ? String(u.id) : null;
-      }
-      function getAnonId(){
-        var key = EARLY_TG_ID ? 'vetka_anon_id_' + EARLY_TG_ID : 'vetka_anon_id';
-        var id = null;
-        try { id = localStorage.getItem(key); } catch(e){}
-        if (!id) {
-          id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now() + '-' + Math.random().toString(36).slice(2));
-          try { localStorage.setItem(key, id); } catch(e){}
-        }
-        return id;
+      // ====== DWELL ======
+      function flushDwell(idx){
+        if (idx < 0 || idx >= slides.length) return;
+        if (!slideEnteredAt) return;
+        var dur = Date.now() - slideEnteredAt;
+        slideEnteredAt = 0;
+        if (dur < 500 || dur > 30 * 60 * 1000) return;
+        var slideId = slides[idx].dataset.id;
+        if (slideId) trackEvent('slide_dwell', { slide_id: slideId, duration_ms: dur });
       }
 
-      var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now() + '-' + Math.random().toString(36).slice(2));
-      var trackedSlideViews = {};
+      // ====== EVENTS ======
       var pendingEvents = [];
       var flushing = false;
       var tgIdWatchStarted = false;
-
-      var authReady = (async function(){
-        var hasStored = false;
-        try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
-        if (hasStored) {
-          for (var i = 0; i < 15; i++) {
-            try {
-              var s = await supabaseClient.auth.getSession();
-              if (s.data && s.data.session && s.data.session.user) return s.data.session.user;
-            } catch(e){}
-            await new Promise(function(r){ setTimeout(r, 200); });
-          }
-        }
-        try {
-          var r = await supabaseClient.auth.signInAnonymously();
-          if (r.error) { console.warn('Auth error:', r.error); return null; }
-          return r.data.user;
-        } catch(e) { console.warn('Auth error:', e); return null; }
-      })();
 
       function startTgIdWatch(){
         if (tgIdWatchStarted) return;
@@ -1884,53 +1386,198 @@
         } catch(e){ console.warn('Track error:', e); }
       }
 
-      authReady.then(function(u){
-        if (!u) return;
-        trackUser('visit');
-        trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
-        setTimeout(function(){ trackUser('visit'); }, 5000);
-        setTimeout(function(){ trackUser('visit'); }, 15000);
-        loadLikesFromSupabase();
-      });
-
-      loadAppSettings();
-      loadSlidesConfig();
-
-      (function eagerPreload(){
-        var n = Math.min(3, slides.length);
-        for (var i = 0; i < n; i++) {
-          if (!getVideo(i)) rebuildVideoFor(i, false, true);
+      // ====== PROFILE ======
+      function openProfile(){
+        if (window.ym) { try { ym(113067752, 'reachGoal', 'open_profile'); } catch(err){} }
+        trackUser('profile_view');
+        trackEvent('profile_open', {});
+        profile.classList.add('open');
+        flushDwell(currentIndex);
+        for (var i = 0; i < slides.length; i++) {
+          var v = getVideo(i);
+          if (v) { try { v.muted = true; v.pause(); } catch(e){} }
         }
-      })();
+      }
+      function closeProfile(){
+        profile.classList.remove('open');
+        slideEnteredAt = Date.now();
+        setActiveSlide(currentIndex);
+      }
+      if (closeBtn) closeBtn.addEventListener('click', function(e){ e.stopPropagation(); closeProfile(); });
 
-      layoutReels();
-      feed.classList.add('visible');
-      feed.style.scrollSnapType = 'none';
-      feed.scrollTop = 0;
-      feed.scrollTo(0, 0);
-      requestAnimationFrame(function(){
-        feed.scrollTop = 0; feed.scrollTo(0, 0);
-        setTimeout(function(){
-          feed.scrollTop = 0; feed.scrollTo(0, 0);
-          feed.style.scrollSnapType = '';
-        }, 100);
-      });
-
-      openByHash();
-      window.addEventListener('hashchange', openByHash);
-
-      var slideIO = new IntersectionObserver(function(entries){
-        entries.forEach(function(e){
-          if (e.isIntersecting && e.intersectionRatio > 0.5) {
-            var slideId = e.target.dataset.id;
-            if (slideId && !trackedSlideViews[slideId]) {
-              trackedSlideViews[slideId] = true;
-              trackEvent('slide_view', { slide_id: slideId });
-            }
+      if (followBtn) {
+        var followed = false;
+        followBtn.addEventListener('click', function(){
+          followed = !followed;
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'follow'); } catch(err){} }
+          trackUser('follow', { orgName: 'БАЗА' });
+          trackEvent('follow', { following: followed });
+          if (followed) {
+            followBtn.classList.add('followed');
+            followBtn.querySelector('span').textContent = 'Вы подписаны';
+            followBtn.querySelector('svg').innerHTML = '<path d="M20 6L9 17l-5-5"/>';
+          } else {
+            followBtn.classList.remove('followed');
+            followBtn.querySelector('span').textContent = 'Подписаться';
+            followBtn.querySelector('svg').innerHTML = '<path d="M12 5v14"/><path d="M5 12h14"/>';
           }
         });
-      }, { root: feed, threshold: [0, 0.55, 0.9] });
-      slides.forEach(function(s){ slideIO.observe(s); });
+      }
+
+      // ====== HASH ======
+      function openByHash(){
+        var hash = location.hash.replace('#', '');
+        if (!hash) return false;
+        var target = document.getElementById(hash);
+        if (!target) return false;
+        setTimeout(function(){
+          try { target.scrollIntoView({behavior: 'auto', block: 'start'}); } catch(e){
+            target.scrollIntoView();
+          }
+        }, 80);
+        return true;
+      }
+      window.addEventListener('hashchange', openByHash);
+
+      // ====== ONBOARDING ======
+      if (onboarding) {
+        var startY = 0, currentY = 0, dragging = false;
+        var THRESHOLD = 70;
+
+        function onStart(e){
+          var pt = e.touches ? e.touches[0] : e;
+          startY = pt.clientY;
+          currentY = startY;
+          dragging = true;
+          onboarding.classList.add('dragging');
+        }
+        function onMove(e){
+          if (!dragging) return;
+          var pt = e.touches ? e.touches[0] : e;
+          currentY = pt.clientY;
+          var delta = currentY - startY;
+          if (delta < 0) {
+            onboarding.style.transform = 'translateY(' + delta + 'px)';
+            if (e.cancelable) e.preventDefault();
+          }
+        }
+        function onEnd(){
+          if (!dragging) return;
+          dragging = false;
+          onboarding.classList.remove('dragging');
+          var delta = currentY - startY;
+          if (delta < -THRESHOLD) {
+            onboarding.style.transform = '';
+            onboarding.classList.add('gone');
+
+            var onbVids = onboarding.querySelectorAll('video');
+            for (var i = 0; i < onbVids.length; i++) {
+              try { onbVids[i].muted = true; } catch(e){}
+              try { onbVids[i].pause(); } catch(e){}
+              try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
+            }
+
+            layoutReels();
+            slideEnteredAt = Date.now();
+            setActiveSlide(0);
+            setTimeout(function(){
+              if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
+              onboarding = null;
+            }, 600);
+          } else {
+            onboarding.style.transform = '';
+          }
+        }
+
+        onboarding.addEventListener('touchstart', onStart, {passive:true});
+        onboarding.addEventListener('touchmove', onMove, {passive:false});
+        onboarding.addEventListener('touchend', onEnd);
+        onboarding.addEventListener('touchcancel', onEnd);
+        onboarding.addEventListener('mousedown', onStart);
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
+
+        var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
+        var onbIdx = 0;
+        var ONB_BATCH = 3;
+
+        function loadOnbBatch(){
+          if (!onboarding) return;
+          var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
+          for (; onbIdx < end; onbIdx++) {
+            (function(v){
+              if (!v || v.dataset.started) return;
+              v.dataset.started = '1';
+              var url = v.dataset.src;
+              if (!url) return;
+              v.muted = true;
+              v.setAttribute('muted','');
+              v.setAttribute('playsinline','');
+              v.setAttribute('webkit-playsinline','');
+              v.setAttribute('autoplay','');
+              try { v.setAttribute('preload','auto'); } catch(e){}
+              v.src = url;
+              try { v.load(); } catch(e){}
+              var p = v.play();
+              if (p && p.catch) p.catch(function(){});
+            })(onbVids[onbIdx]);
+          }
+          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 500);
+        }
+        loadOnbBatch();
+
+        var kickAll = function(){
+          if (!onboarding) return;
+          onboarding.querySelectorAll('video').forEach(function(v){
+            if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+          });
+        };
+        onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
+        onboarding.addEventListener('click', kickAll, {once:true});
+
+        var langBtns = document.querySelectorAll('[data-lang]');
+        for (var li = 0; li < langBtns.length; li++) {
+          (function(b){
+            b.addEventListener('click', function(e){
+              e.stopPropagation();
+              applyLang(b.getAttribute('data-lang'));
+            });
+            b.addEventListener('touchstart', function(e){ e.stopPropagation(); }, {passive:true});
+            b.addEventListener('touchend', function(e){ e.stopPropagation(); });
+          })(langBtns[li]);
+        }
+      }
+
+      applyLang(currentLang);
+
+      // ====== BOOT ======
+      feed.classList.add('visible');
+
+      (async function boot(){
+        try { await loadAppSettings(); } catch(e){}
+
+        var rows = null;
+        try {
+          rows = await api('reels', 'select=*&is_active=eq.true&order=created_at.desc&limit=20');
+        } catch(e){
+          console.warn('reels load error:', e);
+        }
+
+        if (rows && rows.length) {
+          renderReels(rows);
+        }
+
+        authReady.then(function(u){
+          if (!u) return;
+          loadLikesFromSupabase();
+          trackUser('visit');
+          trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
+          setTimeout(function(){ trackUser('visit'); }, 5000);
+          setTimeout(function(){ trackUser('visit'); }, 15000);
+        });
+      })();
+
+      window.addEventListener('resize', layoutReels);
     })();
   </script>
 

@@ -863,7 +863,6 @@
           else b.classList.remove('active');
         }
 
-        // Если сейчас archive-режим — перевести текст кнопки на выбранный язык
         if (APP_SETTINGS.mode === 'archive' || APP_SETTINGS.mode === 'teaser') {
           var ctaTxts = document.querySelectorAll('[data-cta] [data-i18n="buy_ticket"]');
           for (var k = 0; k < ctaTxts.length; k++) {
@@ -952,21 +951,46 @@
       }
 
       // ====== ВАЙБЫ (slides_config) ======
+      // Теперь подтягиваем из базы и video_url тоже.
       async function loadSlidesConfig(){
         try {
-          var rows = await api('slides_config', 'select=slide_id,vibe_title,vibe_subtitle&is_active=eq.true');
+          var rows = await api('slides_config', 'select=slide_id,vibe_title,vibe_subtitle,video_url&is_active=eq.true&order=sort_order.asc');
           if (!rows || !rows.length) return;
           var map = {};
           rows.forEach(function(r){ map[r.slide_id] = r; });
 
-          slides.forEach(function(slide){
+          slides.forEach(function(slide, idx){
             var id = slide.dataset.id;
             var cfg = map[id];
             if (!cfg) return;
+
             var tEl = slide.querySelector('[data-vibe-title]');
             var sEl = slide.querySelector('[data-vibe-subtitle]');
             if (tEl && cfg.vibe_title)    tEl.textContent = cfg.vibe_title;
             if (sEl && cfg.vibe_subtitle) sEl.textContent = cfg.vibe_subtitle;
+
+            // Видео из базы (если задано и отличается от текущего)
+            if (cfg.video_url && cfg.video_url !== videoUrls[idx]) {
+              var newUrl = cfg.video_url;
+              videoUrls[idx] = newUrl;
+
+              var existing = getVideo(idx);
+              if (existing) {
+                if (idx === currentIndex && !existing.paused) {
+                  reviveVideo(idx, true);
+                } else {
+                  try {
+                    existing.muted = true;
+                    existing.pause();
+                    existing.removeAttribute('src');
+                    existing.load();
+                  } catch(e){}
+                  existing.src = newUrl;
+                  existing.dataset.src = newUrl;
+                  try { existing.load(); } catch(e){}
+                }
+              }
+            }
           });
         } catch(e){ console.warn('slides_config load error', e); }
       }

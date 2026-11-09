@@ -27,13 +27,13 @@
 
 <style>
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;outline:none;border:0;}
-  html,body{background:#07070a;color:#fff;font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;height:100%;-webkit-font-smoothing:antialiased;color-scheme:dark;overscroll-behavior:none;}
+  html,body{background:#07070a;color:#fff;font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;height:100%;width:100%;-webkit-font-smoothing:antialiased;color-scheme:dark;overscroll-behavior:none;}
 
-  .onboarding{position:fixed;inset:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;overscroll-behavior:none;}
+  .onboarding{position:fixed;top:0;left:0;right:0;bottom:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;overscroll-behavior:none;display:flex;flex-direction:column;}
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
 
-  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;opacity:0;transition:opacity .5s ease;}
+  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;transition:opacity .5s ease;}
   .onboarding.ready .onb-bg{opacity:1;}
 
   .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
@@ -131,6 +131,7 @@
     transition: transform .12s ease, background .2s ease;
     -webkit-tap-highlight-color: transparent;
     border: 0;
+    text-decoration: none;
   }
   .loc-btn:active { transform: scale(.96); }
   .loc-btn:disabled { opacity: .6; cursor: default; }
@@ -294,7 +295,7 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Это вайб-лента. Моменты, события и места - <em>в реальном времени</em></div>
+      <div class="onb-tag" data-i18n="onboard_tag">Погрузись в собственный поток событий — <em>под свой вайб</em></div>
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
@@ -349,9 +350,9 @@
       })();
 
       var I18N = {
-        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', notify_btn:'Следить за вайбом', notify_ok:'Готово! Пришлём в боте 🔔', notify_already:'Уже подписан на уведомления', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', notify_btn:'Follow this vibe', notify_ok:'Done! We\'ll ping you in the bot 🔔', notify_already:'Already subscribed', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', notify_btn:'Seguir este vibe', notify_ok:'¡Listo! Te avisamos en el bot 🔔', notify_already:'Ya estás suscrito', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Погрузись в собственный поток событий — <em>под свой вайб</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', notify_btn:'Следить за вайбом', notify_ok:'Готово! Пришлём в боте 🔔', notify_already:'Уже подписан на уведомления', route_btn:'Смотреть маршрут', ticket_btn:'Купить билет', route_confirm:'Для построения точного маршрута поделитесь вашей геопозицией.', addr_missing:'Адрес не указан', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'Dive into your own stream of events — <em>to your own vibe</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', notify_btn:'Follow this vibe', notify_ok:'Done! We\'ll ping you in the bot 🔔', notify_already:'Already subscribed', route_btn:'View route', ticket_btn:'Buy ticket', route_confirm:'Share your location to build an accurate route.', addr_missing:'Address not set', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Sumérgete en tu propio flujo de eventos — <em>a tu propio rollo</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', notify_btn:'Seguir este vibe', notify_ok:'¡Listo! Te avisamos en el bot 🔔', notify_already:'Ya estás suscrito', route_btn:'Ver ruta', ticket_btn:'Comprar entrada', route_confirm:'Comparte tu ubicación para crear una ruta precisa.', addr_missing:'Dirección no indicada', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -557,6 +558,37 @@
             ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
             : '';
 
+          var ctaType = reel.cta_type || 'subscribe';
+          var ctaHtml = '';
+
+          if (ctaType === 'ticket') {
+            var ticketUrl = reel.cta_url || 'https://qtickets.ru/event/260719';
+            ctaHtml =
+              '<a class="loc-btn" data-ticket href="' + escapeAttr(ticketUrl) + '" target="_blank" rel="noopener noreferrer">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>' +
+                '<span>' + escapeHtml(reel.cta_label || t('ticket_btn')) + '</span>' +
+              '</a>';
+          } else if (ctaType === 'route') {
+            ctaHtml =
+              '<button class="loc-btn" data-route type="button" ' +
+                'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
+                'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+                'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+                'data-place="' + escapeAttr(reel.place || '') + '">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+                '<span>' + escapeHtml(reel.cta_label || t('route_btn')) + '</span>' +
+              '</button>';
+          } else {
+            ctaHtml =
+              '<button class="loc-btn" data-notify type="button" ' +
+                'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+                'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+                'data-place="' + escapeAttr(reel.place || '') + '">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>' +
+                '<span>' + escapeHtml(reel.cta_label || t('notify_btn')) + '</span>' +
+              '</button>';
+          }
+
           slide.innerHTML =
             '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
             '<div class="veil"></div>' +
@@ -568,13 +600,7 @@
               '</div>' +
               '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
               placeHtml +
-              '<button class="loc-btn" data-notify type="button" ' +
-                'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-                'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-                'data-place="' + escapeAttr(reel.place || '') + '">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>' +
-                '<span data-i18n="notify_btn">' + t('notify_btn') + '</span>' +
-              '</button>' +
+              ctaHtml +
               '<div class="actions-row">' +
                 '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
                   '<span class="tv-ph">' +
@@ -801,7 +827,6 @@
         }
 
         onbMaxWaitTimer = setTimeout(function(){
-          console.warn('onboarding: fallback show after 3s, loaded', onbReadyCount, '/', onbRequired);
           showOnboardingReady();
         }, 3000);
 
@@ -1002,7 +1027,6 @@
         });
       }
 
-      // ===== Подписка на уведомления + запись в subscriptions =====
       var notifyInFlight = false;
       async function subscribeNotify(btn, reelId, vibeTitle, place){
         if (notifyInFlight) return;
@@ -1016,7 +1040,6 @@
           var tgId = tgUser ? String(tgUser.id) : null;
           if (!tgId) { showToast(t('notify_already')); return; }
 
-          // 1) Флаг «хочет уведомления вообще»
           await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
             method: 'PATCH',
             headers: {
@@ -1028,7 +1051,6 @@
             body: JSON.stringify({ wants_notify: true })
           });
 
-          // 2) Подписка на конкретный вайб
           if (reelId) {
             await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
               method: 'POST',
@@ -1065,10 +1087,226 @@
           btn.__bound = true;
           btn.addEventListener('click', function(e){
             e.stopPropagation();
-            var reelId = btn.getAttribute('data-reel-id') || null;
-            var vibeTitle = btn.getAttribute('data-vibe-title') || null;
-            var place = btn.getAttribute('data-place') || null;
-            subscribeNotify(btn, reelId, vibeTitle, place);
+            subscribeNotify(
+              btn,
+              btn.getAttribute('data-reel-id'),
+              btn.getAttribute('data-vibe-title'),
+              btn.getAttribute('data-place')
+            );
+          });
+        });
+      }
+
+      function bindTicketBtns(){
+        document.querySelectorAll('[data-ticket]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', function(e){
+            var slide = btn.closest('.slide');
+            var id = slide ? slide.dataset.id : null;
+            trackEvent('ticket_click', { slide_id: id });
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'cta_click'); } catch(err){} }
+          });
+        });
+      }
+
+      var GEO_CACHE_KEY = 'vetka_geo_v1';
+      var GEO_CACHE_TTL = 30 * 60 * 1000;
+      var LOC_QUEUE_KEY = 'vetka_loc_queue_v1';
+
+      function getCachedCoords() {
+        try {
+          var raw = localStorage.getItem(GEO_CACHE_KEY);
+          if (!raw) return null;
+          var c = JSON.parse(raw);
+          if (!c || typeof c.lat !== 'number' || typeof c.lng !== 'number') return null;
+          if (Date.now() - c.ts > GEO_CACHE_TTL) return null;
+          return { lat: c.lat, lng: c.lng };
+        } catch(e) { return null; }
+      }
+      function setCachedCoords(lat, lng) {
+        try { localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ lat: lat, lng: lng, ts: Date.now() })); } catch(e){}
+      }
+      function requestUserLocation() {
+        return new Promise(function(resolve, reject){
+          if (!navigator.geolocation) { reject(new Error('Geolocation not supported')); return; }
+          navigator.geolocation.getCurrentPosition(
+            function(p){ resolve({ lat: p.coords.latitude, lng: p.coords.longitude }); },
+            function(err){ reject(err); },
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+          );
+        });
+      }
+      function uuid(){
+        try { if (crypto && crypto.randomUUID) return crypto.randomUUID(); } catch(e){}
+        return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+      }
+      function readLocQueue() {
+        try { return JSON.parse(localStorage.getItem(LOC_QUEUE_KEY) || '[]'); } catch(e){ return []; }
+      }
+      function writeLocQueue(q) {
+        try { localStorage.setItem(LOC_QUEUE_KEY, JSON.stringify(q)); } catch(e){}
+      }
+      function removeFromQueueById(id) {
+        try {
+          var q = readLocQueue();
+          var filtered = q.filter(function(it){ return it.client_event_id !== id; });
+          if (filtered.length !== q.length) writeLocQueue(filtered);
+        } catch(e){}
+      }
+      function queueLocationItem(item) {
+        try {
+          var q = readLocQueue();
+          for (var i = 0; i < q.length; i++) { if (q[i].client_event_id === item.client_event_id) return; }
+          q.push(item);
+          if (q.length > 200) q = q.slice(-200);
+          writeLocQueue(q);
+        } catch(e) { console.warn('queueLocationItem fail:', e); }
+      }
+      async function flushLocationQueue() {
+        var q = readLocQueue();
+        if (!q.length) return;
+
+        var token = null;
+        var userId = null;
+        try {
+          var s = await supabaseClient.auth.getSession();
+          if (s && s.data && s.data.session && s.data.session.access_token) {
+            token = s.data.session.access_token;
+            userId = s.data.session.user.id;
+          }
+        } catch(e){}
+
+        if (!token) {
+          try {
+            var anon = await supabaseClient.auth.signInAnonymously();
+            if (anon.error) return;
+            var s2 = await supabaseClient.auth.getSession();
+            if (s2 && s2.data && s2.data.session) {
+              token = s2.data.session.access_token;
+              userId = s2.data.session.user.id;
+            }
+          } catch(e){ return; }
+        }
+        if (!token || !userId) return;
+
+        var tgUser = readTgUser();
+        q = readLocQueue();
+
+        for (var i = 0; i < q.length; i++) {
+          var it = q[i];
+          if (!it || !it.client_event_id) continue;
+          try {
+            var body = [{
+              client_event_id: it.client_event_id,
+              user_id: userId,
+              tg_id: tgUser ? String(tgUser.id) : null,
+              username: tgUser ? (tgUser.username || null) : null,
+              first_name: tgUser ? (tgUser.first_name || null) : null,
+              last_name: tgUser ? (tgUser.last_name || null) : null,
+              profile_url: tgUser ? buildProfileUrl(tgUser) : null,
+              reel_id: it.reel_id,
+              reel_title: it.reel_title,
+              reel_place: it.reel_place,
+              latitude: it.lat,
+              longitude: it.lng,
+              destination_coords: it.dest_coords,
+              consent_given: true,
+              geo_source: it.geo_source,
+              route_created_at: it.ts_iso
+            }];
+
+            var res = await fetch(SUPABASE_URL + '/rest/v1/user_locations', {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify(body),
+              keepalive: true
+            });
+
+            if (res.ok || res.status === 409) {
+              removeFromQueueById(it.client_event_id);
+            }
+          } catch(e) {}
+        }
+      }
+      function saveUserLocationAsync(lat, lng, reelId, reelTitle, reelPlace, destCoords, geoSource) {
+        var item = {
+          client_event_id: uuid(),
+          lat: (typeof lat === 'number' && isFinite(lat)) ? lat : null,
+          lng: (typeof lng === 'number' && isFinite(lng)) ? lng : null,
+          reel_id: reelId,
+          reel_title: reelTitle,
+          reel_place: reelPlace,
+          dest_coords: destCoords,
+          geo_source: geoSource || 'unknown',
+          ts_iso: new Date().toISOString(),
+          ts: Date.now()
+        };
+        queueLocationItem(item);
+        flushLocationQueue();
+      }
+      function openYandexRoute(destCoords) {
+        var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
+        try {
+          if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
+            window.Telegram.WebApp.openLink(url);
+            return;
+          }
+        } catch(e){}
+        try { window.open(url, '_blank', 'noopener,noreferrer'); } catch(e){ location.href = url; }
+      }
+
+      function bindRouteBtns(){
+        document.querySelectorAll('[data-route]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', async function(e){
+            e.stopPropagation();
+            var reelId = btn.getAttribute('data-reel-id');
+            var destCoords = btn.getAttribute('data-location');
+            var vibeTitle = btn.getAttribute('data-vibe-title');
+            var place = btn.getAttribute('data-place');
+
+            if (!destCoords) { showToast(t('addr_missing')); return; }
+
+            trackEvent('route_click', { slide_id: reelId, dest: destCoords });
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'route_click'); } catch(err){} }
+
+            var cached = getCachedCoords();
+            if (cached) {
+              saveUserLocationAsync(cached.lat, cached.lng, reelId, vibeTitle, place, destCoords, 'cache');
+              openYandexRoute(destCoords);
+              return;
+            }
+
+            var userAgreed = confirm(t('route_confirm'));
+            if (!userAgreed) {
+              saveUserLocationAsync(null, null, reelId, vibeTitle, place, destCoords, 'user_declined');
+              openYandexRoute(destCoords);
+              return;
+            }
+
+            var coords = null;
+            try {
+              coords = await Promise.race([
+                requestUserLocation(),
+                new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('gps timeout')); }, 5000); })
+              ]);
+            } catch(err) {}
+
+            if (coords) {
+              setCachedCoords(coords.lat, coords.lng);
+              saveUserLocationAsync(coords.lat, coords.lng, reelId, vibeTitle, place, destCoords, 'fresh');
+            } else {
+              saveUserLocationAsync(null, null, reelId, vibeTitle, place, destCoords, 'gps_failed');
+            }
+
+            openYandexRoute(destCoords);
           });
         });
       }
@@ -1078,6 +1316,8 @@
         bindShareBtns();
         bindTopBtns();
         bindNotifyBtns();
+        bindTicketBtns();
+        bindRouteBtns();
       }
 
       function refreshTopUI(){
@@ -1303,7 +1543,7 @@
         if (document.hidden) { flushDwell(currentIndex); flushEvents(); }
         else { slideEnteredAt = Date.now(); }
       });
-      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
+      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); flushLocationQueue(); });
       window.addEventListener('resize', layoutReels);
 
       retryBtn.addEventListener('click', function(){ location.reload(); });
@@ -1337,6 +1577,7 @@
           refreshTopUI();
           if (onboardingDismissed) bootFeed();
           setInterval(refreshReels, 60000);
+          setInterval(flushLocationQueue, 60000);
 
         } catch (err) {
           console.warn('initFeed error:', err);

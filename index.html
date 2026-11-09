@@ -558,6 +558,7 @@
             ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
             : '';
 
+          // ===== CTA по типу из БД =====
           var ctaType = reel.cta_type || 'subscribe';
           var ctaHtml = '';
 
@@ -1027,6 +1028,7 @@
         });
       }
 
+      // ===== Подписка на вайб =====
       var notifyInFlight = false;
       async function subscribeNotify(btn, reelId, vibeTitle, place){
         if (notifyInFlight) return;
@@ -1097,6 +1099,7 @@
         });
       }
 
+      // ===== Билет (только трекинг) =====
       function bindTicketBtns(){
         document.querySelectorAll('[data-ticket]').forEach(function(btn){
           if (btn.__bound) return;
@@ -1106,10 +1109,12 @@
             var id = slide ? slide.dataset.id : null;
             trackEvent('ticket_click', { slide_id: id });
             if (window.ym) { try { ym(113067752, 'reachGoal', 'cta_click'); } catch(err){} }
+            // Не блокируем переход по ссылке
           });
         });
       }
 
+      // ===== Геолокация для маршрутов =====
       var GEO_CACHE_KEY = 'vetka_geo_v1';
       var GEO_CACHE_TTL = 30 * 60 * 1000;
       var LOC_QUEUE_KEY = 'vetka_loc_queue_v1';
@@ -1540,7 +1545,7 @@
       }
 
       document.addEventListener('visibilitychange', function(){
-        if (document.hidden) { flushDwell(currentIndex); flushEvents(); }
+        if (document.hidden) { flushDwell(currentIndex); flushEvents(); flushLocationQueue(); }
         else { slideEnteredAt = Date.now(); }
       });
       window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); flushLocationQueue(); });
@@ -1577,6 +1582,7 @@
           refreshTopUI();
           if (onboardingDismissed) bootFeed();
           setInterval(refreshReels, 60000);
+          setTimeout(flushLocationQueue, 5000);
           setInterval(flushLocationQueue, 60000);
 
         } catch (err) {

@@ -149,7 +149,7 @@
     z-index: 10;
   }
 
-  .share-btn {
+  .top-vibe, .share-btn {
     pointer-events: auto;
     display: flex;
     flex-direction: column;
@@ -162,9 +162,9 @@
     padding: 0;
     color: inherit;
   }
-  .share-btn:disabled { opacity: .65; cursor: default; }
+  .top-vibe:disabled, .share-btn:disabled { opacity: .65; cursor: default; }
 
-  .ico-ph {
+  .tv-ph, .ico-ph {
     width: 34px;
     height: 34px;
     border-radius: 50%;
@@ -179,17 +179,26 @@
     transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
   }
 
-  .share-btn:active .ico-ph {
+  .top-vibe:active .tv-ph, .share-btn:active .ico-ph {
     transform: scale(.9);
   }
 
-  .ico-ph svg {
+  .tv-ph svg, .ico-ph svg {
     width: 16px;
     height: 16px;
     display: block;
   }
 
-  .lbl {
+  .tv-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #CDFF4A;
+    line-height: 1;
+    text-shadow: 0 1px 4px rgba(0,0,0,.6);
+  }
+
+  .tv-label, .lbl {
     font-family: 'Inter', sans-serif;
     font-size: 8.5px;
     font-weight: 500;
@@ -198,6 +207,19 @@
     color: rgba(255,255,255,.5);
     text-align: center;
   }
+
+  .top-vibe.voted .tv-ph {
+    background: rgba(205,255,74,.9);
+    color: #07070a;
+    border-color: rgba(205,255,74,.9);
+  }
+  .top-vibe.voted .tv-count { color: #CDFF4A; }
+  .top-vibe.voted .tv-label { color: #CDFF4A; }
+
+  @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
+  .tv-count.pulse{animation:countPulse .45s ease;}
+  @keyframes triPulse{0%{transform:translateY(0);}40%{transform:translateY(-3px);}100%{transform:translateY(0);}}
+  .tv-ph svg.pulse{animation:triPulse .4s ease;}
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
@@ -323,9 +345,9 @@
       })();
 
       var I18N = {
-        ru: { onboard_tag:'Погрузись в собственный поток событий — <em>под свой вайб</em>', onboard_hint:'Листай вверх', share_text:'Пойдём вместе?', share_label:'Поделиться', notify_btn:'Следить за вайбом', notify_ok:'Готово! Пришлём в боте 🔔', notify_already:'Уже подписан на уведомления', route_btn:'Смотреть маршрут', ticket_btn:'Купить билет', route_confirm:'Для построения точного маршрута поделитесь вашей геопозицией.', addr_missing:'Адрес не указан', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'Dive into your own stream of events — <em>to your own vibe</em>', onboard_hint:'Swipe up', share_text:'Let\'s go together?', share_label:'Share', notify_btn:'Follow this vibe', notify_ok:'Done! We\'ll ping you in the bot 🔔', notify_already:'Already subscribed', route_btn:'View route', ticket_btn:'Buy ticket', route_confirm:'Share your location to build an accurate route.', addr_missing:'Address not set', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Sumérgete en tu propio flujo de eventos — <em>a tu propio rollo</em>', onboard_hint:'Desliza hacia arriba', share_text:'¿Vamos juntos?', share_label:'Compartir', notify_btn:'Seguir este vibe', notify_ok:'¡Listo! Te avisamos en el bot 🔔', notify_already:'Ya estás suscrito', route_btn:'Ver ruta', ticket_btn:'Comprar entrada', route_confirm:'Comparte tu ubicación para crear una ruta precisa.', addr_missing:'Dirección no indicada', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Погрузись в собственный поток событий — <em>под свой вайб</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', notify_btn:'Следить за вайбом', notify_ok:'Готово! Пришлём в боте 🔔', notify_already:'Уже подписан на уведомления', route_btn:'Смотреть маршрут', ticket_btn:'Купить билет', route_confirm:'Для построения точного маршрута поделитесь вашей геопозицией.', addr_missing:'Адрес не указан', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'Dive into your own stream of events — <em>to your own vibe</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', notify_btn:'Follow this vibe', notify_ok:'Done! We\'ll ping you in the bot 🔔', notify_already:'Already subscribed', route_btn:'View route', ticket_btn:'Buy ticket', route_confirm:'Share your location to build an accurate route.', addr_missing:'Address not set', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Sumérgete en tu propio flujo de eventos — <em>a tu propio rollo</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', notify_btn:'Seguir este vibe', notify_ok:'¡Listo! Te avisamos en el bot 🔔', notify_already:'Ya estás suscrito', route_btn:'Ver ruta', ticket_btn:'Comprar entrada', route_confirm:'Comparte tu ubicación para crear una ruta precisa.', addr_missing:'Dirección no indicada', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -377,11 +399,25 @@
         if (appDataPromise) return appDataPromise;
         appDataPromise = (async function(){
           var rows = [];
+          var likesCount = {};
           try {
-            rows = await api('reels', 'select=*&is_active=eq.true&order=published_at.desc&limit=100');
+            rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
             if (!rows) rows = [];
           } catch(e){ console.warn('reels error:', e); throw e; }
-          return { reels: rows };
+          try {
+            var likesAll = await api('likes', 'select=slide_id');
+            if (likesAll && likesAll.length) {
+              likesAll.forEach(function(l){ if (l.slide_id) likesCount[l.slide_id] = (likesCount[l.slide_id] || 0) + 1; });
+            }
+          } catch(e){ console.warn('likes error:', e); }
+
+          rows.forEach(function(r){
+            var base = parseInt(r.base_votes, 10) || 0;
+            var real = likesCount[r.id] || 0;
+            r.__total = base + real;
+          });
+          rows.sort(function(a, b){ return b.__total - a.__total; });
+          return { reels: rows, likes: likesCount };
         })();
         appDataPromise.catch(function(){ appDataPromise = null; });
         return appDataPromise;
@@ -442,6 +478,8 @@
       var currentIndex = 0;
       var slideEnteredAt = 0;
       var soundEnabled = false;
+      var myTopSlides = {};
+      var topCounts = {};
       var trackedSlideViews = {};
       var flushing = false;
       var tgIdWatchStarted = false;
@@ -509,6 +547,8 @@
             badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
           }
 
+          var baseVotes = parseInt(reel.base_votes, 10) || 0;
+          var totalVotes = baseVotes + (topCounts[reel.id] || 0);
           var placeHtml = reel.place
             ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
             : '';
@@ -557,6 +597,16 @@
               placeHtml +
               ctaHtml +
               '<div class="actions-row">' +
+                '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
+                  '<span class="tv-ph">' +
+                    // Иконка молнии (Vibe)
+                    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+                      '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>' +
+                    '</svg>' +
+                  '</span>' +
+                  '<span class="tv-count" data-count>' + totalVotes + '</span>' +
+                  '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
+                '</button>' +
                 '<button class="share-btn" data-share aria-label="Share">' +
                   '<span class="ico-ph">' +
                     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
@@ -926,6 +976,61 @@
         });
       }
 
+      function bindTopBtns(){
+        document.querySelectorAll('[data-top]').forEach(function(btn){
+          btn.addEventListener('click', async function(e){
+            e.stopPropagation();
+            if (btn.disabled) return;
+            var slide = btn.closest('.slide');
+            var id = slide ? slide.dataset.id : null; if (!id) return;
+
+            btn.disabled = true;
+            var wasVoted = !!myTopSlides[id];
+            var nowVoted = !wasVoted;
+
+            try {
+              if (nowVoted) {
+                myTopSlides[id] = true;
+                topCounts[id] = (topCounts[id] || 0) + 1;
+                showToast(t('top_ok'));
+                var cnt = btn.querySelector('[data-count]');
+                if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
+                var tri = btn.querySelector('.tv-ph svg');
+                if (tri) { tri.classList.remove('pulse'); void tri.offsetWidth; tri.classList.add('pulse'); }
+                try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
+              } else {
+                delete myTopSlides[id];
+                topCounts[id] = Math.max(0, (topCounts[id] || 0) - 1);
+                showToast(t('top_removed'));
+              }
+              refreshTopUI();
+              if (window.ym) { try { ym(113067752, 'reachGoal', 'top_vibe'); } catch(err){} }
+              trackEvent('top_vibe', { slide_id: id, voted: nowVoted });
+
+              try {
+                var user = await authReady; if (!user) return;
+                if (nowVoted) await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
+                else await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
+              } catch(err){ console.warn('vote sync error:', err); }
+            } finally {
+              btn.disabled = false;
+            }
+          });
+        });
+      }
+
+      function refreshTopUI(){
+        slides.forEach(function(slide){
+          var id = slide.dataset.id; if (!id) return;
+          var btn = slide.querySelector('[data-top]'); if (!btn) return;
+          var base = parseInt(btn.dataset.base || '0', 10) || 0;
+          var count = topCounts[id] || 0;
+          var total = base + count; if (total < 0) total = 0;
+          var cnt = btn.querySelector('[data-count]'); if (cnt) cnt.textContent = total;
+          if (myTopSlides[id]) btn.classList.add('voted'); else btn.classList.remove('voted');
+        });
+      }
+
       var notifyInFlight = false;
       async function subscribeNotify(btn, reelId, vibeTitle, place){
         if (notifyInFlight) return;
@@ -1213,6 +1318,7 @@
       function bindHandlers(){
         bindSoundBtns();
         bindShareBtns();
+        bindTopBtns();
         bindNotifyBtns();
         bindTicketBtns();
         bindRouteBtns();
@@ -1277,6 +1383,7 @@
         initIO();
         initSlideViewsIO();
         setActiveSlide(startIdx);
+        refreshTopUI();
 
         if (startIdx > 0) {
           setTimeout(function(){
@@ -1292,18 +1399,33 @@
         if (!onboardingDismissed) return;
         refreshing = true;
         try {
-          var rows = await api('reels', 'select=*&is_active=eq.true&order=published_at.desc&limit=100');
+          var rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
           if (!rows) rows = [];
+          var likesAll = [];
+          try { likesAll = await api('likes', 'select=slide_id') || []; } catch(e){}
+          var newLikes = {};
+          likesAll.forEach(function(l){ if (l.slide_id) newLikes[l.slide_id] = (newLikes[l.slide_id] || 0) + 1; });
+
+          rows.forEach(function(r){
+            var base = parseInt(r.base_votes, 10) || 0;
+            r.__total = base + (newLikes[r.id] || 0);
+          });
+          rows.sort(function(a, b){ return b.__total - a.__total; });
 
           var oldIds = slides.map(function(s){ return s.dataset.id; }).join('|');
           var newIds = rows.map(function(r){ return r.id; }).join('|');
 
-          if (oldIds === newIds) return;
+          if (oldIds === newIds) {
+            topCounts = newLikes;
+            refreshTopUI();
+            return;
+          }
 
           var curId = slides[currentIndex] ? slides[currentIndex].dataset.id : null;
           if (currentIO) { currentIO.disconnect(); currentIO = null; }
           if (slideIO) { slideIO.disconnect(); slideIO = null; }
 
+          topCounts = newLikes;
           renderReels(rows);
           reelsLoaded = true;
 
@@ -1317,6 +1439,7 @@
           initIO();
           initSlideViewsIO();
           setActiveSlide(newIdx);
+          refreshTopUI();
 
           requestAnimationFrame(function(){
             try { if (feed) feed.scrollTop = newIdx * feed.clientHeight; } catch(e){}
@@ -1362,6 +1485,17 @@
         try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) { console.warn('anon auth error:', r.error.message); return null; } return r.data.user; }
         catch(e){ console.warn('anon auth exception:', e); return null; }
       })();
+
+      async function loadMyVotes(){
+        try {
+          var user = await authReady; if (!user) return;
+          try {
+            var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
+            if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });
+          } catch(e){}
+          refreshTopUI();
+        } catch(e){}
+      }
 
       function startTgIdWatch(){
         if (tgIdWatchStarted) return;
@@ -1426,6 +1560,7 @@
         retryCount = retryCount || 0;
         try {
           var data = await fetchAppData();
+          topCounts = data.likes;
           renderReels(data.reels);
           reelsLoaded = true;
 
@@ -1434,8 +1569,15 @@
               authReady,
               new Promise(function(r){ setTimeout(function(){ r(null); }, 2500); })
             ]);
+            if (user) {
+              try {
+                var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
+                if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });
+              } catch(e){}
+            }
           } catch(e){}
 
+          refreshTopUI();
           if (onboardingDismissed) bootFeed();
           setInterval(refreshReels, 60000);
           setInterval(flushLocationQueue, 60000);

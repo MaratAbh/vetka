@@ -116,26 +116,81 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    padding: 12px 36px;
+    gap: 8px;
+    padding: 13px 38px;
     border-radius: 100px;
     background: #CDFF4A;
     color: #07070a;
     font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: -.01em;
     cursor: pointer;
     align-self: center;
-    margin-top: 6px;
-    box-shadow: 0 4px 20px rgba(205,255,74,.35);
-    transition: transform .12s ease, background .2s ease;
+    margin-top: 8px;
+    transition: transform .12s ease;
     -webkit-tap-highlight-color: transparent;
     border: 0;
     text-decoration: none;
   }
   .loc-btn:active { transform: scale(.96); }
   .loc-btn:disabled { opacity: .6; cursor: default; }
-  .loc-btn svg { width: 16px; height: 16px; flex: none; }
+  .loc-btn svg { width: 18px; height: 18px; flex: none; }
+
+  .loc-btn.vibe-cta {
+    animation: vibeGlow 2.8s ease-in-out infinite;
+  }
+  @keyframes vibeGlow {
+    0%, 100% { box-shadow: 0 4px 20px rgba(205,255,74,.35); }
+    50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 2px rgba(205,255,74,.25); }
+  }
+
+  .vibe-banner{
+    position: fixed;
+    top: calc(60px + env(safe-area-inset-top, 0px));
+    left: 16px;
+    right: 16px;
+    z-index: 100;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 10px 10px 16px;
+    border-radius: 100px;
+    background: rgba(12,14,8,.85);
+    border: 1px solid rgba(205,255,74,.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: #CDFF4A;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 24px rgba(0,0,0,.4), 0 0 24px rgba(205,255,74,.15);
+    animation: bannerSlide .35s cubic-bezier(.2,.9,.3,1.4);
+  }
+  .vibe-banner.show { display: flex; }
+  @keyframes bannerSlide {
+    from { transform: translateY(-16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .vibe-banner-text { flex: 1; line-height: 1.25; }
+  .vibe-banner-text em { font-style: normal; color: #fff; font-weight: 500; }
+  .vibe-banner-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(205,255,74,.15);
+    color: #CDFF4A;
+    border: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: background .2s ease, transform .12s ease;
+    flex: none;
+  }
+  .vibe-banner-close:active { background: rgba(205,255,74,.3); transform: scale(.92); }
+  .vibe-banner-close svg { width: 14px; height: 14px; }
 
   .actions-row {
     position: absolute;
@@ -315,6 +370,13 @@
 
   <div class="feed" id="feed"></div>
 
+  <div class="vibe-banner" id="vibeBanner">
+    <span class="vibe-banner-text" id="vibeBannerText">Поток</span>
+    <button class="vibe-banner-close" id="vibeBannerClose" aria-label="Закрыть">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+
   <div class="empty-state" id="emptyState">
     <div class="es-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -363,9 +425,9 @@
       })();
 
       var I18N = {
-        ru: { onboard_tag:'Погрузись в собственный поток событий — <em>под свой вайб</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', share_text:'Пойдём вместе?', share_label:'Поделиться', notify_btn:'Следить за вайбом', notify_ok:'Готово! Пришлём в боте 🔔', notify_already:'Уже подписан на уведомления', route_btn:'Смотреть маршрут', ticket_btn:'Купить билет', route_confirm:'Для построения точного маршрута поделитесь вашей геопозицией.', addr_missing:'Адрес не указан', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'Dive into your own stream of events — <em>to your own vibe</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', share_text:'Let\'s go together?', share_label:'Share', notify_btn:'Follow this vibe', notify_ok:'Done! We\'ll ping you in the bot 🔔', notify_already:'Already subscribed', route_btn:'View route', ticket_btn:'Buy ticket', route_confirm:'Share your location to build an accurate route.', addr_missing:'Address not set', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Sumérgete en tu propio flujo de eventos — <em>a tu propio rollo</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', share_text:'¿Vamos juntos?', share_label:'Compartir', notify_btn:'Seguir este vibe', notify_ok:'¡Listo! Te avisamos en el bot 🔔', notify_already:'Ya estás suscrito', route_btn:'Ver ruta', ticket_btn:'Comprar entrada', route_confirm:'Comparte tu ubicación para crear una ruta precisa.', addr_missing:'Dirección no indicada', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: { onboard_tag:'Погрузись в собственный поток событий — <em>под свой вайб</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', share_text:'Пойдём вместе?', share_label:'Поделиться', vibe_btn:'В этот поток', vibe_stream_toast:'✦ Погружаемся в поток', vibe_single_toast:'Это первый такой вайб. Пришлём ещё 🔔', vibe_clear_toast:'Показали всё', vibe_banner_label:'Поток', vibe_banner_more:'ещё в ленте', vibe_banner_single:'пока один', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'Dive into your own stream of events — <em>to your own vibe</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', share_text:'Let\'s go together?', share_label:'Share', vibe_btn:'Into this stream', vibe_stream_toast:'✦ Diving into the stream', vibe_single_toast:'First one of its kind. We\'ll ping you 🔔', vibe_clear_toast:'Showing all', vibe_banner_label:'Stream', vibe_banner_more:'more in feed', vibe_banner_single:'one for now', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Sumérgete en tu propio flujo de eventos — <em>a tu propio rollo</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', share_text:'¿Vamos juntos?', share_label:'Compartir', vibe_btn:'En este flujo', vibe_stream_toast:'✦ Sumergiéndonos', vibe_single_toast:'El primero de su tipo. Te avisamos 🔔', vibe_clear_toast:'Mostrando todo', vibe_banner_label:'Flujo', vibe_banner_more:'más en el feed', vibe_banner_single:'uno por ahora', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -490,6 +552,12 @@
       var retryBtn = document.getElementById('retryBtn');
       var onboarding = document.getElementById('onboarding');
       var toast = document.getElementById('toast');
+      var vibeBanner = document.getElementById('vibeBanner');
+      var vibeBannerText = document.getElementById('vibeBannerText');
+      var vibeBannerClose = document.getElementById('vibeBannerClose');
+
+      var allReels = [];
+      var currentVibeFilter = null;
 
       var slides = [];
       var videoUrls = [];
@@ -517,7 +585,7 @@
         toast.textContent = text;
         toast.classList.add('show');
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2400);
       }
 
       function showEmptyState(title, text, showRetry){
@@ -534,12 +602,24 @@
         });
       }
       function escapeAttr(s){
-        return String(s)
-          .replace(/&/g, '&amp;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
+        return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      }
+
+      function getVibeStream(currentReel, allReels){
+        var vibe = (currentReel.vibe_title || '').toLowerCase().trim();
+        var place = (currentReel.place || '').toLowerCase().trim();
+        if (!vibe && !place) return allReels.slice();
+
+        var stream = allReels.filter(function(r){
+          var v = (r.vibe_title || '').toLowerCase().trim();
+          var p = (r.place || '').toLowerCase().trim();
+          return (vibe && v === vibe) || (place && p === place);
+        });
+
+        // Поставить текущий рилс первым
+        stream = stream.filter(function(r){ return r.id !== currentReel.id; });
+        stream.unshift(currentReel);
+        return stream;
       }
 
       function renderReels(reels){
@@ -571,39 +651,19 @@
             ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
             : '';
 
-          var ctaType = reel.cta_type || 'subscribe';
-          var ctaHtml = '';
+          // Одна статическая CTA — «В этот поток»
+          var ctaHtml =
+            '<button class="loc-btn vibe-cta" data-vibe type="button" ' +
+              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+              'data-place="' + escapeAttr(reel.place || '') + '">' +
+              '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+                '<path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/>' +
+              '</svg>' +
+              '<span>' + escapeHtml(t('vibe_btn')) + '</span>' +
+            '</button>';
 
-          if (ctaType === 'ticket') {
-            var ticketUrl = reel.cta_url || 'https://qtickets.ru/event/260719';
-            ctaHtml =
-              '<a class="loc-btn" data-ticket href="' + escapeAttr(ticketUrl) + '" target="_blank" rel="noopener noreferrer">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>' +
-                '<span>' + escapeHtml(reel.cta_label || t('ticket_btn')) + '</span>' +
-              '</a>';
-          } else if (ctaType === 'route') {
-            ctaHtml =
-              '<button class="loc-btn" data-route type="button" ' +
-                'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
-                'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-                'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-                'data-place="' + escapeAttr(reel.place || '') + '">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
-                '<span>' + escapeHtml(reel.cta_label || t('route_btn')) + '</span>' +
-              '</button>';
-          } else {
-            ctaHtml =
-              '<button class="loc-btn" data-notify type="button" ' +
-                'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-                'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-                'data-place="' + escapeAttr(reel.place || '') + '">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>' +
-                '<span>' + escapeHtml(reel.cta_label || t('notify_btn')) + '</span>' +
-              '</button>';
-          }
-
-          // Иконка звездочки (sparkle) для топа
-          var starSvg = 
+          var starSvg =
             '<svg viewBox="0 0 24 24">' +
               '<path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z"/>' +
             '</svg>';
@@ -762,10 +822,8 @@
 
         function onStart(e){
           var pt = e.touches ? e.touches[0] : e;
-          startY = pt.clientY;
-          currentY = startY;
-          dragging = true;
-          moved = false;
+          startY = pt.clientY; currentY = startY;
+          dragging = true; moved = false;
           onboarding.classList.add('dragging');
         }
         function onMove(e){
@@ -784,18 +842,14 @@
           dragging = false;
           onboarding.classList.remove('dragging');
           var delta = currentY - startY;
-          if (delta < -THRESHOLD) {
-            dismissOnboarding();
-          } else {
-            onboarding.style.transform = '';
-          }
+          if (delta < -THRESHOLD) dismissOnboarding();
+          else onboarding.style.transform = '';
         }
 
         onboarding.addEventListener('touchstart', onStart, {passive:true});
         onboarding.addEventListener('touchmove', onMove, {passive:false});
         onboarding.addEventListener('touchend', onEnd);
         onboarding.addEventListener('touchcancel', onEnd);
-
         onboarding.addEventListener('mousedown', onStart);
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
@@ -808,7 +862,6 @@
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
         var onbIdx = 0, ONB_BATCH = 6;
-
         var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
 
         var onbReadyShown = false;
@@ -837,9 +890,7 @@
           v.addEventListener('error', fire, { once: true });
         }
 
-        onbMaxWaitTimer = setTimeout(function(){
-          showOnboardingReady();
-        }, 3000);
+        onbMaxWaitTimer = setTimeout(showOnboardingReady, 3000);
 
         function loadOnbBatch(){
           if (!onboarding) return;
@@ -867,8 +918,7 @@
             .then(function(rows){
               if (!onboarding) return;
               try {
-                var seen = {};
-                var urls = [];
+                var seen = {}, urls = [];
                 if (rows && rows.length) {
                   for (var i = 0; i < rows.length; i++) {
                     var u = rows[i] && rows[i].video_url;
@@ -880,10 +930,7 @@
                   return;
                 }
 
-                var n = urls.length;
-                var left = [];
-                var right = [];
-
+                var n = urls.length, left = [], right = [];
                 if (n >= 6) {
                   left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
                   right = [urls[3], urls[4], urls[5], urls[3], urls[4], urls[5]];
@@ -911,12 +958,9 @@
                   }
                   loadOnbBatch();
                 }
-              } catch(err){
-                console.warn('loadOnbFromSupabase parse error:', err);
-              }
+              } catch(err){ console.warn('loadOnb parse error:', err); }
             })
             .catch(function(err){
-              console.warn('onb supabase error:', err);
               if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
             });
         })();
@@ -943,6 +987,7 @@
 
       applyLang(currentLang);
 
+      // ===== Sound =====
       var soundBtns = [];
       function bindSoundBtns(){
         soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -970,6 +1015,7 @@
       }
       function disableSound(){ if (!soundEnabled) return; soundEnabled = false; updateIcons(); var v = getVideo(currentIndex); if (v) { try { v.muted = true; } catch(e){} } }
 
+      // ===== Share =====
       function bindShareBtns(){
         document.querySelectorAll('[data-share]').forEach(function(btn){
           btn.addEventListener('click', function(e){
@@ -995,6 +1041,7 @@
         });
       }
 
+      // ===== Top Vibe (лайки) =====
       function bindTopBtns(){
         document.querySelectorAll('[data-top]').forEach(function(btn){
           btn.addEventListener('click', async function(e){
@@ -1003,7 +1050,6 @@
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : null; if (!id) return;
 
-            // Блокируем кнопку на время запроса
             btn.disabled = true;
             var wasVoted = !!myTopSlides[id];
             var nowVoted = !wasVoted;
@@ -1012,21 +1058,16 @@
               if (nowVoted) {
                 myTopSlides[id] = true;
                 topCounts[id] = (topCounts[id] || 0) + 1;
-                
-                // Анимация цифры и иконки без всплывающего тоста
                 var cnt = btn.querySelector('[data-count]');
                 if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
                 var svg = btn.querySelector('.tv-ph svg');
                 if (svg) { svg.classList.remove('pulse'); void svg.offsetWidth; svg.classList.add('pulse'); }
-                
-                // Легкая вибрация
                 try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
               } else {
                 delete myTopSlides[id];
                 topCounts[id] = Math.max(0, (topCounts[id] || 0) - 1);
               }
               refreshTopUI();
-              
               if (window.ym) { try { ym(113067752, 'reachGoal', 'top_vibe'); } catch(err){} }
               trackEvent('top_vibe', { slide_id: id, voted: nowVoted });
 
@@ -1054,18 +1095,91 @@
         });
       }
 
-      var notifyInFlight = false;
-      async function subscribeNotify(btn, reelId, vibeTitle, place){
-        if (notifyInFlight) return;
-        notifyInFlight = true;
-        if (btn) btn.disabled = true;
+      // ===== Vibe CTA =====
+      async function handleVibeClick(btn, reelId, vibeTitle, place) {
+        if (btn.disabled) return;
+        btn.disabled = true;
+
+        try {
+          trackEvent('vibe_click', { reel_id: reelId, vibe_title: vibeTitle, place: place });
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_click'); } catch(err){} }
+
+          // Подписка в фоне (не ждём)
+          subscribeNotifySilent(reelId, vibeTitle, place);
+
+          var currentReel = allReels.find(function(r){ return r.id === reelId; });
+          if (!currentReel) return;
+
+          var stream = getVibeStream(currentReel, allReels);
+
+          if (stream.length >= 2) {
+            currentVibeFilter = { label: vibeTitle || place || '', reels: stream };
+            renderReels(stream);
+            layoutReels();
+
+            if (currentIO) { currentIO.disconnect(); currentIO = null; }
+            if (slideIO) { slideIO.disconnect(); slideIO = null; }
+
+            currentIndex = 0;
+            slideEnteredAt = Date.now();
+            initIO();
+            initSlideViewsIO();
+            setActiveSlide(0);
+            refreshTopUI();
+
+            try { feed.scrollTop = 0; } catch(e){}
+
+            showVibeBanner(stream.length, vibeTitle || place);
+            showToast(t('vibe_stream_toast'));
+
+            try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
+          } else {
+            showToast(t('vibe_single_toast'));
+          }
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      function showVibeBanner(count, label) {
+        if (!vibeBanner || !vibeBannerText) return;
+        var displayLabel = label || 'этот вайб';
+        var moreCount = Math.max(0, count - 1);
+        var tail = moreCount > 0 ? (moreCount + ' ' + t('vibe_banner_more')) : t('vibe_banner_single');
+        vibeBannerText.innerHTML = '✦ <em>' + escapeHtml(displayLabel) + '</em> · ' + tail;
+        vibeBanner.classList.add('show');
+      }
+
+      function hideVibeBanner() {
+        if (vibeBanner) vibeBanner.classList.remove('show');
+      }
+
+      function clearVibeFilter() {
+        currentVibeFilter = null;
+        hideVibeBanner();
+        if (allReels.length) {
+          renderReels(allReels);
+          layoutReels();
+          if (currentIO) { currentIO.disconnect(); currentIO = null; }
+          if (slideIO) { slideIO.disconnect(); slideIO = null; }
+          currentIndex = 0;
+          slideEnteredAt = Date.now();
+          initIO();
+          initSlideViewsIO();
+          setActiveSlide(0);
+          refreshTopUI();
+          try { feed.scrollTop = 0; } catch(e){}
+          showToast(t('vibe_clear_toast'));
+        }
+      }
+
+      async function subscribeNotifySilent(reelId, vibeTitle, place) {
         try {
           var user = await authReady;
-          if (!user) { showToast('Нужна авторизация'); return; }
-
+          if (!user) return;
           var tgUser = readTgUser();
           var tgId = tgUser ? String(tgUser.id) : null;
-          if (!tgId) { showToast(t('notify_already')); return; }
+          if (!tgId) return;
 
           await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
             method: 'PATCH',
@@ -1096,25 +1210,16 @@
               }])
             });
           }
-
-          showToast(t('notify_ok'));
-          trackEvent('notify_subscribe', { reel_id: reelId, vibe_title: vibeTitle, place: place });
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'notify_subscribe'); } catch(err){} }
-        } catch(err) {
-          console.warn('subscribeNotify error:', err);
-        } finally {
-          notifyInFlight = false;
-          if (btn) btn.disabled = false;
-        }
+        } catch(e) { console.warn('subscribe silent error:', e); }
       }
 
-      function bindNotifyBtns(){
-        document.querySelectorAll('[data-notify]').forEach(function(btn){
+      function bindVibeBtns(){
+        document.querySelectorAll('[data-vibe]').forEach(function(btn){
           if (btn.__bound) return;
           btn.__bound = true;
           btn.addEventListener('click', function(e){
             e.stopPropagation();
-            subscribeNotify(
+            handleVibeClick(
               btn,
               btn.getAttribute('data-reel-id'),
               btn.getAttribute('data-vibe-title'),
@@ -1124,217 +1229,10 @@
         });
       }
 
-      function bindTicketBtns(){
-        document.querySelectorAll('[data-ticket]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
-          btn.addEventListener('click', function(e){
-            var slide = btn.closest('.slide');
-            var id = slide ? slide.dataset.id : null;
-            trackEvent('ticket_click', { slide_id: id });
-            if (window.ym) { try { ym(113067752, 'reachGoal', 'cta_click'); } catch(err){} }
-          });
-        });
-      }
-
-      var GEO_CACHE_KEY = 'vetka_geo_v1';
-      var GEO_CACHE_TTL = 30 * 60 * 1000;
-      var LOC_QUEUE_KEY = 'vetka_loc_queue_v1';
-
-      function getCachedCoords() {
-        try {
-          var raw = localStorage.getItem(GEO_CACHE_KEY);
-          if (!raw) return null;
-          var c = JSON.parse(raw);
-          if (!c || typeof c.lat !== 'number' || typeof c.lng !== 'number') return null;
-          if (Date.now() - c.ts > GEO_CACHE_TTL) return null;
-          return { lat: c.lat, lng: c.lng };
-        } catch(e) { return null; }
-      }
-      function setCachedCoords(lat, lng) {
-        try { localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ lat: lat, lng: lng, ts: Date.now() })); } catch(e){}
-      }
-      function requestUserLocation() {
-        return new Promise(function(resolve, reject){
-          if (!navigator.geolocation) { reject(new Error('Geolocation not supported')); return; }
-          navigator.geolocation.getCurrentPosition(
-            function(p){ resolve({ lat: p.coords.latitude, lng: p.coords.longitude }); },
-            function(err){ reject(err); },
-            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-          );
-        });
-      }
-      function uuid(){
-        try { if (crypto && crypto.randomUUID) return crypto.randomUUID(); } catch(e){}
-        return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
-      }
-      function readLocQueue() {
-        try { return JSON.parse(localStorage.getItem(LOC_QUEUE_KEY) || '[]'); } catch(e){ return []; }
-      }
-      function writeLocQueue(q) {
-        try { localStorage.setItem(LOC_QUEUE_KEY, JSON.stringify(q)); } catch(e){}
-      }
-      function removeFromQueueById(id) {
-        try {
-          var q = readLocQueue();
-          var filtered = q.filter(function(it){ return it.client_event_id !== id; });
-          if (filtered.length !== q.length) writeLocQueue(filtered);
-        } catch(e){}
-      }
-      function queueLocationItem(item) {
-        try {
-          var q = readLocQueue();
-          for (var i = 0; i < q.length; i++) { if (q[i].client_event_id === item.client_event_id) return; }
-          q.push(item);
-          if (q.length > 200) q = q.slice(-200);
-          writeLocQueue(q);
-        } catch(e) { console.warn('queueLocationItem fail:', e); }
-      }
-      async function flushLocationQueue() {
-        var q = readLocQueue();
-        if (!q.length) return;
-
-        var token = null;
-        var userId = null;
-        try {
-          var s = await supabaseClient.auth.getSession();
-          if (s && s.data && s.data.session && s.data.session.access_token) {
-            token = s.data.session.access_token;
-            userId = s.data.session.user.id;
-          }
-        } catch(e){}
-
-        if (!token) {
-          try {
-            var anon = await supabaseClient.auth.signInAnonymously();
-            if (anon.error) return;
-            var s2 = await supabaseClient.auth.getSession();
-            if (s2 && s2.data && s2.data.session) {
-              token = s2.data.session.access_token;
-              userId = s2.data.session.user.id;
-            }
-          } catch(e){ return; }
-        }
-        if (!token || !userId) return;
-
-        var tgUser = readTgUser();
-        q = readLocQueue();
-
-        for (var i = 0; i < q.length; i++) {
-          var it = q[i];
-          if (!it || !it.client_event_id) continue;
-          try {
-            var body = [{
-              client_event_id: it.client_event_id,
-              user_id: userId,
-              tg_id: tgUser ? String(tgUser.id) : null,
-              username: tgUser ? (tgUser.username || null) : null,
-              first_name: tgUser ? (tgUser.first_name || null) : null,
-              last_name: tgUser ? (tgUser.last_name || null) : null,
-              profile_url: tgUser ? buildProfileUrl(tgUser) : null,
-              reel_id: it.reel_id,
-              reel_title: it.reel_title,
-              reel_place: it.reel_place,
-              latitude: it.lat,
-              longitude: it.lng,
-              destination_coords: it.dest_coords,
-              consent_given: true,
-              geo_source: it.geo_source,
-              route_created_at: it.ts_iso
-            }];
-
-            var res = await fetch(SUPABASE_URL + '/rest/v1/user_locations', {
-              method: 'POST',
-              headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-              },
-              body: JSON.stringify(body),
-              keepalive: true
-            });
-
-            if (res.ok || res.status === 409) {
-              removeFromQueueById(it.client_event_id);
-            }
-          } catch(e) {}
-        }
-      }
-      function saveUserLocationAsync(lat, lng, reelId, reelTitle, reelPlace, destCoords, geoSource) {
-        var item = {
-          client_event_id: uuid(),
-          lat: (typeof lat === 'number' && isFinite(lat)) ? lat : null,
-          lng: (typeof lng === 'number' && isFinite(lng)) ? lng : null,
-          reel_id: reelId,
-          reel_title: reelTitle,
-          reel_place: reelPlace,
-          dest_coords: destCoords,
-          geo_source: geoSource || 'unknown',
-          ts_iso: new Date().toISOString(),
-          ts: Date.now()
-        };
-        queueLocationItem(item);
-        flushLocationQueue();
-      }
-      function openYandexRoute(destCoords) {
-        var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
-        try {
-          if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
-            window.Telegram.WebApp.openLink(url);
-            return;
-          }
-        } catch(e){}
-        try { window.open(url, '_blank', 'noopener,noreferrer'); } catch(e){ location.href = url; }
-      }
-
-      function bindRouteBtns(){
-        document.querySelectorAll('[data-route]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
-          btn.addEventListener('click', async function(e){
-            e.stopPropagation();
-            var reelId = btn.getAttribute('data-reel-id');
-            var destCoords = btn.getAttribute('data-location');
-            var vibeTitle = btn.getAttribute('data-vibe-title');
-            var place = btn.getAttribute('data-place');
-
-            if (!destCoords) { showToast(t('addr_missing')); return; }
-
-            trackEvent('route_click', { slide_id: reelId, dest: destCoords });
-            if (window.ym) { try { ym(113067752, 'reachGoal', 'route_click'); } catch(err){} }
-
-            var cached = getCachedCoords();
-            if (cached) {
-              saveUserLocationAsync(cached.lat, cached.lng, reelId, vibeTitle, place, destCoords, 'cache');
-              openYandexRoute(destCoords);
-              return;
-            }
-
-            var userAgreed = confirm(t('route_confirm'));
-            if (!userAgreed) {
-              saveUserLocationAsync(null, null, reelId, vibeTitle, place, destCoords, 'user_declined');
-              openYandexRoute(destCoords);
-              return;
-            }
-
-            var coords = null;
-            try {
-              coords = await Promise.race([
-                requestUserLocation(),
-                new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('gps timeout')); }, 5000); })
-              ]);
-            } catch(err) {}
-
-            if (coords) {
-              setCachedCoords(coords.lat, coords.lng);
-              saveUserLocationAsync(coords.lat, coords.lng, reelId, vibeTitle, place, destCoords, 'fresh');
-            } else {
-              saveUserLocationAsync(null, null, reelId, vibeTitle, place, destCoords, 'gps_failed');
-            }
-
-            openYandexRoute(destCoords);
-          });
+      if (vibeBannerClose) {
+        vibeBannerClose.addEventListener('click', function(e){
+          e.stopPropagation();
+          clearVibeFilter();
         });
       }
 
@@ -1342,11 +1240,10 @@
         bindSoundBtns();
         bindShareBtns();
         bindTopBtns();
-        bindNotifyBtns();
-        bindTicketBtns();
-        bindRouteBtns();
+        bindVibeBtns();
       }
 
+      // ===== Observers =====
       var currentIO = null;
       function initIO(){
         if (currentIO) currentIO.disconnect();
@@ -1435,11 +1332,19 @@
           });
           rows.sort(function(a, b){ return b.__total - a.__total; });
 
+          allReels = rows;
+          topCounts = newLikes;
+
+          if (currentVibeFilter) {
+            // При активном фильтре не сбрасываем ленту, только обновляем счётчики
+            refreshTopUI();
+            return;
+          }
+
           var oldIds = slides.map(function(s){ return s.dataset.id; }).join('|');
           var newIds = rows.map(function(r){ return r.id; }).join('|');
 
           if (oldIds === newIds) {
-            topCounts = newLikes;
             refreshTopUI();
             return;
           }
@@ -1448,7 +1353,6 @@
           if (currentIO) { currentIO.disconnect(); currentIO = null; }
           if (slideIO) { slideIO.disconnect(); slideIO = null; }
 
-          topCounts = newLikes;
           renderReels(rows);
           reelsLoaded = true;
 
@@ -1509,17 +1413,6 @@
         catch(e){ console.warn('anon auth exception:', e); return null; }
       })();
 
-      async function loadMyVotes(){
-        try {
-          var user = await authReady; if (!user) return;
-          try {
-            var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
-            if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });
-          } catch(e){}
-          refreshTopUI();
-        } catch(e){}
-      }
-
       function startTgIdWatch(){
         if (tgIdWatchStarted) return;
         tgIdWatchStarted = true;
@@ -1569,7 +1462,7 @@
         if (document.hidden) { flushDwell(currentIndex); flushEvents(); }
         else { slideEnteredAt = Date.now(); }
       });
-      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); flushLocationQueue(); });
+      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
       window.addEventListener('resize', layoutReels);
 
       retryBtn.addEventListener('click', function(){ location.reload(); });
@@ -1583,6 +1476,7 @@
         retryCount = retryCount || 0;
         try {
           var data = await fetchAppData();
+          allReels = data.reels;
           topCounts = data.likes;
           renderReels(data.reels);
           reelsLoaded = true;
@@ -1603,7 +1497,6 @@
           refreshTopUI();
           if (onboardingDismissed) bootFeed();
           setInterval(refreshReels, 60000);
-          setInterval(flushLocationQueue, 60000);
 
         } catch (err) {
           console.warn('initFeed error:', err);

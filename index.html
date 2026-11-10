@@ -111,20 +111,49 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  .loc-btn {
+  .vibe-btn {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 14px 40px;
+    border-radius: 100px;
+    background: #CDFF4A;
+    color: #07070a;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    cursor: pointer;
+    align-self: center;
+    margin-top: 10px;
+    transition: transform .12s ease;
+    -webkit-tap-highlight-color: transparent;
+    border: 0;
+    animation: vibeGlow 2.6s ease-in-out infinite;
+  }
+  .vibe-btn:active { transform: scale(.96); }
+  .vibe-btn:disabled { opacity: .7; cursor: default; animation: none; }
+  .vibe-btn svg { width: 18px; height: 18px; flex: none; }
+  @keyframes vibeGlow {
+    0%, 100% { box-shadow: 0 4px 20px rgba(205,255,74,.35); }
+    50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 3px rgba(205,255,74,.2); }
+  }
+
+  .go-btn {
     pointer-events: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 13px 38px;
+    padding: 13px 40px;
     border-radius: 100px;
     background: #CDFF4A;
     color: #07070a;
     font-family: 'Inter', sans-serif;
     font-size: 13.5px;
     font-weight: 700;
-    letter-spacing: -.01em;
     cursor: pointer;
     align-self: center;
     margin-top: 8px;
@@ -132,17 +161,71 @@
     -webkit-tap-highlight-color: transparent;
     border: 0;
     text-decoration: none;
+    box-shadow: 0 4px 20px rgba(205,255,74,.35);
   }
-  .loc-btn:active { transform: scale(.96); }
-  .loc-btn:disabled { opacity: .6; cursor: default; }
-  .loc-btn svg { width: 18px; height: 18px; flex: none; }
+  .go-btn:active { transform: scale(.96); }
+  .go-btn svg { width: 16px; height: 16px; flex: none; }
 
-  .loc-btn.vibe-cta {
-    animation: vibeGlow 2.8s ease-in-out infinite;
+  .actions-row {
+    position: absolute;
+    right: 14px;
+    bottom: 170px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    pointer-events: none;
+    z-index: 10;
   }
-  @keyframes vibeGlow {
-    0%, 100% { box-shadow: 0 4px 20px rgba(205,255,74,.35); }
-    50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 2px rgba(205,255,74,.25); }
+
+  .share-btn, .map-btn {
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: inherit;
+  }
+  .share-btn:disabled, .map-btn:disabled { opacity: .65; cursor: default; }
+
+  .ico-ph {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(205,255,74,.14);
+    border: 1px solid rgba(205,255,74,.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #CDFF4A;
+    transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
+  }
+
+  .share-btn:active .ico-ph, .map-btn:active .ico-ph {
+    transform: scale(.9);
+    background: rgba(205,255,74,.9);
+    color: #07070a;
+    border-color: rgba(205,255,74,.9);
+  }
+
+  .ico-ph svg { width: 17px; height: 17px; display: block; }
+
+  .lbl {
+    font-family: 'Inter', sans-serif;
+    font-size: 8.5px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.55);
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0,0,0,.6);
   }
 
   .vibe-banner{
@@ -192,107 +275,71 @@
   .vibe-banner-close:active { background: rgba(205,255,74,.3); transform: scale(.92); }
   .vibe-banner-close svg { width: 14px; height: 14px; }
 
-  .actions-row {
-    position: absolute;
-    right: 14px;
-    bottom: 170px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  .top-vibe, .share-btn {
-    pointer-events: auto;
-    display: flex;
+  .vibe-overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    color: inherit;
+    gap: 22px;
+    background: rgba(7,7,10,.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    opacity: 0;
+    transition: opacity .3s ease;
   }
-  .top-vibe:disabled, .share-btn:disabled { opacity: .65; cursor: default; }
+  .vibe-overlay.show { display: flex; opacity: 1; }
+  .vibe-overlay.hide { opacity: 0; }
 
-  .tv-ph, .ico-ph {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: rgba(205,255,74,.14);
-    border: 1px solid rgba(205,255,74,.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .vibe-overlay-star{
+    width: 68px;
+    height: 68px;
     color: #CDFF4A;
-    transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
+    animation: overlayStarPulse 1.4s ease-in-out infinite;
+    filter: drop-shadow(0 0 24px rgba(205,255,74,.6));
+  }
+  .vibe-overlay-star svg { width: 100%; height: 100%; display: block; }
+  @keyframes overlayStarPulse {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: .85; }
+    50% { transform: scale(1.15) rotate(8deg); opacity: 1; }
   }
 
-  .top-vibe:active .tv-ph, .share-btn:active .ico-ph {
-    transform: scale(.9);
-  }
-
-  .tv-ph svg {
-    width: 18px;
-    height: 18px;
-    display: block;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: fill .2s ease;
-  }
-
-  .ico-ph svg {
-    width: 16px;
-    height: 16px;
-    display: block;
-    fill: none;
-  }
-
-  .tv-count {
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    color: #CDFF4A;
-    line-height: 1;
-    text-shadow: 0 1px 4px rgba(0,0,0,.6);
-  }
-
-  .tv-label, .lbl {
-    font-family: 'Inter', sans-serif;
-    font-size: 8.5px;
+  .vibe-overlay-text{
+    font-family: 'Unbounded', sans-serif;
     font-weight: 500;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,.5);
+    font-size: 17px;
+    letter-spacing: -.02em;
+    color: #fff;
     text-align: center;
+    max-width: 80vw;
+    line-height: 1.3;
+  }
+  .vibe-overlay-text em{
+    font-style: normal;
+    color: #CDFF4A;
   }
 
-  .top-vibe.voted .tv-ph {
-    background: rgba(205,255,74,.9);
-    color: #07070a;
-    border-color: rgba(205,255,74,.9);
+  .vibe-overlay-dots{
+    display: flex;
+    gap: 6px;
+    margin-top: -8px;
   }
-  .top-vibe.voted .tv-ph svg {
-    fill: #07070a;
-    stroke: #07070a;
+  .vibe-overlay-dots i{
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #CDFF4A;
+    opacity: .4;
+    animation: overlayDot 1.2s ease-in-out infinite;
   }
-  .top-vibe.voted .tv-count { color: #CDFF4A; }
-  .top-vibe.voted .tv-label { color: #CDFF4A; }
-
-  @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
-  .tv-count.pulse{animation:countPulse .45s ease;}
-  
-  @keyframes iconPop{0%{transform:scale(1);}50%{transform:scale(1.25);}100%{transform:scale(1);}}
-  .tv-ph svg.pulse{animation:iconPop .35s cubic-bezier(.2,.9,.3,1.4);}
+  .vibe-overlay-dots i:nth-child(2) { animation-delay: .15s; }
+  .vibe-overlay-dots i:nth-child(3) { animation-delay: .3s; }
+  @keyframes overlayDot {
+    0%, 100% { opacity: .3; transform: scale(.8); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
@@ -363,7 +410,7 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Погрузись в собственный поток событий — <em>под свой вайб</em></div>
+      <div class="onb-tag" data-i18n="onboard_tag">Поиск событий <em>под твой вайб</em></div>
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
@@ -375,6 +422,16 @@
     <button class="vibe-banner-close" id="vibeBannerClose" aria-label="Закрыть">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
+  </div>
+
+  <div class="vibe-overlay" id="vibeOverlay">
+    <div class="vibe-overlay-star">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/>
+      </svg>
+    </div>
+    <div class="vibe-overlay-text" id="vibeOverlayText">Собираем поток</div>
+    <div class="vibe-overlay-dots"><i></i><i></i><i></i></div>
   </div>
 
   <div class="empty-state" id="emptyState">
@@ -425,9 +482,57 @@
       })();
 
       var I18N = {
-        ru: { onboard_tag:'Погрузись в собственный поток событий — <em>под свой вайб</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', share_text:'Пойдём вместе?', share_label:'Поделиться', vibe_btn:'В этот поток', vibe_stream_toast:'✦ Погружаемся в поток', vibe_single_toast:'Это первый такой вайб. Пришлём ещё 🔔', vibe_clear_toast:'Показали всё', vibe_banner_label:'Поток', vibe_banner_more:'ещё в ленте', vibe_banner_single:'пока один', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
-        en: { onboard_tag:'Dive into your own stream of events — <em>to your own vibe</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', share_text:'Let\'s go together?', share_label:'Share', vibe_btn:'Into this stream', vibe_stream_toast:'✦ Diving into the stream', vibe_single_toast:'First one of its kind. We\'ll ping you 🔔', vibe_clear_toast:'Showing all', vibe_banner_label:'Stream', vibe_banner_more:'more in feed', vibe_banner_single:'one for now', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
-        es: { onboard_tag:'Sumérgete en tu propio flujo de eventos — <em>a tu propio rollo</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', share_text:'¿Vamos juntos?', share_label:'Compartir', vibe_btn:'En este flujo', vibe_stream_toast:'✦ Sumergiéndonos', vibe_single_toast:'El primero de su tipo. Te avisamos 🔔', vibe_clear_toast:'Mostrando todo', vibe_banner_label:'Flujo', vibe_banner_more:'más en el feed', vibe_banner_single:'uno por ahora', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
+        ru: {
+          onboard_tag:'Поиск событий <em>под твой вайб</em>',
+          onboard_hint:'Листай вверх',
+          vibe_btn:'Выбрать вайб',
+          go_btn:'Перейти',
+          map_label:'На карте',
+          share_label:'Поделиться',
+          share_text:'Пойдём вместе?',
+          overlay_collecting:'Собираем поток',
+          banner_stream:'Поток',
+          banner_one:'1 событие',
+          banner_many:'{n} событий',
+          toast_no_location:'Адрес не указан',
+          toast_soon:'Скоро здесь',
+          toast_back:'Вернулись к выбору',
+          min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
+        },
+        en: {
+          onboard_tag:'Find events <em>for your vibe</em>',
+          onboard_hint:'Swipe up',
+          vibe_btn:'Choose vibe',
+          go_btn:'Open',
+          map_label:'On map',
+          share_label:'Share',
+          share_text:'Let\'s go together?',
+          overlay_collecting:'Collecting stream',
+          banner_stream:'Stream',
+          banner_one:'1 event',
+          banner_many:'{n} events',
+          toast_no_location:'No address',
+          toast_soon:'Coming soon',
+          toast_back:'Back to selection',
+          min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
+        },
+        es: {
+          onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
+          onboard_hint:'Desliza hacia arriba',
+          vibe_btn:'Elegir vibe',
+          go_btn:'Abrir',
+          map_label:'En mapa',
+          share_label:'Compartir',
+          share_text:'¿Vamos juntos?',
+          overlay_collecting:'Recolectando',
+          banner_stream:'Flujo',
+          banner_one:'1 evento',
+          banner_many:'{n} eventos',
+          toast_no_location:'Dirección no indicada',
+          toast_soon:'Pronto',
+          toast_back:'Volver a elegir',
+          min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
+        }
       };
 
       var currentLang = 'ru';
@@ -435,6 +540,7 @@
       if (!I18N[currentLang]) currentLang = 'ru';
 
       function t(key){ var d = I18N[currentLang] || I18N.ru; return d[key] != null ? d[key] : (I18N.ru[key] || key); }
+      function tFmt(key, vars){ var s = t(key); for (var k in vars) s = s.replace('{' + k + '}', vars[k]); return s; }
 
       function applyLang(lang){
         if (!I18N[lang]) lang = 'ru';
@@ -472,35 +578,6 @@
         } finally {
           clearTimeout(timer);
         }
-      }
-
-      var appDataPromise = null;
-      function fetchAppData() {
-        if (appDataPromise) return appDataPromise;
-        appDataPromise = (async function(){
-          var rows = [];
-          var likesCount = {};
-          try {
-            rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
-            if (!rows) rows = [];
-          } catch(e){ console.warn('reels error:', e); throw e; }
-          try {
-            var likesAll = await api('likes', 'select=slide_id');
-            if (likesAll && likesAll.length) {
-              likesAll.forEach(function(l){ if (l.slide_id) likesCount[l.slide_id] = (likesCount[l.slide_id] || 0) + 1; });
-            }
-          } catch(e){ console.warn('likes error:', e); }
-
-          rows.forEach(function(r){
-            var base = parseInt(r.base_votes, 10) || 0;
-            var real = likesCount[r.id] || 0;
-            r.__total = base + real;
-          });
-          rows.sort(function(a, b){ return b.__total - a.__total; });
-          return { reels: rows, likes: likesCount };
-        })();
-        appDataPromise.catch(function(){ appDataPromise = null; });
-        return appDataPromise;
       }
 
       function timeAgo(iso){
@@ -555,26 +632,26 @@
       var vibeBanner = document.getElementById('vibeBanner');
       var vibeBannerText = document.getElementById('vibeBannerText');
       var vibeBannerClose = document.getElementById('vibeBannerClose');
+      var vibeOverlay = document.getElementById('vibeOverlay');
+      var vibeOverlayText = document.getElementById('vibeOverlayText');
 
-      var allReels = [];
-      var currentVibeFilter = null;
+      var vibeReels = [];
+      var allEventReels = [];
+      var currentVibe = null;
 
       var slides = [];
       var videoUrls = [];
       var currentIndex = 0;
       var slideEnteredAt = 0;
       var soundEnabled = false;
-      var myTopSlides = {};
-      var topCounts = {};
       var trackedSlideViews = {};
       var flushing = false;
       var tgIdWatchStarted = false;
       var pendingEvents = [];
-      var reelsLoaded = false;
+      var loaded = false;
       var onboardingDismissed = false;
       var feedBooted = false;
       var onboardingClosing = false;
-      var refreshing = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
@@ -585,7 +662,7 @@
         toast.textContent = text;
         toast.classList.add('show');
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2400);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
       }
 
       function showEmptyState(title, text, showRetry){
@@ -605,27 +682,95 @@
         return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       }
 
-      function getVibeStream(currentReel, allReels){
-        var vibe = (currentReel.vibe_title || '').toLowerCase().trim();
-        var place = (currentReel.place || '').toLowerCase().trim();
-        if (!vibe && !place) return allReels.slice();
-
-        var stream = allReels.filter(function(r){
-          var v = (r.vibe_title || '').toLowerCase().trim();
-          var p = (r.place || '').toLowerCase().trim();
-          return (vibe && v === vibe) || (place && p === place);
-        });
-
-        // Поставить текущий рилс первым
-        stream = stream.filter(function(r){ return r.id !== currentReel.id; });
-        stream.unshift(currentReel);
-        return stream;
+      async function loadVibeReels(){
+        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.vibe&order=created_at.asc&limit=20');
+      }
+      async function loadEventsForVibe(category){
+        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=created_at.desc&limit=50');
       }
 
-      function renderReels(reels){
+      function renderSlideShell(reel, mode){
+        var slide = document.createElement('div');
+        slide.className = 'slide';
+        slide.dataset.id = reel.id;
+
+        var badgeState = getBadgeState(reel.published_at);
+        var badgeClass = 'live-top hidden';
+        var badgeInner = '';
+        if (badgeState === 'live') {
+          badgeClass = 'live-top';
+          badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
+        }
+
+        var placeHtml = reel.place
+          ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
+          : '';
+
+        var ctaHtml = '';
+        var actionsHtml = '';
+
+        if (mode === 'vibe') {
+          // Экран выбора вайба: одна большая кнопка «Выбрать вайб», без «Поделиться»
+          ctaHtml =
+            '<button class="vibe-btn" data-choose type="button" ' +
+              'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
+              'data-label="' + escapeAttr(reel.vibe_title || '') + '">' +
+              '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/></svg>' +
+              '<span data-i18n="vibe_btn">' + t('vibe_btn') + '</span>' +
+            '</button>';
+          actionsHtml = ''; // НЕТ кнопок справа
+        } else {
+          // Экран событий: «Перейти» снизу + «На карте» и «Поделиться» справа
+          ctaHtml =
+            '<button class="go-btn" data-go type="button" ' +
+              'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
+              'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
+              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+              'data-place="' + escapeAttr(reel.place || '') + '">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>' +
+              '<span data-i18n="go_btn">' + t('go_btn') + '</span>' +
+            '</button>';
+
+          actionsHtml =
+            '<button class="map-btn" data-map ' +
+              'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
+              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+              'data-place="' + escapeAttr(reel.place || '') + '">' +
+              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>' +
+              '<span class="lbl" data-i18n="map_label">' + t('map_label') + '</span>' +
+            '</button>' +
+            '<button class="share-btn" data-share>' +
+              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
+              '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
+            '</button>';
+        }
+
+        var actionsBlock = actionsHtml
+          ? '<div class="actions-row">' + actionsHtml + '</div>'
+          : '';
+
+        slide.innerHTML =
+          '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
+          '<div class="veil"></div>' +
+          '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
+          '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
+          '<div class="bottom">' +
+            '<div class="title-row"><div class="title">' + escapeHtml(reel.vibe_title || '') + '</div></div>' +
+            '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
+            placeHtml +
+            ctaHtml +
+            actionsBlock +
+          '</div>';
+
+        return slide;
+      }
+
+      function renderList(reels, mode){
         feed.innerHTML = '';
         if (!reels || reels.length === 0) {
-          showEmptyState('Пока пусто', 'Скоро тут появятся рилсы. Загляни позже.', false);
+          showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет событий.', false);
           slides = [];
           videoUrls = [];
           return;
@@ -633,74 +778,7 @@
         hideEmptyState();
 
         reels.forEach(function(reel){
-          var slide = document.createElement('div');
-          slide.className = 'slide';
-          slide.dataset.id = reel.id;
-
-          var badgeState = getBadgeState(reel.published_at);
-          var badgeClass = 'live-top hidden';
-          var badgeInner = '';
-          if (badgeState === 'live') {
-            badgeClass = 'live-top';
-            badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
-          }
-
-          var baseVotes = parseInt(reel.base_votes, 10) || 0;
-          var totalVotes = baseVotes + (topCounts[reel.id] || 0);
-          var placeHtml = reel.place
-            ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
-            : '';
-
-          // Одна статическая CTA — «В этот поток»
-          var ctaHtml =
-            '<button class="loc-btn vibe-cta" data-vibe type="button" ' +
-              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-              'data-place="' + escapeAttr(reel.place || '') + '">' +
-              '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
-                '<path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/>' +
-              '</svg>' +
-              '<span>' + escapeHtml(t('vibe_btn')) + '</span>' +
-            '</button>';
-
-          var starSvg =
-            '<svg viewBox="0 0 24 24">' +
-              '<path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z"/>' +
-            '</svg>';
-
-          slide.innerHTML =
-            '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
-            '<div class="veil"></div>' +
-            '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
-            '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
-            '<div class="bottom">' +
-              '<div class="title-row">' +
-                '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
-              '</div>' +
-              '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
-              placeHtml +
-              ctaHtml +
-              '<div class="actions-row">' +
-                '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
-                  '<span class="tv-ph">' + starSvg + '</span>' +
-                  '<span class="tv-count" data-count>' + totalVotes + '</span>' +
-                  '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
-                '</button>' +
-                '<button class="share-btn" data-share aria-label="Share">' +
-                  '<span class="ico-ph">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>' +
-                      '<circle cx="9" cy="7" r="4"/>' +
-                      '<path d="M19 8v6"/>' +
-                      '<path d="M22 11h-6"/>' +
-                    '</svg>' +
-                  '</span>' +
-                  '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
-                '</button>' +
-              '</div>' +
-            '</div>';
-
-          feed.appendChild(slide);
+          feed.appendChild(renderSlideShell(reel, mode));
         });
 
         slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
@@ -809,7 +887,7 @@
         layoutReels();
         slideEnteredAt = Date.now();
         feed.classList.add('visible');
-        if (reelsLoaded) bootFeed();
+        if (loaded) bootFeed();
         setTimeout(function(){
           if (onboarding && onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
           onboarding = null;
@@ -914,7 +992,7 @@
 
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
-          api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
+          api('reels', 'select=video_url&is_active=eq.true&order=created_at.desc&limit=12')
             .then(function(rows){
               if (!onboarding) return;
               try {
@@ -960,7 +1038,7 @@
                 }
               } catch(err){ console.warn('loadOnb parse error:', err); }
             })
-            .catch(function(err){
+            .catch(function(){
               if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
             });
         })();
@@ -987,7 +1065,6 @@
 
       applyLang(currentLang);
 
-      // ===== Sound =====
       var soundBtns = [];
       function bindSoundBtns(){
         soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -1015,9 +1092,10 @@
       }
       function disableSound(){ if (!soundEnabled) return; soundEnabled = false; updateIcons(); var v = getVideo(currentIndex); if (v) { try { v.muted = true; } catch(e){} } }
 
-      // ===== Share =====
       function bindShareBtns(){
         document.querySelectorAll('[data-share]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
           btn.addEventListener('click', function(e){
             e.stopPropagation();
             if (window.ym) { try { ym(113067752, 'reachGoal', 'share'); } catch(err){} }
@@ -1041,142 +1119,84 @@
         });
       }
 
-      // ===== Top Vibe (лайки) =====
-      function bindTopBtns(){
-        document.querySelectorAll('[data-top]').forEach(function(btn){
-          btn.addEventListener('click', async function(e){
+      function bindChooseBtns(){
+        document.querySelectorAll('[data-choose]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', function(e){
             e.stopPropagation();
             if (btn.disabled) return;
-            var slide = btn.closest('.slide');
-            var id = slide ? slide.dataset.id : null; if (!id) return;
-
-            btn.disabled = true;
-            var wasVoted = !!myTopSlides[id];
-            var nowVoted = !wasVoted;
-
-            try {
-              if (nowVoted) {
-                myTopSlides[id] = true;
-                topCounts[id] = (topCounts[id] || 0) + 1;
-                var cnt = btn.querySelector('[data-count]');
-                if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
-                var svg = btn.querySelector('.tv-ph svg');
-                if (svg) { svg.classList.remove('pulse'); void svg.offsetWidth; svg.classList.add('pulse'); }
-                try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
-              } else {
-                delete myTopSlides[id];
-                topCounts[id] = Math.max(0, (topCounts[id] || 0) - 1);
-              }
-              refreshTopUI();
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'top_vibe'); } catch(err){} }
-              trackEvent('top_vibe', { slide_id: id, voted: nowVoted });
-
-              try {
-                var user = await authReady; if (!user) return;
-                if (nowVoted) await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
-                else await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
-              } catch(err){ console.warn('vote sync error:', err); }
-            } finally {
-              btn.disabled = false;
-            }
+            var category = btn.getAttribute('data-category');
+            var label = btn.getAttribute('data-label') || category;
+            selectVibe(btn, category, label);
           });
         });
       }
 
-      function refreshTopUI(){
-        slides.forEach(function(slide){
-          var id = slide.dataset.id; if (!id) return;
-          var btn = slide.querySelector('[data-top]'); if (!btn) return;
-          var base = parseInt(btn.dataset.base || '0', 10) || 0;
-          var count = topCounts[id] || 0;
-          var total = base + count; if (total < 0) total = 0;
-          var cnt = btn.querySelector('[data-count]'); if (cnt) cnt.textContent = total;
-          if (myTopSlides[id]) btn.classList.add('voted'); else btn.classList.remove('voted');
-        });
-      }
-
-      // ===== Vibe CTA =====
-      async function handleVibeClick(btn, reelId, vibeTitle, place) {
-        if (btn.disabled) return;
+      async function selectVibe(btn, category, label){
         btn.disabled = true;
+        trackEvent('vibe_select', { category: category, label: label });
+        if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
 
-        try {
-          trackEvent('vibe_click', { reel_id: reelId, vibe_title: vibeTitle, place: place });
-          if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_click'); } catch(err){} }
+        showVibeOverlay(label);
 
-          // Подписка в фоне (не ждём)
-          subscribeNotifySilent(reelId, vibeTitle, place);
+        var delayP = new Promise(function(r){ setTimeout(r, 900); });
+        subscribeVibe(category, label);
+        var eventsP = loadEventsForVibe(category).catch(function(){ return []; });
 
-          var currentReel = allReels.find(function(r){ return r.id === reelId; });
-          if (!currentReel) return;
+        var results = await Promise.all([eventsP, delayP]);
+        var events = results[0] || [];
 
-          var stream = getVibeStream(currentReel, allReels);
-
-          if (stream.length >= 2) {
-            currentVibeFilter = { label: vibeTitle || place || '', reels: stream };
-            renderReels(stream);
-            layoutReels();
-
-            if (currentIO) { currentIO.disconnect(); currentIO = null; }
-            if (slideIO) { slideIO.disconnect(); slideIO = null; }
-
-            currentIndex = 0;
-            slideEnteredAt = Date.now();
-            initIO();
-            initSlideViewsIO();
-            setActiveSlide(0);
-            refreshTopUI();
-
-            try { feed.scrollTop = 0; } catch(e){}
-
-            showVibeBanner(stream.length, vibeTitle || place);
-            showToast(t('vibe_stream_toast'));
-
-            try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
-          } else {
-            showToast(t('vibe_single_toast'));
-          }
-        } finally {
+        if (!events.length) {
+          hideVibeOverlay();
           btn.disabled = false;
+          showToast(t('toast_soon'));
+          return;
         }
+
+        allEventReels = events;
+        currentVibe = { category: category, label: label, events: events };
+
+        hideVibeOverlay();
+        await new Promise(function(r){ setTimeout(r, 260); });
+
+        if (currentIO) { currentIO.disconnect(); currentIO = null; }
+        if (slideIO) { slideIO.disconnect(); slideIO = null; }
+
+        renderList(events, 'event');
+        layoutReels();
+
+        currentIndex = 0;
+        slideEnteredAt = Date.now();
+        initIO();
+        initSlideViewsIO();
+        setActiveSlide(0);
+
+        try { feed.scrollTop = 0; } catch(e){}
+
+        showVibeBanner(label, events.length);
+
+        btn.disabled = false;
       }
 
-      function showVibeBanner(count, label) {
-        if (!vibeBanner || !vibeBannerText) return;
-        var displayLabel = label || 'этот вайб';
-        var moreCount = Math.max(0, count - 1);
-        var tail = moreCount > 0 ? (moreCount + ' ' + t('vibe_banner_more')) : t('vibe_banner_single');
-        vibeBannerText.innerHTML = '✦ <em>' + escapeHtml(displayLabel) + '</em> · ' + tail;
-        vibeBanner.classList.add('show');
+      function showVibeOverlay(label){
+        if (!vibeOverlay) return;
+        vibeOverlayText.innerHTML = t('overlay_collecting') + ' · <em>' + escapeHtml(label) + '</em>';
+        vibeOverlay.classList.remove('hide');
+        vibeOverlay.classList.add('show');
+      }
+      function hideVibeOverlay(){
+        if (!vibeOverlay) return;
+        vibeOverlay.classList.add('hide');
+        setTimeout(function(){
+          vibeOverlay.classList.remove('show');
+          vibeOverlay.classList.remove('hide');
+        }, 300);
       }
 
-      function hideVibeBanner() {
-        if (vibeBanner) vibeBanner.classList.remove('show');
-      }
-
-      function clearVibeFilter() {
-        currentVibeFilter = null;
-        hideVibeBanner();
-        if (allReels.length) {
-          renderReels(allReels);
-          layoutReels();
-          if (currentIO) { currentIO.disconnect(); currentIO = null; }
-          if (slideIO) { slideIO.disconnect(); slideIO = null; }
-          currentIndex = 0;
-          slideEnteredAt = Date.now();
-          initIO();
-          initSlideViewsIO();
-          setActiveSlide(0);
-          refreshTopUI();
-          try { feed.scrollTop = 0; } catch(e){}
-          showToast(t('vibe_clear_toast'));
-        }
-      }
-
-      async function subscribeNotifySilent(reelId, vibeTitle, place) {
+      async function subscribeVibe(category, label){
         try {
-          var user = await authReady;
-          if (!user) return;
+          var user = await authReady; if (!user) return;
           var tgUser = readTgUser();
           var tgId = tgUser ? String(tgUser.id) : null;
           if (!tgId) return;
@@ -1192,58 +1212,124 @@
             body: JSON.stringify({ wants_notify: true })
           });
 
-          if (reelId) {
-            await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
-              method: 'POST',
-              headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-                'Content-Type': 'application/json',
-                'Prefer': 'resolution=ignore-duplicates,return=minimal'
-              },
-              body: JSON.stringify([{
-                user_id: user.id,
-                tg_id: tgId,
-                reel_id: reelId,
-                vibe_title: vibeTitle || null,
-                place: place || null
-              }])
-            });
-          }
-        } catch(e) { console.warn('subscribe silent error:', e); }
+          await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
+            method: 'POST',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'resolution=ignore-duplicates,return=minimal'
+            },
+            body: JSON.stringify([{
+              user_id: user.id,
+              tg_id: tgId,
+              reel_id: 'vibe:' + category,
+              vibe_title: label || null,
+              place: category || null
+            }])
+          });
+        } catch(e) { console.warn('subscribeVibe error:', e); }
       }
 
-      function bindVibeBtns(){
-        document.querySelectorAll('[data-vibe]').forEach(function(btn){
+      function showVibeBanner(label, count){
+        if (!vibeBanner || !vibeBannerText) return;
+        var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
+        vibeBannerText.innerHTML = '✦ ' + escapeHtml(t('banner_stream')) + ' <em>' + escapeHtml(label) + '</em> · ' + countText;
+        vibeBanner.classList.add('show');
+      }
+      function hideVibeBanner(){ if (vibeBanner) vibeBanner.classList.remove('show'); }
+
+      async function backToVibes(){
+        currentVibe = null;
+        hideVibeBanner();
+        if (currentIO) { currentIO.disconnect(); currentIO = null; }
+        if (slideIO) { slideIO.disconnect(); slideIO = null; }
+
+        renderList(vibeReels, 'vibe');
+        layoutReels();
+        currentIndex = 0;
+        slideEnteredAt = Date.now();
+        initIO();
+        initSlideViewsIO();
+        setActiveSlide(0);
+        try { feed.scrollTop = 0; } catch(e){}
+        showToast(t('toast_back'));
+      }
+
+      function bindGoBtns(){
+        document.querySelectorAll('[data-go]').forEach(function(btn){
           if (btn.__bound) return;
           btn.__bound = true;
           btn.addEventListener('click', function(e){
             e.stopPropagation();
-            handleVibeClick(
-              btn,
-              btn.getAttribute('data-reel-id'),
-              btn.getAttribute('data-vibe-title'),
-              btn.getAttribute('data-place')
-            );
+            var ctaUrl = btn.getAttribute('data-cta-url') || '';
+            var loc = btn.getAttribute('data-location') || '';
+            var reelId = btn.getAttribute('data-reel-id') || '';
+            var vibeTitle = btn.getAttribute('data-vibe-title') || '';
+            var place = btn.getAttribute('data-place') || '';
+
+            trackEvent('go_click', { slide_id: reelId, has_url: !!ctaUrl, has_loc: !!loc });
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
+
+            if (ctaUrl) {
+              try {
+                if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
+                  window.Telegram.WebApp.openLink(ctaUrl);
+                } else {
+                  window.open(ctaUrl, '_blank', 'noopener,noreferrer');
+                }
+              } catch(e){ location.href = ctaUrl; }
+              return;
+            }
+
+            if (loc) { openMap(loc, reelId, vibeTitle, place); return; }
+
+            showToast(t('toast_soon'));
           });
         });
       }
 
-      if (vibeBannerClose) {
-        vibeBannerClose.addEventListener('click', function(e){
-          e.stopPropagation();
-          clearVibeFilter();
+      function bindMapBtns(){
+        document.querySelectorAll('[data-map]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', function(e){
+            e.stopPropagation();
+            var loc = btn.getAttribute('data-location') || '';
+            var reelId = btn.getAttribute('data-reel-id') || '';
+            var vibeTitle = btn.getAttribute('data-vibe-title') || '';
+            var place = btn.getAttribute('data-place') || '';
+
+            if (!loc) { showToast(t('toast_no_location')); return; }
+
+            trackEvent('map_click', { slide_id: reelId });
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'map_click'); } catch(err){} }
+
+            openMap(loc, reelId, vibeTitle, place);
+          });
         });
+      }
+
+      function openMap(destCoords, reelId, vibeTitle, place){
+        var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
+        trackEvent('route_open', { slide_id: reelId, dest: destCoords });
+        try {
+          if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
+            window.Telegram.WebApp.openLink(url);
+            return;
+          }
+        } catch(e){}
+        try { window.open(url, '_blank', 'noopener,noreferrer'); } catch(e){ location.href = url; }
       }
 
       function bindHandlers(){
         bindSoundBtns();
         bindShareBtns();
-        bindTopBtns();
-        bindVibeBtns();
+        bindChooseBtns();
+        bindGoBtns();
+        bindMapBtns();
       }
 
-      // ===== Observers =====
       var currentIO = null;
       function initIO(){
         if (currentIO) currentIO.disconnect();
@@ -1303,80 +1389,11 @@
         initIO();
         initSlideViewsIO();
         setActiveSlide(startIdx);
-        refreshTopUI();
 
         if (startIdx > 0) {
           setTimeout(function(){
             try { if (feed) feed.scrollTop = startIdx * feed.clientHeight; } catch(e){}
           }, 250);
-        }
-      }
-
-      async function refreshReels(){
-        if (refreshing) return;
-        if (!reelsLoaded) return;
-        if (document.hidden) return;
-        if (!onboardingDismissed) return;
-        refreshing = true;
-        try {
-          var rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
-          if (!rows) rows = [];
-          var likesAll = [];
-          try { likesAll = await api('likes', 'select=slide_id') || []; } catch(e){}
-          var newLikes = {};
-          likesAll.forEach(function(l){ if (l.slide_id) newLikes[l.slide_id] = (newLikes[l.slide_id] || 0) + 1; });
-
-          rows.forEach(function(r){
-            var base = parseInt(r.base_votes, 10) || 0;
-            r.__total = base + (newLikes[r.id] || 0);
-          });
-          rows.sort(function(a, b){ return b.__total - a.__total; });
-
-          allReels = rows;
-          topCounts = newLikes;
-
-          if (currentVibeFilter) {
-            // При активном фильтре не сбрасываем ленту, только обновляем счётчики
-            refreshTopUI();
-            return;
-          }
-
-          var oldIds = slides.map(function(s){ return s.dataset.id; }).join('|');
-          var newIds = rows.map(function(r){ return r.id; }).join('|');
-
-          if (oldIds === newIds) {
-            refreshTopUI();
-            return;
-          }
-
-          var curId = slides[currentIndex] ? slides[currentIndex].dataset.id : null;
-          if (currentIO) { currentIO.disconnect(); currentIO = null; }
-          if (slideIO) { slideIO.disconnect(); slideIO = null; }
-
-          renderReels(rows);
-          reelsLoaded = true;
-
-          var newIdx = 0;
-          if (curId) {
-            for (var i = 0; i < slides.length; i++) {
-              if (slides[i].dataset.id === curId) { newIdx = i; break; }
-            }
-          }
-          currentIndex = newIdx;
-          initIO();
-          initSlideViewsIO();
-          setActiveSlide(newIdx);
-          refreshTopUI();
-
-          requestAnimationFrame(function(){
-            try { if (feed) feed.scrollTop = newIdx * feed.clientHeight; } catch(e){}
-          });
-
-          layoutReels();
-        } catch(e) {
-          console.warn('refresh error:', e);
-        } finally {
-          refreshing = false;
         }
       }
 
@@ -1409,8 +1426,8 @@
             await new Promise(function(r){ setTimeout(r, 200); });
           }
         }
-        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) { console.warn('anon auth error:', r.error.message); return null; } return r.data.user; }
-        catch(e){ console.warn('anon auth exception:', e); return null; }
+        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) return null; return r.data.user; }
+        catch(e){ return null; }
       })();
 
       function startTgIdWatch(){
@@ -1465,6 +1482,13 @@
       window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
       window.addEventListener('resize', layoutReels);
 
+      if (vibeBannerClose) {
+        vibeBannerClose.addEventListener('click', function(e){
+          e.stopPropagation();
+          backToVibes();
+        });
+      }
+
       retryBtn.addEventListener('click', function(){ location.reload(); });
 
       authReady.then(function(u){
@@ -1472,42 +1496,25 @@
         trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
       });
 
-      async function initFeed(retryCount){
+      async function initApp(retryCount){
         retryCount = retryCount || 0;
         try {
-          var data = await fetchAppData();
-          allReels = data.reels;
-          topCounts = data.likes;
-          renderReels(data.reels);
-          reelsLoaded = true;
-
-          try {
-            var user = await Promise.race([
-              authReady,
-              new Promise(function(r){ setTimeout(function(){ r(null); }, 2500); })
-            ]);
-            if (user) {
-              try {
-                var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
-                if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });
-              } catch(e){}
-            }
-          } catch(e){}
-
-          refreshTopUI();
+          var vibes = await loadVibeReels();
+          if (!vibes) vibes = [];
+          vibeReels = vibes;
+          renderList(vibes, 'vibe');
+          loaded = true;
           if (onboardingDismissed) bootFeed();
-          setInterval(refreshReels, 60000);
-
         } catch (err) {
-          console.warn('initFeed error:', err);
+          console.warn('initApp error:', err);
           if (retryCount < 3) {
-            setTimeout(function(){ initFeed(retryCount + 1); }, 1500 * (retryCount + 1));
+            setTimeout(function(){ initApp(retryCount + 1); }, 1500 * (retryCount + 1));
           } else {
             showEmptyState('Не удалось загрузить', 'Проверьте соединение и попробуйте снова.', true);
           }
         }
       }
-      initFeed(0);
+      initApp(0);
 
     })();
   </script>

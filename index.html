@@ -98,7 +98,6 @@
   .live-top.hidden{display:none;}
 
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
-  .bottom .actions-row{pointer-events:auto;}
 
   .title-row{display:flex;align-items:center;gap:12px;pointer-events:none;}
   .title-row .title{flex:1;min-width:0;}
@@ -142,32 +141,44 @@
     50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 3px rgba(205,255,74,.2); }
   }
 
-  /* Пульсирующий спиральный кружок (вместо «Выбрать») */
-  .pulse-btn {
+  /* Правая стопка на экране событий */
+  .actions-row {
     position: absolute;
-    left: 50%;
-    bottom: calc(160px + env(safe-area-inset-bottom, 0px));
-    transform: translateX(-50%);
-    z-index: 6;
-    width: 72px;
-    height: 72px;
-    background: transparent;
-    border: 0;
-    padding: 0;
-    cursor: pointer;
-    color: #CDFF4A;
-    opacity: 0.42;
+    right: 14px;
+    bottom: calc(130px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Главное действие — пульсирующий спиральный кружок */
+  .pulse-btn {
     pointer-events: auto;
+    width: 56px;
+    height: 56px;
+    background: rgba(205,255,74,.08);
+    border: 1px solid rgba(205,255,74,.45);
+    border-radius: 50%;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #CDFF4A;
+    cursor: pointer;
+    padding: 0;
     -webkit-tap-highlight-color: transparent;
-    animation: pulseBtnFloat 4s ease-in-out infinite;
-    transition: opacity .25s ease;
+    animation: pulseBtnFloat 3.2s ease-in-out infinite;
+    transition: background .2s ease, transform .12s ease;
   }
   .pulse-btn:active {
-    opacity: 0.85;
-    animation: none;
-    transform: translateX(-50%) scale(.94);
+    background: rgba(205,255,74,.25);
+    transform: scale(.92);
   }
-  .pulse-btn svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .pulse-btn svg { width: 34px; height: 34px; display: block; overflow: visible; }
   .pulse-btn .p-center { fill: currentColor; }
   .pulse-btn .p-wave {
     fill: none;
@@ -188,20 +199,8 @@
     100% { opacity: 0;   transform: scale(2.1); }
   }
   @keyframes pulseBtnFloat {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50%      { transform: translateX(-50%) translateY(-6px); }
-  }
-
-  .actions-row {
-    position: absolute;
-    right: 14px;
-    bottom: 170px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    pointer-events: none;
-    z-index: 10;
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-4px); }
   }
 
   .share-btn, .map-btn {
@@ -254,13 +253,16 @@
     text-shadow: 0 1px 3px rgba(0,0,0,.6);
   }
 
-  /* Кнопка «Сменить вайб» — без надписи, иконка обновление + звезда */
+  /* Кнопка «Сменить вайб» — слева над описанием, с подписью */
   .back-vibe-btn {
     position: fixed;
     left: 16px;
-    bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(220px + env(safe-area-inset-bottom, 0px));
     z-index: 50;
     display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
     background: transparent;
     border: 0;
     padding: 0;
@@ -268,7 +270,7 @@
     -webkit-tap-highlight-color: transparent;
     pointer-events: auto;
   }
-  .back-vibe-btn.show { display: block; }
+  .back-vibe-btn.show { display: flex; }
   .back-vibe-btn-inner {
     width: 44px;
     height: 44px;
@@ -288,6 +290,19 @@
     background: rgba(205,255,74,.2);
   }
   .back-vibe-btn-inner svg { width: 22px; height: 22px; display: block; }
+
+  .back-vibe-btn-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.75);
+    text-shadow: 0 1px 3px rgba(0,0,0,.8);
+    text-align: center;
+    white-space: nowrap;
+    max-width: 100%;
+  }
 
   /* Всплывающая плашка сверху (само исчезает) */
   .vibe-banner{
@@ -481,6 +496,7 @@
         <path d="M12 8.7l.95 2.35L15.3 12l-2.35.95L12 15.3l-.95-2.35L8.7 12l2.35-.95L12 8.7z" fill="currentColor" stroke="none"/>
       </svg>
     </span>
+    <span class="back-vibe-btn-label" data-i18n="back_label">Сменить вайб</span>
   </button>
 
   <div class="empty-state" id="emptyState">
@@ -542,6 +558,7 @@
           banner_stream:'Поток',
           banner_one:'1 событие',
           banner_many:'{n} событий',
+          back_label:'Сменить вайб',
           toast_no_location:'Адрес не указан',
           toast_soon:'Скоро здесь',
           toast_back:'Вернулись к выбору',
@@ -558,6 +575,7 @@
           banner_stream:'Stream',
           banner_one:'1 event',
           banner_many:'{n} events',
+          back_label:'Change vibe',
           toast_no_location:'No address',
           toast_soon:'Coming soon',
           toast_back:'Back to selection',
@@ -574,6 +592,7 @@
           banner_stream:'Flujo',
           banner_one:'1 evento',
           banner_many:'{n} eventos',
+          back_label:'Cambiar vibe',
           toast_no_location:'Dirección no indicada',
           toast_soon:'Pronto',
           toast_back:'Volver a elegir',
@@ -755,7 +774,6 @@
 
         var ctaHtml = '';
         var actionsHtml = '';
-        var pulseBtnHtml = '';
 
         if (mode === 'vibe') {
           ctaHtml =
@@ -767,22 +785,8 @@
             '</button>';
           actionsHtml = '';
         } else {
-          // Event: справа «На карте» и «Поделиться», снизу-центр — пульсирующий кружок
+          // Правая стопка: pulse (сверху) + map + share
           actionsHtml =
-            '<button class="map-btn" data-map ' +
-              'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
-              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-              'data-place="' + escapeAttr(reel.place || '') + '">' +
-              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>' +
-              '<span class="lbl" data-i18n="map_label">' + t('map_label') + '</span>' +
-            '</button>' +
-            '<button class="share-btn" data-share>' +
-              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
-              '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
-            '</button>';
-
-          pulseBtnHtml =
             '<button class="pulse-btn" data-go type="button" ' +
               'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
               'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
@@ -796,6 +800,18 @@
                 '<circle class="p-wave" cx="36" cy="36" r="10"/>' +
                 '<circle class="p-center" cx="36" cy="36" r="3.2"/>' +
               '</svg>' +
+            '</button>' +
+            '<button class="map-btn" data-map ' +
+              'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
+              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+              'data-place="' + escapeAttr(reel.place || '') + '">' +
+              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>' +
+              '<span class="lbl" data-i18n="map_label">' + t('map_label') + '</span>' +
+            '</button>' +
+            '<button class="share-btn" data-share>' +
+              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
+              '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
             '</button>';
         }
 
@@ -813,9 +829,8 @@
             '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
             placeHtml +
             ctaHtml +
-            actionsBlock +
           '</div>' +
-          pulseBtnHtml;
+          actionsBlock;
 
         return slide;
       }

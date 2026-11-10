@@ -111,6 +111,7 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
+  /* Кнопка на экране выбора вайба */
   .vibe-btn {
     pointer-events: auto;
     display: inline-flex;
@@ -135,36 +136,61 @@
   }
   .vibe-btn:active { transform: scale(.96); }
   .vibe-btn:disabled { opacity: .7; cursor: default; animation: none; }
-  .vibe-btn svg { width: 18px; height: 18px; flex: none; }
+  .vibe-btn svg { width: 16px; height: 16px; flex: none; }
   @keyframes vibeGlow {
     0%, 100% { box-shadow: 0 4px 20px rgba(205,255,74,.35); }
     50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 3px rgba(205,255,74,.2); }
   }
 
-  .go-btn {
-    pointer-events: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 13px 40px;
-    border-radius: 100px;
-    background: #CDFF4A;
-    color: #07070a;
-    font-family: 'Inter', sans-serif;
-    font-size: 13.5px;
-    font-weight: 700;
-    cursor: pointer;
-    align-self: center;
-    margin-top: 8px;
-    transition: transform .12s ease;
-    -webkit-tap-highlight-color: transparent;
+  /* Пульсирующий спиральный кружок (вместо «Выбрать») */
+  .pulse-btn {
+    position: absolute;
+    left: 50%;
+    bottom: calc(160px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    z-index: 6;
+    width: 72px;
+    height: 72px;
+    background: transparent;
     border: 0;
-    text-decoration: none;
-    box-shadow: 0 4px 20px rgba(205,255,74,.35);
+    padding: 0;
+    cursor: pointer;
+    color: #CDFF4A;
+    opacity: 0.42;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+    animation: pulseBtnFloat 4s ease-in-out infinite;
+    transition: opacity .25s ease;
   }
-  .go-btn:active { transform: scale(.96); }
-  .go-btn svg { width: 16px; height: 16px; flex: none; }
+  .pulse-btn:active {
+    opacity: 0.85;
+    animation: none;
+    transform: translateX(-50%) scale(.94);
+  }
+  .pulse-btn svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .pulse-btn .p-center { fill: currentColor; }
+  .pulse-btn .p-wave {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: pWave 2.4s ease-out infinite;
+    opacity: 0;
+  }
+  .pulse-btn .p-wave:nth-child(2) { animation-delay: 0s; }
+  .pulse-btn .p-wave:nth-child(3) { animation-delay: .8s; }
+  .pulse-btn .p-wave:nth-child(4) { animation-delay: 1.6s; }
+  @keyframes pWave {
+    0%   { opacity: 0;   transform: scale(.35); }
+    15%  { opacity: .9;  }
+    70%  { opacity: .35; }
+    100% { opacity: 0;   transform: scale(2.1); }
+  }
+  @keyframes pulseBtnFloat {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%      { transform: translateX(-50%) translateY(-6px); }
+  }
 
   .actions-row {
     position: absolute;
@@ -228,16 +254,52 @@
     text-shadow: 0 1px 3px rgba(0,0,0,.6);
   }
 
+  /* Кнопка «Сменить вайб» — без надписи, иконка обновление + звезда */
+  .back-vibe-btn {
+    position: fixed;
+    left: 16px;
+    bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+    z-index: 50;
+    display: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
+  }
+  .back-vibe-btn.show { display: block; }
+  .back-vibe-btn-inner {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0,0,0,.55);
+    border: 1px solid rgba(205,255,74,.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #CDFF4A;
+    transition: transform .15s ease, background .2s ease;
+  }
+  .back-vibe-btn:active .back-vibe-btn-inner {
+    transform: scale(.9);
+    background: rgba(205,255,74,.2);
+  }
+  .back-vibe-btn-inner svg { width: 22px; height: 22px; display: block; }
+
+  /* Всплывающая плашка сверху (само исчезает) */
   .vibe-banner{
     position: fixed;
     top: calc(60px + env(safe-area-inset-top, 0px));
     left: 16px;
     right: 16px;
     z-index: 100;
-    display: none;
+    display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 10px 10px 16px;
+    padding: 10px 14px 10px 16px;
     border-radius: 100px;
     background: rgba(12,14,8,.85);
     border: 1px solid rgba(205,255,74,.55);
@@ -248,33 +310,16 @@
     font-size: 12px;
     font-weight: 600;
     box-shadow: 0 4px 24px rgba(0,0,0,.4), 0 0 24px rgba(205,255,74,.15);
-    animation: bannerSlide .35s cubic-bezier(.2,.9,.3,1.4);
+    opacity: 0;
+    transform: translateY(-16px);
+    pointer-events: none;
+    transition: opacity .35s ease, transform .35s cubic-bezier(.2,.9,.3,1.4);
   }
-  .vibe-banner.show { display: flex; }
-  @keyframes bannerSlide {
-    from { transform: translateY(-16px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
+  .vibe-banner.show { opacity: 1; transform: translateY(0); }
   .vibe-banner-text { flex: 1; line-height: 1.25; }
   .vibe-banner-text em { font-style: normal; color: #fff; font-weight: 500; }
-  .vibe-banner-close {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: rgba(205,255,74,.15);
-    color: #CDFF4A;
-    border: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 0;
-    transition: background .2s ease, transform .12s ease;
-    flex: none;
-  }
-  .vibe-banner-close:active { background: rgba(205,255,74,.3); transform: scale(.92); }
-  .vibe-banner-close svg { width: 14px; height: 14px; }
 
+  /* Overlay «собираем поток» */
   .vibe-overlay{
     position: fixed;
     inset: 0;
@@ -316,10 +361,7 @@
     max-width: 80vw;
     line-height: 1.3;
   }
-  .vibe-overlay-text em{
-    font-style: normal;
-    color: #CDFF4A;
-  }
+  .vibe-overlay-text em{ font-style: normal; color: #CDFF4A; }
 
   .vibe-overlay-dots{
     display: flex;
@@ -419,9 +461,6 @@
 
   <div class="vibe-banner" id="vibeBanner">
     <span class="vibe-banner-text" id="vibeBannerText">Поток</span>
-    <button class="vibe-banner-close" id="vibeBannerClose" aria-label="Закрыть">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
   </div>
 
   <div class="vibe-overlay" id="vibeOverlay">
@@ -433,6 +472,16 @@
     <div class="vibe-overlay-text" id="vibeOverlayText">Собираем поток</div>
     <div class="vibe-overlay-dots"><i></i><i></i><i></i></div>
   </div>
+
+  <button class="back-vibe-btn" id="backVibeBtn" type="button" aria-label="Сменить вайб">
+    <span class="back-vibe-btn-inner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 12a8 8 0 1 1-2.3-5.6"/>
+        <path d="M20 4v4h-4"/>
+        <path d="M12 8.7l.95 2.35L15.3 12l-2.35.95L12 15.3l-.95-2.35L8.7 12l2.35-.95L12 8.7z" fill="currentColor" stroke="none"/>
+      </svg>
+    </span>
+  </button>
 
   <div class="empty-state" id="emptyState">
     <div class="es-icon">
@@ -485,8 +534,7 @@
         ru: {
           onboard_tag:'Поиск событий <em>под твой вайб</em>',
           onboard_hint:'Листай вверх',
-          vibe_btn:'Выбрать вайб',
-          go_btn:'Перейти',
+          vibe_btn:'Перейти к событиям',
           map_label:'На карте',
           share_label:'Поделиться',
           share_text:'Пойдём вместе?',
@@ -502,8 +550,7 @@
         en: {
           onboard_tag:'Find events <em>for your vibe</em>',
           onboard_hint:'Swipe up',
-          vibe_btn:'Choose vibe',
-          go_btn:'Open',
+          vibe_btn:'Go to events',
           map_label:'On map',
           share_label:'Share',
           share_text:'Let\'s go together?',
@@ -519,8 +566,7 @@
         es: {
           onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
           onboard_hint:'Desliza hacia arriba',
-          vibe_btn:'Elegir vibe',
-          go_btn:'Abrir',
+          vibe_btn:'Ir a eventos',
           map_label:'En mapa',
           share_label:'Compartir',
           share_text:'¿Vamos juntos?',
@@ -631,9 +677,9 @@
       var toast = document.getElementById('toast');
       var vibeBanner = document.getElementById('vibeBanner');
       var vibeBannerText = document.getElementById('vibeBannerText');
-      var vibeBannerClose = document.getElementById('vibeBannerClose');
       var vibeOverlay = document.getElementById('vibeOverlay');
       var vibeOverlayText = document.getElementById('vibeOverlayText');
+      var backVibeBtn = document.getElementById('backVibeBtn');
 
       var vibeReels = [];
       var allEventReels = [];
@@ -656,6 +702,7 @@
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
       var flushTimer = null;
+      var bannerHideTimer = null;
 
       function showToast(text){
         if (!toast) return;
@@ -708,30 +755,19 @@
 
         var ctaHtml = '';
         var actionsHtml = '';
+        var pulseBtnHtml = '';
 
         if (mode === 'vibe') {
-          // Экран выбора вайба: одна большая кнопка «Выбрать вайб», без «Поделиться»
           ctaHtml =
             '<button class="vibe-btn" data-choose type="button" ' +
               'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
               'data-label="' + escapeAttr(reel.vibe_title || '') + '">' +
-              '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/></svg>' +
               '<span data-i18n="vibe_btn">' + t('vibe_btn') + '</span>' +
+              '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/></svg>' +
             '</button>';
-          actionsHtml = ''; // НЕТ кнопок справа
+          actionsHtml = '';
         } else {
-          // Экран событий: «Перейти» снизу + «На карте» и «Поделиться» справа
-          ctaHtml =
-            '<button class="go-btn" data-go type="button" ' +
-              'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
-              'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
-              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-              'data-place="' + escapeAttr(reel.place || '') + '">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>' +
-              '<span data-i18n="go_btn">' + t('go_btn') + '</span>' +
-            '</button>';
-
+          // Event: справа «На карте» и «Поделиться», снизу-центр — пульсирующий кружок
           actionsHtml =
             '<button class="map-btn" data-map ' +
               'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
@@ -744,6 +780,22 @@
             '<button class="share-btn" data-share>' +
               '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
               '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
+            '</button>';
+
+          pulseBtnHtml =
+            '<button class="pulse-btn" data-go type="button" ' +
+              'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
+              'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
+              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+              'data-place="' + escapeAttr(reel.place || '') + '" ' +
+              'aria-label="Открыть">' +
+              '<svg viewBox="0 0 72 72" aria-hidden="true">' +
+                '<circle class="p-wave" cx="36" cy="36" r="10"/>' +
+                '<circle class="p-wave" cx="36" cy="36" r="10"/>' +
+                '<circle class="p-wave" cx="36" cy="36" r="10"/>' +
+                '<circle class="p-center" cx="36" cy="36" r="3.2"/>' +
+              '</svg>' +
             '</button>';
         }
 
@@ -762,7 +814,8 @@
             placeHtml +
             ctaHtml +
             actionsBlock +
-          '</div>';
+          '</div>' +
+          pulseBtnHtml;
 
         return slide;
       }
@@ -773,6 +826,7 @@
           showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет событий.', false);
           slides = [];
           videoUrls = [];
+          if (backVibeBtn) backVibeBtn.classList.remove('show');
           return;
         }
         hideEmptyState();
@@ -780,6 +834,11 @@
         reels.forEach(function(reel){
           feed.appendChild(renderSlideShell(reel, mode));
         });
+
+        if (backVibeBtn) {
+          if (mode === 'event') backVibeBtn.classList.add('show');
+          else backVibeBtn.classList.remove('show');
+        }
 
         slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
         videoUrls = [];
@@ -1235,13 +1294,19 @@
         if (!vibeBanner || !vibeBannerText) return;
         var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
         vibeBannerText.innerHTML = '✦ ' + escapeHtml(t('banner_stream')) + ' <em>' + escapeHtml(label) + '</em> · ' + countText;
+        vibeBanner.classList.remove('show');
+        void vibeBanner.offsetWidth;
         vibeBanner.classList.add('show');
+        clearTimeout(bannerHideTimer);
+        bannerHideTimer = setTimeout(function(){
+          vibeBanner.classList.remove('show');
+        }, 2800);
       }
-      function hideVibeBanner(){ if (vibeBanner) vibeBanner.classList.remove('show'); }
 
       async function backToVibes(){
         currentVibe = null;
-        hideVibeBanner();
+        if (vibeBanner) vibeBanner.classList.remove('show');
+        clearTimeout(bannerHideTimer);
         if (currentIO) { currentIO.disconnect(); currentIO = null; }
         if (slideIO) { slideIO.disconnect(); slideIO = null; }
 
@@ -1278,7 +1343,7 @@
                 } else {
                   window.open(ctaUrl, '_blank', 'noopener,noreferrer');
                 }
-              } catch(e){ location.href = ctaUrl; }
+              } catch(err){ location.href = ctaUrl; }
               return;
             }
 
@@ -1482,8 +1547,8 @@
       window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
       window.addEventListener('resize', layoutReels);
 
-      if (vibeBannerClose) {
-        vibeBannerClose.addEventListener('click', function(e){
+      if (backVibeBtn) {
+        backVibeBtn.addEventListener('click', function(e){
           e.stopPropagation();
           backToVibes();
         });

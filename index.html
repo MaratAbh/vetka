@@ -588,6 +588,35 @@
         }
       }
 
+      var audioUnlocked = false;
+      function unlockAudio(){
+        if (audioUnlocked) return;
+        audioUnlocked = true;
+        try {
+          var AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) {
+            var ctx = new AC();
+            var buf = ctx.createBuffer(1, 1, 22050);
+            var src = ctx.createBufferSource();
+            src.buffer = buf;
+            src.connect(ctx.destination);
+            src.start(0);
+            if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
+          }
+        } catch(e){}
+        try {
+          var a = new Audio();
+          a.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+          a.volume = 0;
+          var pp = a.play();
+          if (pp && pp.catch) pp.catch(function(){});
+        } catch(e){}
+      }
+
+      document.addEventListener('touchstart', unlockAudio, {once:true, passive:true});
+      document.addEventListener('click', unlockAudio, {once:true});
+      document.addEventListener('keydown', unlockAudio, {once:true});
+
       function timeAgo(iso){
         var diff = Date.now() - new Date(iso).getTime();
         var mins = Math.floor(diff / 60000);
@@ -650,7 +679,7 @@
       var videoUrls = [];
       var currentIndex = 0;
       var slideEnteredAt = 0;
-      var soundEnabled = false;
+      var soundEnabled = true;
       var trackedSlideViews = {};
       var flushing = false;
       var tgIdWatchStarted = false;
@@ -885,6 +914,7 @@
 
       function dismissOnboarding(){
         if (!onboarding || onboardingClosing) return;
+        unlockAudio();
         onboardingClosing = true;
         onboarding.style.transform = '';
         onboarding.classList.add('gone');
@@ -912,6 +942,7 @@
         var THRESHOLD = 60;
 
         function onStart(e){
+          unlockAudio();
           var pt = e.touches ? e.touches[0] : e;
           startY = pt.clientY; currentY = startY;
           dragging = true; moved = false;
@@ -946,6 +977,7 @@
         document.addEventListener('mouseup', onEnd);
 
         onboarding.addEventListener('click', function(e){
+          unlockAudio();
           if (e.target.closest('.lang-switch')) return;
           if (moved) return;
           dismissOnboarding();

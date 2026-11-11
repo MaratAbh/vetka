@@ -585,7 +585,6 @@
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
 
-      // Таймаут api: 6 сек (было 12 — юзер ждал слишком долго при проблемах с сетью)
       async function api(path, query, timeoutMs){
         var ctrl = new AbortController();
         var timer = setTimeout(function(){ try { ctrl.abort(); } catch(e){} }, timeoutMs || 6000);
@@ -1028,18 +1027,15 @@
         }, 600);
       }
 
-      // ===== Проверка deep link / sessionStorage в самом начале =====
       var DEEP_ID = getStartParam();
       var ONBOARDED = false;
       try { ONBOARDED = !!sessionStorage.getItem('vetka_onboarded'); } catch(e){}
 
       if (DEEP_ID || ONBOARDED) {
-        // Deep link или уже проходил онбординг в этой сессии — сразу убираем
         removeOnboardingInstant();
       }
 
       if (onboarding) {
-        // Обработчики онбординга — только если он ещё на экране
         var startY = 0, currentY = 0, dragging = false, moved = false;
         var THRESHOLD = 60;
 
@@ -1115,7 +1111,6 @@
           v.addEventListener('error', fire, { once: true });
         }
 
-        // Fallback 1.5 сек вместо 3 — онбординг быстрее показывается
         onbMaxWaitTimer = setTimeout(showOnboardingReady, 1500);
 
         function loadOnbBatch(){
@@ -1690,37 +1685,62 @@
             if (!events) events = [];
           }
 
-          var hasReel = false;
-          for (var i = 0; i < events.length; i++) {
-            if (events[i].id === reel.id) { hasReel = true; break; }
-          }
-          if (!hasReel) events.unshift(reel);
-
+          // ==== СОРТИРОВКА: reel первым, остальные за ним ====
+          // Даже если рилс не входит в events (is_active или reel_kind), он в массиве sorted[0]
           var sorted = [reel];
-          for (var j = 0; j < events.length; j++) {
-            if (events[j].id !== reel.id) sorted.push(events[j]);
+          for (var i = 0; i < events.length; i++) {
+            if (events[i].id !== reel.id) sorted.push(events[i]);
           }
+
+          // Проверка: sorted[0] ДОЛЖЕН быть reel
+          if (sorted[0].id !== reel.id) {
+            console.warn('DEEP LINK BUG: sorted[0] != reel, force reorder');
+            sorted = [reel];
+            for (var k = 0; k < events.length; k++) {
+              if (events[k].id !== reel.id) sorted.push(events[k]);
+            }
+          }
+
+          console.log('[DEEP] reel.id =', reel.id, '| sorted[0].id =', sorted[0].id, '| total =', sorted.length);
 
           allEventReels = sorted;
           currentVibe = { category: reel.vibe_category, label: reel.vibe_title, events: sorted };
 
-          // ВАЖНО: не ждём authReady перед рендером — показываем сразу
+          // Показываем ленту и рендерим в правильном порядке
           feed.classList.add('visible');
           renderList(sorted, 'event');
           layoutReels();
-          initIO();
-          initSlideViewsIO();
+
+          // ==== ПРИНУДИТЕЛЬНЫЙ СБРОС СКРОЛЛА НА 0 ====
           currentIndex = 0;
           slideEnteredAt = Date.now();
-          setActiveSlide(0);
-          try { feed.scrollTop = 0; } catch(e){}
+
+          function forceScrollTop(){
+            try { feed.scrollTop = 0; } catch(e){}
+          }
+          forceScrollTop();
+          requestAnimationFrame(forceScrollTop);
+
+          // IO создаём с задержкой, чтобы не переключило на неверный слайд
+          setTimeout(function(){
+            forceScrollTop();
+            initIO();
+            initSlideViewsIO();
+            setActiveSlide(0);
+            forceScrollTop();
+          }, 250);
+
+          // Ещё несколько сбросов на всякий
+          setTimeout(forceScrollTop, 0);
+          setTimeout(forceScrollTop, 100);
+          setTimeout(forceScrollTop, 400);
+
           loaded = true;
 
-          // Подписки — в фоне, обновят UI когда придут
+          // Подписки — в фоне
           loadMySubscriptions().then(function(){ refreshSubscriptionUI(); }).catch(function(){});
         } catch(e) {
           console.warn('openDeepLinkedReel error:', e);
-          // Полный fallback
           try {
             var vibes2 = await loadVibeReels();
             if (!vibes2) vibes2 = [];

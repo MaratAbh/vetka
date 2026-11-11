@@ -184,7 +184,7 @@
     cursor: pointer;
     align-self: center;
     margin-top: 8px;
-    transition: transform .12s ease, background .2s ease, color .2s ease;
+    transition: transform .12s ease, background .2s ease, color .2s ease, opacity .2s ease;
     -webkit-tap-highlight-color: transparent;
     border: 0;
     text-decoration: none;
@@ -192,7 +192,8 @@
     min-width: 0;
   }
   .go-btn:active { transform: scale(.96); }
-  .go-btn[disabled] { cursor: default; transform: none; opacity: .75; }
+  .go-btn[disabled] { cursor: default; transform: none; }
+  .go-btn[data-inflight="1"] { opacity: .7; }
   .go-btn.subscribed {
     background: rgba(205,255,74,.14);
     color: #CDFF4A;
@@ -505,7 +506,6 @@
           onboard_hint:'Листай вверх',
           vibe_btn:'Перейти к событиям',
           go_btn:'Получить приглашение',
-          go_sending:'Отправляем…',
           go_subscribed:'Ты в списке',
           go_error:'Не получилось, попробуй ещё',
           go_ok_toast:'Готово! Пришлём в боте 🔔',
@@ -517,7 +517,6 @@
           banner_one:'1 событие',
           banner_many:'{n} событий',
           toast_soon:'Скоро здесь',
-          toast_not_found:'Событие не найдено',
           min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
         },
         en: {
@@ -525,7 +524,6 @@
           onboard_hint:'Swipe up',
           vibe_btn:'Go to events',
           go_btn:'Get invite',
-          go_sending:'Sending…',
           go_subscribed:'You\'re in',
           go_error:'Try again',
           go_ok_toast:'Done! We\'ll ping you in the bot 🔔',
@@ -537,7 +535,6 @@
           banner_one:'1 event',
           banner_many:'{n} events',
           toast_soon:'Coming soon',
-          toast_not_found:'Event not found',
           min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
         },
         es: {
@@ -545,7 +542,6 @@
           onboard_hint:'Desliza hacia arriba',
           vibe_btn:'Ir a eventos',
           go_btn:'Obtener invitación',
-          go_sending:'Enviando…',
           go_subscribed:'Estás dentro',
           go_error:'Inténtalo otra vez',
           go_ok_toast:'¡Listo! Te avisamos en el bot 🔔',
@@ -557,7 +553,6 @@
           banner_one:'1 evento',
           banner_many:'{n} eventos',
           toast_soon:'Pronto',
-          toast_not_found:'Evento no encontrado',
           min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
         }
       };
@@ -904,7 +899,6 @@
         refreshSubscriptionUI();
       }
 
-      // ===== DEEP LINK: рендерим ровно один рилс =====
       function renderSingleReel(reel){
         if (!reel) return;
         feed.classList.add('visible');
@@ -1445,9 +1439,8 @@
               return;
             }
 
+            // НЕ меняем текст кнопки, просто блокируем на время запроса
             btn.dataset.inflight = '1';
-            var originalHtml = btn.innerHTML;
-            btn.innerHTML = '<span>' + escapeHtml(t('go_sending')) + '</span>';
 
             if (isSub) {
               var okU = await unsubscribeFromReel(reelId);
@@ -1461,8 +1454,6 @@
                 showToast(t('go_unsub_ok'));
                 trackEvent('unsubscribe_reel', { slide_id: reelId });
               } else {
-                btn.innerHTML = originalHtml;
-                applyLang(currentLang);
                 showToast(t('go_error'));
               }
             } else {
@@ -1480,8 +1471,6 @@
                 trackEvent('subscribe_reel', { slide_id: reelId });
                 if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
               } else {
-                btn.innerHTML = originalHtml;
-                applyLang(currentLang);
                 showToast(t('go_error'));
               }
             }
@@ -1667,7 +1656,6 @@
       async function initApp(retryCount){
         retryCount = retryCount || 0;
         try {
-          // ===== DEEP LINK: сразу к рилсу, без онбординга и вайбов =====
           var deepId = getStartParam();
           if (deepId) {
             var reel = await loadReelById(deepId);
@@ -1676,7 +1664,6 @@
               onboardingClosing = true;
               autoBootStarted = true;
 
-              // Мгновенно убираем онбординг — не ждём анимации
               if (onboarding) {
                 try {
                   onboarding.querySelectorAll('video').forEach(function(v){
@@ -1687,17 +1674,14 @@
                 onboarding = null;
               }
 
-              // Подтянуть подписки, чтобы кнопка сразу в правильном состоянии
               try { await loadMySubscriptions(); } catch(e){}
 
               renderSingleReel(reel);
               loaded = true;
               return;
             }
-            // если рилс не нашли — падаем в обычный флоу
           }
 
-          // ===== ОБЫЧНЫЙ FLOW: онбординг → вайбы → события =====
           var vibes = await loadVibeReels();
           if (!vibes) vibes = [];
           vibeReels = vibes;

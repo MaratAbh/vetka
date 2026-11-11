@@ -111,6 +111,33 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
+  .organizer-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:3px 9px;
+    border-radius:100px;
+    background:rgba(0,0,0,.45);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    font-family:'Inter',sans-serif;
+    font-size:10.5px;
+    font-weight:600;
+    color:rgba(255,255,255,.7);
+    align-self:flex-start;
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .organizer-badge svg{
+    width:11px;
+    height:11px;
+    flex:none;
+    color:#CDFF4A;
+  }
+
   .vibe-btn {
     pointer-events: auto;
     display: inline-flex;
@@ -178,7 +205,7 @@
     z-index: 10;
   }
 
-  .share-btn, .map-btn {
+  .share-btn {
     pointer-events: auto;
     display: flex;
     flex-direction: column;
@@ -191,7 +218,7 @@
     padding: 0;
     color: inherit;
   }
-  .share-btn:disabled, .map-btn:disabled { opacity: .65; cursor: default; }
+  .share-btn:disabled { opacity: .65; cursor: default; }
 
   .ico-ph {
     width: 34px;
@@ -208,7 +235,7 @@
     transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
   }
 
-  .share-btn:active .ico-ph, .map-btn:active .ico-ph {
+  .share-btn:active .ico-ph {
     transform: scale(.9);
     background: rgba(205,255,74,.9);
     color: #07070a;
@@ -226,61 +253,6 @@
     color: rgba(255,255,255,.55);
     text-align: center;
     text-shadow: 0 1px 3px rgba(0,0,0,.6);
-  }
-
-  /* ===== Кнопка «Сменить вайб» — тихо в левом нижнем углу ===== */
-  .back-vibe-btn {
-    position: fixed;
-    left: 12px;
-    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-    z-index: 50;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    pointer-events: auto;
-    background: transparent;
-    border: 0;
-    padding: 0;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    opacity: .72;
-    transition: opacity .18s ease;
-  }
-  .back-vibe-btn.show { display: flex; }
-  .back-vibe-btn:active { opacity: 1; }
-
-  .back-vibe-btn-inner {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, .32);
-    border: 1px solid rgba(205, 255, 74, .22);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(205, 255, 74, .72);
-    transition: transform .15s ease, background .2s ease;
-  }
-  .back-vibe-btn:active .back-vibe-btn-inner {
-    transform: scale(.9);
-    background: rgba(205, 255, 74, .15);
-  }
-  .back-vibe-btn-inner svg {
-    width: 15px;
-    height: 15px;
-  }
-  .back-vibe-btn-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 7px;
-    font-weight: 500;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, .38);
-    text-shadow: 0 1px 3px rgba(0, 0, 0, .7);
-    line-height: 1;
   }
 
   /* ===== Всплывающая плашка сверху (само исчезает) ===== */
@@ -473,18 +445,6 @@
     <div class="vibe-overlay-dots"><i></i><i></i><i></i></div>
   </div>
 
-  <button class="back-vibe-btn" id="backVibeBtn" type="button">
-    <span class="back-vibe-btn-inner">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 15a6 6 0 1 1-6-6 3.5 3.5 0 1 1 3.5 3.5 1.5 1.5 0 1 1-1.5-1.5"/>
-        <path d="M5 5l.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7L2.5 8l1.7-.8z" fill="currentColor" stroke="none"/>
-        <circle cx="9" cy="3" r=".7" fill="currentColor" stroke="none"/>
-        <circle cx="3" cy="9" r=".5" fill="currentColor" stroke="none"/>
-      </svg>
-    </span>
-    <span class="back-vibe-btn-label" data-i18n="back_label">Сменить</span>
-  </button>
-
   <div class="empty-state" id="emptyState">
     <div class="es-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -538,14 +498,12 @@
           onboard_hint:'Листай вверх',
           vibe_btn:'Перейти к событиям',
           go_btn:'Выбрать',
-          map_label:'На карте',
           share_label:'Поделиться',
           share_text:'Пойдём вместе?',
           overlay_collecting:'Собираем поток',
           banner_stream:'Поток',
           banner_one:'1 событие',
           banner_many:'{n} событий',
-          back_label:'Сменить',
           toast_no_location:'Адрес не указан',
           toast_soon:'Скоро здесь',
           toast_back:'Вернулись к выбору',
@@ -556,14 +514,12 @@
           onboard_hint:'Swipe up',
           vibe_btn:'Go to events',
           go_btn:'Choose',
-          map_label:'On map',
           share_label:'Share',
           share_text:'Let\'s go together?',
           overlay_collecting:'Collecting stream',
           banner_stream:'Stream',
           banner_one:'1 event',
           banner_many:'{n} events',
-          back_label:'Change',
           toast_no_location:'No address',
           toast_soon:'Coming soon',
           toast_back:'Back to selection',
@@ -574,14 +530,12 @@
           onboard_hint:'Desliza hacia arriba',
           vibe_btn:'Ir a eventos',
           go_btn:'Elegir',
-          map_label:'En mapa',
           share_label:'Compartir',
           share_text:'¿Vamos juntos?',
           overlay_collecting:'Recolectando',
           banner_stream:'Flujo',
           banner_one:'1 evento',
           banner_many:'{n} eventos',
-          back_label:'Cambiar',
           toast_no_location:'Dirección no indicada',
           toast_soon:'Pronto',
           toast_back:'Volver a elegir',
@@ -687,7 +641,6 @@
       var vibeBannerText = document.getElementById('vibeBannerText');
       var vibeOverlay = document.getElementById('vibeOverlay');
       var vibeOverlayText = document.getElementById('vibeOverlayText');
-      var backVibeBtn = document.getElementById('backVibeBtn');
 
       var vibeReels = [];
       var allEventReels = [];
@@ -706,6 +659,7 @@
       var onboardingDismissed = false;
       var feedBooted = false;
       var onboardingClosing = false;
+      var autoBootStarted = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
@@ -761,11 +715,14 @@
           ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
           : '';
 
+        var organizerHtml = reel.organizer
+          ? '<div class="organizer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4.5 4L12 5l4.5 6L21 7l-1.5 11h-15z"/></svg>' + escapeHtml(reel.organizer) + '</div>'
+          : '';
+
         var ctaHtml = '';
         var actionsHtml = '';
 
         if (mode === 'vibe') {
-          // Экран выбора вайба: одна большая кнопка «Перейти к событиям» + иконка вайба справа
           ctaHtml =
             '<button class="vibe-btn" data-choose type="button" ' +
               'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
@@ -775,7 +732,6 @@
             '</button>';
           actionsHtml = '';
         } else {
-          // Экран событий: «Выбрать» снизу + «На карте» и «Поделиться» справа
           ctaHtml =
             '<button class="go-btn" data-go type="button" ' +
               'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
@@ -788,14 +744,6 @@
             '</button>';
 
           actionsHtml =
-            '<button class="map-btn" data-map ' +
-              'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
-              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-              'data-place="' + escapeAttr(reel.place || '') + '">' +
-              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>' +
-              '<span class="lbl" data-i18n="map_label">' + t('map_label') + '</span>' +
-            '</button>' +
             '<button class="share-btn" data-share>' +
               '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
               '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
@@ -815,6 +763,7 @@
             '<div class="title-row"><div class="title">' + escapeHtml(reel.vibe_title || '') + '</div></div>' +
             '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
             placeHtml +
+            organizerHtml +
             ctaHtml +
             actionsBlock +
           '</div>';
@@ -828,7 +777,6 @@
           showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет событий.', false);
           slides = [];
           videoUrls = [];
-          if (backVibeBtn) backVibeBtn.classList.remove('show');
           return;
         }
         hideEmptyState();
@@ -836,12 +784,6 @@
         reels.forEach(function(reel){
           feed.appendChild(renderSlideShell(reel, mode));
         });
-
-        // Показываем кнопку «Сменить» только на экране событий
-        if (backVibeBtn) {
-          if (mode === 'event') backVibeBtn.classList.add('show');
-          else backVibeBtn.classList.remove('show');
-        }
 
         slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
         videoUrls = [];
@@ -932,6 +874,15 @@
         for (var i = 0; i < all.length; i++) all[i].style.height = vh + 'px';
       }
 
+      function getStartParam(){
+        try {
+          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+            return window.Telegram.WebApp.initDataUnsafe.start_param || null;
+          }
+        } catch(e){}
+        return null;
+      }
+
       function dismissOnboarding(){
         if (!onboarding || onboardingClosing) return;
         onboardingClosing = true;
@@ -949,7 +900,7 @@
         layoutReels();
         slideEnteredAt = Date.now();
         feed.classList.add('visible');
-        if (loaded) bootFeed();
+        postOnboardingBoot();
         setTimeout(function(){
           if (onboarding && onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
           onboarding = null;
@@ -1196,8 +1147,8 @@
       }
 
       async function selectVibe(btn, category, label){
-        btn.disabled = true;
-        trackEvent('vibe_select', { category: category, label: label });
+        if (btn) btn.disabled = true;
+        trackEvent('vibe_select', { category: category, label: label, auto: !btn });
         if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
 
         showVibeOverlay(label);
@@ -1211,7 +1162,7 @@
 
         if (!events.length) {
           hideVibeOverlay();
-          btn.disabled = false;
+          if (btn) btn.disabled = false;
           showToast(t('toast_soon'));
           return;
         }
@@ -1228,17 +1179,26 @@
         renderList(events, 'event');
         layoutReels();
 
-        currentIndex = 0;
-        slideEnteredAt = Date.now();
         initIO();
         initSlideViewsIO();
-        setActiveSlide(0);
 
-        try { feed.scrollTop = 0; } catch(e){}
+        var startParam = getStartParam();
+        var targetIdx = 0;
+        if (startParam) {
+          for (var si = 0; si < slides.length; si++) {
+            if (slides[si].dataset.id === startParam) { targetIdx = si; break; }
+          }
+        }
+
+        currentIndex = targetIdx;
+        slideEnteredAt = Date.now();
+        setActiveSlide(targetIdx);
+
+        try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
 
         showVibeBanner(label, events.length);
 
-        btn.disabled = false;
+        if (btn) btn.disabled = false;
       }
 
       function showVibeOverlay(label){
@@ -1297,35 +1257,16 @@
         if (!vibeBanner || !vibeBannerText) return;
         var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
         vibeBannerText.innerHTML = '✦ ' + escapeHtml(t('banner_stream')) + ' <em>' + escapeHtml(label) + '</em> · ' + countText;
-        // Принудительно перезапускаем анимацию
         vibeBanner.classList.remove('show');
         void vibeBanner.offsetWidth;
         vibeBanner.classList.add('show');
 
-        // Автоскрытие через 2.8 секунды
         clearTimeout(bannerHideTimer);
         bannerHideTimer = setTimeout(function(){
           vibeBanner.classList.remove('show');
         }, 2800);
       }
       function hideVibeBanner(){ if (vibeBanner) vibeBanner.classList.remove('show'); }
-
-      async function backToVibes(){
-        currentVibe = null;
-        hideVibeBanner();
-        if (currentIO) { currentIO.disconnect(); currentIO = null; }
-        if (slideIO) { slideIO.disconnect(); slideIO = null; }
-
-        renderList(vibeReels, 'vibe');
-        layoutReels();
-        currentIndex = 0;
-        slideEnteredAt = Date.now();
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(0);
-        try { feed.scrollTop = 0; } catch(e){}
-        showToast(t('toast_back'));
-      }
 
       function bindGoBtns(){
         document.querySelectorAll('[data-go]').forEach(function(btn){
@@ -1360,27 +1301,6 @@
         });
       }
 
-      function bindMapBtns(){
-        document.querySelectorAll('[data-map]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
-          btn.addEventListener('click', function(e){
-            e.stopPropagation();
-            var loc = btn.getAttribute('data-location') || '';
-            var reelId = btn.getAttribute('data-reel-id') || '';
-            var vibeTitle = btn.getAttribute('data-vibe-title') || '';
-            var place = btn.getAttribute('data-place') || '';
-
-            if (!loc) { showToast(t('toast_no_location')); return; }
-
-            trackEvent('map_click', { slide_id: reelId });
-            if (window.ym) { try { ym(113067752, 'reachGoal', 'map_click'); } catch(err){} }
-
-            openMap(loc, reelId, vibeTitle, place);
-          });
-        });
-      }
-
       function openMap(destCoords, reelId, vibeTitle, place){
         var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
         trackEvent('route_open', { slide_id: reelId, dest: destCoords });
@@ -1398,7 +1318,6 @@
         bindShareBtns();
         bindChooseBtns();
         bindGoBtns();
-        bindMapBtns();
       }
 
       var currentIO = null;
@@ -1435,6 +1354,19 @@
         slides.forEach(function(s){ slideIO.observe(s); });
       }
 
+      function postOnboardingBoot(){
+        if (autoBootStarted) return;
+        if (!loaded) return;
+        autoBootStarted = true;
+
+        if (vibeReels.length === 1) {
+          var v = vibeReels[0];
+          selectVibe(null, v.vibe_category, v.vibe_title || v.vibe_category);
+        } else {
+          bootFeed();
+        }
+      }
+
       function bootFeed(){
         if (feedBooted) return;
         if (!slides.length) return;
@@ -1442,12 +1374,7 @@
         feed.classList.add('visible');
         layoutReels();
 
-        var startParam = null;
-        try {
-          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-            startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
-          }
-        } catch(e){}
+        var startParam = getStartParam();
 
         var startIdx = 0;
         if (startParam) {
@@ -1553,13 +1480,6 @@
       window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
       window.addEventListener('resize', layoutReels);
 
-      if (backVibeBtn) {
-        backVibeBtn.addEventListener('click', function(e){
-          e.stopPropagation();
-          backToVibes();
-        });
-      }
-
       retryBtn.addEventListener('click', function(){ location.reload(); });
 
       authReady.then(function(u){
@@ -1575,7 +1495,7 @@
           vibeReels = vibes;
           renderList(vibes, 'vibe');
           loaded = true;
-          if (onboardingDismissed) bootFeed();
+          if (onboardingDismissed) postOnboardingBoot();
         } catch (err) {
           console.warn('initApp error:', err);
           if (retryCount < 3) {

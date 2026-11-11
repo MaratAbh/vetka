@@ -1268,20 +1268,24 @@
       }
 
       async function selectVibe(btn, category, label){
+        var isAuto = !btn;
         if (btn) btn.disabled = true;
-        trackEvent('vibe_select', { category: category, label: label, auto: !btn });
+        trackEvent('vibe_select', { category: category, label: label, auto: isAuto });
         if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
 
-        showVibeOverlay(label);
+        // Оверлей показываем только при ручном переходе (когда вайбов 2+)
+        if (!isAuto) {
+          showVibeOverlay(label);
+        }
 
-        var delayP = new Promise(function(r){ setTimeout(r, 900); });
+        var delayP = isAuto ? Promise.resolve() : new Promise(function(r){ setTimeout(r, 900); });
         var eventsP = loadEventsForVibe(category).catch(function(){ return []; });
 
         var results = await Promise.all([eventsP, delayP]);
         var events = results[0] || [];
 
         if (!events.length) {
-          hideVibeOverlay();
+          if (!isAuto) hideVibeOverlay();
           if (btn) btn.disabled = false;
           showToast(t('toast_soon'));
           return;
@@ -1290,8 +1294,10 @@
         allEventReels = events;
         currentVibe = { category: category, label: label, events: events };
 
-        hideVibeOverlay();
-        await new Promise(function(r){ setTimeout(r, 260); });
+        if (!isAuto) {
+          hideVibeOverlay();
+          await new Promise(function(r){ setTimeout(r, 260); });
+        }
 
         if (currentIO) { currentIO.disconnect(); currentIO = null; }
         if (slideIO) { slideIO.disconnect(); slideIO = null; }
@@ -1316,7 +1322,9 @@
 
         try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
 
-        showVibeBanner(label, events.length);
+        if (!isAuto) {
+          showVibeBanner(label, events.length);
+        }
 
         if (btn) btn.disabled = false;
       }
@@ -1439,7 +1447,6 @@
               return;
             }
 
-            // НЕ меняем текст кнопки, просто блокируем на время запроса
             btn.dataset.inflight = '1';
 
             if (isSub) {

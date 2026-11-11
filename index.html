@@ -198,6 +198,7 @@
     color: #CDFF4A;
     border: 1px solid rgba(205,255,74,.55);
     box-shadow: none;
+    opacity: 1;
   }
   .go-btn svg { width: 16px; height: 16px; flex: none; }
 
@@ -515,7 +516,6 @@
           banner_one:'1 событие',
           banner_many:'{n} событий',
           toast_soon:'Скоро здесь',
-          toast_back:'Вернулись к выбору',
           min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
         },
         en: {
@@ -534,7 +534,6 @@
           banner_one:'1 event',
           banner_many:'{n} events',
           toast_soon:'Coming soon',
-          toast_back:'Back to selection',
           min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
         },
         es: {
@@ -553,7 +552,6 @@
           banner_one:'1 evento',
           banner_many:'{n} eventos',
           toast_soon:'Pronto',
-          toast_back:'Volver a elegir',
           min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
         }
       };
@@ -603,7 +601,6 @@
         }
       }
 
-      // ===== Разблокировка звука (iOS) =====
       var audioUnlocked = false;
       function unlockAudio(){
         if (audioUnlocked) return;
@@ -688,6 +685,7 @@
       var vibeReels = [];
       var allEventReels = [];
       var currentVibe = null;
+      var mySubscribed = {};
 
       var slides = [];
       var videoUrls = [];
@@ -741,6 +739,59 @@
         return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=sort_order.asc&limit=50');
       }
 
+      async function loadMySubscriptions(){
+        try {
+          var user = await authReady; if (!user) return;
+          var res = await supabaseClient.from('subscriptions').select('reel_id').eq('user_id', user.id);
+          if (res && res.data) {
+            res.data.forEach(function(r){
+              if (r && r.reel_id) mySubscribed[r.reel_id] = true;
+            });
+          }
+        } catch(e) {
+          console.warn('loadMySubscriptions error:', e);
+        }
+      }
+
+      function goBtnHtml(reel){
+        var isSub = !!mySubscribed[reel.id];
+        if (isSub) {
+          return '<button class="go-btn subscribed" data-go type="button" disabled data-subscribed="1" ' +
+            'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
+            'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+            'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+            'data-place="' + escapeAttr(reel.place || '') + '">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
+            '<span data-i18n="go_subscribed">' + t('go_subscribed') + '</span>' +
+          '</button>';
+        }
+        return '<button class="go-btn" data-go type="button" ' +
+          'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
+          'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+          'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+          'data-place="' + escapeAttr(reel.place || '') + '">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>' +
+          '<span data-i18n="go_btn">' + t('go_btn') + '</span>' +
+        '</button>';
+      }
+
+      function refreshSubscriptionUI(){
+        slides.forEach(function(slide){
+          var id = slide.dataset.id;
+          if (!id) return;
+          if (!mySubscribed[id]) return;
+          var btn = slide.querySelector('[data-go]');
+          if (!btn) return;
+          if (btn.dataset.subscribed === '1') return;
+          btn.dataset.subscribed = '1';
+          btn.classList.add('subscribed');
+          btn.disabled = true;
+          btn.innerHTML =
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
+            '<span>' + escapeHtml(t('go_subscribed')) + '</span>';
+        });
+      }
+
       function renderSlideShell(reel, mode){
         var slide = document.createElement('div');
         slide.className = 'slide';
@@ -775,15 +826,7 @@
             '</button>';
           actionsHtml = '';
         } else {
-          ctaHtml =
-            '<button class="go-btn" data-go type="button" ' +
-              'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
-              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-              'data-place="' + escapeAttr(reel.place || '') + '">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>' +
-              '<span data-i18n="go_btn">' + t('go_btn') + '</span>' +
-            '</button>';
+          ctaHtml = goBtnHtml(reel);
 
           actionsHtml =
             '<button class="share-btn" data-share>' +
@@ -838,6 +881,7 @@
         });
 
         bindHandlers();
+        refreshSubscriptionUI();
       }
 
       function refreshLiveLabels(){
@@ -1349,6 +1393,7 @@
 
             var ok = await subscribeToReel(reelId, vibeTitle, place);
             if (ok) {
+              mySubscribed[reelId] = true;
               btn.dataset.subscribed = '1';
               btn.classList.add('subscribed');
               btn.innerHTML =
@@ -1440,6 +1485,7 @@
         initIO();
         initSlideViewsIO();
         setActiveSlide(startIdx);
+        refreshSubscriptionUI();
 
         if (startIdx > 0) {
           setTimeout(function(){
@@ -1549,6 +1595,10 @@
           renderList(vibes, 'vibe');
           loaded = true;
           if (onboardingDismissed) postOnboardingBoot();
+
+          loadMySubscriptions().then(function(){
+            refreshSubscriptionUI();
+          });
         } catch (err) {
           console.warn('initApp error:', err);
           if (retryCount < 3) {

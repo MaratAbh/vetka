@@ -497,7 +497,7 @@
           onboard_tag:'Поиск событий <em>под твой вайб</em>',
           onboard_hint:'Листай вверх',
           vibe_btn:'Перейти к событиям',
-          go_btn:'Выбрать',
+          go_btn:'Хочу приглашение',
           share_label:'Поделиться',
           share_text:'Пойдём вместе?',
           overlay_collecting:'Собираем поток',
@@ -513,7 +513,7 @@
           onboard_tag:'Find events <em>for your vibe</em>',
           onboard_hint:'Swipe up',
           vibe_btn:'Go to events',
-          go_btn:'Choose',
+          go_btn:'Get invite',
           share_label:'Share',
           share_text:'Let\'s go together?',
           overlay_collecting:'Collecting stream',
@@ -529,7 +529,7 @@
           onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
           onboard_hint:'Desliza hacia arriba',
           vibe_btn:'Ir a eventos',
-          go_btn:'Elegir',
+          go_btn:'Quiero invitación',
           share_label:'Compartir',
           share_text:'¿Vamos juntos?',
           overlay_collecting:'Recolectando',
@@ -692,10 +692,10 @@
       }
 
       async function loadVibeReels(){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.vibe&order=created_at.asc&limit=20');
+        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.vibe&order=sort_order.asc&limit=20');
       }
       async function loadEventsForVibe(category){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=created_at.desc&limit=50');
+        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=sort_order.asc&limit=50');
       }
 
       function renderSlideShell(reel, mode){
@@ -739,7 +739,7 @@
               'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
               'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
               'data-place="' + escapeAttr(reel.place || '') + '">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>' +
               '<span data-i18n="go_btn">' + t('go_btn') + '</span>' +
             '</button>';
 
@@ -1005,7 +1005,7 @@
 
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
-          api('reels', 'select=video_url&is_active=eq.true&order=created_at.desc&limit=12')
+          api('reels', 'select=video_url&is_active=eq.true&order=sort_order.asc&limit=12')
             .then(function(rows){
               if (!onboarding) return;
               try {

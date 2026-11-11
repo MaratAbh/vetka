@@ -517,6 +517,7 @@
           banner_one:'1 событие',
           banner_many:'{n} событий',
           toast_soon:'Скоро здесь',
+          toast_not_found:'Событие не найдено',
           min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
         },
         en: {
@@ -536,6 +537,7 @@
           banner_one:'1 event',
           banner_many:'{n} events',
           toast_soon:'Coming soon',
+          toast_not_found:'Event not found',
           min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
         },
         es: {
@@ -555,6 +557,7 @@
           banner_one:'1 evento',
           banner_many:'{n} eventos',
           toast_soon:'Pronto',
+          toast_not_found:'Evento no encontrado',
           min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
         }
       };
@@ -741,6 +744,13 @@
       async function loadEventsForVibe(category){
         return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=sort_order.asc&limit=50');
       }
+      async function loadReelById(id){
+        try {
+          var rows = await api('reels', 'select=*&id=eq.' + encodeURIComponent(id) + '&limit=1');
+          if (rows && rows.length) return rows[0];
+        } catch(e){ console.warn('loadReelById error:', e); }
+        return null;
+      }
 
       async function loadMySubscriptions(){
         try {
@@ -769,7 +779,6 @@
         var isSub = !!mySubscribed[reel.id];
         var cls = isSub ? 'go-btn subscribed' : 'go-btn';
         var inner = isSub ? checkBtnInner() : ticketBtnInner();
-        // ВАЖНО: для subscribed НЕ ставим disabled — иначе клик для отписки не проходит
         return '<button class="' + cls + '" data-go type="button" ' +
           'data-subscribed="' + (isSub ? '1' : '0') + '" ' +
           'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
@@ -893,6 +902,24 @@
 
         bindHandlers();
         refreshSubscriptionUI();
+      }
+
+      // ===== DEEP LINK: рендерим ровно один рилс =====
+      function renderSingleReel(reel){
+        if (!reel) return;
+        feed.classList.add('visible');
+        feed.innerHTML = '';
+        feed.appendChild(renderSlideShell(reel, 'event'));
+        slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
+        videoUrls = [reel.video_url || null];
+        bindHandlers();
+        refreshSubscriptionUI();
+        layoutReels();
+        currentIndex = 0;
+        slideEnteredAt = Date.now();
+        initIO();
+        initSlideViewsIO();
+        setActiveSlide(0);
       }
 
       function refreshLiveLabels(){
@@ -1397,7 +1424,6 @@
           btn.__bound = true;
           btn.addEventListener('click', async function(e){
             e.stopPropagation();
-            // Блокируем только во время inflight, чтобы не было двойных запросов
             if (btn.dataset.inflight === '1') return;
 
             var ctaUrl = btn.getAttribute('data-cta-url') || '';
@@ -1406,7 +1432,6 @@
             var place = btn.getAttribute('data-place') || '';
             var isSub = btn.dataset.subscribed === '1';
 
-            // Если есть внешний URL и НЕ подписан — ведём наружу
             if (ctaUrl && !isSub) {
               trackEvent('go_click', { slide_id: reelId, has_url: true });
               if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
@@ -1642,6 +1667,37 @@
       async function initApp(retryCount){
         retryCount = retryCount || 0;
         try {
+          // ===== DEEP LINK: сразу к рилсу, без онбординга и вайбов =====
+          var deepId = getStartParam();
+          if (deepId) {
+            var reel = await loadReelById(deepId);
+            if (reel) {
+              onboardingDismissed = true;
+              onboardingClosing = true;
+              autoBootStarted = true;
+
+              // Мгновенно убираем онбординг — не ждём анимации
+              if (onboarding) {
+                try {
+                  onboarding.querySelectorAll('video').forEach(function(v){
+                    try { v.muted = true; v.pause(); v.removeAttribute('src'); v.load(); } catch(e){}
+                  });
+                } catch(e){}
+                if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
+                onboarding = null;
+              }
+
+              // Подтянуть подписки, чтобы кнопка сразу в правильном состоянии
+              try { await loadMySubscriptions(); } catch(e){}
+
+              renderSingleReel(reel);
+              loaded = true;
+              return;
+            }
+            // если рилс не нашли — падаем в обычный флоу
+          }
+
+          // ===== ОБЫЧНЫЙ FLOW: онбординг → вайбы → события =====
           var vibes = await loadVibeReels();
           if (!vibes) vibes = [];
           vibeReels = vibes;

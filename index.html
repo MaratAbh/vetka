@@ -585,9 +585,10 @@
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
 
+      // Таймаут api: 6 сек (было 12 — юзер ждал слишком долго при проблемах с сетью)
       async function api(path, query, timeoutMs){
         var ctrl = new AbortController();
-        var timer = setTimeout(function(){ try { ctrl.abort(); } catch(e){} }, timeoutMs || 12000);
+        var timer = setTimeout(function(){ try { ctrl.abort(); } catch(e){} }, timeoutMs || 6000);
         try {
           var url = SUPABASE_URL + '/rest/v1/' + path;
           if (query) url += '?' + query;
@@ -899,23 +900,6 @@
         refreshSubscriptionUI();
       }
 
-      function renderSingleReel(reel){
-        if (!reel) return;
-        feed.classList.add('visible');
-        feed.innerHTML = '';
-        feed.appendChild(renderSlideShell(reel, 'event'));
-        slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
-        videoUrls = [reel.video_url || null];
-        bindHandlers();
-        refreshSubscriptionUI();
-        layoutReels();
-        currentIndex = 0;
-        slideEnteredAt = Date.now();
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(0);
-      }
-
       function refreshLiveLabels(){
         slides.forEach(function(slide){
           var live = slide.querySelector('.live-top');
@@ -1001,6 +985,22 @@
         return null;
       }
 
+      function removeOnboardingInstant(){
+        onboardingDismissed = true;
+        onboardingClosing = true;
+        autoBootStarted = true;
+        if (onboarding) {
+          try {
+            onboarding.querySelectorAll('video').forEach(function(v){
+              try { v.muted = true; v.pause(); v.removeAttribute('src'); v.load(); } catch(e){}
+            });
+          } catch(e){}
+          try { if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding); } catch(e){}
+          onboarding = null;
+        }
+        try { sessionStorage.setItem('vetka_onboarded', '1'); } catch(e){}
+      }
+
       function dismissOnboarding(){
         if (!onboarding || onboardingClosing) return;
         unlockAudio();
@@ -1015,6 +1015,8 @@
           try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
         }
 
+        try { sessionStorage.setItem('vetka_onboarded', '1'); } catch(e){}
+
         onboardingDismissed = true;
         layoutReels();
         slideEnteredAt = Date.now();
@@ -1026,7 +1028,18 @@
         }, 600);
       }
 
+      // ===== Проверка deep link / sessionStorage в самом начале =====
+      var DEEP_ID = getStartParam();
+      var ONBOARDED = false;
+      try { ONBOARDED = !!sessionStorage.getItem('vetka_onboarded'); } catch(e){}
+
+      if (DEEP_ID || ONBOARDED) {
+        // Deep link или уже проходил онбординг в этой сессии — сразу убираем
+        removeOnboardingInstant();
+      }
+
       if (onboarding) {
+        // Обработчики онбординга — только если он ещё на экране
         var startY = 0, currentY = 0, dragging = false, moved = false;
         var THRESHOLD = 60;
 
@@ -1102,7 +1115,8 @@
           v.addEventListener('error', fire, { once: true });
         }
 
-        onbMaxWaitTimer = setTimeout(showOnboardingReady, 3000);
+        // Fallback 1.5 сек вместо 3 — онбординг быстрее показывается
+        onbMaxWaitTimer = setTimeout(showOnboardingReady, 1500);
 
         function loadOnbBatch(){
           if (!onboarding) return;
@@ -1273,7 +1287,6 @@
         trackEvent('vibe_select', { category: category, label: label, auto: isAuto });
         if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
 
-        // Оверлей показываем только при ручном переходе (когда вайбов 2+)
         if (!isAuto) {
           showVibeOverlay(label);
         }
@@ -1546,26 +1559,12 @@
         feed.classList.add('visible');
         layoutReels();
 
-        var startParam = getStartParam();
-
         var startIdx = 0;
-        if (startParam) {
-          for (var i = 0; i < slides.length; i++) {
-            if (slides[i].dataset.id === startParam) { startIdx = i; break; }
-          }
-        }
-
         currentIndex = startIdx;
         initIO();
         initSlideViewsIO();
         setActiveSlide(startIdx);
         refreshSubscriptionUI();
-
-        if (startIdx > 0) {
-          setTimeout(function(){
-            try { if (feed) feed.scrollTop = startIdx * feed.clientHeight; } catch(e){}
-          }, 250);
-        }
       }
 
       function copyToClipboard(text){
@@ -1660,33 +1659,92 @@
         trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
       });
 
+      async function openDeepLinkedReel(deepId){
+        try {
+          var reel = await loadReelById(deepId);
+          if (!reel) {
+            // Рилс не нашли — обычный флоу
+            try {
+              var vibesFB = await loadVibeReels();
+              if (!vibesFB) vibesFB = [];
+              vibeReels = vibesFB;
+              if (vibeReels.length === 1) {
+                var v = vibeReels[0];
+                await selectVibe(null, v.vibe_category, v.vibe_title || v.vibe_category);
+              } else if (vibeReels.length > 1) {
+                renderList(vibesFB, 'vibe');
+                bootFeed();
+              } else {
+                showEmptyState('Пока пусто', 'Скоро тут появятся вайбы.', false);
+              }
+              loaded = true;
+            } catch(e) { console.warn('deep fallback error:', e); }
+            loadMySubscriptions().then(function(){ refreshSubscriptionUI(); }).catch(function(){});
+            return;
+          }
+
+          // Загружаем остальные события того же вайба
+          var events = [];
+          if (reel.vibe_category) {
+            try { events = await loadEventsForVibe(reel.vibe_category); } catch(e){ events = []; }
+            if (!events) events = [];
+          }
+
+          var hasReel = false;
+          for (var i = 0; i < events.length; i++) {
+            if (events[i].id === reel.id) { hasReel = true; break; }
+          }
+          if (!hasReel) events.unshift(reel);
+
+          var sorted = [reel];
+          for (var j = 0; j < events.length; j++) {
+            if (events[j].id !== reel.id) sorted.push(events[j]);
+          }
+
+          allEventReels = sorted;
+          currentVibe = { category: reel.vibe_category, label: reel.vibe_title, events: sorted };
+
+          // ВАЖНО: не ждём authReady перед рендером — показываем сразу
+          feed.classList.add('visible');
+          renderList(sorted, 'event');
+          layoutReels();
+          initIO();
+          initSlideViewsIO();
+          currentIndex = 0;
+          slideEnteredAt = Date.now();
+          setActiveSlide(0);
+          try { feed.scrollTop = 0; } catch(e){}
+          loaded = true;
+
+          // Подписки — в фоне, обновят UI когда придут
+          loadMySubscriptions().then(function(){ refreshSubscriptionUI(); }).catch(function(){});
+        } catch(e) {
+          console.warn('openDeepLinkedReel error:', e);
+          // Полный fallback
+          try {
+            var vibes2 = await loadVibeReels();
+            if (!vibes2) vibes2 = [];
+            vibeReels = vibes2;
+            renderList(vibes2, 'vibe');
+            if (vibeReels.length === 1) {
+              var v2 = vibeReels[0];
+              await selectVibe(null, v2.vibe_category, v2.vibe_title || v2.vibe_category);
+            } else {
+              bootFeed();
+            }
+            loaded = true;
+          } catch(e2) {
+            showEmptyState('Не удалось загрузить', 'Проверьте соединение и попробуйте снова.', true);
+          }
+        }
+      }
+
       async function initApp(retryCount){
         retryCount = retryCount || 0;
         try {
-          var deepId = getStartParam();
-          if (deepId) {
-            var reel = await loadReelById(deepId);
-            if (reel) {
-              onboardingDismissed = true;
-              onboardingClosing = true;
-              autoBootStarted = true;
-
-              if (onboarding) {
-                try {
-                  onboarding.querySelectorAll('video').forEach(function(v){
-                    try { v.muted = true; v.pause(); v.removeAttribute('src'); v.load(); } catch(e){}
-                  });
-                } catch(e){}
-                if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-                onboarding = null;
-              }
-
-              try { await loadMySubscriptions(); } catch(e){}
-
-              renderSingleReel(reel);
-              loaded = true;
-              return;
-            }
+          if (DEEP_ID) {
+            await openDeepLinkedReel(DEEP_ID);
+            return;
           }
 
           var vibes = await loadVibeReels();
@@ -1698,10 +1756,10 @@
 
           loadMySubscriptions().then(function(){
             refreshSubscriptionUI();
-          });
+          }).catch(function(){});
         } catch (err) {
           console.warn('initApp error:', err);
-          if (retryCount < 3) {
+          if (retryCount < 2) {
             setTimeout(function(){ initApp(retryCount + 1); }, 1500 * (retryCount + 1));
           } else {
             showEmptyState('Не удалось загрузить', 'Проверьте соединение и попробуйте снова.', true);

@@ -184,13 +184,21 @@
     cursor: pointer;
     align-self: center;
     margin-top: 8px;
-    transition: transform .12s ease;
+    transition: transform .12s ease, background .2s ease, color .2s ease;
     -webkit-tap-highlight-color: transparent;
     border: 0;
     text-decoration: none;
     box-shadow: 0 4px 20px rgba(205,255,74,.35);
+    min-width: 0;
   }
   .go-btn:active { transform: scale(.96); }
+  .go-btn:disabled { cursor: default; transform: none; }
+  .go-btn.subscribed {
+    background: rgba(205,255,74,.14);
+    color: #CDFF4A;
+    border: 1px solid rgba(205,255,74,.55);
+    box-shadow: none;
+  }
   .go-btn svg { width: 16px; height: 16px; flex: none; }
 
   .actions-row {
@@ -255,7 +263,6 @@
     text-shadow: 0 1px 3px rgba(0,0,0,.6);
   }
 
-  /* ===== Всплывающая плашка сверху (само исчезает) ===== */
   .vibe-banner{
     position: fixed;
     top: calc(60px + env(safe-area-inset-top, 0px));
@@ -288,7 +295,6 @@
   .vibe-banner-text { flex: 1; line-height: 1.25; }
   .vibe-banner-text em { font-style: normal; color: #fff; font-weight: 500; }
 
-  /* ===== Overlay «собираем поток» ===== */
   .vibe-overlay{
     position: fixed;
     inset: 0;
@@ -498,6 +504,10 @@
           onboard_hint:'Листай вверх',
           vibe_btn:'Перейти к событиям',
           go_btn:'Хочу приглашение',
+          go_sending:'Отправляем…',
+          go_subscribed:'Ты в списке',
+          go_error:'Не получилось, попробуй ещё',
+          go_ok_toast:'Пришлём приглашение в бот',
           share_label:'Поделиться',
           share_text:'Пойдём вместе?',
           overlay_collecting:'Собираем поток',
@@ -514,6 +524,10 @@
           onboard_hint:'Swipe up',
           vibe_btn:'Go to events',
           go_btn:'Get invite',
+          go_sending:'Sending…',
+          go_subscribed:'You\'re in',
+          go_error:'Try again',
+          go_ok_toast:'We\'ll send the invite in the bot',
           share_label:'Share',
           share_text:'Let\'s go together?',
           overlay_collecting:'Collecting stream',
@@ -530,6 +544,10 @@
           onboard_hint:'Desliza hacia arriba',
           vibe_btn:'Ir a eventos',
           go_btn:'Quiero invitación',
+          go_sending:'Enviando…',
+          go_subscribed:'Estás dentro',
+          go_error:'Inténtalo otra vez',
+          go_ok_toast:'Te enviaremos la invitación',
           share_label:'Compartir',
           share_text:'¿Vamos juntos?',
           overlay_collecting:'Recolectando',
@@ -650,7 +668,6 @@
         } catch(e){}
         return null;
       }
-      function buildProfileUrl(u){ if (!u) return null; if (u.username) return 'https://t.me/' + u.username; return 'tg://user?id=' + u.id; }
       var EARLY_TG_USER = readTgUserFromHash();
       var EARLY_TG_ID = EARLY_TG_USER ? String(EARLY_TG_USER.id) : null;
       function readTgUser(){
@@ -767,6 +784,7 @@
               'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
               'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
               'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+              'data-vibe-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
               'data-place="' + escapeAttr(reel.place || '') + '">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>' +
               '<span data-i18n="go_btn">' + t('go_btn') + '</span>' +
@@ -1285,6 +1303,48 @@
         } catch(e) { console.warn('subscribeVibe error:', e); }
       }
 
+      async function subscribeToReel(reelId, vibeTitle, place){
+        try {
+          var user = await authReady; if (!user) return false;
+          var tgUser = readTgUser();
+          var tgId = tgUser ? String(tgUser.id) : null;
+          if (!tgId) return false;
+          if (!reelId) return false;
+
+          await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ wants_notify: true })
+          });
+
+          var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
+            method: 'POST',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'resolution=ignore-duplicates,return=minimal'
+            },
+            body: JSON.stringify([{
+              user_id: user.id,
+              tg_id: tgId,
+              reel_id: reelId,
+              vibe_title: vibeTitle || null,
+              place: place || null
+            }])
+          });
+          return r.ok;
+        } catch(e) {
+          console.warn('subscribeToReel error:', e);
+          return false;
+        }
+      }
+
       function showVibeBanner(label, count){
         if (!vibeBanner || !vibeBannerText) return;
         var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
@@ -1304,17 +1364,19 @@
         document.querySelectorAll('[data-go]').forEach(function(btn){
           if (btn.__bound) return;
           btn.__bound = true;
-          btn.addEventListener('click', function(e){
+          btn.addEventListener('click', async function(e){
             e.stopPropagation();
+            if (btn.disabled || btn.dataset.subscribed === '1') return;
+
             var ctaUrl = btn.getAttribute('data-cta-url') || '';
-            var loc = btn.getAttribute('data-location') || '';
             var reelId = btn.getAttribute('data-reel-id') || '';
             var vibeTitle = btn.getAttribute('data-vibe-title') || '';
             var place = btn.getAttribute('data-place') || '';
 
-            trackEvent('go_click', { slide_id: reelId, has_url: !!ctaUrl, has_loc: !!loc });
+            trackEvent('go_click', { slide_id: reelId, has_url: !!ctaUrl });
             if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
 
+            // Если у рилса есть внешний URL (Quicktickets и т.п.) — ведём туда.
             if (ctaUrl) {
               try {
                 if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
@@ -1326,23 +1388,28 @@
               return;
             }
 
-            if (loc) { openMap(loc, reelId, vibeTitle, place); return; }
+            // Иначе — подписываем на приглашение через бот.
+            var originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span>' + escapeHtml(t('go_sending')) + '</span>';
 
-            showToast(t('toast_soon'));
+            var ok = await subscribeToReel(reelId, vibeTitle, place);
+            if (ok) {
+              btn.dataset.subscribed = '1';
+              btn.classList.add('subscribed');
+              btn.innerHTML =
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
+                '<span>' + escapeHtml(t('go_subscribed')) + '</span>';
+              showToast(t('go_ok_toast'));
+              trackEvent('subscribe_reel', { slide_id: reelId });
+              if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
+            } else {
+              btn.disabled = false;
+              btn.innerHTML = originalHtml;
+              showToast(t('go_error'));
+            }
           });
         });
-      }
-
-      function openMap(destCoords, reelId, vibeTitle, place){
-        var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
-        trackEvent('route_open', { slide_id: reelId, dest: destCoords });
-        try {
-          if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
-            window.Telegram.WebApp.openLink(url);
-            return;
-          }
-        } catch(e){}
-        try { window.open(url, '_blank', 'noopener,noreferrer'); } catch(e){ location.href = url; }
       }
 
       function bindHandlers(){

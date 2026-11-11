@@ -143,13 +143,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 9px;
-    padding: 14px 40px;
+    gap: 8px;
+    padding: 11px 26px;
     border-radius: 100px;
     background: #CDFF4A;
     color: #07070a;
     font-family: 'Inter', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: -.01em;
     cursor: pointer;
@@ -162,7 +162,7 @@
   }
   .vibe-btn:active { transform: scale(.96); }
   .vibe-btn:disabled { opacity: .7; cursor: default; animation: none; }
-  .vibe-btn svg { width: 16px; height: 16px; flex: none; }
+  .vibe-btn svg { width: 14px; height: 14px; flex: none; }
   @keyframes vibeGlow {
     0%, 100% { box-shadow: 0 4px 20px rgba(205,255,74,.35); }
     50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 3px rgba(205,255,74,.2); }
@@ -173,13 +173,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 13px 40px;
+    gap: 7px;
+    padding: 10px 22px;
     border-radius: 100px;
     background: #CDFF4A;
     color: #07070a;
     font-family: 'Inter', sans-serif;
-    font-size: 13.5px;
+    font-size: 12.5px;
     font-weight: 700;
     cursor: pointer;
     align-self: center;
@@ -200,12 +200,12 @@
     box-shadow: none;
     opacity: 1;
   }
-  .go-btn svg { width: 16px; height: 16px; flex: none; }
+  .go-btn svg { width: 14px; height: 14px; flex: none; }
 
   .actions-row {
     position: absolute;
     right: 14px;
-    bottom: 170px;
+    bottom: 150px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -509,6 +509,7 @@
           go_subscribed:'Ты в списке',
           go_error:'Не получилось, попробуй ещё',
           go_ok_toast:'Готово! Пришлём в боте 🔔',
+          go_unsub_ok:'Подписка отменена',
           share_label:'Поделиться',
           share_text:'Пойдём вместе?',
           overlay_collecting:'Собираем поток',
@@ -527,6 +528,7 @@
           go_subscribed:'You\'re in',
           go_error:'Try again',
           go_ok_toast:'Done! We\'ll ping you in the bot 🔔',
+          go_unsub_ok:'Unsubscribed',
           share_label:'Share',
           share_text:'Let\'s go together?',
           overlay_collecting:'Collecting stream',
@@ -545,6 +547,7 @@
           go_subscribed:'Estás dentro',
           go_error:'Inténtalo otra vez',
           go_ok_toast:'¡Listo! Te avisamos en el bot 🔔',
+          go_unsub_ok:'Suscripción cancelada',
           share_label:'Compartir',
           share_text:'¿Vamos juntos?',
           overlay_collecting:'Recolectando',
@@ -753,25 +756,26 @@
         }
       }
 
+      function ticketBtnInner(){
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>' +
+          '<span data-i18n="go_btn">' + t('go_btn') + '</span>';
+      }
+      function checkBtnInner(){
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
+          '<span data-i18n="go_subscribed">' + t('go_subscribed') + '</span>';
+      }
+
       function goBtnHtml(reel){
         var isSub = !!mySubscribed[reel.id];
-        if (isSub) {
-          return '<button class="go-btn subscribed" data-go type="button" disabled data-subscribed="1" ' +
-            'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
-            'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-            'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-            'data-place="' + escapeAttr(reel.place || '') + '">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
-            '<span data-i18n="go_subscribed">' + t('go_subscribed') + '</span>' +
-          '</button>';
-        }
-        return '<button class="go-btn" data-go type="button" ' +
+        var cls = isSub ? 'go-btn subscribed' : 'go-btn';
+        var inner = isSub ? checkBtnInner() : ticketBtnInner();
+        return '<button class="' + cls + '" data-go type="button" ' +
+          (isSub ? 'disabled data-subscribed="1" ' : 'data-subscribed="0" ') +
           'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
           'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
           'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
           'data-place="' + escapeAttr(reel.place || '') + '">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>' +
-          '<span data-i18n="go_btn">' + t('go_btn') + '</span>' +
+          inner +
         '</button>';
       }
 
@@ -779,16 +783,22 @@
         slides.forEach(function(slide){
           var id = slide.dataset.id;
           if (!id) return;
-          if (!mySubscribed[id]) return;
           var btn = slide.querySelector('[data-go]');
           if (!btn) return;
-          if (btn.dataset.subscribed === '1') return;
-          btn.dataset.subscribed = '1';
-          btn.classList.add('subscribed');
-          btn.disabled = true;
-          btn.innerHTML =
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
-            '<span>' + escapeHtml(t('go_subscribed')) + '</span>';
+          var shouldBeSub = !!mySubscribed[id];
+          var isSub = btn.dataset.subscribed === '1';
+          if (shouldBeSub === isSub) return;
+          if (shouldBeSub) {
+            btn.dataset.subscribed = '1';
+            btn.classList.add('subscribed');
+            btn.disabled = true;
+            btn.innerHTML = checkBtnInner();
+          } else {
+            btn.dataset.subscribed = '0';
+            btn.classList.remove('subscribed');
+            btn.disabled = false;
+            btn.innerHTML = ticketBtnInner();
+          }
         });
       }
 
@@ -1346,6 +1356,26 @@
         }
       }
 
+      async function unsubscribeFromReel(reelId){
+        try {
+          var user = await authReady; if (!user) return false;
+          if (!reelId) return false;
+
+          var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions?user_id=eq.' + encodeURIComponent(user.id) + '&reel_id=eq.' + encodeURIComponent(reelId), {
+            method: 'DELETE',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+              'Prefer': 'return=minimal'
+            }
+          });
+          return r.ok;
+        } catch(e) {
+          console.warn('unsubscribeFromReel error:', e);
+          return false;
+        }
+      }
+
       function showVibeBanner(label, count){
         if (!vibeBanner || !vibeBannerText) return;
         var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
@@ -1366,17 +1396,18 @@
           btn.__bound = true;
           btn.addEventListener('click', async function(e){
             e.stopPropagation();
-            if (btn.disabled || btn.dataset.subscribed === '1') return;
+            if (btn.disabled) return;
 
             var ctaUrl = btn.getAttribute('data-cta-url') || '';
             var reelId = btn.getAttribute('data-reel-id') || '';
             var vibeTitle = btn.getAttribute('data-vibe-title') || '';
             var place = btn.getAttribute('data-place') || '';
+            var isSub = btn.dataset.subscribed === '1';
 
-            trackEvent('go_click', { slide_id: reelId, has_url: !!ctaUrl });
-            if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
-
-            if (ctaUrl) {
+            // Если есть внешний URL и НЕ подписан — ведём наружу
+            if (ctaUrl && !isSub) {
+              trackEvent('go_click', { slide_id: reelId, has_url: true });
+              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
               try {
                 if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
                   window.Telegram.WebApp.openLink(ctaUrl);
@@ -1391,21 +1422,43 @@
             btn.disabled = true;
             btn.innerHTML = '<span>' + escapeHtml(t('go_sending')) + '</span>';
 
-            var ok = await subscribeToReel(reelId, vibeTitle, place);
-            if (ok) {
-              mySubscribed[reelId] = true;
-              btn.dataset.subscribed = '1';
-              btn.classList.add('subscribed');
-              btn.innerHTML =
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
-                '<span>' + escapeHtml(t('go_subscribed')) + '</span>';
-              showToast(t('go_ok_toast'));
-              trackEvent('subscribe_reel', { slide_id: reelId });
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
+            if (isSub) {
+              // Отписка
+              var okU = await unsubscribeFromReel(reelId);
+              if (okU) {
+                delete mySubscribed[reelId];
+                btn.dataset.subscribed = '0';
+                btn.classList.remove('subscribed');
+                btn.disabled = false;
+                btn.innerHTML = ticketBtnInner();
+                applyLang(currentLang);
+                showToast(t('go_unsub_ok'));
+                trackEvent('unsubscribe_reel', { slide_id: reelId });
+              } else {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                showToast(t('go_error'));
+              }
             } else {
-              btn.disabled = false;
-              btn.innerHTML = originalHtml;
-              showToast(t('go_error'));
+              // Подписка
+              trackEvent('go_click', { slide_id: reelId, has_url: false });
+              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
+              var okS = await subscribeToReel(reelId, vibeTitle, place);
+              if (okS) {
+                mySubscribed[reelId] = true;
+                btn.dataset.subscribed = '1';
+                btn.classList.add('subscribed');
+                btn.disabled = true;
+                btn.innerHTML = checkBtnInner();
+                applyLang(currentLang);
+                showToast(t('go_ok_toast'));
+                trackEvent('subscribe_reel', { slide_id: reelId });
+                if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
+              } else {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                showToast(t('go_error'));
+              }
             }
           });
         });

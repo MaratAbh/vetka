@@ -1553,8 +1553,12 @@
         autoBootStarted = true;
 
         if (vibeReels.length === 1) {
-          var v = vibeReels[0];
-          selectVibe(null, v.vibe_category, v.vibe_title || v.vibe_category);
+          if (allEventReels.length > 0 && slides.length > 0 && currentVibe) {
+            bootFeed();
+          } else {
+            var v = vibeReels[0];
+            selectVibe(null, v.vibe_category, v.vibe_title || v.vibe_category);
+          }
         } else {
           bootFeed();
         }
@@ -1713,7 +1717,22 @@
           var vibes = await loadVibeReels();
           if (!vibes) vibes = [];
           vibeReels = vibes;
-          renderList(vibes, 'vibe');
+
+          if (vibeReels.length === 1) {
+            var v0 = vibeReels[0];
+            var evs0 = [];
+            try { evs0 = await loadEventsForVibe(v0.vibe_category) || []; } catch(e){ evs0 = []; }
+            if (evs0.length) {
+              allEventReels = evs0;
+              currentVibe = { category: v0.vibe_category, label: v0.vibe_title || v0.vibe_category, events: evs0 };
+              renderList(evs0, 'event');
+            } else {
+              renderList(vibes, 'vibe');
+            }
+          } else {
+            renderList(vibes, 'vibe');
+          }
+
           loaded = true;
           if (onboardingDismissed) postOnboardingBoot();
 

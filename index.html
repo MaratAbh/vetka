@@ -97,6 +97,50 @@
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
   .live-top.hidden{display:none;}
 
+  /* Вайб-пилюля (название вайба + стрелка назад) */
+  .vibe-top{
+    position: fixed;
+    top: calc(16px + env(safe-area-inset-top, 0px));
+    right: 56px;
+    z-index: 20;
+    max-width: calc(100vw - 130px);
+  }
+  .vibe-back-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px 7px 8px;
+    border-radius: 100px;
+    background: rgba(0,0,0,.55);
+    border: 1px solid rgba(255,255,255,.14);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    max-width: 100%;
+    transition: background .18s ease, border-color .18s ease, transform .12s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .vibe-back-btn:active{
+    background: rgba(205,255,74,.2);
+    border-color: rgba(205,255,74,.5);
+    transform: scale(.97);
+  }
+  .vibe-back-btn svg{
+    width: 16px;
+    height: 16px;
+    flex: none;
+    color: #CDFF4A;
+  }
+  .vibe-back-btn span{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
 
@@ -437,6 +481,13 @@
     </div>
   </div>
 
+  <div class="vibe-top" id="vibeTop" style="display:none;">
+    <button class="vibe-back-btn" id="vibeBackBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      <span id="vibeTopLabel"></span>
+    </button>
+  </div>
+
   <div class="feed" id="feed"></div>
 
   <div class="vibe-banner" id="vibeBanner">
@@ -686,6 +737,10 @@
       var vibeOverlay = document.getElementById('vibeOverlay');
       var vibeOverlayText = document.getElementById('vibeOverlayText');
 
+      var vibeTopEl = document.getElementById('vibeTop');
+      var vibeTopLabel = document.getElementById('vibeTopLabel');
+      var vibeBackBtn = document.getElementById('vibeBackBtn');
+
       var vibeReels = [];
       var allEventReels = [];
       var currentVibe = null;
@@ -826,6 +881,33 @@
         });
       }
 
+      function showVibeTop(label){
+        if (!vibeTopEl || !vibeTopLabel) return;
+        vibeTopLabel.textContent = label || '';
+        vibeTopEl.style.display = '';
+      }
+      function hideVibeTop(){
+        if (!vibeTopEl) return;
+        vibeTopEl.style.display = 'none';
+      }
+
+      function backToVibes(){
+        if (currentIO) { currentIO.disconnect(); currentIO = null; }
+        if (slideIO) { slideIO.disconnect(); slideIO = null; }
+        currentVibe = null;
+        allEventReels = [];
+        hideVibeTop();
+        hideVibeBanner();
+        renderList(vibeReels, 'vibe');
+        layoutReels();
+        currentIndex = 0;
+        slideEnteredAt = Date.now();
+        initIO();
+        initSlideViewsIO();
+        setActiveSlide(0);
+        try { feed.scrollTop = 0; } catch(e){}
+      }
+
       function renderSlideShell(reel, mode){
         var slide = document.createElement('div');
         slide.className = 'slide';
@@ -896,6 +978,7 @@
           showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет событий.', false);
           slides = [];
           videoUrls = [];
+          hideVibeTop();
           return;
         }
         hideEmptyState();
@@ -916,6 +999,12 @@
 
         bindHandlers();
         refreshSubscriptionUI();
+
+        if (mode === 'event' && currentVibe) {
+          showVibeTop(currentVibe.label || currentVibe.category || '');
+        } else {
+          hideVibeTop();
+        }
       }
 
       function renderSingleReel(reel){
@@ -1220,6 +1309,13 @@
 
       applyLang(currentLang);
 
+      if (vibeBackBtn) {
+        vibeBackBtn.addEventListener('click', function(e){
+          e.stopPropagation();
+          backToVibes();
+        });
+      }
+
       var soundBtns = [];
       function bindSoundBtns(){
         soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -1439,6 +1535,7 @@
           vibeBanner.classList.remove('show');
         }, 2800);
       }
+      function hideVibeBanner(){ if (vibeBanner) vibeBanner.classList.remove('show'); }
 
       function bindGoBtns(){
         document.querySelectorAll('[data-go]').forEach(function(btn){

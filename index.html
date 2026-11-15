@@ -111,45 +111,18 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  .organizer-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    padding:3px 9px;
-    border-radius:100px;
-    background:rgba(0,0,0,.45);
-    border:1px solid rgba(255,255,255,.12);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-    font-family:'Inter',sans-serif;
-    font-size:10.5px;
-    font-weight:600;
-    color:rgba(255,255,255,.7);
-    align-self:flex-start;
-    max-width:100%;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-  .organizer-badge svg{
-    width:11px;
-    height:11px;
-    flex:none;
-    color:#CDFF4A;
-  }
-
   .vibe-btn {
     pointer-events: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 11px 26px;
+    gap: 9px;
+    padding: 14px 40px;
     border-radius: 100px;
     background: #CDFF4A;
     color: #07070a;
     font-family: 'Inter', sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: -.01em;
     cursor: pointer;
@@ -162,7 +135,7 @@
   }
   .vibe-btn:active { transform: scale(.96); }
   .vibe-btn:disabled { opacity: .7; cursor: default; animation: none; }
-  .vibe-btn svg { width: 14px; height: 14px; flex: none; }
+  .vibe-btn svg { width: 16px; height: 16px; flex: none; }
   @keyframes vibeGlow {
     0%, 100% { box-shadow: 0 4px 20px rgba(205,255,74,.35); }
     50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 3px rgba(205,255,74,.2); }
@@ -173,40 +146,30 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    padding: 10px 22px;
+    gap: 8px;
+    padding: 13px 40px;
     border-radius: 100px;
     background: #CDFF4A;
     color: #07070a;
     font-family: 'Inter', sans-serif;
-    font-size: 12.5px;
+    font-size: 13.5px;
     font-weight: 700;
     cursor: pointer;
     align-self: center;
     margin-top: 8px;
-    transition: transform .12s ease, background .2s ease, color .2s ease, opacity .2s ease;
+    transition: transform .12s ease;
     -webkit-tap-highlight-color: transparent;
     border: 0;
     text-decoration: none;
     box-shadow: 0 4px 20px rgba(205,255,74,.35);
-    min-width: 0;
   }
   .go-btn:active { transform: scale(.96); }
-  .go-btn[disabled] { cursor: default; transform: none; }
-  .go-btn[data-inflight="1"] { opacity: .7; }
-  .go-btn.subscribed {
-    background: rgba(205,255,74,.14);
-    color: #CDFF4A;
-    border: 1px solid rgba(205,255,74,.55);
-    box-shadow: none;
-    opacity: 1;
-  }
-  .go-btn svg { width: 14px; height: 14px; flex: none; }
+  .go-btn svg { width: 16px; height: 16px; flex: none; }
 
   .actions-row {
     position: absolute;
     right: 14px;
-    bottom: 150px;
+    bottom: 170px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -215,7 +178,7 @@
     z-index: 10;
   }
 
-  .share-btn {
+  .share-btn, .map-btn {
     pointer-events: auto;
     display: flex;
     flex-direction: column;
@@ -228,7 +191,7 @@
     padding: 0;
     color: inherit;
   }
-  .share-btn:disabled { opacity: .65; cursor: default; }
+  .share-btn:disabled, .map-btn:disabled { opacity: .65; cursor: default; }
 
   .ico-ph {
     width: 34px;
@@ -245,7 +208,7 @@
     transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
   }
 
-  .share-btn:active .ico-ph {
+  .share-btn:active .ico-ph, .map-btn:active .ico-ph {
     transform: scale(.9);
     background: rgba(205,255,74,.9);
     color: #07070a;
@@ -265,6 +228,57 @@
     text-shadow: 0 1px 3px rgba(0,0,0,.6);
   }
 
+  /* ===== Кнопка «Сменить вайб» (слева внизу) ===== */
+  .back-vibe-btn {
+    position: fixed;
+    left: 16px;
+    bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+    z-index: 50;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    pointer-events: auto;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .back-vibe-btn.show { display: flex; }
+  .back-vibe-btn-inner {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0,0,0,.55);
+    border: 1px solid rgba(205,255,74,.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #CDFF4A;
+    transition: transform .15s ease, background .2s ease;
+  }
+  .back-vibe-btn:active .back-vibe-btn-inner {
+    transform: scale(.9);
+    background: rgba(205,255,74,.2);
+  }
+  .back-vibe-btn-inner svg {
+    width: 20px;
+    height: 20px;
+  }
+  .back-vibe-btn-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 8.5px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.65);
+    text-shadow: 0 1px 3px rgba(0,0,0,.7);
+  }
+
+  /* ===== Всплывающая плашка сверху (само исчезает) ===== */
   .vibe-banner{
     position: fixed;
     top: calc(60px + env(safe-area-inset-top, 0px));
@@ -297,6 +311,7 @@
   .vibe-banner-text { flex: 1; line-height: 1.25; }
   .vibe-banner-text em { font-style: normal; color: #fff; font-weight: 500; }
 
+  /* ===== Overlay «собираем поток» ===== */
   .vibe-overlay{
     position: fixed;
     inset: 0;
@@ -453,6 +468,16 @@
     <div class="vibe-overlay-dots"><i></i><i></i><i></i></div>
   </div>
 
+  <button class="back-vibe-btn" id="backVibeBtn" type="button">
+    <span class="back-vibe-btn-inner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 1 0 3-6.7"/>
+        <path d="M3 4v5h5"/>
+      </svg>
+    </span>
+    <span class="back-vibe-btn-label" data-i18n="back_label">Сменить</span>
+  </button>
+
   <div class="empty-state" id="emptyState">
     <div class="es-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -505,54 +530,54 @@
           onboard_tag:'Поиск событий <em>под твой вайб</em>',
           onboard_hint:'Листай вверх',
           vibe_btn:'Перейти к событиям',
-          go_btn:'Получить приглашение',
-          go_subscribed:'Ты в списке',
-          go_error:'Не получилось, попробуй ещё',
-          go_ok_toast:'Готово! Пришлём в боте 🔔',
-          go_unsub_ok:'Подписка отменена',
+          go_btn:'Выбрать',
+          map_label:'На карте',
           share_label:'Поделиться',
           share_text:'Пойдём вместе?',
           overlay_collecting:'Собираем поток',
           banner_stream:'Поток',
           banner_one:'1 событие',
           banner_many:'{n} событий',
+          back_label:'Сменить',
+          toast_no_location:'Адрес не указан',
           toast_soon:'Скоро здесь',
+          toast_back:'Вернулись к выбору',
           min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
         },
         en: {
           onboard_tag:'Find events <em>for your vibe</em>',
           onboard_hint:'Swipe up',
           vibe_btn:'Go to events',
-          go_btn:'Get invite',
-          go_subscribed:'You\'re in',
-          go_error:'Try again',
-          go_ok_toast:'Done! We\'ll ping you in the bot 🔔',
-          go_unsub_ok:'Unsubscribed',
+          go_btn:'Choose',
+          map_label:'On map',
           share_label:'Share',
           share_text:'Let\'s go together?',
           overlay_collecting:'Collecting stream',
           banner_stream:'Stream',
           banner_one:'1 event',
           banner_many:'{n} events',
+          back_label:'Change',
+          toast_no_location:'No address',
           toast_soon:'Coming soon',
+          toast_back:'Back to selection',
           min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
         },
         es: {
           onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
           onboard_hint:'Desliza hacia arriba',
           vibe_btn:'Ir a eventos',
-          go_btn:'Obtener invitación',
-          go_subscribed:'Estás dentro',
-          go_error:'Inténtalo otra vez',
-          go_ok_toast:'¡Listo! Te avisamos en el bot 🔔',
-          go_unsub_ok:'Suscripción cancelada',
+          go_btn:'Elegir',
+          map_label:'En mapa',
           share_label:'Compartir',
           share_text:'¿Vamos juntos?',
           overlay_collecting:'Recolectando',
           banner_stream:'Flujo',
           banner_one:'1 evento',
           banner_many:'{n} eventos',
+          back_label:'Cambiar',
+          toast_no_location:'Dirección no indicada',
           toast_soon:'Pronto',
+          toast_back:'Volver a elegir',
           min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
         }
       };
@@ -602,34 +627,6 @@
         }
       }
 
-      var audioUnlocked = false;
-      function unlockAudio(){
-        if (audioUnlocked) return;
-        audioUnlocked = true;
-        try {
-          var AC = window.AudioContext || window.webkitAudioContext;
-          if (AC) {
-            var ctx = new AC();
-            var buf = ctx.createBuffer(1, 1, 22050);
-            var src = ctx.createBufferSource();
-            src.buffer = buf;
-            src.connect(ctx.destination);
-            src.start(0);
-            if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
-          }
-        } catch(e){}
-        try {
-          var a = new Audio();
-          a.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-          a.volume = 0;
-          var pp = a.play();
-          if (pp && pp.catch) pp.catch(function(){});
-        } catch(e){}
-      }
-      document.addEventListener('touchstart', unlockAudio, {once:true, passive:true});
-      document.addEventListener('click', unlockAudio, {once:true});
-      document.addEventListener('keydown', unlockAudio, {once:true});
-
       function timeAgo(iso){
         var diff = Date.now() - new Date(iso).getTime();
         var mins = Math.floor(diff / 60000);
@@ -663,6 +660,7 @@
         } catch(e){}
         return null;
       }
+      function buildProfileUrl(u){ if (!u) return null; if (u.username) return 'https://t.me/' + u.username; return 'tg://user?id=' + u.id; }
       var EARLY_TG_USER = readTgUserFromHash();
       var EARLY_TG_ID = EARLY_TG_USER ? String(EARLY_TG_USER.id) : null;
       function readTgUser(){
@@ -682,17 +680,17 @@
       var vibeBannerText = document.getElementById('vibeBannerText');
       var vibeOverlay = document.getElementById('vibeOverlay');
       var vibeOverlayText = document.getElementById('vibeOverlayText');
+      var backVibeBtn = document.getElementById('backVibeBtn');
 
       var vibeReels = [];
       var allEventReels = [];
       var currentVibe = null;
-      var mySubscribed = {};
 
       var slides = [];
       var videoUrls = [];
       var currentIndex = 0;
       var slideEnteredAt = 0;
-      var soundEnabled = true;
+      var soundEnabled = false;
       var trackedSlideViews = {};
       var flushing = false;
       var tgIdWatchStarted = false;
@@ -701,7 +699,6 @@
       var onboardingDismissed = false;
       var feedBooted = false;
       var onboardingClosing = false;
-      var autoBootStarted = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
@@ -734,77 +731,10 @@
       }
 
       async function loadVibeReels(){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.vibe&order=sort_order.asc&limit=20');
+        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.vibe&order=created_at.asc&limit=20');
       }
       async function loadEventsForVibe(category){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=sort_order.asc&limit=50');
-      }
-      async function loadReelById(id){
-        try {
-          var rows = await api('reels', 'select=*&id=eq.' + encodeURIComponent(id) + '&limit=1');
-          if (rows && rows.length) return rows[0];
-        } catch(e){ console.warn('loadReelById error:', e); }
-        return null;
-      }
-
-      async function loadMySubscriptions(){
-        try {
-          var user = await authReady; if (!user) return;
-          var res = await supabaseClient.from('subscriptions').select('reel_id').eq('user_id', user.id);
-          if (res && res.data) {
-            res.data.forEach(function(r){
-              if (r && r.reel_id) mySubscribed[r.reel_id] = true;
-            });
-          }
-        } catch(e) {
-          console.warn('loadMySubscriptions error:', e);
-        }
-      }
-
-      function ticketBtnInner(){
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>' +
-          '<span data-i18n="go_btn">' + t('go_btn') + '</span>';
-      }
-      function checkBtnInner(){
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
-          '<span data-i18n="go_subscribed">' + t('go_subscribed') + '</span>';
-      }
-
-      function goBtnHtml(reel){
-        var isSub = !!mySubscribed[reel.id];
-        var cls = isSub ? 'go-btn subscribed' : 'go-btn';
-        var inner = isSub ? checkBtnInner() : ticketBtnInner();
-        return '<button class="' + cls + '" data-go type="button" ' +
-          'data-subscribed="' + (isSub ? '1' : '0') + '" ' +
-          'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
-          'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-          'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-          'data-place="' + escapeAttr(reel.place || '') + '">' +
-          inner +
-        '</button>';
-      }
-
-      function refreshSubscriptionUI(){
-        slides.forEach(function(slide){
-          var id = slide.dataset.id;
-          if (!id) return;
-          var btn = slide.querySelector('[data-go]');
-          if (!btn) return;
-          var shouldBeSub = !!mySubscribed[id];
-          var isSub = btn.dataset.subscribed === '1';
-          if (shouldBeSub === isSub) return;
-          if (shouldBeSub) {
-            btn.dataset.subscribed = '1';
-            btn.classList.add('subscribed');
-            btn.disabled = false;
-            btn.innerHTML = checkBtnInner();
-          } else {
-            btn.dataset.subscribed = '0';
-            btn.classList.remove('subscribed');
-            btn.disabled = false;
-            btn.innerHTML = ticketBtnInner();
-          }
-        });
+        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=created_at.desc&limit=50');
       }
 
       function renderSlideShell(reel, mode){
@@ -824,14 +754,11 @@
           ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
           : '';
 
-        var organizerHtml = reel.organizer
-          ? '<div class="organizer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4.5 4L12 5l4.5 6L21 7l-1.5 11h-15z"/></svg>' + escapeHtml(reel.organizer) + '</div>'
-          : '';
-
         var ctaHtml = '';
         var actionsHtml = '';
 
         if (mode === 'vibe') {
+          // Экран выбора вайба: одна большая кнопка «Перейти к событиям» + иконка вайба справа
           ctaHtml =
             '<button class="vibe-btn" data-choose type="button" ' +
               'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
@@ -841,9 +768,27 @@
             '</button>';
           actionsHtml = '';
         } else {
-          ctaHtml = goBtnHtml(reel);
+          // Экран событий: «Выбрать» снизу + «На карте» и «Поделиться» справа
+          ctaHtml =
+            '<button class="go-btn" data-go type="button" ' +
+              'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
+              'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
+              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+              'data-place="' + escapeAttr(reel.place || '') + '">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
+              '<span data-i18n="go_btn">' + t('go_btn') + '</span>' +
+            '</button>';
 
           actionsHtml =
+            '<button class="map-btn" data-map ' +
+              'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
+              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+              'data-place="' + escapeAttr(reel.place || '') + '">' +
+              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>' +
+              '<span class="lbl" data-i18n="map_label">' + t('map_label') + '</span>' +
+            '</button>' +
             '<button class="share-btn" data-share>' +
               '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
               '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
@@ -863,7 +808,6 @@
             '<div class="title-row"><div class="title">' + escapeHtml(reel.vibe_title || '') + '</div></div>' +
             '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
             placeHtml +
-            organizerHtml +
             ctaHtml +
             actionsBlock +
           '</div>';
@@ -877,6 +821,7 @@
           showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет событий.', false);
           slides = [];
           videoUrls = [];
+          if (backVibeBtn) backVibeBtn.classList.remove('show');
           return;
         }
         hideEmptyState();
@@ -884,6 +829,12 @@
         reels.forEach(function(reel){
           feed.appendChild(renderSlideShell(reel, mode));
         });
+
+        // Показываем кнопку «Сменить» только на экране событий
+        if (backVibeBtn) {
+          if (mode === 'event') backVibeBtn.classList.add('show');
+          else backVibeBtn.classList.remove('show');
+        }
 
         slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
         videoUrls = [];
@@ -896,24 +847,6 @@
         });
 
         bindHandlers();
-        refreshSubscriptionUI();
-      }
-
-      function renderSingleReel(reel){
-        if (!reel) return;
-        feed.classList.add('visible');
-        feed.innerHTML = '';
-        feed.appendChild(renderSlideShell(reel, 'event'));
-        slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
-        videoUrls = [reel.video_url || null];
-        bindHandlers();
-        refreshSubscriptionUI();
-        layoutReels();
-        currentIndex = 0;
-        slideEnteredAt = Date.now();
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(0);
       }
 
       function refreshLiveLabels(){
@@ -992,18 +925,8 @@
         for (var i = 0; i < all.length; i++) all[i].style.height = vh + 'px';
       }
 
-      function getStartParam(){
-        try {
-          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-            return window.Telegram.WebApp.initDataUnsafe.start_param || null;
-          }
-        } catch(e){}
-        return null;
-      }
-
       function dismissOnboarding(){
         if (!onboarding || onboardingClosing) return;
-        unlockAudio();
         onboardingClosing = true;
         onboarding.style.transform = '';
         onboarding.classList.add('gone');
@@ -1019,7 +942,7 @@
         layoutReels();
         slideEnteredAt = Date.now();
         feed.classList.add('visible');
-        postOnboardingBoot();
+        if (loaded) bootFeed();
         setTimeout(function(){
           if (onboarding && onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
           onboarding = null;
@@ -1031,7 +954,6 @@
         var THRESHOLD = 60;
 
         function onStart(e){
-          unlockAudio();
           var pt = e.touches ? e.touches[0] : e;
           startY = pt.clientY; currentY = startY;
           dragging = true; moved = false;
@@ -1066,7 +988,6 @@
         document.addEventListener('mouseup', onEnd);
 
         onboarding.addEventListener('click', function(e){
-          unlockAudio();
           if (e.target.closest('.lang-switch')) return;
           if (moved) return;
           dismissOnboarding();
@@ -1126,7 +1047,7 @@
 
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
-          api('reels', 'select=video_url&is_active=eq.true&order=sort_order.asc&limit=12')
+          api('reels', 'select=video_url&is_active=eq.true&order=created_at.desc&limit=12')
             .then(function(rows){
               if (!onboarding) return;
               try {
@@ -1170,7 +1091,7 @@
                   }
                   loadOnbBatch();
                 }
-              } catch(err){}
+              } catch(err){ console.warn('loadOnb parse error:', err); }
             })
             .catch(function(){
               if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
@@ -1268,25 +1189,22 @@
       }
 
       async function selectVibe(btn, category, label){
-        var isAuto = !btn;
-        if (btn) btn.disabled = true;
-        trackEvent('vibe_select', { category: category, label: label, auto: isAuto });
+        btn.disabled = true;
+        trackEvent('vibe_select', { category: category, label: label });
         if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
 
-        // Оверлей показываем только при ручном переходе (когда вайбов 2+)
-        if (!isAuto) {
-          showVibeOverlay(label);
-        }
+        showVibeOverlay(label);
 
-        var delayP = isAuto ? Promise.resolve() : new Promise(function(r){ setTimeout(r, 900); });
+        var delayP = new Promise(function(r){ setTimeout(r, 900); });
+        subscribeVibe(category, label);
         var eventsP = loadEventsForVibe(category).catch(function(){ return []; });
 
         var results = await Promise.all([eventsP, delayP]);
         var events = results[0] || [];
 
         if (!events.length) {
-          if (!isAuto) hideVibeOverlay();
-          if (btn) btn.disabled = false;
+          hideVibeOverlay();
+          btn.disabled = false;
           showToast(t('toast_soon'));
           return;
         }
@@ -1294,10 +1212,8 @@
         allEventReels = events;
         currentVibe = { category: category, label: label, events: events };
 
-        if (!isAuto) {
-          hideVibeOverlay();
-          await new Promise(function(r){ setTimeout(r, 260); });
-        }
+        hideVibeOverlay();
+        await new Promise(function(r){ setTimeout(r, 260); });
 
         if (currentIO) { currentIO.disconnect(); currentIO = null; }
         if (slideIO) { slideIO.disconnect(); slideIO = null; }
@@ -1305,28 +1221,17 @@
         renderList(events, 'event');
         layoutReels();
 
+        currentIndex = 0;
+        slideEnteredAt = Date.now();
         initIO();
         initSlideViewsIO();
+        setActiveSlide(0);
 
-        var startParam = getStartParam();
-        var targetIdx = 0;
-        if (startParam) {
-          for (var si = 0; si < slides.length; si++) {
-            if (slides[si].dataset.id === startParam) { targetIdx = si; break; }
-          }
-        }
+        try { feed.scrollTop = 0; } catch(e){}
 
-        currentIndex = targetIdx;
-        slideEnteredAt = Date.now();
-        setActiveSlide(targetIdx);
+        showVibeBanner(label, events.length);
 
-        try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
-
-        if (!isAuto) {
-          showVibeBanner(label, events.length);
-        }
-
-        if (btn) btn.disabled = false;
+        btn.disabled = false;
       }
 
       function showVibeOverlay(label){
@@ -1344,13 +1249,12 @@
         }, 300);
       }
 
-      async function subscribeToReel(reelId, vibeTitle, place){
+      async function subscribeVibe(category, label){
         try {
-          var user = await authReady; if (!user) return false;
+          var user = await authReady; if (!user) return;
           var tgUser = readTgUser();
           var tgId = tgUser ? String(tgUser.id) : null;
-          if (!tgId) return false;
-          if (!reelId) return false;
+          if (!tgId) return;
 
           await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
             method: 'PATCH',
@@ -1363,7 +1267,7 @@
             body: JSON.stringify({ wants_notify: true })
           });
 
-          var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
+          await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
             method: 'POST',
             headers: {
               'apikey': SUPABASE_ANON_KEY,
@@ -1374,69 +1278,64 @@
             body: JSON.stringify([{
               user_id: user.id,
               tg_id: tgId,
-              reel_id: reelId,
-              vibe_title: vibeTitle || null,
-              place: place || null
+              reel_id: 'vibe:' + category,
+              vibe_title: label || null,
+              place: category || null
             }])
           });
-          return r.ok;
-        } catch(e) {
-          console.warn('subscribeToReel error:', e);
-          return false;
-        }
-      }
-
-      async function unsubscribeFromReel(reelId){
-        try {
-          var user = await authReady; if (!user) return false;
-          if (!reelId) return false;
-
-          var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions?user_id=eq.' + encodeURIComponent(user.id) + '&reel_id=eq.' + encodeURIComponent(reelId), {
-            method: 'DELETE',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Prefer': 'return=minimal'
-            }
-          });
-          return r.ok;
-        } catch(e) {
-          console.warn('unsubscribeFromReel error:', e);
-          return false;
-        }
+        } catch(e) { console.warn('subscribeVibe error:', e); }
       }
 
       function showVibeBanner(label, count){
         if (!vibeBanner || !vibeBannerText) return;
         var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
         vibeBannerText.innerHTML = '✦ ' + escapeHtml(t('banner_stream')) + ' <em>' + escapeHtml(label) + '</em> · ' + countText;
+        // Принудительно перезапускаем анимацию
         vibeBanner.classList.remove('show');
         void vibeBanner.offsetWidth;
         vibeBanner.classList.add('show');
 
+        // Автоскрытие через 2.8 секунды
         clearTimeout(bannerHideTimer);
         bannerHideTimer = setTimeout(function(){
           vibeBanner.classList.remove('show');
         }, 2800);
+      }
+      function hideVibeBanner(){ if (vibeBanner) vibeBanner.classList.remove('show'); }
+
+      async function backToVibes(){
+        currentVibe = null;
+        hideVibeBanner();
+        if (currentIO) { currentIO.disconnect(); currentIO = null; }
+        if (slideIO) { slideIO.disconnect(); slideIO = null; }
+
+        renderList(vibeReels, 'vibe');
+        layoutReels();
+        currentIndex = 0;
+        slideEnteredAt = Date.now();
+        initIO();
+        initSlideViewsIO();
+        setActiveSlide(0);
+        try { feed.scrollTop = 0; } catch(e){}
+        showToast(t('toast_back'));
       }
 
       function bindGoBtns(){
         document.querySelectorAll('[data-go]').forEach(function(btn){
           if (btn.__bound) return;
           btn.__bound = true;
-          btn.addEventListener('click', async function(e){
+          btn.addEventListener('click', function(e){
             e.stopPropagation();
-            if (btn.dataset.inflight === '1') return;
-
             var ctaUrl = btn.getAttribute('data-cta-url') || '';
+            var loc = btn.getAttribute('data-location') || '';
             var reelId = btn.getAttribute('data-reel-id') || '';
             var vibeTitle = btn.getAttribute('data-vibe-title') || '';
             var place = btn.getAttribute('data-place') || '';
-            var isSub = btn.dataset.subscribed === '1';
 
-            if (ctaUrl && !isSub) {
-              trackEvent('go_click', { slide_id: reelId, has_url: true });
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
+            trackEvent('go_click', { slide_id: reelId, has_url: !!ctaUrl, has_loc: !!loc });
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
+
+            if (ctaUrl) {
               try {
                 if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
                   window.Telegram.WebApp.openLink(ctaUrl);
@@ -1447,42 +1346,44 @@
               return;
             }
 
-            btn.dataset.inflight = '1';
+            if (loc) { openMap(loc, reelId, vibeTitle, place); return; }
 
-            if (isSub) {
-              var okU = await unsubscribeFromReel(reelId);
-              btn.dataset.inflight = '0';
-              if (okU) {
-                delete mySubscribed[reelId];
-                btn.dataset.subscribed = '0';
-                btn.classList.remove('subscribed');
-                btn.innerHTML = ticketBtnInner();
-                applyLang(currentLang);
-                showToast(t('go_unsub_ok'));
-                trackEvent('unsubscribe_reel', { slide_id: reelId });
-              } else {
-                showToast(t('go_error'));
-              }
-            } else {
-              trackEvent('go_click', { slide_id: reelId, has_url: false });
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
-              var okS = await subscribeToReel(reelId, vibeTitle, place);
-              btn.dataset.inflight = '0';
-              if (okS) {
-                mySubscribed[reelId] = true;
-                btn.dataset.subscribed = '1';
-                btn.classList.add('subscribed');
-                btn.innerHTML = checkBtnInner();
-                applyLang(currentLang);
-                showToast(t('go_ok_toast'));
-                trackEvent('subscribe_reel', { slide_id: reelId });
-                if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
-              } else {
-                showToast(t('go_error'));
-              }
-            }
+            showToast(t('toast_soon'));
           });
         });
+      }
+
+      function bindMapBtns(){
+        document.querySelectorAll('[data-map]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', function(e){
+            e.stopPropagation();
+            var loc = btn.getAttribute('data-location') || '';
+            var reelId = btn.getAttribute('data-reel-id') || '';
+            var vibeTitle = btn.getAttribute('data-vibe-title') || '';
+            var place = btn.getAttribute('data-place') || '';
+
+            if (!loc) { showToast(t('toast_no_location')); return; }
+
+            trackEvent('map_click', { slide_id: reelId });
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'map_click'); } catch(err){} }
+
+            openMap(loc, reelId, vibeTitle, place);
+          });
+        });
+      }
+
+      function openMap(destCoords, reelId, vibeTitle, place){
+        var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
+        trackEvent('route_open', { slide_id: reelId, dest: destCoords });
+        try {
+          if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
+            window.Telegram.WebApp.openLink(url);
+            return;
+          }
+        } catch(e){}
+        try { window.open(url, '_blank', 'noopener,noreferrer'); } catch(e){ location.href = url; }
       }
 
       function bindHandlers(){
@@ -1490,6 +1391,7 @@
         bindShareBtns();
         bindChooseBtns();
         bindGoBtns();
+        bindMapBtns();
       }
 
       var currentIO = null;
@@ -1526,19 +1428,6 @@
         slides.forEach(function(s){ slideIO.observe(s); });
       }
 
-      function postOnboardingBoot(){
-        if (autoBootStarted) return;
-        if (!loaded) return;
-        autoBootStarted = true;
-
-        if (vibeReels.length === 1) {
-          var v = vibeReels[0];
-          selectVibe(null, v.vibe_category, v.vibe_title || v.vibe_category);
-        } else {
-          bootFeed();
-        }
-      }
-
       function bootFeed(){
         if (feedBooted) return;
         if (!slides.length) return;
@@ -1546,7 +1435,12 @@
         feed.classList.add('visible');
         layoutReels();
 
-        var startParam = getStartParam();
+        var startParam = null;
+        try {
+          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+            startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
+          }
+        } catch(e){}
 
         var startIdx = 0;
         if (startParam) {
@@ -1559,7 +1453,6 @@
         initIO();
         initSlideViewsIO();
         setActiveSlide(startIdx);
-        refreshSubscriptionUI();
 
         if (startIdx > 0) {
           setTimeout(function(){
@@ -1653,6 +1546,13 @@
       window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
       window.addEventListener('resize', layoutReels);
 
+      if (backVibeBtn) {
+        backVibeBtn.addEventListener('click', function(e){
+          e.stopPropagation();
+          backToVibes();
+        });
+      }
+
       retryBtn.addEventListener('click', function(){ location.reload(); });
 
       authReady.then(function(u){
@@ -1663,42 +1563,12 @@
       async function initApp(retryCount){
         retryCount = retryCount || 0;
         try {
-          var deepId = getStartParam();
-          if (deepId) {
-            var reel = await loadReelById(deepId);
-            if (reel) {
-              onboardingDismissed = true;
-              onboardingClosing = true;
-              autoBootStarted = true;
-
-              if (onboarding) {
-                try {
-                  onboarding.querySelectorAll('video').forEach(function(v){
-                    try { v.muted = true; v.pause(); v.removeAttribute('src'); v.load(); } catch(e){}
-                  });
-                } catch(e){}
-                if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-                onboarding = null;
-              }
-
-              try { await loadMySubscriptions(); } catch(e){}
-
-              renderSingleReel(reel);
-              loaded = true;
-              return;
-            }
-          }
-
           var vibes = await loadVibeReels();
           if (!vibes) vibes = [];
           vibeReels = vibes;
           renderList(vibes, 'vibe');
           loaded = true;
-          if (onboardingDismissed) postOnboardingBoot();
-
-          loadMySubscriptions().then(function(){
-            refreshSubscriptionUI();
-          });
+          if (onboardingDismissed) bootFeed();
         } catch (err) {
           console.warn('initApp error:', err);
           if (retryCount < 3) {

@@ -84,8 +84,15 @@
   .feed.visible{opacity:1;pointer-events:auto;}
   .feed::-webkit-scrollbar{display:none;}
   .slide{position:relative;height:100vh;height:100dvh;width:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#000;}
-  .video{position:absolute;inset:0;overflow:hidden;background:#05050a;display:flex;align-items:center;justify-content:center;}
-  .video video{position:relative;width:100%;height:100%;object-fit:contain;display:block;}
+  .video{
+    position:absolute;inset:0;overflow:hidden;display:flex;align-items:center;justify-content:center;
+    background:
+      radial-gradient(60% 40% at 30% 30%, rgba(205,255,74,.06), transparent 60%),
+      radial-gradient(50% 40% at 70% 70%, rgba(122,108,255,.10), transparent 60%),
+      linear-gradient(160deg, #1a1a26 0%, #0a0a12 100%);
+  }
+  .video video{position:relative;width:100%;height:100%;object-fit:contain;display:block;background:transparent;opacity:0;transition:opacity .25s ease;}
+  .video video.ready{opacity:1;}
   .veil{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.05) 22%,rgba(0,0,0,.05) 45%,rgba(0,0,0,.55) 72%,rgba(0,0,0,.92) 100%);}
   .sound-btn{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:16px;z-index:10;width:32px;height:32px;background:transparent;border:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);cursor:pointer;padding:0;transition:color .2s ease;}
   .sound-btn:active{color:rgba(255,255,255,.7);}
@@ -112,53 +119,21 @@
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
   .organizer-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    padding:3px 9px;
-    border-radius:100px;
-    background:rgba(0,0,0,.45);
-    border:1px solid rgba(255,255,255,.12);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-    font-family:'Inter',sans-serif;
-    font-size:10.5px;
-    font-weight:600;
-    color:rgba(255,255,255,.7);
-    align-self:flex-start;
-    max-width:100%;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+    display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:100px;
+    background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;
+    color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   }
-  .organizer-badge svg{
-    width:11px;
-    height:11px;
-    flex:none;
-    color:#CDFF4A;
-  }
+  .organizer-badge svg{width:11px;height:11px;flex:none;color:#CDFF4A;}
 
   .vibe-btn {
-    pointer-events: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 11px 26px;
-    border-radius: 100px;
-    background: #CDFF4A;
-    color: #07070a;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: -.01em;
-    cursor: pointer;
-    align-self: center;
-    margin-top: 10px;
-    transition: transform .12s ease;
-    -webkit-tap-highlight-color: transparent;
-    border: 0;
-    animation: vibeGlow 2.6s ease-in-out infinite;
+    pointer-events: auto;display: inline-flex;align-items: center;justify-content: center;
+    gap: 8px;padding: 11px 26px;border-radius: 100px;background: #CDFF4A;color: #07070a;
+    font-family: 'Inter', sans-serif;font-size: 13px;font-weight: 700;letter-spacing: -.01em;
+    cursor: pointer;align-self: center;margin-top: 10px;transition: transform .12s ease;
+    -webkit-tap-highlight-color: transparent;border: 0;animation: vibeGlow 2.6s ease-in-out infinite;
   }
   .vibe-btn:active { transform: scale(.96); }
   .vibe-btn:disabled { opacity: .7; cursor: default; animation: none; }
@@ -169,198 +144,48 @@
   }
 
   .go-btn {
-    pointer-events: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 10px 22px;
-    border-radius: 100px;
-    background: #CDFF4A;
-    color: #07070a;
-    font-family: 'Inter', sans-serif;
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
-    align-self: center;
-    margin-top: 8px;
-    transition: transform .12s ease, background .2s ease, color .2s ease, opacity .2s ease;
-    -webkit-tap-highlight-color: transparent;
-    border: 0;
-    text-decoration: none;
-    box-shadow: 0 4px 20px rgba(205,255,74,.35);
-    min-width: 0;
+    pointer-events: auto;display: inline-flex;align-items: center;justify-content: center;
+    gap: 7px;padding: 10px 22px;border-radius: 100px;background: #CDFF4A;color: #07070a;
+    font-family: 'Inter', sans-serif;font-size: 12.5px;font-weight: 700;cursor: pointer;
+    align-self: center;margin-top: 8px;transition: transform .12s ease, background .2s ease, color .2s ease, opacity .2s ease;
+    -webkit-tap-highlight-color: transparent;border: 0;text-decoration: none;
+    box-shadow: 0 4px 20px rgba(205,255,74,.35);min-width: 0;
   }
   .go-btn:active { transform: scale(.96); }
   .go-btn[disabled] { cursor: default; transform: none; }
   .go-btn[data-inflight="1"] { opacity: .7; }
   .go-btn.subscribed {
-    background: rgba(205,255,74,.14);
-    color: #CDFF4A;
-    border: 1px solid rgba(205,255,74,.55);
-    box-shadow: none;
-    opacity: 1;
+    background: rgba(205,255,74,.14);color: #CDFF4A;
+    border: 1px solid rgba(205,255,74,.55);box-shadow: none;opacity: 1;
   }
   .go-btn svg { width: 14px; height: 14px; flex: none; }
 
   .actions-row {
-    position: absolute;
-    right: 14px;
-    bottom: 150px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    pointer-events: none;
-    z-index: 10;
+    position: absolute;right: 14px;bottom: 150px;display: flex;flex-direction: column;
+    align-items: center;gap: 18px;pointer-events: none;z-index: 10;
   }
 
   .share-btn {
-    pointer-events: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    color: inherit;
+    pointer-events: auto;display: flex;flex-direction: column;align-items: center;
+    justify-content: center;gap: 4px;background: transparent;border: none;cursor: pointer;
+    padding: 0;color: inherit;
   }
   .share-btn:disabled { opacity: .65; cursor: default; }
 
   .ico-ph {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: rgba(205,255,74,.14);
-    border: 1px solid rgba(205,255,74,.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #CDFF4A;
+    width: 34px;height: 34px;border-radius: 50%;background: rgba(205,255,74,.14);
+    border: 1px solid rgba(205,255,74,.4);backdrop-filter: blur(8px);-webkit-backdrop-filter: blur(8px);
+    display: flex;align-items: center;justify-content: center;color: #CDFF4A;
     transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
   }
-
   .share-btn:active .ico-ph {
-    transform: scale(.9);
-    background: rgba(205,255,74,.9);
-    color: #07070a;
-    border-color: rgba(205,255,74,.9);
+    transform: scale(.9);background: rgba(205,255,74,.9);color: #07070a;border-color: rgba(205,255,74,.9);
   }
-
   .ico-ph svg { width: 17px; height: 17px; display: block; }
 
   .lbl {
-    font-family: 'Inter', sans-serif;
-    font-size: 8.5px;
-    font-weight: 500;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,.55);
-    text-align: center;
-    text-shadow: 0 1px 3px rgba(0,0,0,.6);
-  }
-
-  .vibe-banner{
-    position: fixed;
-    top: calc(60px + env(safe-area-inset-top, 0px));
-    left: 16px;
-    right: 16px;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px 10px 16px;
-    border-radius: 100px;
-    background: rgba(12,14,8,.85);
-    border: 1px solid rgba(205,255,74,.55);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    color: #CDFF4A;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    box-shadow: 0 4px 24px rgba(0,0,0,.4), 0 0 24px rgba(205,255,74,.15);
-    opacity: 0;
-    transform: translateY(-16px);
-    pointer-events: none;
-    transition: opacity .35s ease, transform .35s cubic-bezier(.2,.9,.3,1.4);
-  }
-  .vibe-banner.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .vibe-banner-text { flex: 1; line-height: 1.25; }
-  .vibe-banner-text em { font-style: normal; color: #fff; font-weight: 500; }
-
-  .vibe-overlay{
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 22px;
-    background: rgba(7,7,10,.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    opacity: 0;
-    transition: opacity .3s ease;
-  }
-  .vibe-overlay.show { display: flex; opacity: 1; }
-  .vibe-overlay.hide { opacity: 0; }
-
-  .vibe-overlay-star{
-    width: 68px;
-    height: 68px;
-    color: #CDFF4A;
-    animation: overlayStarPulse 1.4s ease-in-out infinite;
-    filter: drop-shadow(0 0 24px rgba(205,255,74,.6));
-  }
-  .vibe-overlay-star svg { width: 100%; height: 100%; display: block; }
-  @keyframes overlayStarPulse {
-    0%, 100% { transform: scale(1) rotate(0deg); opacity: .85; }
-    50% { transform: scale(1.15) rotate(8deg); opacity: 1; }
-  }
-
-  .vibe-overlay-text{
-    font-family: 'Unbounded', sans-serif;
-    font-weight: 500;
-    font-size: 17px;
-    letter-spacing: -.02em;
-    color: #fff;
-    text-align: center;
-    max-width: 80vw;
-    line-height: 1.3;
-  }
-  .vibe-overlay-text em{
-    font-style: normal;
-    color: #CDFF4A;
-  }
-
-  .vibe-overlay-dots{
-    display: flex;
-    gap: 6px;
-    margin-top: -8px;
-  }
-  .vibe-overlay-dots i{
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #CDFF4A;
-    opacity: .4;
-    animation: overlayDot 1.2s ease-in-out infinite;
-  }
-  .vibe-overlay-dots i:nth-child(2) { animation-delay: .15s; }
-  .vibe-overlay-dots i:nth-child(3) { animation-delay: .3s; }
-  @keyframes overlayDot {
-    0%, 100% { opacity: .3; transform: scale(.8); }
-    50% { opacity: 1; transform: scale(1.15); }
+    font-family: 'Inter', sans-serif;font-size: 8.5px;font-weight: 500;letter-spacing: .12em;
+    text-transform: uppercase;color: rgba(255,255,255,.55);text-align: center;text-shadow: 0 1px 3px rgba(0,0,0,.6);
   }
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
@@ -439,20 +264,6 @@
 
   <div class="feed" id="feed"></div>
 
-  <div class="vibe-banner" id="vibeBanner">
-    <span class="vibe-banner-text" id="vibeBannerText">Поток</span>
-  </div>
-
-  <div class="vibe-overlay" id="vibeOverlay">
-    <div class="vibe-overlay-star">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/>
-      </svg>
-    </div>
-    <div class="vibe-overlay-text" id="vibeOverlayText">Собираем поток</div>
-    <div class="vibe-overlay-dots"><i></i><i></i><i></i></div>
-  </div>
-
   <div class="empty-state" id="emptyState">
     <div class="es-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -464,7 +275,7 @@
     <button class="retry-btn" id="retryBtn" type="button" style="display:none;">Попробовать снова</button>
   </div>
 
-  <div class="toast" id="toast">Ссылка скопирована</div>
+  <div class="toast" id="toast">Готово</div>
 
   <script type="text/javascript">
      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -510,12 +321,12 @@
           go_error:'Не получилось, попробуй ещё',
           go_ok_toast:'Готово! Пришлём в боте 🔔',
           go_unsub_ok:'Подписка отменена',
+          cta_route:'Маршрут',
+          cta_ticket:'Купить билет',
+          cta_external:'Открыть',
+          toast_no_location:'Адрес не указан',
           share_label:'Поделиться',
           share_text:'Пойдём вместе?',
-          overlay_collecting:'Собираем поток',
-          banner_stream:'Поток',
-          banner_one:'1 событие',
-          banner_many:'{n} событий',
           toast_soon:'Скоро здесь',
           min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
         },
@@ -528,12 +339,12 @@
           go_error:'Try again',
           go_ok_toast:'Done! We\'ll ping you in the bot 🔔',
           go_unsub_ok:'Unsubscribed',
+          cta_route:'Route',
+          cta_ticket:'Buy ticket',
+          cta_external:'Open',
+          toast_no_location:'No address',
           share_label:'Share',
           share_text:'Let\'s go together?',
-          overlay_collecting:'Collecting stream',
-          banner_stream:'Stream',
-          banner_one:'1 event',
-          banner_many:'{n} events',
           toast_soon:'Coming soon',
           min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
         },
@@ -546,12 +357,12 @@
           go_error:'Inténtalo otra vez',
           go_ok_toast:'¡Listo! Te avisamos en el bot 🔔',
           go_unsub_ok:'Suscripción cancelada',
+          cta_route:'Ruta',
+          cta_ticket:'Comprar',
+          cta_external:'Abrir',
+          toast_no_location:'Dirección no indicada',
           share_label:'Compartir',
           share_text:'¿Vamos juntos?',
-          overlay_collecting:'Recolectando',
-          banner_stream:'Flujo',
-          banner_one:'1 evento',
-          banner_many:'{n} eventos',
           toast_soon:'Pronto',
           min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
         }
@@ -678,10 +489,6 @@
       var retryBtn = document.getElementById('retryBtn');
       var onboarding = document.getElementById('onboarding');
       var toast = document.getElementById('toast');
-      var vibeBanner = document.getElementById('vibeBanner');
-      var vibeBannerText = document.getElementById('vibeBannerText');
-      var vibeOverlay = document.getElementById('vibeOverlay');
-      var vibeOverlayText = document.getElementById('vibeOverlayText');
 
       var vibeReels = [];
       var allEventReels = [];
@@ -707,7 +514,6 @@
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
       var flushTimer = null;
-      var bannerHideTimer = null;
 
       function showToast(text){
         if (!toast) return;
@@ -760,47 +566,77 @@
         } catch(e) { console.warn('loadMySubscriptions error:', e); }
       }
 
-      function ticketBtnInner(){
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>' +
-          '<span data-i18n="go_btn">' + t('go_btn') + '</span>';
-      }
-      function checkBtnInner(){
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
-          '<span data-i18n="go_subscribed">' + t('go_subscribed') + '</span>';
-      }
-
-      function goBtnHtml(reel){
+      function inviteBtnHtml(reel, customLabel){
         var isSub = !!mySubscribed[reel.id];
         var cls = isSub ? 'go-btn subscribed' : 'go-btn';
-        var inner = isSub ? checkBtnInner() : ticketBtnInner();
-        return '<button class="' + cls + '" data-go type="button" ' +
+        var label = customLabel || (isSub ? t('go_subscribed') : t('go_btn'));
+        var icon = isSub
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>';
+        return '<button class="' + cls + '" data-go type="button" data-cta-type="invite" ' +
           'data-subscribed="' + (isSub ? '1' : '0') + '" ' +
-          'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
           'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
           'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
           'data-place="' + escapeAttr(reel.place || '') + '">' +
-          inner + '</button>';
+          icon + '<span>' + escapeHtml(label) + '</span>' +
+        '</button>';
+      }
+
+      function urlBtnHtml(type, label, url, reelId){
+        var icon = type === 'ticket'
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>';
+        return '<button class="go-btn" data-go type="button" data-cta-type="' + type + '" ' +
+          'data-cta-url="' + escapeAttr(url) + '" ' +
+          'data-reel-id="' + escapeAttr(reelId || '') + '">' +
+          icon + '<span>' + escapeHtml(label) + '</span>' +
+        '</button>';
+      }
+
+      function routeBtnHtml(label, coords, reelId){
+        return '<button class="go-btn" data-go type="button" data-cta-type="route" ' +
+          'data-location="' + escapeAttr(coords || '') + '" ' +
+          'data-reel-id="' + escapeAttr(reelId || '') + '">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+          '<span>' + escapeHtml(label) + '</span>' +
+        '</button>';
+      }
+
+      function getCtaHtml(reel){
+        var type = reel.cta_type || (reel.cta_url ? 'url' : 'invite');
+        var label = reel.cta_label || '';
+        if (type === 'route') {
+          return routeBtnHtml(label || t('cta_route'), reel.location_coords, reel.id);
+        }
+        if (type === 'url' || type === 'ticket' || type === 'external') {
+          var l = label || (type === 'ticket' ? t('cta_ticket') : t('cta_external'));
+          var t2 = type === 'url' ? 'external' : type;
+          return urlBtnHtml(t2, l, reel.cta_url || '', reel.id);
+        }
+        // invite
+        return inviteBtnHtml(reel, label);
       }
 
       function refreshSubscriptionUI(){
         slides.forEach(function(slide){
           var id = slide.dataset.id;
           if (!id) return;
-          var btn = slide.querySelector('[data-go]');
+          var btn = slide.querySelector('[data-go][data-cta-type="invite"]');
           if (!btn) return;
           var shouldBeSub = !!mySubscribed[id];
           var isSub = btn.dataset.subscribed === '1';
           if (shouldBeSub === isSub) return;
+          var reel = null;
+          for (var i = 0; i < allEventReels.length; i++) { if (allEventReels[i].id === id) { reel = allEventReels[i]; break; } }
+          var label = reel && reel.cta_label ? reel.cta_label : '';
           if (shouldBeSub) {
             btn.dataset.subscribed = '1';
             btn.classList.add('subscribed');
-            btn.disabled = false;
-            btn.innerHTML = checkBtnInner();
+            btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span>' + escapeHtml(t('go_subscribed')) + '</span>';
           } else {
             btn.dataset.subscribed = '0';
             btn.classList.remove('subscribed');
-            btn.disabled = false;
-            btn.innerHTML = ticketBtnInner();
+            btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg><span>' + escapeHtml(label || t('go_btn')) + '</span>';
           }
         });
       }
@@ -841,7 +677,7 @@
             '</button>';
           actionsHtml = '';
         } else {
-          ctaHtml = goBtnHtml(reel);
+          ctaHtml = getCtaHtml(reel);
           actionsHtml =
             '<button class="share-btn" data-share>' +
               '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
@@ -854,7 +690,7 @@
           : '';
 
         slide.innerHTML =
-          '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '"' + posterAttr + ' loop playsinline preload="metadata" muted></video></div>' +
+          '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '"' + posterAttr + ' loop playsinline preload="auto" muted onloadeddata="this.classList.add(\'ready\')" oncanplay="this.classList.add(\'ready\')"></video></div>' +
           '<div class="veil"></div>' +
           '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
           '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
@@ -898,24 +734,6 @@
         refreshSubscriptionUI();
       }
 
-      function renderSingleReel(reel){
-        if (!reel) return;
-        feed.classList.add('visible');
-        feed.innerHTML = '';
-        feed.appendChild(renderSlideShell(reel, 'event'));
-        slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
-        videoUrls = [reel.video_url || null];
-        videoPosters = [reel.poster_url || null];
-        bindHandlers();
-        refreshSubscriptionUI();
-        layoutReels();
-        currentIndex = 0;
-        slideEnteredAt = Date.now();
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(0);
-      }
-
       function refreshLiveLabels(){
         slides.forEach(function(slide){
           var live = slide.querySelector('.live-top');
@@ -954,7 +772,10 @@
         var v = document.createElement('video');
         v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('loop',''); v.setAttribute('preload','auto');
         if (videoPosters[idx]) v.setAttribute('poster', videoPosters[idx]);
-        v.muted = true; v.src = url; v.dataset.src = url; container.appendChild(v);
+        v.muted = true; v.src = url; v.dataset.src = url;
+        v.addEventListener('loadeddata', function(){ v.classList.add('ready'); }, { once: true });
+        v.addEventListener('canplay', function(){ v.classList.add('ready'); }, { once: true });
+        container.appendChild(v);
         if (autoplay) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
         else if (prime) {
           try {
@@ -1103,7 +924,7 @@
           v.addEventListener('error', fire, { once: true });
         }
 
-        onbMaxWaitTimer = setTimeout(showOnboardingReady, 3000);
+        onbMaxWaitTimer = setTimeout(showOnboardingReady, 2500);
 
         function loadOnbBatch(){
           if (!onboarding) return;
@@ -1254,18 +1075,11 @@
         var isAuto = !btn;
         if (btn) btn.disabled = true;
         trackEvent('vibe_select', { category: category, label: label, auto: isAuto });
-        if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
 
-        if (!isAuto) { showVibeOverlay(label); }
-
-        var delayP = isAuto ? Promise.resolve() : new Promise(function(r){ setTimeout(r, 900); });
         var eventsP = loadEventsForVibe(category).catch(function(){ return []; });
-
-        var results = await Promise.all([eventsP, delayP]);
-        var events = results[0] || [];
+        var events = (await eventsP) || [];
 
         if (!events.length) {
-          if (!isAuto) hideVibeOverlay();
           if (btn) btn.disabled = false;
           showToast(t('toast_soon'));
           return;
@@ -1273,11 +1087,6 @@
 
         allEventReels = events;
         currentVibe = { category: category, label: label, events: events };
-
-        if (!isAuto) {
-          hideVibeOverlay();
-          await new Promise(function(r){ setTimeout(r, 260); });
-        }
 
         if (currentIO) { currentIO.disconnect(); currentIO = null; }
         if (slideIO) { slideIO.disconnect(); slideIO = null; }
@@ -1302,23 +1111,7 @@
 
         try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
 
-        if (!isAuto) { showVibeBanner(label, events.length); }
         if (btn) btn.disabled = false;
-      }
-
-      function showVibeOverlay(label){
-        if (!vibeOverlay) return;
-        vibeOverlayText.innerHTML = t('overlay_collecting') + ' · <em>' + escapeHtml(label) + '</em>';
-        vibeOverlay.classList.remove('hide');
-        vibeOverlay.classList.add('show');
-      }
-      function hideVibeOverlay(){
-        if (!vibeOverlay) return;
-        vibeOverlay.classList.add('hide');
-        setTimeout(function(){
-          vibeOverlay.classList.remove('show');
-          vibeOverlay.classList.remove('hide');
-        }, 300);
       }
 
       async function subscribeToReel(reelId, vibeTitle, place){
@@ -1356,15 +1149,22 @@
         } catch(e) { console.warn('unsubscribeFromReel error:', e); return false; }
       }
 
-      function showVibeBanner(label, count){
-        if (!vibeBanner || !vibeBannerText) return;
-        var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
-        vibeBannerText.innerHTML = '✦ ' + escapeHtml(t('banner_stream')) + ' <em>' + escapeHtml(label) + '</em> · ' + countText;
-        vibeBanner.classList.remove('show');
-        void vibeBanner.offsetWidth;
-        vibeBanner.classList.add('show');
-        clearTimeout(bannerHideTimer);
-        bannerHideTimer = setTimeout(function(){ vibeBanner.classList.remove('show'); }, 2800);
+      function openExternal(url){
+        if (!url) return;
+        try {
+          if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
+            window.Telegram.WebApp.openLink(url);
+          } else {
+            window.open(url, '_blank', 'noopener,noreferrer');
+          }
+        } catch(e){ location.href = url; }
+      }
+
+      function openMap(coords, reelId){
+        if (!coords) { showToast(t('toast_no_location')); return; }
+        var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(coords) + '&rtt=auto';
+        trackEvent('route_open', { slide_id: reelId, dest: coords });
+        openExternal(url);
       }
 
       function bindGoBtns(){
@@ -1375,21 +1175,29 @@
             e.stopPropagation();
             if (btn.dataset.inflight === '1') return;
 
-            var ctaUrl = btn.getAttribute('data-cta-url') || '';
+            var type = btn.getAttribute('data-cta-type') || 'invite';
             var reelId = btn.getAttribute('data-reel-id') || '';
-            var vibeTitle = btn.getAttribute('data-vibe-title') || '';
-            var place = btn.getAttribute('data-place') || '';
-            var isSub = btn.dataset.subscribed === '1';
 
-            if (ctaUrl && !isSub) {
-              trackEvent('go_click', { slide_id: reelId, has_url: true });
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
-              try {
-                if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') window.Telegram.WebApp.openLink(ctaUrl);
-                else window.open(ctaUrl, '_blank', 'noopener,noreferrer');
-              } catch(e){ location.href = ctaUrl; }
+            // ROUTE
+            if (type === 'route') {
+              var loc = btn.getAttribute('data-location') || '';
+              trackEvent('route_click', { slide_id: reelId });
+              openMap(loc, reelId);
               return;
             }
+
+            // URL (ticket / external)
+            if (type === 'ticket' || type === 'external') {
+              var u = btn.getAttribute('data-cta-url') || '';
+              trackEvent('url_click', { slide_id: reelId, url: u });
+              openExternal(u);
+              return;
+            }
+
+            // INVITE
+            var isSub = btn.dataset.subscribed === '1';
+            var vibeTitle = btn.getAttribute('data-vibe-title') || '';
+            var place = btn.getAttribute('data-place') || '';
 
             btn.dataset.inflight = '1';
 
@@ -1400,25 +1208,21 @@
                 delete mySubscribed[reelId];
                 btn.dataset.subscribed = '0';
                 btn.classList.remove('subscribed');
-                btn.innerHTML = ticketBtnInner();
-                applyLang(currentLang);
+                refreshSubscriptionUI();
                 showToast(t('go_unsub_ok'));
                 trackEvent('unsubscribe_reel', { slide_id: reelId });
               } else { showToast(t('go_error')); }
             } else {
-              trackEvent('go_click', { slide_id: reelId, has_url: false });
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
+              trackEvent('invite_click', { slide_id: reelId });
               var okS = await subscribeToReel(reelId, vibeTitle, place);
               btn.dataset.inflight = '0';
               if (okS) {
                 mySubscribed[reelId] = true;
                 btn.dataset.subscribed = '1';
                 btn.classList.add('subscribed');
-                btn.innerHTML = checkBtnInner();
-                applyLang(currentLang);
+                refreshSubscriptionUI();
                 showToast(t('go_ok_toast'));
                 trackEvent('subscribe_reel', { slide_id: reelId });
-                if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
               } else { showToast(t('go_error')); }
             }
           });
@@ -1517,9 +1321,6 @@
         });
       }
 
-      // Тихая предзагрузка первого видео через скрытый video-элемент.
-      // Стартует сразу после загрузки списка вайбов, работает пока юзер смотрит онбординг.
-      // Так к моменту свайпа первое видео уже качается.
       function preloadVideo(url, poster){
         if (!url) return;
         try {
@@ -1665,9 +1466,6 @@
                 slideEnteredAt = Date.now();
                 try { feed.scrollTop = 0; } catch(e){}
 
-                // предзагрузка первого видео сразу
-                if (videoUrls[0]) preloadVideo(videoUrls[0], videoPosters[0]);
-
                 setTimeout(function(){
                   try { feed.scrollTop = 0; } catch(e){}
                   initIO();
@@ -1681,7 +1479,19 @@
                 return;
               }
 
-              renderSingleReel(reel);
+              feed.innerHTML = '';
+              feed.appendChild(renderSlideShell(reel, 'event'));
+              slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
+              videoUrls = [reel.video_url || null];
+              videoPosters = [reel.poster_url || null];
+              bindHandlers();
+              refreshSubscriptionUI();
+              layoutReels();
+              currentIndex = 0;
+              slideEnteredAt = Date.now();
+              initIO();
+              initSlideViewsIO();
+              setActiveSlide(0);
               loaded = true;
               loadMySubscriptions().then(function(){ refreshSubscriptionUI(); }).catch(function(){});
               return;
@@ -1694,9 +1504,6 @@
           renderList(vibes, 'vibe');
           loaded = true;
 
-          // Предзагрузка первого видео ещё до онбординга.
-          // Если один вайб — грузим первое событие этого вайба.
-          // Если несколько — грузим видео первого вайба (превьюшка).
           if (!onboardingDismissed) {
             if (vibeReels.length === 1) {
               loadEventsForVibe(vibeReels[0].vibe_category).then(function(evs){

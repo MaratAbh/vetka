@@ -138,58 +138,6 @@
     white-space: nowrap;
   }
 
-  /* Tabs (Events / Venues) */
-  .vibe-tabs{
-    position: fixed;
-    top: calc(56px + env(safe-area-inset-top, 0px));
-    left: 16px;
-    right: 16px;
-    z-index: 49;
-    display: none;
-    gap: 4px;
-    padding: 4px;
-    border-radius: 100px;
-    background: rgba(7,7,10,.72);
-    border: 1px solid rgba(255,255,255,.1);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 4px 20px rgba(0,0,0,.3);
-  }
-  .vibe-tabs.show { display: flex; }
-  .vibe-tab{
-    flex: 1;
-    padding: 8px 12px;
-    border-radius: 100px;
-    background: transparent;
-    color: rgba(255,255,255,.62);
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: -.01em;
-    cursor: pointer;
-    border: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    transition: background .2s ease, color .2s ease, transform .12s ease;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .vibe-tab:active { transform: scale(.96); }
-  .vibe-tab.active { background: #CDFF4A; color: #07070a; }
-  .vibe-tab-count{font-size:10px;opacity:.72;font-weight:700;}
-  .vibe-tab.active .vibe-tab-count{opacity:1;}
-
-  /* Venue slide */
-  .venue-hours{
-    font-family:'Inter',sans-serif;
-    font-size:11.5px;
-    font-weight:500;
-    color:rgba(255,255,255,.7);
-    align-self:flex-start;
-  }
-  .slide[data-mode="venue"] .video video{ object-fit: cover; }
-
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
 
@@ -199,6 +147,7 @@
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
 
+  /* Название + кнопка в одной строке */
   .vibe-title-row{
     display:flex;
     align-items:center;
@@ -222,6 +171,7 @@
     text-shadow:0 2px 14px rgba(0,0,0,.7);
   }
 
+  /* Компактная круглая кнопка со стрелкой */
   .vibe-btn {
     pointer-events: auto;
     flex-shrink: 0;
@@ -513,8 +463,6 @@
     </button>
   </div>
 
-  <div class="vibe-tabs" id="vibeTabs"></div>
-
   <div class="feed" id="feed"></div>
 
   <div class="vibe-banner" id="vibeBanner">
@@ -585,11 +533,6 @@
           banner_one:'1 событие',
           banner_many:'{n} событий',
           toast_soon:'Скоро здесь',
-          tab_events:'События',
-          tab_venues:'Места',
-          venue_book:'Забронировать',
-          venue_directions:'Как добраться',
-          venue_hour_today:'Сегодня',
           min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
         },
         en: {
@@ -608,11 +551,6 @@
           banner_one:'1 event',
           banner_many:'{n} events',
           toast_soon:'Coming soon',
-          tab_events:'Events',
-          tab_venues:'Venues',
-          venue_book:'Book',
-          venue_directions:'Directions',
-          venue_hour_today:'Today',
           min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
         },
         es: {
@@ -631,11 +569,6 @@
           banner_one:'1 evento',
           banner_many:'{n} eventos',
           toast_soon:'Pronto',
-          tab_events:'Eventos',
-          tab_venues:'Sitios',
-          venue_book:'Reservar',
-          venue_directions:'Cómo llegar',
-          venue_hour_today:'Hoy',
           min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
         }
       };
@@ -767,14 +700,12 @@
       var vibeTopEl = document.getElementById('vibeTop');
       var vibeTopLabel = document.getElementById('vibeTopLabel');
       var vibeBackBtn = document.getElementById('vibeBackBtn');
-      var vibeTabsEl = document.getElementById('vibeTabs');
 
       var vibeReels = [];
       var allEventReels = [];
       var currentVibe = null;
       var lastVibeCategory = null;
       var vibeEventsCache = {};
-      var vibeVenuesCache = {};
       var mySubscribed = {};
 
       var slides = [];
@@ -828,11 +759,6 @@
       async function loadEventsForVibe(category){
         return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=sort_order.asc&limit=50');
       }
-      async function loadVenuesForVibe(category){
-        try {
-          return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.venue&vibe_category=eq.' + encodeURIComponent(category) + '&order=sort_order.asc&limit=30') || [];
-        } catch(e){ return []; }
-      }
       async function loadReelById(id){
         try {
           var rows = await api('reels', 'select=*&id=eq.' + encodeURIComponent(id) + '&limit=1');
@@ -855,20 +781,14 @@
         }
       }
 
-      function prefetchVibeData(){
+      function prefetchVibeEvents(){
         vibeReels.forEach(function(v){
           var cat = v.vibe_category;
           if (!cat) return;
-          if (vibeEventsCache[cat] === undefined) {
-            loadEventsForVibe(cat).then(function(events){
-              vibeEventsCache[cat] = events || [];
-            }).catch(function(){});
-          }
-          if (vibeVenuesCache[cat] === undefined) {
-            loadVenuesForVibe(cat).then(function(venues){
-              vibeVenuesCache[cat] = venues || [];
-            }).catch(function(){});
-          }
+          if (vibeEventsCache[cat] !== undefined) return;
+          loadEventsForVibe(cat).then(function(events){
+            vibeEventsCache[cat] = events || [];
+          }).catch(function(){});
         });
       }
 
@@ -914,42 +834,6 @@
         '</button>';
       }
 
-      // === Venue CTA ===
-      function venueCta(reel){
-        var u = String(reel.cta_url || '').trim().toLowerCase();
-        if (u && u !== 'none') {
-          return { label: (reel.cta_label && String(reel.cta_label).trim()) || t('venue_book'), url: reel.cta_url };
-        }
-        if (reel.lat && reel.lng) {
-          return { label: (reel.cta_label && String(reel.cta_label).trim()) || t('venue_directions'), url: 'https://yandex.ru/maps/?pt=' + reel.lng + ',' + reel.lat + '&z=17' };
-        }
-        if (reel.address) {
-          return { label: (reel.cta_label && String(reel.cta_label).trim()) || t('venue_directions'), url: 'https://yandex.ru/maps/?text=' + encodeURIComponent(reel.address) };
-        }
-        return null;
-      }
-
-      function venueCtaHtml(reel){
-        var vc = venueCta(reel);
-        if (!vc) return '';
-        return '<button class="go-btn" data-go type="button" ' +
-          'data-subscribed="0" ' +
-          'data-cta-url="' + escapeAttr(vc.url) + '" ' +
-          'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-          'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-          'data-place="' + escapeAttr(reel.place || '') + '">' +
-          goBtnIcon(false) + '<span>' + escapeHtml(vc.label) + '</span>' +
-        '</button>';
-      }
-
-      function venueHoursToday(reel){
-        if (!reel.work_hours || typeof reel.work_hours !== 'object') return '';
-        var dayKey = ['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()];
-        var today = reel.work_hours[dayKey];
-        if (!today) return '';
-        return t('venue_hour_today') + ' ' + today;
-      }
-
       function updateGoBtn(btn, reel, isSub){
         if (!btn || !reel) return;
         btn.dataset.subscribed = isSub ? '1' : '0';
@@ -959,7 +843,6 @@
 
       function refreshSubscriptionUI(){
         slides.forEach(function(slide){
-          if (slide.dataset.mode === 'venue') return;
           var id = slide.dataset.id;
           if (!id) return;
           var btn = slide.querySelector('[data-go]');
@@ -983,76 +866,12 @@
         document.body.classList.remove('in-event-feed');
       }
 
-      function hideVibeTabs(){
-        if (!vibeTabsEl) return;
-        vibeTabsEl.classList.remove('show');
-        vibeTabsEl.innerHTML = '';
-      }
-
-      function renderVibeTabs(){
-        if (!vibeTabsEl) return;
-        if (!currentVibe) { hideVibeTabs(); return; }
-        var evCount = (currentVibe.events || []).length;
-        var vnCount = (currentVibe.venues || []).length;
-        if (evCount === 0 || vnCount === 0) { hideVibeTabs(); return; }
-
-        var evActive = currentVibe.activeTab === 'events' ? ' active' : '';
-        var vnActive = currentVibe.activeTab === 'venues' ? ' active' : '';
-
-        vibeTabsEl.innerHTML =
-          '<button class="vibe-tab' + evActive + '" data-tab="events" type="button">' +
-            escapeHtml(t('tab_events')) + ' <span class="vibe-tab-count">' + evCount + '</span>' +
-          '</button>' +
-          '<button class="vibe-tab' + vnActive + '" data-tab="venues" type="button">' +
-            escapeHtml(t('tab_venues')) + ' <span class="vibe-tab-count">' + vnCount + '</span>' +
-          '</button>';
-
-        vibeTabsEl.classList.add('show');
-
-        vibeTabsEl.querySelectorAll('[data-tab]').forEach(function(el){
-          el.addEventListener('click', function(e){
-            e.stopPropagation();
-            var tabKey = el.getAttribute('data-tab');
-            switchVibeTab(tabKey);
-          });
-        });
-      }
-
-      function switchVibeTab(tabKey){
-        if (!currentVibe) return;
-        if (currentVibe.activeTab === tabKey) return;
-        currentVibe.activeTab = tabKey;
-
-        if (currentIO) { currentIO.disconnect(); currentIO = null; }
-        if (slideIO) { slideIO.disconnect(); slideIO = null; }
-        feed.querySelectorAll('video').forEach(function(v){ try { v.pause(); v.muted = true; } catch(e){} });
-
-        if (tabKey === 'events') {
-          renderList(currentVibe.events || [], 'event');
-        } else {
-          renderList(currentVibe.venues || [], 'venue');
-        }
-
-        layoutReels();
-        initIO();
-        initSlideViewsIO();
-
-        currentIndex = 0;
-        slideEnteredAt = Date.now();
-        setActiveSlide(0);
-        try { feed.scrollTop = 0; } catch(e){}
-
-        renderVibeTabs();
-        trackEvent('vibe_tab', { tab: tabKey, category: currentVibe.category });
-      }
-
       function backToVibes(){
         if (currentIO) { currentIO.disconnect(); currentIO = null; }
         if (slideIO) { slideIO.disconnect(); slideIO = null; }
         currentVibe = null;
         allEventReels = [];
         hideVibeTop();
-        hideVibeTabs();
         hideVibeBanner();
         renderList(vibeReels, 'vibe');
         layoutReels();
@@ -1076,34 +895,25 @@
         var slide = document.createElement('div');
         slide.className = 'slide' + (mode === 'vibe' ? ' vibe-slide' : '');
         slide.dataset.id = reel.id;
-        if (mode === 'venue') slide.dataset.mode = 'venue';
 
-        var badgeHtml = '';
+        var badgeClass = 'live-top hidden';
+        var badgeInner = '';
+
         if (mode === 'event') {
-          var badgeClass = 'live-top hidden';
-          var badgeInner = '';
           var badgeState = getBadgeState(reel.published_at);
           if (badgeState === 'live') {
             badgeClass = 'live-top';
             badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
           }
-          badgeHtml = '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>';
         }
 
-        var placeText = mode === 'venue' ? (reel.address || reel.place) : reel.place;
-        var placeHtml = placeText
-          ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(placeText) + '</div>'
+        var placeHtml = reel.place
+          ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
           : '';
 
         var organizerHtml = (mode === 'event' && reel.organizer)
           ? '<div class="organizer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4.5 4L12 5l4.5 6L21 7l-1.5 11h-15z"/></svg>' + escapeHtml(reel.organizer) + '</div>'
           : '';
-
-        var shareBtnHtml =
-          '<button class="share-btn" data-share>' +
-            '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
-            '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
-          '</button>';
 
         var bottomContent = '';
 
@@ -1130,31 +940,26 @@
             placeHtml +
             swipeHintHtml;
 
-        } else if (mode === 'venue') {
-          var hours = venueHoursToday(reel);
-          var hoursHtml = hours ? '<div class="venue-hours">' + escapeHtml(hours) + '</div>' : '';
-          bottomContent =
-            '<div class="title-row"><div class="title">' + escapeHtml(reel.vibe_title || reel.place || '') + '</div></div>' +
-            '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
-            placeHtml +
-            hoursHtml +
-            venueCtaHtml(reel) +
-            '<div class="actions-row">' + shareBtnHtml + '</div>';
-
         } else {
+          var actionsHtml =
+            '<button class="share-btn" data-share>' +
+              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
+              '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
+            '</button>';
+
           bottomContent =
             '<div class="title-row"><div class="title">' + escapeHtml(reel.vibe_title || '') + '</div></div>' +
             '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
             placeHtml +
             organizerHtml +
             goBtnHtml(reel) +
-            '<div class="actions-row">' + shareBtnHtml + '</div>';
+            '<div class="actions-row">' + actionsHtml + '</div>';
         }
 
         slide.innerHTML =
           '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
           '<div class="veil"></div>' +
-          badgeHtml +
+          '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
           '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
           '<div class="bottom">' + bottomContent + '</div>';
 
@@ -1164,11 +969,10 @@
       function renderList(reels, mode){
         feed.innerHTML = '';
         if (!reels || reels.length === 0) {
-          showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет ' + (mode === 'venue' ? 'мест' : 'событий') + '.', false);
+          showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет событий.', false);
           slides = [];
           videoUrls = [];
           hideVibeTop();
-          hideVibeTabs();
           return;
         }
         hideEmptyState();
@@ -1190,11 +994,10 @@
         bindHandlers();
         refreshSubscriptionUI();
 
-        if ((mode === 'event' || mode === 'venue') && currentVibe) {
+        if (mode === 'event' && currentVibe) {
           showVibeTop(currentVibe.label || currentVibe.category || '');
         } else {
           hideVibeTop();
-          hideVibeTabs();
         }
       }
 
@@ -1217,7 +1020,6 @@
 
       function refreshLiveLabels(){
         slides.forEach(function(slide){
-          if (slide.dataset.mode === 'venue') return;
           var live = slide.querySelector('.live-top');
           if (!live) return;
           var pub = live.getAttribute('data-published');
@@ -1582,46 +1384,25 @@
         trackEvent('vibe_select', { category: category, label: label });
         if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
 
-        var eventsP = (vibeEventsCache[category] !== undefined)
-          ? Promise.resolve(vibeEventsCache[category])
-          : loadEventsForVibe(category).catch(function(){ return []; });
-        var venuesP = (vibeVenuesCache[category] !== undefined)
-          ? Promise.resolve(vibeVenuesCache[category])
-          : loadVenuesForVibe(category).catch(function(){ return []; });
+        var events = vibeEventsCache[category];
+        if (events === undefined) {
+          try { events = await loadEventsForVibe(category); } catch(e){ events = []; }
+          vibeEventsCache[category] = events || [];
+        }
 
-        var results = await Promise.all([eventsP, venuesP]);
-        var events = results[0] || [];
-        var venues = results[1] || [];
-
-        vibeEventsCache[category] = events;
-        vibeVenuesCache[category] = venues;
-
-        if (!events.length && !venues.length) {
+        if (!events || !events.length) {
           if (btn) btn.disabled = false;
           showToast(t('toast_soon'));
           return;
         }
 
         allEventReels = events;
-        var defaultTab = events.length > 0 ? 'events' : 'venues';
-
-        currentVibe = {
-          category: category,
-          label: label,
-          events: events,
-          venues: venues,
-          activeTab: defaultTab
-        };
+        currentVibe = { category: category, label: label, events: events };
 
         if (currentIO) { currentIO.disconnect(); currentIO = null; }
         if (slideIO) { slideIO.disconnect(); slideIO = null; }
 
-        if (defaultTab === 'events') {
-          renderList(events, 'event');
-        } else {
-          renderList(venues, 'venue');
-        }
-        renderVibeTabs();
+        renderList(events, 'event');
         layoutReels();
 
         initIO();
@@ -1629,7 +1410,7 @@
 
         var startParam = getStartParam();
         var targetIdx = 0;
-        if (startParam && defaultTab === 'events') {
+        if (startParam) {
           for (var si = 0; si < slides.length; si++) {
             if (slides[si].dataset.id === startParam) { targetIdx = si; break; }
           }
@@ -1638,11 +1419,10 @@
         currentIndex = targetIdx;
         slideEnteredAt = Date.now();
         setActiveSlide(targetIdx);
+
         try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
 
         if (btn) btn.disabled = false;
-
-        trackEvent('door_open', { category: category, events: events.length, venues: venues.length, default_tab: defaultTab });
       }
 
       async function subscribeToReel(reelId, vibeTitle, place){
@@ -1995,7 +1775,7 @@
           renderList(vibes, 'vibe');
           loaded = true;
 
-          prefetchVibeData();
+          prefetchVibeEvents();
 
           if (onboardingDismissed) postOnboardingBoot();
 

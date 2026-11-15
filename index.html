@@ -97,7 +97,26 @@
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
   .live-top.hidden{display:none;}
 
-  /* Вайб-пилюля (название вайба + стрелка назад) */
+  .vibe-badge{
+    position:absolute;
+    top:calc(16px + env(safe-area-inset-top,0px));
+    left:16px;
+    z-index:10;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:9.5px;
+    font-weight:700;
+    color:#07070a;
+    padding:5px 10px;
+    border-radius:100px;
+    background:#CDFF4A;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    pointer-events:none;
+    box-shadow:0 0 12px rgba(205,255,74,.4);
+  }
+
   .vibe-top{
     position: fixed;
     top: calc(16px + env(safe-area-inset-top, 0px));
@@ -139,6 +158,48 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .vibe-count{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:11.5px;
+    font-weight:500;
+    color:rgba(255,255,255,.7);
+    align-self:flex-start;
+  }
+  .vibe-count svg{
+    width:12px;
+    height:12px;
+    flex:none;
+    color:#CDFF4A;
+  }
+
+  .vibe-swipe-hint{
+    margin-top:2px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    font-family:'Inter',sans-serif;
+    font-size:9px;
+    font-weight:600;
+    color:rgba(255,255,255,.4);
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    align-self:center;
+    pointer-events:none;
+  }
+  .vibe-swipe-hint svg{
+    width:13px;
+    height:13px;
+    color:rgba(255,255,255,.5);
+    animation:swipeBounce 1.8s ease-in-out infinite;
+  }
+  @keyframes swipeBounce{
+    0%,100%{transform:translateY(0);opacity:.45;}
+    50%{transform:translateY(-4px);opacity:.9;}
   }
 
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
@@ -555,7 +616,9 @@
         ru: {
           onboard_tag:'Поиск событий <em>под твой вайб</em>',
           onboard_hint:'Листай вверх',
-          vibe_btn:'Перейти к событиям',
+          vibe_btn:'Смотреть события',
+          vibe_badge:'Вайб',
+          vibe_hint_next:'Ещё вайбы',
           go_btn:'Следить за анонсом',
           go_buy:'Купить билет',
           go_subscribed:'Ты в списке',
@@ -568,13 +631,17 @@
           banner_stream:'Поток',
           banner_one:'1 событие',
           banner_many:'{n} событий',
+          vibe_count_one:'1 событие внутри',
+          vibe_count_many:'{n} событий внутри',
           toast_soon:'Скоро здесь',
           min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
         },
         en: {
           onboard_tag:'Find events <em>for your vibe</em>',
           onboard_hint:'Swipe up',
-          vibe_btn:'Go to events',
+          vibe_btn:'View events',
+          vibe_badge:'Vibe',
+          vibe_hint_next:'More vibes',
           go_btn:'Follow announcement',
           go_buy:'Buy ticket',
           go_subscribed:'You\'re in',
@@ -587,13 +654,17 @@
           banner_stream:'Stream',
           banner_one:'1 event',
           banner_many:'{n} events',
+          vibe_count_one:'1 event inside',
+          vibe_count_many:'{n} events inside',
           toast_soon:'Coming soon',
           min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
         },
         es: {
           onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
           onboard_hint:'Desliza hacia arriba',
-          vibe_btn:'Ir a eventos',
+          vibe_btn:'Ver eventos',
+          vibe_badge:'Vibe',
+          vibe_hint_next:'Más vibes',
           go_btn:'Seguir anuncio',
           go_buy:'Comprar entrada',
           go_subscribed:'Estás dentro',
@@ -606,6 +677,8 @@
           banner_stream:'Flujo',
           banner_one:'1 evento',
           banner_many:'{n} eventos',
+          vibe_count_one:'1 evento dentro',
+          vibe_count_many:'{n} eventos dentro',
           toast_soon:'Pronto',
           min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
         }
@@ -742,8 +815,11 @@
       var vibeBackBtn = document.getElementById('vibeBackBtn');
 
       var vibeReels = [];
+      var vibeCounts = {};
       var allEventReels = [];
       var currentVibe = null;
+      var prefetchedVibe = null;
+      var lastVibeCategory = null;
       var mySubscribed = {};
 
       var slides = [];
@@ -803,6 +879,18 @@
           if (rows && rows.length) return rows[0];
         } catch(e){ console.warn('loadReelById error:', e); }
         return null;
+      }
+      async function loadVibeCounts(){
+        try {
+          var rows = await api('reels', 'select=vibe_category&reel_kind=eq.event&is_active=eq.true');
+          var counts = {};
+          if (rows && rows.length) {
+            rows.forEach(function(r){
+              if (r && r.vibe_category) counts[r.vibe_category] = (counts[r.vibe_category] || 0) + 1;
+            });
+          }
+          return counts;
+        } catch(e){ return {}; }
       }
 
       async function loadMySubscriptions(){
@@ -900,15 +988,26 @@
         hideVibeBanner();
         renderList(vibeReels, 'vibe');
         layoutReels();
-        currentIndex = 0;
+
+        var targetIdx = 0;
+        if (lastVibeCategory) {
+          for (var i = 0; i < slides.length; i++) {
+            if (slides[i].dataset.id === (vibeReels[i] && vibeReels[i].id)) { /* noop */ }
+          }
+          for (var k = 0; k < vibeReels.length; k++) {
+            if (vibeReels[k].vibe_category === lastVibeCategory) { targetIdx = k; break; }
+          }
+        }
+
+        currentIndex = targetIdx;
         slideEnteredAt = Date.now();
         initIO();
         initSlideViewsIO();
-        setActiveSlide(0);
-        try { feed.scrollTop = 0; } catch(e){}
+        setActiveSlide(targetIdx);
+        try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
       }
 
-      function renderSlideShell(reel, mode){
+      function renderSlideShell(reel, mode, idx, total){
         var slide = document.createElement('div');
         slide.className = 'slide';
         slide.dataset.id = reel.id;
@@ -916,7 +1015,11 @@
         var badgeState = getBadgeState(reel.published_at);
         var badgeClass = 'live-top hidden';
         var badgeInner = '';
-        if (badgeState === 'live') {
+
+        if (mode === 'vibe') {
+          badgeClass = 'vibe-badge';
+          badgeInner = '<span>' + escapeHtml(t('vibe_badge')) + '</span>';
+        } else if (badgeState === 'live') {
           badgeClass = 'live-top';
           badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
         }
@@ -931,19 +1034,29 @@
 
         var ctaHtml = '';
         var actionsHtml = '';
+        var vibeCountHtml = '';
+        var swipeHintHtml = '';
 
         if (mode === 'vibe') {
+          var cnt = vibeCounts[reel.vibe_category] || 0;
+          if (cnt > 0) {
+            var cntLabel = cnt === 1 ? t('vibe_count_one') : tFmt('vibe_count_many', { n: cnt });
+            vibeCountHtml = '<div class="vibe-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>' + escapeHtml(cntLabel) + '</div>';
+          }
+
           ctaHtml =
             '<button class="vibe-btn" data-choose type="button" ' +
               'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
               'data-label="' + escapeAttr(reel.vibe_title || '') + '">' +
               '<span data-i18n="vibe_btn">' + t('vibe_btn') + '</span>' +
-              '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/></svg>' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>' +
             '</button>';
-          actionsHtml = '';
+
+          if (total > 1 && idx < total - 1) {
+            swipeHintHtml = '<div class="vibe-swipe-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg><span>' + escapeHtml(t('vibe_hint_next')) + '</span></div>';
+          }
         } else {
           ctaHtml = goBtnHtml(reel);
-
           actionsHtml =
             '<button class="share-btn" data-share>' +
               '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
@@ -965,7 +1078,9 @@
             '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
             placeHtml +
             organizerHtml +
+            vibeCountHtml +
             ctaHtml +
+            swipeHintHtml +
             actionsBlock +
           '</div>';
 
@@ -983,8 +1098,8 @@
         }
         hideEmptyState();
 
-        reels.forEach(function(reel){
-          feed.appendChild(renderSlideShell(reel, mode));
+        reels.forEach(function(reel, idx){
+          feed.appendChild(renderSlideShell(reel, mode, idx, reels.length));
         });
 
         slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
@@ -1011,7 +1126,7 @@
         if (!reel) return;
         feed.classList.add('visible');
         feed.innerHTML = '';
-        feed.appendChild(renderSlideShell(reel, 'event'));
+        feed.appendChild(renderSlideShell(reel, 'event', 0, 1));
         slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
         videoUrls = [reel.video_url || null];
         bindHandlers();
@@ -1385,23 +1500,25 @@
       }
 
       async function selectVibe(btn, category, label){
-        var isAuto = !btn;
         if (btn) btn.disabled = true;
-        trackEvent('vibe_select', { category: category, label: label, auto: isAuto });
+        lastVibeCategory = category;
+        trackEvent('vibe_select', { category: category, label: label });
         if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
 
-        if (!isAuto) {
+        var events;
+        if (prefetchedVibe && prefetchedVibe.category === category) {
+          events = prefetchedVibe.events;
+          prefetchedVibe = null;
+        } else {
           showVibeOverlay(label);
+          var delayP = new Promise(function(r){ setTimeout(r, 500); });
+          var eventsP = loadEventsForVibe(category).catch(function(){ return []; });
+          var results = await Promise.all([eventsP, delayP]);
+          events = results[0] || [];
         }
 
-        var delayP = isAuto ? Promise.resolve() : new Promise(function(r){ setTimeout(r, 900); });
-        var eventsP = loadEventsForVibe(category).catch(function(){ return []; });
-
-        var results = await Promise.all([eventsP, delayP]);
-        var events = results[0] || [];
-
         if (!events.length) {
-          if (!isAuto) hideVibeOverlay();
+          hideVibeOverlay();
           if (btn) btn.disabled = false;
           showToast(t('toast_soon'));
           return;
@@ -1410,10 +1527,7 @@
         allEventReels = events;
         currentVibe = { category: category, label: label, events: events };
 
-        if (!isAuto) {
-          hideVibeOverlay();
-          await new Promise(function(r){ setTimeout(r, 260); });
-        }
+        hideVibeOverlay();
 
         if (currentIO) { currentIO.disconnect(); currentIO = null; }
         if (slideIO) { slideIO.disconnect(); slideIO = null; }
@@ -1437,10 +1551,6 @@
         setActiveSlide(targetIdx);
 
         try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
-
-        if (!isAuto) {
-          showVibeBanner(label, events.length);
-        }
 
         if (btn) btn.disabled = false;
       }
@@ -1650,17 +1760,7 @@
         if (autoBootStarted) return;
         if (!loaded) return;
         autoBootStarted = true;
-
-        if (vibeReels.length === 1) {
-          if (allEventReels.length > 0 && slides.length > 0 && currentVibe) {
-            bootFeed();
-          } else {
-            var v = vibeReels[0];
-            selectVibe(null, v.vibe_category, v.vibe_title || v.vibe_category);
-          }
-        } else {
-          bootFeed();
-        }
+        bootFeed();
       }
 
       function bootFeed(){
@@ -1817,21 +1917,17 @@
           if (!vibes) vibes = [];
           vibeReels = vibes;
 
+          vibeCounts = await loadVibeCounts() || {};
+
           if (vibeReels.length === 1) {
             var v0 = vibeReels[0];
-            var evs0 = [];
-            try { evs0 = await loadEventsForVibe(v0.vibe_category) || []; } catch(e){ evs0 = []; }
-            if (evs0.length) {
-              allEventReels = evs0;
-              currentVibe = { category: v0.vibe_category, label: v0.vibe_title || v0.vibe_category, events: evs0 };
-              renderList(evs0, 'event');
-            } else {
-              renderList(vibes, 'vibe');
-            }
-          } else {
-            renderList(vibes, 'vibe');
+            try {
+              var evs0 = await loadEventsForVibe(v0.vibe_category) || [];
+              if (evs0.length) prefetchedVibe = { category: v0.vibe_category, events: evs0 };
+            } catch(e){}
           }
 
+          renderList(vibes, 'vibe');
           loaded = true;
           if (onboardingDismissed) postOnboardingBoot();
 

@@ -891,6 +891,7 @@
       }
 
       function renderList(reels, mode){
+        reels = rankFeed(reels);
         feed.innerHTML = '';
         if (!reels || reels.length === 0) {
           showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет событий.', false);
@@ -1092,7 +1093,7 @@
         });
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = 3;
+        var onbIdx = 0, ONB_BATCH = 6;
         var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
 
         var onbReadyShown = false;
@@ -1135,14 +1136,12 @@
               v.muted = true;
               v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
               try { v.setAttribute('preload','auto'); } catch(e){}
-              v.src = url;
-              try { v.load(); } catch(e){}
-              v.addEventListener('loadeddata', function(){ try { v.play().catch(function(){}); } catch(e){} }, { once: true });
+              v.src = url; try { v.load(); } catch(e){}
               var p = v.play(); if (p && p.catch) p.catch(function(){});
               watchVideoReady(v);
             })(onbVids[targetIdx]);
           }
-          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 600);
+          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 100);
         }
 
         (function loadOnbFromSupabase(attempt){
@@ -1257,6 +1256,7 @@
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : '';
             trackEvent('share', { slide_id: id });
+            noteCta(id, 0.5);
 
             var url = TG_MINIAPP_URL;
             if (id) url += '?startapp=' + encodeURIComponent(id);
@@ -1293,6 +1293,7 @@
         if (btn) btn.disabled = true;
         trackEvent('vibe_select', { category: category, label: label, auto: isAuto });
         if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
+        bumpAffinity(category, 0.4);
 
         if (!isAuto) {
           showVibeOverlay(label);
@@ -1457,6 +1458,7 @@
 
             if (cta && cta !== 'none' && !isSub) {
               trackEvent('go_click', { slide_id: reelId, has_url: true });
+              noteCta(reelId, 1.0);
               if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
               try {
                 if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
@@ -1486,6 +1488,7 @@
                 updateGoBtn(btn, reel, false);
                 showToast(t('go_unsub_ok'));
                 trackEvent('unsubscribe_reel', { slide_id: reelId });
+                noteCta(reelId, -0.3);
               } else {
                 showToast(t('go_error'));
               }
@@ -1499,6 +1502,7 @@
                 updateGoBtn(btn, reel, true);
                 showToast(t('go_ok_toast'));
                 trackEvent('subscribe_reel', { slide_id: reelId });
+                noteCta(reelId, 0.8);
                 if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
               } else {
                 showToast(t('go_error'));
@@ -1525,6 +1529,22 @@
           if (best && bestRatio > 0.55) {
             var idx = slides.indexOf(best);
             if (idx !== -1 && idx !== currentIndex) {
+
+              if (slideEnteredAt && (Date.now() - slideEnteredAt) < 800) {
+                var prev = slides[currentIndex];
+                if (prev) {
+                  var prevId = prev.dataset.id;
+                  var prevReel = findReelById(prevId);
+                  var prevCat = prevReel ? catOf(prevReel) : null;
+                  trackEvent('skip', {
+                    slide_id: prevId,
+                    category: prevCat,
+                    duration_ms: Date.now() - slideEnteredAt
+                  });
+                  if (prevCat) bumpAffinity(prevCat, -0.35);
+                }
+              }
+
               flushDwell(currentIndex);
               currentIndex = idx;
               slideEnteredAt = Date.now();
@@ -1686,6 +1706,103 @@
         if (!u) return;
         trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
       });
+
+      // ===== Ranked feed v0 =====
+      var AFFINITY_KEY = 'vetka_affinity_' + (EARLY_TG_ID || getAnonId());
+      var AFFINITY = (function(){
+        try { return JSON.parse(localStorage.getItem(AFFINITY_KEY) || '{}') || {}; } catch(e){ return {}; }
+      })();
+      function saveAffinity(){ try { localStorage.setItem(AFFINITY_KEY, JSON.stringify(AFFINITY)); } catch(e){} }
+      function bumpAffinity(category, delta){
+        if (!category) return;
+        AFFINITY[category] = (AFFINITY[category] || 0) + delta;
+        saveAffinity();
+      }
+      function noteCta(reelId, weight){
+        if (!reelId) return;
+        var r = findReelById(reelId);
+        if (r) bumpAffinity(catOf(r), weight);
+      }
+      function catOf(r){
+        if (!r) return null;
+        var c = String(r.vibe_category || '').trim();
+        if (c) return c;
+        var p = String(r.place || '').trim();
+        if (p) return 'place:' + p;
+        return 'misc';
+      }
+      function freshness(r){
+        var t = r && r.published_at ? new Date(r.published_at).getTime() : 0;
+        if (!t) return 0;
+        var age = Date.now() - t;
+        if (age < 0) return 1;
+        return Math.max(0, 1 - age / (7 * 864e5));
+      }
+      function scoreOf(r){
+        var fresh = freshness(r) * 0.4;
+        var aff = Math.tanh((AFFINITY[catOf(r)] || 0) * 0.5) * 0.5;
+        var ord = r.sort_order != null ? Math.max(0, 1 - (Number(r.sort_order) || 0) / 100) * 0.1 : 0;
+        return fresh + aff + ord;
+      }
+      function coldStartRoundRobin(reels, n){
+        var buckets = {}, order = [];
+        reels.forEach(function(r){
+          var c = catOf(r);
+          if (!buckets[c]) { buckets[c] = []; order.push(c); }
+          buckets[c].push(r);
+        });
+        Object.keys(buckets).forEach(function(c){
+          buckets[c].sort(function(a, b){ return freshness(b) - freshness(a); });
+        });
+        var out = [], round = 0;
+        while (out.length < Math.min(n, reels.length)) {
+          var progressed = false;
+          for (var i = 0; i < order.length && out.length < n; i++) {
+            var b = buckets[order[i]];
+            if (b[round]) { out.push(b[round]); progressed = true; }
+          }
+          if (!progressed) break;
+          round++;
+        }
+        return out;
+      }
+      function rankFeed(reels){
+        if (!reels || !reels.length) return reels;
+        if (reels.__ranked) return reels;
+
+        var pool = reels.slice();
+        var picked = [];
+        var COLD = Math.min(6, pool.length);
+        var coldIds = {};
+        coldStartRoundRobin(pool, COLD).forEach(function(r){ coldIds[r.id] = 1; picked.push(r); });
+        pool = pool.filter(function(r){ return !coldIds[r.id]; });
+
+        var lastCats  = picked.map(catOf);
+        var lastPlaces = picked.map(function(r){ return String(r.place || '').trim(); });
+
+        while (pool.length) {
+          var bestIdx = -1, bestScore = -Infinity;
+          for (var i = 0; i < pool.length; i++) {
+            var r = pool[i];
+            var c = catOf(r);
+            var p = String(r.place || '').trim();
+            var s = scoreOf(r);
+            if (lastCats.slice(-3).indexOf(c) !== -1) s -= 0.6;
+            if (p && lastPlaces.slice(-5).indexOf(p) !== -1) s -= 0.5;
+            if (picked.length > 0 && picked.length % 5 === 0 && lastCats.slice(-2).indexOf(c) === -1) s += 0.3;
+            if (s > bestScore) { bestScore = s; bestIdx = i; }
+          }
+          if (bestIdx === -1) break;
+          var chosen = pool.splice(bestIdx, 1)[0];
+          picked.push(chosen);
+          lastCats.push(catOf(chosen));
+          lastPlaces.push(String(chosen.place || '').trim());
+        }
+
+        picked.__ranked = true;
+        reels.__ranked = true;
+        return picked;
+      }
 
       async function initApp(retryCount){
         retryCount = retryCount || 0;

@@ -29,64 +29,73 @@
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;outline:none;border:0;}
   html,body{background:#07070a;color:#fff;font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;height:100%;width:100%;-webkit-font-smoothing:antialiased;color-scheme:dark;overscroll-behavior:none;}
 
-  .onboarding{position:fixed;top:0;left:0;right:0;bottom:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;overscroll-behavior:none;display:flex;flex-direction:column;}
-  .onboarding.dragging{transition:none;}
-  .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
+  /* ===== Fixed brand mark (vibe feed) ===== */
+  .vibe-topbar{
+    position:fixed;
+    top:calc(18px + env(safe-area-inset-top,0px));
+    left:18px;
+    z-index:15;
+    font-family:'Unbounded',sans-serif;font-weight:500;
+    font-size:18px;letter-spacing:-.03em;
+    color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.7);
+    pointer-events:none;
+    opacity:0;transform:translateY(-4px);
+    transition:opacity .3s ease,transform .3s ease;
+  }
+  .vibe-topbar.visible{opacity:1;transform:translateY(0);}
+  .vibe-topbar em{font-style:normal;color:#CDFF4A;}
 
-  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;transition:opacity .5s ease;}
-  .onboarding.ready .onb-bg{opacity:1;}
+  /* ===== Door header (inside event feed) ===== */
+  .door-header{
+    position:fixed;top:0;left:0;right:0;z-index:20;
+    padding:calc(10px + env(safe-area-inset-top,0px)) 14px 16px;
+    background:linear-gradient(180deg,rgba(7,7,10,.94) 0%,rgba(7,7,10,.75) 65%,transparent 100%);
+    pointer-events:none;opacity:0;transform:translateY(-8px);
+    transition:opacity .3s ease,transform .3s ease;
+  }
+  .door-header.visible{opacity:1;transform:translateY(0);}
+  .door-header-row{display:flex;align-items:center;gap:10px;pointer-events:auto;}
+  .door-back{
+    width:34px;height:34px;border-radius:50%;
+    background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.14);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    cursor:pointer;padding:0;flex:none;transition:background .2s ease,transform .12s ease;
+  }
+  .door-back:active{transform:scale(.92);background:rgba(255,255,255,.1);}
+  .door-back svg{width:16px;height:16px;}
+  .door-title{
+    flex:1;min-width:0;font-family:'Unbounded',sans-serif;font-weight:500;
+    font-size:18px;line-height:1.1;letter-spacing:-.025em;color:#fff;
+    text-shadow:0 2px 12px rgba(0,0,0,.6);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .door-badge{
+    margin-top:9px;padding-left:44px;
+    font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;
+    letter-spacing:.14em;text-transform:uppercase;color:#CDFF4A;
+    text-shadow:0 1px 6px rgba(0,0,0,.7);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
 
-  .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
-  .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
-  .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;z-index:1;}
-  .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#0a0a12;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;}
+  body.door-mode .vibe-topbar{opacity:0;}
+  body.door-mode .live-top{display:none;}
+  body.door-mode .sound-btn{top:calc(66px + env(safe-area-inset-top,0px));}
 
-  .onb-col-up{animation:colUp 60s linear infinite;animation-play-state:paused;}
-  .onb-col-down{animation:colDown 60s linear infinite;animation-play-state:paused;}
-  @keyframes colUp{from{transform:translateY(0);}to{transform:translateY(-50%);}}
-  @keyframes colDown{from{transform:translateY(-50%);}to{transform:translateY(0);}}
-  .onboarding.ready .onb-col-up,
-  .onboarding.ready .onb-col-down{animation-play-state:running;}
-
-  .onb-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.55) 0%,rgba(7,7,10,.15) 30%,rgba(7,7,10,.35) 55%,rgba(7,7,10,.85) 85%,rgba(7,7,10,.98) 100%);opacity:0;transition:opacity .5s ease;}
-  .onboarding.ready .onb-veil{opacity:1;}
-
-  .onb-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;transition:opacity .35s ease;}
-  .onb-loader-mark{width:56px;height:56px;color:#CDFF4A;opacity:.7;animation:onbLoaderPulse 1.6s ease-in-out infinite;}
-  .onb-loader-mark svg{width:100%;height:100%;display:block;}
-  @keyframes onbLoaderPulse{0%,100%{opacity:.35;transform:scale(1);}50%{opacity:1;transform:scale(1.08);}}
-  .onboarding.ready .onb-loader{opacity:0;}
-
-  .onb-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(42px + env(safe-area-inset-bottom,0px));z-index:2;pointer-events:none;}
-
-  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
-  .onb-mark svg{width:100%;height:100%;display:block;}
-  .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
-  .onb-logo em{font-style:normal;color:#CDFF4A;}
-  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
-  .onb-tag em{font-style:normal;color:#CDFF4A;}
-  .onb-hint{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
-  .onb-hint i{display:block;width:1.5px;height:34px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));animation:onbHint 2s ease-in-out infinite;}
-  @keyframes onbHint{0%{transform:translateY(-10px) scaleY(.3);opacity:0;}45%{opacity:1;}100%{transform:translateY(10px) scaleY(1);opacity:0;}}
-
-  .onboarding.ready .onb-mark{opacity:1;transform:none;transition-delay:.1s;}
-  .onboarding.ready .onb-logo{opacity:1;transform:none;transition-delay:.2s;}
-  .onboarding.ready .onb-tag{opacity:1;transform:none;transition-delay:.35s;}
-  .onboarding.ready .onb-hint{opacity:1;transform:none;transition-delay:.5s;}
-
-  .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;opacity:0;transition:opacity .5s ease;}
-  .onboarding.ready .lang-switch{opacity:1;transition-delay:.3s;}
-  .lang-switch button{background:transparent;border:0;color:rgba(255,255,255,.6);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;padding:6px 11px;border-radius:100px;cursor:pointer;transition:background .2s ease, color .2s ease, transform .12s ease;}
-  .lang-switch button.active{background:#CDFF4A;color:#07070a;}
-  .lang-switch button:active{transform:scale(.94);}
-
+  /* ===== Feed ===== */
   .feed{position:fixed;inset:0;height:100vh;height:100dvh;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;z-index:1;opacity:0;pointer-events:none;transition:opacity .25s ease;overscroll-behavior:none;}
   .feed.visible{opacity:1;pointer-events:auto;}
   .feed::-webkit-scrollbar{display:none;}
   .slide{position:relative;height:100vh;height:100dvh;width:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#000;}
   .video{position:absolute;inset:0;overflow:hidden;background:#05050a;display:flex;align-items:center;justify-content:center;}
   .video video{position:relative;width:100%;height:100%;object-fit:contain;display:block;}
+
+  /* Vibe slides — video fills screen */
+  .slide-vibe .video video{object-fit:cover;}
+
   .veil{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.05) 22%,rgba(0,0,0,.05) 45%,rgba(0,0,0,.55) 72%,rgba(0,0,0,.92) 100%);}
+  .veil-vibe{background:linear-gradient(180deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,.15) 22%,rgba(0,0,0,.05) 45%,rgba(0,0,0,.6) 72%,rgba(0,0,0,.96) 100%);}
+
   .sound-btn{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:16px;z-index:10;width:32px;height:32px;background:transparent;border:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);cursor:pointer;padding:0;transition:color .2s ease;}
   .sound-btn:active{color:rgba(255,255,255,.7);}
   .sound-btn svg{width:18px;height:18px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));}
@@ -97,117 +106,60 @@
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
   .live-top.hidden{display:none;}
 
-  .vibe-badge{
-    position:absolute;
-    top:calc(16px + env(safe-area-inset-top,0px));
-    left:16px;
-    z-index:10;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-size:9.5px;
-    font-weight:700;
-    color:#07070a;
-    padding:5px 10px;
-    border-radius:100px;
-    background:#CDFF4A;
-    letter-spacing:.14em;
-    text-transform:uppercase;
+  /* ===== Vibe slide bottom ===== */
+  .vibe-bottom{
+    position:absolute;left:0;right:0;
+    bottom:calc(28px + env(safe-area-inset-bottom,0px));
+    z-index:5;
+    padding:0 24px;
+    display:flex;flex-direction:column;align-items:center;
+    text-align:center;
     pointer-events:none;
-    box-shadow:0 0 12px rgba(205,255,74,.4);
   }
-
-  .vibe-top{
-    position: fixed;
-    top: calc(16px + env(safe-area-inset-top, 0px));
-    right: 56px;
-    z-index: 20;
-    max-width: calc(100vw - 130px);
+  .vibe-title{
+    font-family:'Unbounded',sans-serif;font-weight:500;
+    font-size:clamp(24px, 7vw, 32px);
+    line-height:1.1;letter-spacing:-.03em;
+    color:#fff;text-shadow:0 4px 24px rgba(0,0,0,.85);
+    max-width:100%;overflow-wrap:break-word;
   }
-  .vibe-back-btn{
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 13px 7px 8px;
-    border-radius: 100px;
-    background: rgba(0,0,0,.55);
-    border: 1px solid rgba(255,255,255,.14);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-    font-size: 12.5px;
-    font-weight: 600;
-    cursor: pointer;
-    max-width: 100%;
-    transition: background .18s ease, border-color .18s ease, transform .12s ease;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .vibe-back-btn:active{
-    background: rgba(205,255,74,.2);
-    border-color: rgba(205,255,74,.5);
-    transform: scale(.97);
-  }
-  .vibe-back-btn svg{
-    width: 16px;
-    height: 16px;
-    flex: none;
-    color: #CDFF4A;
-  }
-  .vibe-back-btn span{
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .vibe-count{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    font-size:11.5px;
-    font-weight:500;
-    color:rgba(255,255,255,.7);
-    align-self:flex-start;
-  }
-  .vibe-count svg{
-    width:12px;
-    height:12px;
-    flex:none;
-    color:#CDFF4A;
-  }
-
-  .vibe-swipe-hint{
-    margin-top:2px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:3px;
+  .vibe-subtitle{
+    margin-top:12px;
     font-family:'Inter',sans-serif;
-    font-size:9px;
-    font-weight:600;
-    color:rgba(255,255,255,.4);
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    align-self:center;
-    pointer-events:none;
+    font-size:14px;font-weight:500;line-height:1.4;
+    color:rgba(255,255,255,.78);
+    text-shadow:0 2px 12px rgba(0,0,0,.8);
+    max-width:100%;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
   }
-  .vibe-swipe-hint svg{
-    width:13px;
-    height:13px;
-    color:rgba(255,255,255,.5);
-    animation:swipeBounce 1.8s ease-in-out infinite;
+  .vibe-enter-btn{
+    pointer-events:auto;
+    margin-top:26px;
+    padding:15px 40px;
+    border-radius:100px;
+    background:#CDFF4A;color:#07070a;
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;font-weight:700;letter-spacing:-.01em;
+    border:0;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    box-shadow:0 8px 32px rgba(205,255,74,.4);
+    animation:vibePulse 2.8s ease-in-out infinite;
+    transition:transform .12s ease;
+    -webkit-tap-highlight-color:transparent;
   }
-  @keyframes swipeBounce{
-    0%,100%{transform:translateY(0);opacity:.45;}
-    50%{transform:translateY(-4px);opacity:.9;}
+  .vibe-enter-btn:active{transform:scale(.96);}
+  .vibe-enter-btn svg{width:16px;height:16px;flex:none;transition:transform .2s ease;}
+  .vibe-enter-btn:active svg{transform:translateX(3px);}
+  @keyframes vibePulse{
+    0%,100%{box-shadow:0 8px 32px rgba(205,255,74,.4);}
+    50%{box-shadow:0 8px 40px rgba(205,255,74,.7),0 0 0 3px rgba(205,255,74,.15);}
   }
 
+  /* ===== Event slide bottom ===== */
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
-
   .title-row{display:flex;align-items:center;gap:12px;pointer-events:none;}
   .title-row .title{flex:1;min-width:0;}
-
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
   .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);min-height:0;}
@@ -216,261 +168,29 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  .organizer-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    padding:3px 9px;
-    border-radius:100px;
-    background:rgba(0,0,0,.45);
-    border:1px solid rgba(255,255,255,.12);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-    font-family:'Inter',sans-serif;
-    font-size:10.5px;
-    font-weight:600;
-    color:rgba(255,255,255,.7);
-    align-self:flex-start;
-    max-width:100%;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-  .organizer-badge svg{
-    width:11px;
-    height:11px;
-    flex:none;
-    color:#CDFF4A;
-  }
+  .organizer-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:100px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .organizer-badge svg{width:11px;height:11px;flex:none;color:#CDFF4A;}
 
-  .vibe-btn {
-    pointer-events: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 11px 26px;
-    border-radius: 100px;
-    background: #CDFF4A;
-    color: #07070a;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: -.01em;
-    cursor: pointer;
-    align-self: center;
-    margin-top: 10px;
-    transition: transform .12s ease;
-    -webkit-tap-highlight-color: transparent;
-    border: 0;
-    animation: vibeGlow 2.6s ease-in-out infinite;
-  }
-  .vibe-btn:active { transform: scale(.96); }
-  .vibe-btn:disabled { opacity: .7; cursor: default; animation: none; }
-  .vibe-btn svg { width: 14px; height: 14px; flex: none; }
-  @keyframes vibeGlow {
-    0%, 100% { box-shadow: 0 4px 20px rgba(205,255,74,.35); }
-    50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 3px rgba(205,255,74,.2); }
-  }
+  .go-btn{pointer-events:auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 22px;border-radius:100px;background:#CDFF4A;color:#07070a;font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;align-self:center;margin-top:8px;transition:transform .12s ease,background .2s ease,color .2s ease,opacity .2s ease;-webkit-tap-highlight-color:transparent;border:0;text-decoration:none;box-shadow:0 4px 20px rgba(205,255,74,.35);min-width:0;}
+  .go-btn:active{transform:scale(.96);}
+  .go-btn[disabled]{cursor:default;transform:none;}
+  .go-btn[data-inflight="1"]{opacity:.7;}
+  .go-btn.subscribed{background:rgba(205,255,74,.14);color:#CDFF4A;border:1px solid rgba(205,255,74,.55);box-shadow:none;opacity:1;}
+  .go-btn svg{width:14px;height:14px;flex:none;}
 
-  .go-btn {
-    pointer-events: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 10px 22px;
-    border-radius: 100px;
-    background: #CDFF4A;
-    color: #07070a;
-    font-family: 'Inter', sans-serif;
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
-    align-self: center;
-    margin-top: 8px;
-    transition: transform .12s ease, background .2s ease, color .2s ease, opacity .2s ease;
-    -webkit-tap-highlight-color: transparent;
-    border: 0;
-    text-decoration: none;
-    box-shadow: 0 4px 20px rgba(205,255,74,.35);
-    min-width: 0;
-  }
-  .go-btn:active { transform: scale(.96); }
-  .go-btn[disabled] { cursor: default; transform: none; }
-  .go-btn[data-inflight="1"] { opacity: .7; }
-  .go-btn.subscribed {
-    background: rgba(205,255,74,.14);
-    color: #CDFF4A;
-    border: 1px solid rgba(205,255,74,.55);
-    box-shadow: none;
-    opacity: 1;
-  }
-  .go-btn svg { width: 14px; height: 14px; flex: none; }
+  .actions-row{position:absolute;right:14px;bottom:150px;display:flex;flex-direction:column;align-items:center;gap:18px;pointer-events:none;z-index:10;}
 
-  .actions-row {
-    position: absolute;
-    right: 14px;
-    bottom: 150px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    pointer-events: none;
-    z-index: 10;
-  }
+  .share-btn{pointer-events:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:transparent;border:none;cursor:pointer;padding:0;color:inherit;}
+  .share-btn:disabled{opacity:.65;cursor:default;}
+  .ico-ph{width:34px;height:34px;border-radius:50%;background:rgba(205,255,74,.14);border:1px solid rgba(205,255,74,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;color:#CDFF4A;transition:transform .15s ease,background .2s ease,color .2s ease,border-color .2s ease;}
+  .share-btn:active .ico-ph{transform:scale(.9);background:rgba(205,255,74,.9);color:#07070a;border-color:rgba(205,255,74,.9);}
+  .ico-ph svg{width:17px;height:17px;display:block;}
 
-  .share-btn {
-    pointer-events: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    color: inherit;
-  }
-  .share-btn:disabled { opacity: .65; cursor: default; }
+  .lbl{font-family:'Inter',sans-serif;font-size:8.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.6);}
 
-  .ico-ph {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: rgba(205,255,74,.14);
-    border: 1px solid rgba(205,255,74,.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #CDFF4A;
-    transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
-  }
-
-  .share-btn:active .ico-ph {
-    transform: scale(.9);
-    background: rgba(205,255,74,.9);
-    color: #07070a;
-    border-color: rgba(205,255,74,.9);
-  }
-
-  .ico-ph svg { width: 17px; height: 17px; display: block; }
-
-  .lbl {
-    font-family: 'Inter', sans-serif;
-    font-size: 8.5px;
-    font-weight: 500;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,.55);
-    text-align: center;
-    text-shadow: 0 1px 3px rgba(0,0,0,.6);
-  }
-
-  .vibe-banner{
-    position: fixed;
-    top: calc(60px + env(safe-area-inset-top, 0px));
-    left: 16px;
-    right: 16px;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px 10px 16px;
-    border-radius: 100px;
-    background: rgba(12,14,8,.85);
-    border: 1px solid rgba(205,255,74,.55);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    color: #CDFF4A;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    box-shadow: 0 4px 24px rgba(0,0,0,.4), 0 0 24px rgba(205,255,74,.15);
-    opacity: 0;
-    transform: translateY(-16px);
-    pointer-events: none;
-    transition: opacity .35s ease, transform .35s cubic-bezier(.2,.9,.3,1.4);
-  }
-  .vibe-banner.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .vibe-banner-text { flex: 1; line-height: 1.25; }
-  .vibe-banner-text em { font-style: normal; color: #fff; font-weight: 500; }
-
-  .vibe-overlay{
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 22px;
-    background: rgba(7,7,10,.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    opacity: 0;
-    transition: opacity .3s ease;
-  }
-  .vibe-overlay.show { display: flex; opacity: 1; }
-  .vibe-overlay.hide { opacity: 0; }
-
-  .vibe-overlay-star{
-    width: 68px;
-    height: 68px;
-    color: #CDFF4A;
-    animation: overlayStarPulse 1.4s ease-in-out infinite;
-    filter: drop-shadow(0 0 24px rgba(205,255,74,.6));
-  }
-  .vibe-overlay-star svg { width: 100%; height: 100%; display: block; }
-  @keyframes overlayStarPulse {
-    0%, 100% { transform: scale(1) rotate(0deg); opacity: .85; }
-    50% { transform: scale(1.15) rotate(8deg); opacity: 1; }
-  }
-
-  .vibe-overlay-text{
-    font-family: 'Unbounded', sans-serif;
-    font-weight: 500;
-    font-size: 17px;
-    letter-spacing: -.02em;
-    color: #fff;
-    text-align: center;
-    max-width: 80vw;
-    line-height: 1.3;
-  }
-  .vibe-overlay-text em{
-    font-style: normal;
-    color: #CDFF4A;
-  }
-
-  .vibe-overlay-dots{
-    display: flex;
-    gap: 6px;
-    margin-top: -8px;
-  }
-  .vibe-overlay-dots i{
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #CDFF4A;
-    opacity: .4;
-    animation: overlayDot 1.2s ease-in-out infinite;
-  }
-  .vibe-overlay-dots i:nth-child(2) { animation-delay: .15s; }
-  .vibe-overlay-dots i:nth-child(3) { animation-delay: .3s; }
-  @keyframes overlayDot {
-    0%, 100% { opacity: .3; transform: scale(.8); }
-    50% { opacity: 1; transform: scale(1.15); }
-  }
-
-  .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
+  .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
-  .toast.show{opacity:1;transform:translate(-50%, 0);}
+  .toast.show{opacity:1;transform:translate(-50%,0);}
 
   .empty-state{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;z-index:4;pointer-events:none;opacity:0;transition:opacity .3s ease;}
   .empty-state.visible{opacity:1;pointer-events:auto;}
@@ -484,86 +204,21 @@
 </head>
 <body>
 
-  <div class="onboarding" id="onboarding">
-    <div class="onb-bg" id="onbBg">
-      <div class="onb-col onb-col-up">
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-      </div>
-      <div class="onb-col onb-col-down">
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-      </div>
-    </div>
+  <div class="vibe-topbar" id="vibeTopbar">VETKA<em>.</em></div>
 
-    <div class="onb-veil"></div>
-
-    <div class="onb-loader" aria-hidden="true">
-      <div class="onb-loader-mark">
-        <svg viewBox="0 0 40 40" fill="none">
-          <path d="M20 39V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 27C12.5 25.2 8 19.4 8 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 21C27.5 19.2 32 13.4 32 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <circle cx="8" cy="11" r="2.1" fill="#CDFF4A"/>
-          <circle cx="32" cy="5" r="2.1" fill="#CDFF4A"/>
-          <circle cx="20" cy="13" r="2.1" fill="#CDFF4A"/>
+  <div class="door-header" id="doorHeader">
+    <div class="door-header-row">
+      <button class="door-back" id="doorBack" type="button" aria-label="Все вайбы">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
         </svg>
-      </div>
+      </button>
+      <div class="door-title" id="doorTitle"></div>
     </div>
-
-    <div class="lang-switch">
-      <button type="button" data-lang="ru">RU</button>
-      <button type="button" data-lang="en">EN</button>
-      <button type="button" data-lang="es">ES</button>
-    </div>
-
-    <div class="onb-content">
-      <div class="onb-mark">
-        <svg viewBox="0 0 40 40" fill="none">
-          <path d="M20 39V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 27C12.5 25.2 8 19.4 8 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 21C27.5 19.2 32 13.4 32 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <circle cx="8" cy="11" r="2.1" fill="#CDFF4A"/>
-          <circle cx="32" cy="5" r="2.1" fill="#CDFF4A"/>
-          <circle cx="20" cy="13" r="2.1" fill="#CDFF4A"/>
-        </svg>
-      </div>
-      <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Поиск событий <em>под твой вайб</em></div>
-      <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
-    </div>
-  </div>
-
-  <div class="vibe-top" id="vibeTop" style="display:none;">
-    <button class="vibe-back-btn" id="vibeBackBtn" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      <span id="vibeTopLabel"></span>
-    </button>
+    <div class="door-badge" id="doorBadge"></div>
   </div>
 
   <div class="feed" id="feed"></div>
-
-  <div class="vibe-banner" id="vibeBanner">
-    <span class="vibe-banner-text" id="vibeBannerText">Поток</span>
-  </div>
-
-  <div class="vibe-overlay" id="vibeOverlay">
-    <div class="vibe-overlay-star">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/>
-      </svg>
-    </div>
-    <div class="vibe-overlay-text" id="vibeOverlayText">Собираем поток</div>
-    <div class="vibe-overlay-dots"><i></i><i></i><i></i></div>
-  </div>
 
   <div class="empty-state" id="emptyState">
     <div class="es-icon">
@@ -614,73 +269,76 @@
 
       var I18N = {
         ru: {
-          onboard_tag:'Поиск событий <em>под твой вайб</em>',
-          onboard_hint:'Листай вверх',
-          vibe_btn:'Смотреть события',
-          vibe_badge:'Вайб',
-          vibe_hint_next:'Ещё вайбы',
-          go_btn:'Следить за анонсом',
-          go_buy:'Купить билет',
-          go_subscribed:'Ты в списке',
-          go_error:'Не получилось, попробуй ещё',
-          go_ok_toast:'Готово! Пришлём в боте 🔔',
-          go_unsub_ok:'Подписка отменена',
-          share_label:'Поделиться',
-          share_text:'Пойдём вместе?',
-          overlay_collecting:'Собираем поток',
-          banner_stream:'Поток',
-          banner_one:'1 событие',
-          banner_many:'{n} событий',
-          vibe_count_one:'1 событие внутри',
-          vibe_count_many:'{n} событий внутри',
-          toast_soon:'Скоро здесь',
-          min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
+          go_btn: 'Следить за анонсом',
+          go_buy: 'Купить билет',
+          go_subscribed: 'Ты в списке',
+          go_error: 'Не получилось, попробуй ещё',
+          go_ok_toast: 'Готово! Пришлём в боте 🔔',
+          go_unsub_ok: 'Подписка отменена',
+          vibe_enter: 'Войти',
+          vibe_subscribe: 'Подписаться на вайб',
+          vibe_subscribed: 'Ты в списке',
+          vibe_ok_toast: 'Готово! Пришлём новый анонс 🔔',
+          vibe_unsub_ok: 'Подписка на вайб отменена',
+          past_badge: 'Прошедшие · Скоро новый анонс',
+          live_now: 'LIVE · идёт сейчас',
+          soon_today: 'Скоро · сегодня в {time}',
+          soon_tomorrow: 'Скоро · завтра в {time}',
+          soon_date: 'Скоро · {date}',
+          share_label: 'Поделиться',
+          share_text: 'Пойдём вместе?',
+          banner_stream: 'Поток',
+          banner_one: '1 событие',
+          banner_many: '{n} событий',
+          min_ago: 'мин назад', hour_ago: 'ч назад', yesterday: 'вчера', day_ago: 'дн назад', just_now: 'только что'
         },
         en: {
-          onboard_tag:'Find events <em>for your vibe</em>',
-          onboard_hint:'Swipe up',
-          vibe_btn:'View events',
-          vibe_badge:'Vibe',
-          vibe_hint_next:'More vibes',
-          go_btn:'Follow announcement',
-          go_buy:'Buy ticket',
-          go_subscribed:'You\'re in',
-          go_error:'Try again',
-          go_ok_toast:'Done! We\'ll ping you in the bot 🔔',
-          go_unsub_ok:'Unsubscribed',
-          share_label:'Share',
-          share_text:'Let\'s go together?',
-          overlay_collecting:'Collecting stream',
-          banner_stream:'Stream',
-          banner_one:'1 event',
-          banner_many:'{n} events',
-          vibe_count_one:'1 event inside',
-          vibe_count_many:'{n} events inside',
-          toast_soon:'Coming soon',
-          min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
+          go_btn: 'Follow announcement',
+          go_buy: 'Buy ticket',
+          go_subscribed: 'You\'re in',
+          go_error: 'Try again',
+          go_ok_toast: 'Done! We\'ll ping you in the bot 🔔',
+          go_unsub_ok: 'Unsubscribed',
+          vibe_enter: 'Enter',
+          vibe_subscribe: 'Subscribe to vibe',
+          vibe_subscribed: 'You\'re in',
+          vibe_ok_toast: 'Done! We\'ll ping you 🔔',
+          vibe_unsub_ok: 'Unsubscribed from vibe',
+          past_badge: 'Past events · New announcement soon',
+          live_now: 'LIVE · happening now',
+          soon_today: 'Soon · today at {time}',
+          soon_tomorrow: 'Soon · tomorrow at {time}',
+          soon_date: 'Soon · {date}',
+          share_label: 'Share',
+          share_text: 'Let\'s go together?',
+          banner_stream: 'Stream',
+          banner_one: '1 event',
+          banner_many: '{n} events',
+          min_ago: 'min ago', hour_ago: 'h ago', yesterday: 'yesterday', day_ago: 'd ago', just_now: 'just now'
         },
         es: {
-          onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
-          onboard_hint:'Desliza hacia arriba',
-          vibe_btn:'Ver eventos',
-          vibe_badge:'Vibe',
-          vibe_hint_next:'Más vibes',
-          go_btn:'Seguir anuncio',
-          go_buy:'Comprar entrada',
-          go_subscribed:'Estás dentro',
-          go_error:'Inténtalo otra vez',
-          go_ok_toast:'¡Listo! Te avisamos en el bot 🔔',
-          go_unsub_ok:'Suscripción cancelada',
-          share_label:'Compartir',
-          share_text:'¿Vamos juntos?',
-          overlay_collecting:'Recolectando',
-          banner_stream:'Flujo',
-          banner_one:'1 evento',
-          banner_many:'{n} eventos',
-          vibe_count_one:'1 evento dentro',
-          vibe_count_many:'{n} eventos dentro',
-          toast_soon:'Pronto',
-          min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
+          go_btn: 'Seguir anuncio',
+          go_buy: 'Comprar entrada',
+          go_subscribed: 'Estás dentro',
+          go_error: 'Inténtalo otra vez',
+          go_ok_toast: '¡Listo! Te avisamos en el bot 🔔',
+          go_unsub_ok: 'Suscripción cancelada',
+          vibe_enter: 'Entrar',
+          vibe_subscribe: 'Suscribirse al vibe',
+          vibe_subscribed: 'Estás dentro',
+          vibe_ok_toast: '¡Listo! Te avisamos 🔔',
+          vibe_unsub_ok: 'Suscripción cancelada',
+          past_badge: 'Eventos pasados · Nuevo anuncio pronto',
+          live_now: 'LIVE · en curso',
+          soon_today: 'Pronto · hoy a las {time}',
+          soon_tomorrow: 'Pronto · mañana a las {time}',
+          soon_date: 'Pronto · {date}',
+          share_label: 'Compartir',
+          share_text: '¿Vamos juntos?',
+          banner_stream: 'Flujo',
+          banner_one: '1 evento',
+          banner_many: '{n} eventos',
+          min_ago: 'min', hour_ago: 'h', yesterday: 'ayer', day_ago: 'd', just_now: 'ahora'
         }
       };
 
@@ -690,24 +348,6 @@
 
       function t(key){ var d = I18N[currentLang] || I18N.ru; return d[key] != null ? d[key] : (I18N.ru[key] || key); }
       function tFmt(key, vars){ var s = t(key); for (var k in vars) s = s.replace('{' + k + '}', vars[k]); return s; }
-
-      function applyLang(lang){
-        if (!I18N[lang]) lang = 'ru';
-        currentLang = lang;
-        try { localStorage.setItem('vetka_lang', lang); } catch(e){}
-        var nodes = document.querySelectorAll('[data-i18n]');
-        for (var i = 0; i < nodes.length; i++) {
-          var k = nodes[i].getAttribute('data-i18n');
-          var d = I18N[lang];
-          if (d && d[k] != null) nodes[i].innerHTML = d[k];
-        }
-        var btns = document.querySelectorAll('[data-lang]');
-        for (var j = 0; j < btns.length; j++) {
-          var b = btns[j];
-          if (b.getAttribute('data-lang') === lang) b.classList.add('active');
-          else b.classList.remove('active');
-        }
-      }
 
       var SUPABASE_URL = 'https://rlkjsjgktyltvxnfyski.supabase.co';
       var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa2pzamdrdHlsdHZ4bmZ5c2tpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzOTc4NzQsImV4cCI6MjEwNTk3Mzg3NH0.nMcWA6Bo5GtUHDLIqLKqmR0Qa8b39hfKUSSeiVlIgCk';
@@ -729,51 +369,41 @@
         }
       }
 
-      var audioUnlocked = false;
-      function unlockAudio(){
-        if (audioUnlocked) return;
-        audioUnlocked = true;
-        try {
-          var AC = window.AudioContext || window.webkitAudioContext;
-          if (AC) {
-            var ctx = new AC();
-            var buf = ctx.createBuffer(1, 1, 22050);
-            var src = ctx.createBufferSource();
-            src.buffer = buf;
-            src.connect(ctx.destination);
-            src.start(0);
-            if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
-          }
-        } catch(e){}
-        try {
-          var a = new Audio();
-          a.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-          a.volume = 0;
-          var pp = a.play();
-          if (pp && pp.catch) pp.catch(function(){});
-        } catch(e){}
+      function pad2(n){ return (n < 10 ? '0' : '') + n; }
+      function formatDateShort(d){
+        var locMap = { ru: 'ru-RU', en: 'en-US', es: 'es-ES' };
+        try { return d.toLocaleDateString(locMap[currentLang] || 'ru-RU', { day: 'numeric', month: 'short' }); }
+        catch(e){ return d.getDate() + '.' + (d.getMonth() + 1); }
       }
-      document.addEventListener('touchstart', unlockAudio, {once:true, passive:true});
-      document.addEventListener('click', unlockAudio, {once:true});
-      document.addEventListener('keydown', unlockAudio, {once:true});
-
-      function timeAgo(iso){
-        var diff = Date.now() - new Date(iso).getTime();
-        var mins = Math.floor(diff / 60000);
-        if (mins < 1) return t('just_now');
-        if (mins < 60) return mins + ' ' + t('min_ago');
-        var hours = Math.floor(mins / 60);
-        if (hours < 24) return hours + ' ' + t('hour_ago');
-        var days = Math.floor(hours / 24);
-        if (days === 1) return t('yesterday');
-        return days + ' ' + t('day_ago');
+      function formatStartsAt(iso){
+        if (!iso) return '';
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return '';
+        var now = new Date();
+        var todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        var eventDayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+        var diffDays = Math.round((eventDayStart - todayStart) / 86400000);
+        var time = pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+        if (diffDays === 0) return tFmt('soon_today', { time: time });
+        if (diffDays === 1) return tFmt('soon_tomorrow', { time: time });
+        return tFmt('soon_date', { date: formatDateShort(d) });
       }
 
-      var LIVE_WINDOW_MS = 24 * 60 * 60 * 1000;
-      function getBadgeState(iso){
-        var diff = Date.now() - new Date(iso).getTime();
-        if (diff < 0) return 'hidden';
-        if (diff < LIVE_WINDOW_MS) return 'live';
+      function getBadgeState(reel){
+        if (!reel || !reel.event_starts_at) return 'hidden';
+        var start = new Date(reel.event_starts_at).getTime();
+        if (isNaN(start)) return 'hidden';
+        var end = reel.event_ends_at ? new Date(reel.event_ends_at).getTime() : null;
+        if (end !== null && isNaN(end)) end = null;
+        var now = Date.now();
+        if (end !== null && now > end) return 'hidden';
+        if (now >= start) {
+          if (end === null) return 'live';
+          if (now <= end) return 'live';
+          return 'hidden';
+        }
+        var untilStart = start - now;
+        if (untilStart <= 48 * 3600 * 1000) return 'soon';
         return 'hidden';
       }
 
@@ -803,23 +433,16 @@
       var esTitle = document.getElementById('esTitle');
       var esText = document.getElementById('esText');
       var retryBtn = document.getElementById('retryBtn');
-      var onboarding = document.getElementById('onboarding');
       var toast = document.getElementById('toast');
-      var vibeBanner = document.getElementById('vibeBanner');
-      var vibeBannerText = document.getElementById('vibeBannerText');
-      var vibeOverlay = document.getElementById('vibeOverlay');
-      var vibeOverlayText = document.getElementById('vibeOverlayText');
-
-      var vibeTopEl = document.getElementById('vibeTop');
-      var vibeTopLabel = document.getElementById('vibeTopLabel');
-      var vibeBackBtn = document.getElementById('vibeBackBtn');
+      var vibeTopbar = document.getElementById('vibeTopbar');
+      var doorHeader = document.getElementById('doorHeader');
+      var doorTitle = document.getElementById('doorTitle');
+      var doorBadge = document.getElementById('doorBadge');
+      var doorBack = document.getElementById('doorBack');
 
       var vibeReels = [];
-      var vibeCounts = {};
       var allEventReels = [];
       var currentVibe = null;
-      var prefetchedVibe = null;
-      var lastVibeCategory = null;
       var mySubscribed = {};
 
       var slides = [];
@@ -832,15 +455,25 @@
       var tgIdWatchStarted = false;
       var pendingEvents = [];
       var loaded = false;
-      var onboardingDismissed = false;
-      var feedBooted = false;
-      var onboardingClosing = false;
-      var autoBootStarted = false;
+
+      // === Track state ===
+      var currentView = 'vibes';  // 'vibes' | 'door'
+      var lastVibeIndex = 0;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
       var flushTimer = null;
-      var bannerHideTimer = null;
+
+      function haptic(type){
+        try {
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if (!tg || !tg.HapticFeedback) return;
+          var hf = tg.HapticFeedback;
+          if ((type === 'light' || type === 'medium' || type === 'heavy') && typeof hf.impactOccurred === 'function') hf.impactOccurred(type);
+          else if ((type === 'success' || type === 'error' || type === 'warning') && typeof hf.notificationOccurred === 'function') hf.notificationOccurred(type);
+          else if (type === 'select' && typeof hf.selectionChanged === 'function') hf.selectionChanged();
+        } catch(e){}
+      }
 
       function showToast(text){
         if (!toast) return;
@@ -870,9 +503,33 @@
       async function loadVibeReels(){
         return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.vibe&order=sort_order.asc&limit=20');
       }
+
       async function loadEventsForVibe(category){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=sort_order.asc&limit=50');
+        var enc = encodeURIComponent(category);
+        var now = new Date().toISOString();
+
+        var upcoming = [];
+        try {
+          upcoming = await api('reels',
+            'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + enc +
+            '&or=(event_starts_at.is.null,event_starts_at.gte.' + now + ')' +
+            '&order=event_starts_at.asc.nulls.last&limit=50') || [];
+        } catch(e){ upcoming = []; }
+
+        if (upcoming.length) return { events: upcoming, past: false };
+
+        var past = [];
+        try {
+          past = await api('reels',
+            'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + enc +
+            '&event_starts_at.lt.' + now +
+            '&order=event_starts_at.desc&limit=20') || [];
+        } catch(e){ past = []; }
+
+        if (past.length) return { events: past, past: true };
+        return { events: [], past: true };
       }
+
       async function loadReelById(id){
         try {
           var rows = await api('reels', 'select=*&id=eq.' + encodeURIComponent(id) + '&limit=1');
@@ -880,36 +537,28 @@
         } catch(e){ console.warn('loadReelById error:', e); }
         return null;
       }
-      async function loadVibeCounts(){
-        try {
-          var rows = await api('reels', 'select=vibe_category&reel_kind=eq.event&is_active=eq.true');
-          var counts = {};
-          if (rows && rows.length) {
-            rows.forEach(function(r){
-              if (r && r.vibe_category) counts[r.vibe_category] = (counts[r.vibe_category] || 0) + 1;
-            });
-          }
-          return counts;
-        } catch(e){ return {}; }
-      }
 
       async function loadMySubscriptions(){
         try {
           var user = await authReady; if (!user) return;
           var res = await supabaseClient.from('subscriptions').select('reel_id').eq('user_id', user.id);
           if (res && res.data) {
-            res.data.forEach(function(r){
-              if (r && r.reel_id) mySubscribed[r.reel_id] = true;
-            });
+            res.data.forEach(function(r){ if (r && r.reel_id) mySubscribed[r.reel_id] = true; });
           }
-        } catch(e) {
-          console.warn('loadMySubscriptions error:', e);
-        }
+        } catch(e) { console.warn('loadMySubscriptions error:', e); }
       }
 
       function findReelById(id){
         for (var i = 0; i < allEventReels.length; i++) {
           if (allEventReels[i].id === id) return allEventReels[i];
+        }
+        return null;
+      }
+
+      function findVibeReel(category){
+        if (!category) return null;
+        for (var i = 0; i < vibeReels.length; i++) {
+          if (vibeReels[i].vibe_category === category) return vibeReels[i];
         }
         return null;
       }
@@ -922,16 +571,21 @@
       }
 
       function goBtnIcon(isSub){
-        if (isSub) {
-          return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
-        }
+        if (isSub) return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
         return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>';
+      }
+      function vibeBtnIcon(isSub){
+        if (isSub) return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
       }
 
       function goBtnLabel(reel, isSub){
         if (isSub) return t('go_subscribed');
         if (reel.cta_label && String(reel.cta_label).trim()) return String(reel.cta_label).trim();
         return ctaState(reel) === 'buy' ? t('go_buy') : t('go_btn');
+      }
+      function vibeBtnLabel(isSub){
+        return isSub ? t('vibe_subscribed') : t('vibe_subscribe');
       }
 
       function goBtnHtml(reel){
@@ -949,19 +603,43 @@
         '</button>';
       }
 
+      function vibeBtnHtml(vibeReel){
+        if (!vibeReel) return '';
+        var isSub = !!mySubscribed[vibeReel.id];
+        var cls = isSub ? 'go-btn subscribed' : 'go-btn';
+        var label = vibeBtnLabel(isSub);
+        return '<button class="' + cls + '" data-go data-vibe-sub="' + escapeAttr(vibeReel.id) + '" type="button" ' +
+          'data-subscribed="' + (isSub ? '1' : '0') + '" ' +
+          'data-vibe-title="' + escapeAttr(vibeReel.vibe_title || '') + '">' +
+          vibeBtnIcon(isSub) + '<span>' + escapeHtml(label) + '</span>' +
+        '</button>';
+      }
+
       function updateGoBtn(btn, reel, isSub){
         if (!btn || !reel) return;
         btn.dataset.subscribed = isSub ? '1' : '0';
         if (isSub) btn.classList.add('subscribed'); else btn.classList.remove('subscribed');
         btn.innerHTML = goBtnIcon(isSub) + '<span>' + escapeHtml(goBtnLabel(reel, isSub)) + '</span>';
       }
+      function updateVibeBtn(btn, isSub){
+        if (!btn) return;
+        btn.dataset.subscribed = isSub ? '1' : '0';
+        if (isSub) btn.classList.add('subscribed'); else btn.classList.remove('subscribed');
+        btn.innerHTML = vibeBtnIcon(isSub) + '<span>' + escapeHtml(vibeBtnLabel(isSub)) + '</span>';
+      }
 
       function refreshSubscriptionUI(){
         slides.forEach(function(slide){
-          var id = slide.dataset.id;
-          if (!id) return;
           var btn = slide.querySelector('[data-go]');
           if (!btn) return;
+          var vibeId = btn.getAttribute('data-vibe-sub');
+          if (vibeId) {
+            updateVibeBtn(btn, !!mySubscribed[vibeId]);
+            btn.disabled = false;
+            return;
+          }
+          var id = slide.dataset.id;
+          if (!id) return;
           var reel = findReelById(id);
           if (!reel) return;
           updateGoBtn(btn, reel, !!mySubscribed[id]);
@@ -969,59 +647,55 @@
         });
       }
 
-      function showVibeTop(label){
-        if (!vibeTopEl || !vibeTopLabel) return;
-        vibeTopLabel.textContent = label || '';
-        vibeTopEl.style.display = '';
-      }
-      function hideVibeTop(){
-        if (!vibeTopEl) return;
-        vibeTopEl.style.display = 'none';
-      }
-
-      function backToVibes(){
-        if (currentIO) { currentIO.disconnect(); currentIO = null; }
-        if (slideIO) { slideIO.disconnect(); slideIO = null; }
-        currentVibe = null;
-        allEventReels = [];
-        hideVibeTop();
-        hideVibeBanner();
-        renderList(vibeReels, 'vibe');
-        layoutReels();
-
-        var targetIdx = 0;
-        if (lastVibeCategory) {
-          for (var i = 0; i < slides.length; i++) {
-            if (slides[i].dataset.id === (vibeReels[i] && vibeReels[i].id)) { /* noop */ }
-          }
-          for (var k = 0; k < vibeReels.length; k++) {
-            if (vibeReels[k].vibe_category === lastVibeCategory) { targetIdx = k; break; }
-          }
-        }
-
-        currentIndex = targetIdx;
-        slideEnteredAt = Date.now();
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(targetIdx);
-        try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
-      }
-
-      function renderSlideShell(reel, mode, idx, total){
+      // === Рендер слайда ВАЙБА (тизер двери) ===
+      function renderVibeSlide(reel){
         var slide = document.createElement('div');
-        slide.className = 'slide';
+        slide.className = 'slide slide-vibe';
         slide.dataset.id = reel.id;
+        slide.dataset.mode = 'vibe';
 
-        var badgeState = getBadgeState(reel.published_at);
+        var title = escapeHtml(reel.vibe_title || reel.vibe_category || '');
+        var sub = reel.vibe_subtitle
+          ? '<div class="vibe-subtitle">' + escapeHtml(reel.vibe_subtitle) + '</div>'
+          : '';
+
+        slide.innerHTML =
+          '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
+          '<div class="veil veil-vibe"></div>' +
+          '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
+          '<div class="vibe-bottom">' +
+            '<div class="vibe-title">' + title + '</div>' +
+            sub +
+            '<button class="vibe-enter-btn" data-enter-vibe type="button" ' +
+              'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
+              'data-label="' + escapeAttr(reel.vibe_title || reel.vibe_category || '') + '">' +
+              '<span>' + escapeHtml(t('vibe_enter')) + '</span>' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg>' +
+            '</button>' +
+          '</div>';
+
+        return slide;
+      }
+
+      // === Рендер слайда СОБЫТИЯ (внутри двери) ===
+      function renderEventSlide(reel, opts){
+        opts = opts || {};
+        var slide = document.createElement('div');
+        slide.className = 'slide slide-event';
+        slide.dataset.id = reel.id;
+        if (opts.pastMode) slide.dataset.past = '1';
+
         var badgeClass = 'live-top hidden';
         var badgeInner = '';
-
-        if (mode === 'vibe') {
-          badgeClass = 'vibe-badge';
-          badgeInner = '<span>' + escapeHtml(t('vibe_badge')) + '</span>';
-        } else if (badgeState === 'live') {
-          badgeClass = 'live-top';
-          badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
+        if (!opts.pastMode) {
+          var badgeState = getBadgeState(reel);
+          if (badgeState === 'live') {
+            badgeClass = 'live-top';
+            badgeInner = '<span class="dot"></span><span class="live-time">' + escapeHtml(t('live_now')) + '</span>';
+          } else if (badgeState === 'soon') {
+            badgeClass = 'live-top';
+            badgeInner = '<span class="live-time">' + escapeHtml(formatStartsAt(reel.event_starts_at)) + '</span>';
+          }
         }
 
         var placeHtml = reel.place
@@ -1032,74 +706,49 @@
           ? '<div class="organizer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4.5 4L12 5l4.5 6L21 7l-1.5 11h-15z"/></svg>' + escapeHtml(reel.organizer) + '</div>'
           : '';
 
-        var ctaHtml = '';
-        var actionsHtml = '';
-        var vibeCountHtml = '';
-        var swipeHintHtml = '';
-
-        if (mode === 'vibe') {
-          var cnt = vibeCounts[reel.vibe_category] || 0;
-          if (cnt > 0) {
-            var cntLabel = cnt === 1 ? t('vibe_count_one') : tFmt('vibe_count_many', { n: cnt });
-            vibeCountHtml = '<div class="vibe-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>' + escapeHtml(cntLabel) + '</div>';
-          }
-
-          ctaHtml =
-            '<button class="vibe-btn" data-choose type="button" ' +
-              'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
-              'data-label="' + escapeAttr(reel.vibe_title || '') + '">' +
-              '<span data-i18n="vibe_btn">' + t('vibe_btn') + '</span>' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>' +
-            '</button>';
-
-          if (total > 1 && idx < total - 1) {
-            swipeHintHtml = '<div class="vibe-swipe-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg><span>' + escapeHtml(t('vibe_hint_next')) + '</span></div>';
-          }
+        var ctaHtml;
+        if (opts.pastMode && opts.vibeReel) {
+          ctaHtml = vibeBtnHtml(opts.vibeReel);
         } else {
           ctaHtml = goBtnHtml(reel);
-          actionsHtml =
-            '<button class="share-btn" data-share>' +
-              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
-              '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
-            '</button>';
         }
 
-        var actionsBlock = actionsHtml
-          ? '<div class="actions-row">' + actionsHtml + '</div>'
-          : '';
+        var actionsHtml =
+          '<button class="share-btn" data-share>' +
+            '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
+            '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
+          '</button>';
 
         slide.innerHTML =
           '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
           '<div class="veil"></div>' +
-          '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
+          '<div class="' + badgeClass + '" data-starts-at="' + escapeAttr(reel.event_starts_at || '') + '" data-ends-at="' + escapeAttr(reel.event_ends_at || '') + '">' + badgeInner + '</div>' +
           '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
           '<div class="bottom">' +
             '<div class="title-row"><div class="title">' + escapeHtml(reel.vibe_title || '') + '</div></div>' +
             '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
             placeHtml +
             organizerHtml +
-            vibeCountHtml +
             ctaHtml +
-            swipeHintHtml +
-            actionsBlock +
+            '<div class="actions-row">' + actionsHtml + '</div>' +
           '</div>';
 
         return slide;
       }
 
-      function renderList(reels, mode){
+      // === Публичный рендер списка (для event-слайдов) ===
+      function renderList(reels, opts){
         feed.innerHTML = '';
         if (!reels || reels.length === 0) {
-          showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет событий.', false);
+          showEmptyState('Пока пусто', 'В этом потоке пока нет событий.', false);
           slides = [];
           videoUrls = [];
-          hideVibeTop();
           return;
         }
         hideEmptyState();
 
-        reels.forEach(function(reel, idx){
-          feed.appendChild(renderSlideShell(reel, mode, idx, reels.length));
+        reels.forEach(function(reel){
+          feed.appendChild(renderEventSlide(reel, opts));
         });
 
         slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
@@ -1114,19 +763,159 @@
 
         bindHandlers();
         refreshSubscriptionUI();
-
-        if (mode === 'event' && currentVibe) {
-          showVibeTop(currentVibe.label || currentVibe.category || '');
-        } else {
-          hideVibeTop();
-        }
       }
 
+      // === Главный экран — вертикальная лента вайбов ===
+      function renderVibesFeed(reels, initialIdx){
+        initialIdx = initialIdx || 0;
+
+        feed.innerHTML = '';
+        hideEmptyState();
+        showVibeTopbar();
+
+        if (!reels || !reels.length) {
+          showEmptyState('Пока пусто', 'Скоро тут появятся вайбы.', false);
+          slides = [];
+          videoUrls = [];
+          return;
+        }
+
+        reels.forEach(function(reel){
+          feed.appendChild(renderVibeSlide(reel));
+        });
+
+        slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
+        videoUrls = [];
+        slides.forEach(function(s, i){
+          var v = s.querySelector('video');
+          videoUrls[i] = v ? (v.dataset.src || null) : null;
+          if (v && v.parentNode) {
+            try { v.muted = true; v.pause(); v.removeAttribute('src'); v.load(); v.parentNode.removeChild(v); } catch(e){}
+          }
+        });
+
+        bindHandlers();
+
+        if (currentIO) { currentIO.disconnect(); currentIO = null; }
+        if (slideIO) { slideIO.disconnect(); slideIO = null; }
+
+        initIO();
+        initSlideViewsIO();
+
+        if (initialIdx >= slides.length) initialIdx = 0;
+        currentIndex = initialIdx;
+        slideEnteredAt = Date.now();
+        setActiveSlide(initialIdx);
+
+        requestAnimationFrame(function(){
+          try { feed.scrollTop = initialIdx * feed.clientHeight; } catch(e){}
+        });
+
+        currentView = 'vibes';
+        trackEvent('vibes_feed_view', { count: reels.length });
+        if (window.ym) { try { ym(113067752, 'reachGoal', 'vibes_feed_view'); } catch(err){} }
+      }
+
+      function showVibeTopbar(){
+        document.body.classList.remove('door-mode');
+        if (vibeTopbar) vibeTopbar.classList.add('visible');
+        if (doorHeader) doorHeader.classList.remove('visible');
+        feed.classList.add('visible');
+      }
+      function hideVibeTopbar(){
+        if (vibeTopbar) vibeTopbar.classList.remove('visible');
+      }
+
+      // === Открыть дверь ===
+      async function openDoor(category, label){
+        if (currentView === 'vibes') {
+          lastVibeIndex = currentIndex;
+        }
+        haptic('medium');
+
+        currentView = 'door';
+        hideVibeTopbar();
+        document.body.classList.add('door-mode');
+
+        if (doorTitle) doorTitle.textContent = label || category || '';
+        if (doorBadge) doorBadge.textContent = '✦ Загружаем поток';
+        if (doorHeader) doorHeader.classList.add('visible');
+
+        // Сбросим текущий фид
+        if (currentIO) { currentIO.disconnect(); currentIO = null; }
+        if (slideIO) { slideIO.disconnect(); slideIO = null; }
+        feed.querySelectorAll('video').forEach(function(v){ try { v.pause(); v.muted = true; } catch(e){} });
+        feed.innerHTML = '';
+        slides = [];
+        videoUrls = [];
+        hideEmptyState();
+
+        var result = await loadEventsForVibe(category).catch(function(){ return { events: [], past: true }; });
+        var events = result.events || [];
+        var isPast = !!result.past;
+
+        if (!events.length) {
+          showEmptyState('Пока пусто', 'В этом вайбе пока нет событий. Загляни позже.', false);
+          if (doorBadge) doorBadge.textContent = '✦ Пусто';
+          return;
+        }
+
+        allEventReels = events;
+        currentVibe = { category: category, label: label, events: events, isPast: isPast };
+
+        renderList(events, isPast ? { pastMode: true, vibeReel: findVibeReel(category) } : null);
+        layoutReels();
+        initIO();
+        initSlideViewsIO();
+
+        currentIndex = 0;
+        slideEnteredAt = Date.now();
+        setActiveSlide(0);
+        try { feed.scrollTop = 0; } catch(e){}
+
+        if (isPast) {
+          if (doorBadge) doorBadge.textContent = '✦ ' + t('past_badge');
+        } else {
+          var count = events.length;
+          var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
+          if (doorBadge) doorBadge.textContent = '✦ ' + t('banner_stream') + ' · ' + countText;
+        }
+
+        trackEvent('door_open', { category: category, label: label, count: events.length, past: isPast });
+        if (window.ym) { try { ym(113067752, 'reachGoal', 'door_open'); } catch(err){} }
+      }
+
+      // === Назад к ленте вайбов ===
+      function backToVibes(){
+        haptic('select');
+
+        if (currentIO) { currentIO.disconnect(); currentIO = null; }
+        if (slideIO) { slideIO.disconnect(); slideIO = null; }
+
+        feed.querySelectorAll('video').forEach(function(v){ try { v.pause(); v.muted = true; } catch(e){} });
+
+        currentVibe = null;
+        renderVibesFeed(vibeReels, lastVibeIndex);
+
+        trackEvent('door_back', {});
+      }
+
+      if (doorBack) {
+        doorBack.addEventListener('click', function(e){
+          e.stopPropagation();
+          backToVibes();
+        });
+      }
+
+      // === Deep-link на конкретный рилс ===
       function renderSingleReel(reel){
         if (!reel) return;
+        hideVibeTopbar();
+        if (doorHeader) doorHeader.classList.remove('visible');
+        document.body.classList.remove('door-mode');
         feed.classList.add('visible');
         feed.innerHTML = '';
-        feed.appendChild(renderSlideShell(reel, 'event', 0, 1));
+        feed.appendChild(renderEventSlide(reel));
         slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
         videoUrls = [reel.video_url || null];
         bindHandlers();
@@ -1134,21 +923,30 @@
         layoutReels();
         currentIndex = 0;
         slideEnteredAt = Date.now();
+        if (currentIO) { currentIO.disconnect(); currentIO = null; }
+        if (slideIO) { slideIO.disconnect(); slideIO = null; }
         initIO();
         initSlideViewsIO();
         setActiveSlide(0);
+        currentView = 'door';
       }
 
       function refreshLiveLabels(){
         slides.forEach(function(slide){
+          if (slide.dataset.past === '1') return;
           var live = slide.querySelector('.live-top');
           if (!live) return;
-          var pub = live.getAttribute('data-published');
-          if (!pub) return;
-          var state = getBadgeState(pub);
+          var startsAt = live.getAttribute('data-starts-at');
+          var endsAt = live.getAttribute('data-ends-at');
+          if (!startsAt) return;
+          var fakeReel = { event_starts_at: startsAt, event_ends_at: endsAt || null };
+          var state = getBadgeState(fakeReel);
           if (state === 'live') {
             live.className = 'live-top';
-            live.innerHTML = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(pub) + '</span>';
+            live.innerHTML = '<span class="dot"></span><span class="live-time">' + escapeHtml(t('live_now')) + '</span>';
+          } else if (state === 'soon') {
+            live.className = 'live-top';
+            live.innerHTML = '<span class="live-time">' + escapeHtml(formatStartsAt(startsAt)) + '</span>';
           } else {
             live.className = 'live-top hidden';
             live.innerHTML = '';
@@ -1224,217 +1022,13 @@
         return null;
       }
 
-      function dismissOnboarding(){
-        if (!onboarding || onboardingClosing) return;
-        unlockAudio();
-        onboardingClosing = true;
-        onboarding.style.transform = '';
-        onboarding.classList.add('gone');
-
-        var onbVids = onboarding.querySelectorAll('video');
-        for (var i = 0; i < onbVids.length; i++) {
-          try { onbVids[i].muted = true; } catch(e){}
-          try { onbVids[i].pause(); } catch(e){}
-          try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
-        }
-
-        onboardingDismissed = true;
-        layoutReels();
-        slideEnteredAt = Date.now();
-        feed.classList.add('visible');
-        postOnboardingBoot();
-        setTimeout(function(){
-          if (onboarding && onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-          onboarding = null;
-        }, 600);
-      }
-
-      if (onboarding) {
-        var startY = 0, currentY = 0, dragging = false, moved = false;
-        var THRESHOLD = 60;
-
-        function onStart(e){
-          unlockAudio();
-          var pt = e.touches ? e.touches[0] : e;
-          startY = pt.clientY; currentY = startY;
-          dragging = true; moved = false;
-          onboarding.classList.add('dragging');
-        }
-        function onMove(e){
-          if (!dragging) return;
-          var pt = e.touches ? e.touches[0] : e;
-          currentY = pt.clientY;
-          var delta = currentY - startY;
-          if (Math.abs(delta) > 6) moved = true;
-          if (delta < 0) {
-            onboarding.style.transform = 'translateY(' + delta + 'px)';
-            if (e.cancelable) e.preventDefault();
-          }
-        }
-        function onEnd(){
-          if (!dragging) return;
-          dragging = false;
-          onboarding.classList.remove('dragging');
-          var delta = currentY - startY;
-          if (delta < -THRESHOLD) dismissOnboarding();
-          else onboarding.style.transform = '';
-        }
-
-        onboarding.addEventListener('touchstart', onStart, {passive:true});
-        onboarding.addEventListener('touchmove', onMove, {passive:false});
-        onboarding.addEventListener('touchend', onEnd);
-        onboarding.addEventListener('touchcancel', onEnd);
-        onboarding.addEventListener('mousedown', onStart);
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onEnd);
-
-        onboarding.addEventListener('click', function(e){
-          unlockAudio();
-          if (e.target.closest('.lang-switch')) return;
-          if (moved) return;
-          dismissOnboarding();
-        });
-
-        var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = 3;
-        var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
-
-        var onbReadyShown = false;
-        var onbReadyCount = 0;
-        var onbRequired = onbVids.length;
-        var onbMaxWaitTimer = null;
-
-        function showOnboardingReady(){
-          if (onbReadyShown) return;
-          onbReadyShown = true;
-          if (onboarding) onboarding.classList.add('ready');
-          if (onbMaxWaitTimer) { clearTimeout(onbMaxWaitTimer); onbMaxWaitTimer = null; }
-        }
-
-        function watchVideoReady(v){
-          if (!v || v.__onbWatched) return;
-          v.__onbWatched = true;
-          var fire = function(){
-            if (v.__onbFired) return;
-            v.__onbFired = true;
-            onbReadyCount++;
-            if (onbReadyCount >= onbRequired) showOnboardingReady();
-          };
-          if (v.readyState >= 2) { fire(); return; }
-          v.addEventListener('loadeddata', fire, { once: true });
-          v.addEventListener('error', fire, { once: true });
-        }
-
-        onbMaxWaitTimer = setTimeout(showOnboardingReady, 3000);
-
-        function loadOnbBatch(){
-          if (!onboarding) return;
-          var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
-          for (; onbIdx < end; onbIdx++) {
-            var targetIdx = loadOrder[onbIdx] !== undefined ? loadOrder[onbIdx] : onbIdx;
-            (function(v){
-              if (!v || v.dataset.started) return;
-              v.dataset.started = '1';
-              var url = v.dataset.src; if (!url) return;
-              v.muted = true;
-              v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
-              try { v.setAttribute('preload','auto'); } catch(e){}
-              v.src = url;
-              try { v.load(); } catch(e){}
-              v.addEventListener('loadeddata', function(){ try { v.play().catch(function(){}); } catch(e){} }, { once: true });
-              var p = v.play(); if (p && p.catch) p.catch(function(){});
-              watchVideoReady(v);
-            })(onbVids[targetIdx]);
-          }
-          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 600);
-        }
-
-        (function loadOnbFromSupabase(attempt){
-          attempt = attempt || 1;
-          api('reels', 'select=video_url&is_active=eq.true&order=sort_order.asc&limit=12')
-            .then(function(rows){
-              if (!onboarding) return;
-              try {
-                var seen = {}, urls = [];
-                if (rows && rows.length) {
-                  for (var i = 0; i < rows.length; i++) {
-                    var u = rows[i] && rows[i].video_url;
-                    if (u && !seen[u]) { seen[u] = 1; urls.push(u); }
-                  }
-                }
-                if (!urls.length) {
-                  if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
-                  return;
-                }
-
-                var n = urls.length, left = [], right = [];
-                if (n >= 6) {
-                  left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-                  right = [urls[3], urls[4], urls[5], urls[3], urls[4], urls[5]];
-                } else if (n === 5) {
-                  left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-                  right = [urls[3], urls[4], urls[3], urls[4], urls[3], urls[4]];
-                } else if (n === 4) {
-                  left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
-                  right = [urls[2], urls[3], urls[2], urls[3], urls[2], urls[3]];
-                } else if (n === 3) {
-                  left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-                  right = [urls[1], urls[2], urls[0], urls[1], urls[2], urls[0]];
-                } else if (n === 2) {
-                  left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
-                  right = [urls[1], urls[0], urls[1], urls[0], urls[1], urls[0]];
-                } else {
-                  left = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
-                  right = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
-                }
-
-                if (onbVids.length >= 12) {
-                  for (var j = 0; j < 6; j++) {
-                    onbVids[j].dataset.src = left[j];
-                    onbVids[j + 6].dataset.src = right[j];
-                  }
-                  loadOnbBatch();
-                }
-              } catch(err){}
-            })
-            .catch(function(){
-              if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
-            });
-        })();
-
-        var kickAll = function(){
-          if (!onboarding) return;
-          onboarding.querySelectorAll('video').forEach(function(v){ if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } });
-        };
-        onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
-        onboarding.addEventListener('click', kickAll, {once:true});
-
-        var langBtns = document.querySelectorAll('[data-lang]');
-        for (var li = 0; li < langBtns.length; li++) {
-          (function(b){
-            b.addEventListener('click', function(e){ e.stopPropagation(); applyLang(b.getAttribute('data-lang')); });
-            b.addEventListener('touchstart', function(e){ e.stopPropagation(); }, {passive:true});
-            b.addEventListener('touchend', function(e){ e.stopPropagation(); });
-          })(langBtns[li]);
-        }
-      } else {
-        onboardingDismissed = true;
-        feed.classList.add('visible');
-      }
-
-      applyLang(currentLang);
-
-      if (vibeBackBtn) {
-        vibeBackBtn.addEventListener('click', function(e){
-          e.stopPropagation();
-          backToVibes();
-        });
-      }
-
+      // === Sound ===
       var soundBtns = [];
       function bindSoundBtns(){
         soundBtns = feed.querySelectorAll('[data-sound-btn]');
         soundBtns.forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
           btn.addEventListener('click', function(e){
             e.stopPropagation();
             if (soundEnabled) disableSound(); else enableSound();
@@ -1451,12 +1045,24 @@
       }
       function enableSound(){
         if (soundEnabled) return;
+        haptic('light');
         soundEnabled = true; updateIcons();
         var v = getVideo(currentIndex);
         if (v) { var p = v.play(); var unmute = function(){ try { v.muted = false; v.volume = 1; } catch(e){} }; if (p && p.then) p.then(unmute).catch(function(){}); else unmute(); }
         trackEvent('sound_on', {});
       }
-      function disableSound(){ if (!soundEnabled) return; soundEnabled = false; updateIcons(); var v = getVideo(currentIndex); if (v) { try { v.muted = true; } catch(e){} } }
+      function disableSound(){ if (!soundEnabled) return; haptic('light'); soundEnabled = false; updateIcons(); var v = getVideo(currentIndex); if (v) { try { v.muted = true; } catch(e){} } }
+
+      function bindEnterVibeBtns(){
+        document.querySelectorAll('[data-enter-vibe]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', function(e){
+            e.stopPropagation();
+            openDoor(btn.getAttribute('data-category'), btn.getAttribute('data-label'));
+          });
+        });
+      }
 
       function bindShareBtns(){
         document.querySelectorAll('[data-share]').forEach(function(btn){
@@ -1464,6 +1070,7 @@
           btn.__bound = true;
           btn.addEventListener('click', function(e){
             e.stopPropagation();
+            haptic('light');
             if (window.ym) { try { ym(113067752, 'reachGoal', 'share'); } catch(err){} }
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : '';
@@ -1485,91 +1092,6 @@
         });
       }
 
-      function bindChooseBtns(){
-        document.querySelectorAll('[data-choose]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
-          btn.addEventListener('click', function(e){
-            e.stopPropagation();
-            if (btn.disabled) return;
-            var category = btn.getAttribute('data-category');
-            var label = btn.getAttribute('data-label') || category;
-            selectVibe(btn, category, label);
-          });
-        });
-      }
-
-      async function selectVibe(btn, category, label){
-        if (btn) btn.disabled = true;
-        lastVibeCategory = category;
-        trackEvent('vibe_select', { category: category, label: label });
-        if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
-
-        var events;
-        if (prefetchedVibe && prefetchedVibe.category === category) {
-          events = prefetchedVibe.events;
-          prefetchedVibe = null;
-        } else {
-          showVibeOverlay(label);
-          var delayP = new Promise(function(r){ setTimeout(r, 500); });
-          var eventsP = loadEventsForVibe(category).catch(function(){ return []; });
-          var results = await Promise.all([eventsP, delayP]);
-          events = results[0] || [];
-        }
-
-        if (!events.length) {
-          hideVibeOverlay();
-          if (btn) btn.disabled = false;
-          showToast(t('toast_soon'));
-          return;
-        }
-
-        allEventReels = events;
-        currentVibe = { category: category, label: label, events: events };
-
-        hideVibeOverlay();
-
-        if (currentIO) { currentIO.disconnect(); currentIO = null; }
-        if (slideIO) { slideIO.disconnect(); slideIO = null; }
-
-        renderList(events, 'event');
-        layoutReels();
-
-        initIO();
-        initSlideViewsIO();
-
-        var startParam = getStartParam();
-        var targetIdx = 0;
-        if (startParam) {
-          for (var si = 0; si < slides.length; si++) {
-            if (slides[si].dataset.id === startParam) { targetIdx = si; break; }
-          }
-        }
-
-        currentIndex = targetIdx;
-        slideEnteredAt = Date.now();
-        setActiveSlide(targetIdx);
-
-        try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
-
-        if (btn) btn.disabled = false;
-      }
-
-      function showVibeOverlay(label){
-        if (!vibeOverlay) return;
-        vibeOverlayText.innerHTML = t('overlay_collecting') + ' · <em>' + escapeHtml(label) + '</em>';
-        vibeOverlay.classList.remove('hide');
-        vibeOverlay.classList.add('show');
-      }
-      function hideVibeOverlay(){
-        if (!vibeOverlay) return;
-        vibeOverlay.classList.add('hide');
-        setTimeout(function(){
-          vibeOverlay.classList.remove('show');
-          vibeOverlay.classList.remove('hide');
-        }, 300);
-      }
-
       async function subscribeToReel(reelId, vibeTitle, place){
         try {
           var user = await authReady; if (!user) return false;
@@ -1580,72 +1102,30 @@
 
           await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
             method: 'PATCH',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=minimal'
-            },
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
             body: JSON.stringify({ wants_notify: true })
           });
 
           var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
             method: 'POST',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json',
-              'Prefer': 'resolution=ignore-duplicates,return=minimal'
-            },
-            body: JSON.stringify([{
-              user_id: user.id,
-              tg_id: tgId,
-              reel_id: reelId,
-              vibe_title: vibeTitle || null,
-              place: place || null
-            }])
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'resolution=ignore-duplicates,return=minimal' },
+            body: JSON.stringify([{ user_id: user.id, tg_id: tgId, reel_id: reelId, vibe_title: vibeTitle || null, place: place || null }])
           });
           return r.ok;
-        } catch(e) {
-          console.warn('subscribeToReel error:', e);
-          return false;
-        }
+        } catch(e) { console.warn('subscribeToReel error:', e); return false; }
       }
 
       async function unsubscribeFromReel(reelId){
         try {
           var user = await authReady; if (!user) return false;
           if (!reelId) return false;
-
           var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions?user_id=eq.' + encodeURIComponent(user.id) + '&reel_id=eq.' + encodeURIComponent(reelId), {
             method: 'DELETE',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Prefer': 'return=minimal'
-            }
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Prefer': 'return=minimal' }
           });
           return r.ok;
-        } catch(e) {
-          console.warn('unsubscribeFromReel error:', e);
-          return false;
-        }
+        } catch(e) { console.warn('unsubscribeFromReel error:', e); return false; }
       }
-
-      function showVibeBanner(label, count){
-        if (!vibeBanner || !vibeBannerText) return;
-        var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
-        vibeBannerText.innerHTML = '✦ ' + escapeHtml(t('banner_stream')) + ' <em>' + escapeHtml(label) + '</em> · ' + countText;
-        vibeBanner.classList.remove('show');
-        void vibeBanner.offsetWidth;
-        vibeBanner.classList.add('show');
-
-        clearTimeout(bannerHideTimer);
-        bannerHideTimer = setTimeout(function(){
-          vibeBanner.classList.remove('show');
-        }, 2800);
-      }
-      function hideVibeBanner(){ if (vibeBanner) vibeBanner.classList.remove('show'); }
 
       function bindGoBtns(){
         document.querySelectorAll('[data-go]').forEach(function(btn){
@@ -1655,12 +1135,44 @@
             e.stopPropagation();
             if (btn.dataset.inflight === '1') return;
 
+            var vibeSubId = btn.getAttribute('data-vibe-sub');
+            var isSub = btn.dataset.subscribed === '1';
+
+            haptic('medium');
+
+            if (vibeSubId) {
+              btn.dataset.inflight = '1';
+              if (isSub) {
+                var okVU = await unsubscribeFromReel(vibeSubId);
+                btn.dataset.inflight = '0';
+                if (okVU) {
+                  delete mySubscribed[vibeSubId];
+                  haptic('success');
+                  showToast(t('vibe_unsub_ok'));
+                  refreshSubscriptionUI();
+                  trackEvent('unsubscribe_vibe', { vibe_reel_id: vibeSubId });
+                } else { haptic('error'); showToast(t('go_error')); }
+              } else {
+                var vibeReel = currentVibe ? findVibeReel(currentVibe.category) : null;
+                var okVS = await subscribeToReel(vibeSubId, vibeReel ? vibeReel.vibe_title : '', null);
+                btn.dataset.inflight = '0';
+                if (okVS) {
+                  mySubscribed[vibeSubId] = true;
+                  haptic('success');
+                  showToast(t('vibe_ok_toast'));
+                  refreshSubscriptionUI();
+                  trackEvent('subscribe_vibe', { vibe_reel_id: vibeSubId });
+                  if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_vibe'); } catch(err){} }
+                } else { haptic('error'); showToast(t('go_error')); }
+              }
+              return;
+            }
+
             var ctaUrl = btn.getAttribute('data-cta-url') || '';
             var cta = String(ctaUrl).trim().toLowerCase();
             var reelId = btn.getAttribute('data-reel-id') || '';
             var vibeTitle = btn.getAttribute('data-vibe-title') || '';
             var place = btn.getAttribute('data-place') || '';
-            var isSub = btn.dataset.subscribed === '1';
 
             if (cta && cta !== 'none' && !isSub) {
               trackEvent('go_click', { slide_id: reelId, has_url: true });
@@ -1676,14 +1188,7 @@
             }
 
             btn.dataset.inflight = '1';
-
-            var reel = findReelById(reelId) || {
-              id: reelId,
-              cta_url: ctaUrl,
-              cta_label: null,
-              vibe_title: vibeTitle,
-              place: place
-            };
+            var reel = findReelById(reelId) || { id: reelId, cta_url: ctaUrl, cta_label: null, vibe_title: vibeTitle, place: place };
 
             if (isSub) {
               var okU = await unsubscribeFromReel(reelId);
@@ -1691,11 +1196,10 @@
               if (okU) {
                 delete mySubscribed[reelId];
                 updateGoBtn(btn, reel, false);
+                haptic('success');
                 showToast(t('go_unsub_ok'));
                 trackEvent('unsubscribe_reel', { slide_id: reelId });
-              } else {
-                showToast(t('go_error'));
-              }
+              } else { haptic('error'); showToast(t('go_error')); }
             } else {
               trackEvent('go_click', { slide_id: reelId, has_url: false });
               if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
@@ -1704,12 +1208,11 @@
               if (okS) {
                 mySubscribed[reelId] = true;
                 updateGoBtn(btn, reel, true);
+                haptic('success');
                 showToast(t('go_ok_toast'));
                 trackEvent('subscribe_reel', { slide_id: reelId });
                 if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
-              } else {
-                showToast(t('go_error'));
-              }
+              } else { haptic('error'); showToast(t('go_error')); }
             }
           });
         });
@@ -1718,8 +1221,8 @@
       function bindHandlers(){
         bindSoundBtns();
         bindShareBtns();
-        bindChooseBtns();
         bindGoBtns();
+        bindEnterVibeBtns();
       }
 
       var currentIO = null;
@@ -1732,6 +1235,7 @@
           if (best && bestRatio > 0.55) {
             var idx = slides.indexOf(best);
             if (idx !== -1 && idx !== currentIndex) {
+              haptic('light');
               flushDwell(currentIndex);
               currentIndex = idx;
               slideEnteredAt = Date.now();
@@ -1754,42 +1258,6 @@
           });
         }, { root: feed, threshold: [0, 0.55, 0.9] });
         slides.forEach(function(s){ slideIO.observe(s); });
-      }
-
-      function postOnboardingBoot(){
-        if (autoBootStarted) return;
-        if (!loaded) return;
-        autoBootStarted = true;
-        bootFeed();
-      }
-
-      function bootFeed(){
-        if (feedBooted) return;
-        if (!slides.length) return;
-        feedBooted = true;
-        feed.classList.add('visible');
-        layoutReels();
-
-        var startParam = getStartParam();
-
-        var startIdx = 0;
-        if (startParam) {
-          for (var i = 0; i < slides.length; i++) {
-            if (slides[i].dataset.id === startParam) { startIdx = i; break; }
-          }
-        }
-
-        currentIndex = startIdx;
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(startIdx);
-        refreshSubscriptionUI();
-
-        if (startIdx > 0) {
-          setTimeout(function(){
-            try { if (feed) feed.scrollTop = startIdx * feed.clientHeight; } catch(e){}
-          }, 250);
-        }
       }
 
       function copyToClipboard(text){
@@ -1877,12 +1345,9 @@
       window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
       window.addEventListener('resize', layoutReels);
 
-      retryBtn.addEventListener('click', function(){ location.reload(); });
+      retryBtn.addEventListener('click', function(){ haptic('medium'); location.reload(); });
 
-      authReady.then(function(u){
-        if (!u) return;
-        trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
-      });
+      authReady.then(function(u){ if (!u) return; trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent }); });
 
       async function initApp(retryCount){
         retryCount = retryCount || 0;
@@ -1891,22 +1356,7 @@
           if (deepId) {
             var reel = await loadReelById(deepId);
             if (reel) {
-              onboardingDismissed = true;
-              onboardingClosing = true;
-              autoBootStarted = true;
-
-              if (onboarding) {
-                try {
-                  onboarding.querySelectorAll('video').forEach(function(v){
-                    try { v.muted = true; v.pause(); v.removeAttribute('src'); v.load(); } catch(e){}
-                  });
-                } catch(e){}
-                if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-                onboarding = null;
-              }
-
               try { await loadMySubscriptions(); } catch(e){}
-
               renderSingleReel(reel);
               loaded = true;
               return;
@@ -1916,24 +1366,13 @@
           var vibes = await loadVibeReels();
           if (!vibes) vibes = [];
           vibeReels = vibes;
-
-          vibeCounts = await loadVibeCounts() || {};
-
-          if (vibeReels.length === 1) {
-            var v0 = vibeReels[0];
-            try {
-              var evs0 = await loadEventsForVibe(v0.vibe_category) || [];
-              if (evs0.length) prefetchedVibe = { category: v0.vibe_category, events: evs0 };
-            } catch(e){}
-          }
-
-          renderList(vibes, 'vibe');
           loaded = true;
-          if (onboardingDismissed) postOnboardingBoot();
 
-          loadMySubscriptions().then(function(){
-            refreshSubscriptionUI();
-          });
+          feed.classList.add('visible');
+          layoutReels();
+
+          renderVibesFeed(vibeReels, 0);
+          loadMySubscriptions().then(function(){ refreshSubscriptionUI(); });
         } catch (err) {
           console.warn('initApp error:', err);
           if (retryCount < 3) {
@@ -1943,6 +1382,7 @@
           }
         }
       }
+
       initApp(0);
 
     })();

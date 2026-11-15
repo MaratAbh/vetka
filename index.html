@@ -33,79 +33,49 @@
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
 
-  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.15);}
+  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;transition:opacity .5s ease;}
+  .onboarding.ready .onb-bg{opacity:1;}
 
   .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
+  .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
+  .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;z-index:1;}
+  .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#0a0a12;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;}
 
-  /* плитка: тёмный фон + лого VETKA по центру, пока видео не готово */
-  .onb-col .tile{
-    position:relative;
-    width:100%;
-    aspect-ratio:9/16;
-    background:#12121a;
-    border-radius:10px;
-    overflow:hidden;
-    flex:none;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .onb-col .tile::before{
-    content:'';
-    position:absolute;
-    inset:0;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none'><path d='M20 39V13' stroke='%23CDFF4A' stroke-opacity='0.35' stroke-width='1.6' stroke-linecap='round'/><path d='M20 27C12.5 25.2 8 19.4 8 11' stroke='%23CDFF4A' stroke-opacity='0.35' stroke-width='1.6' stroke-linecap='round'/><path d='M20 21C27.5 19.2 32 13.4 32 5' stroke='%23CDFF4A' stroke-opacity='0.35' stroke-width='1.6' stroke-linecap='round'/><circle cx='8' cy='11' r='2.1' fill='%23CDFF4A' fill-opacity='0.35'/><circle cx='32' cy='5' r='2.1' fill='%23CDFF4A' fill-opacity='0.35'/><circle cx='20' cy='13' r='2.1' fill='%23CDFF4A' fill-opacity='0.35'/></svg>");
-    background-repeat:no-repeat;
-    background-position:center;
-    background-size:32% auto;
-    pointer-events:none;
-    z-index:1;
-    animation:onbTilePulse 1.6s ease-in-out infinite;
-  }
-  @keyframes onbTilePulse{
-    0%,100%{opacity:.4;transform:scale(.96);}
-    50%{opacity:.85;transform:scale(1);}
-  }
-
-  .onb-col .tile video{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-    background:transparent;
-    transform:translateZ(0);
-    backface-visibility:hidden;
-    pointer-events:none;
-    z-index:2;
-    opacity:0;
-    transition:opacity .25s ease;
-  }
-  .onb-col .tile video.ready{
-    opacity:1;
-  }
-
-  .onb-col-up{animation:colUp 60s linear infinite;}
-  .onb-col-down{animation:colDown 60s linear infinite;}
+  .onb-col-up{animation:colUp 60s linear infinite;animation-play-state:paused;}
+  .onb-col-down{animation:colDown 60s linear infinite;animation-play-state:paused;}
   @keyframes colUp{from{transform:translateY(0);}to{transform:translateY(-50%);}}
   @keyframes colDown{from{transform:translateY(-50%);}to{transform:translateY(0);}}
+  .onboarding.ready .onb-col-up,
+  .onboarding.ready .onb-col-down{animation-play-state:running;}
 
-  .onb-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.55) 0%,rgba(7,7,10,.15) 30%,rgba(7,7,10,.35) 55%,rgba(7,7,10,.85) 85%,rgba(7,7,10,.98) 100%);opacity:1;}
+  .onb-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.55) 0%,rgba(7,7,10,.15) 30%,rgba(7,7,10,.35) 55%,rgba(7,7,10,.85) 85%,rgba(7,7,10,.98) 100%);opacity:0;transition:opacity .5s ease;}
+  .onboarding.ready .onb-veil{opacity:1;}
+
+  .onb-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;transition:opacity .35s ease;}
+  .onb-loader-mark{width:56px;height:56px;color:#CDFF4A;opacity:.7;animation:onbLoaderPulse 1.6s ease-in-out infinite;}
+  .onb-loader-mark svg{width:100%;height:100%;display:block;}
+  @keyframes onbLoaderPulse{0%,100%{opacity:.35;transform:scale(1);}50%{opacity:1;transform:scale(1.08);}}
+  .onboarding.ready .onb-loader{opacity:0;}
 
   .onb-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(42px + env(safe-area-inset-bottom,0px));z-index:2;pointer-events:none;}
 
-  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;}
+  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
   .onb-mark svg{width:100%;height:100%;display:block;}
-  .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);}
+  .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
   .onb-logo em{font-style:normal;color:#CDFF4A;}
-  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);}
+  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
   .onb-tag em{font-style:normal;color:#CDFF4A;}
-  .onb-hint{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);}
+  .onb-hint{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
   .onb-hint i{display:block;width:1.5px;height:34px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));animation:onbHint 2s ease-in-out infinite;}
   @keyframes onbHint{0%{transform:translateY(-10px) scaleY(.3);opacity:0;}45%{opacity:1;}100%{transform:translateY(10px) scaleY(1);opacity:0;}}
 
-  .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;}
+  .onboarding.ready .onb-mark{opacity:1;transform:none;transition-delay:.1s;}
+  .onboarding.ready .onb-logo{opacity:1;transform:none;transition-delay:.2s;}
+  .onboarding.ready .onb-tag{opacity:1;transform:none;transition-delay:.35s;}
+  .onboarding.ready .onb-hint{opacity:1;transform:none;transition-delay:.5s;}
+
+  .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;opacity:0;transition:opacity .5s ease;}
+  .onboarding.ready .lang-switch{opacity:1;transition-delay:.3s;}
   .lang-switch button{background:transparent;border:0;color:rgba(255,255,255,.6);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;padding:6px 11px;border-radius:100px;cursor:pointer;transition:background .2s ease, color .2s ease, transform .12s ease;}
   .lang-switch button.active{background:#CDFF4A;color:#07070a;}
   .lang-switch button:active{transform:scale(.94);}
@@ -141,102 +111,91 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  .organizer-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    padding:3px 9px;
-    border-radius:100px;
-    background:rgba(0,0,0,.45);
-    border:1px solid rgba(255,255,255,.12);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-    font-family:'Inter',sans-serif;
-    font-size:10.5px;
-    font-weight:600;
-    color:rgba(255,255,255,.7);
-    align-self:flex-start;
-    max-width:100%;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-  .organizer-badge svg{
-    width:11px;
-    height:11px;
-    flex:none;
-    color:#CDFF4A;
-  }
-
-  .vibe-btn {
+  .loc-btn {
     pointer-events: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 11px 26px;
+    padding: 13px 38px;
     border-radius: 100px;
     background: #CDFF4A;
     color: #07070a;
     font-family: 'Inter', sans-serif;
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 700;
     letter-spacing: -.01em;
     cursor: pointer;
     align-self: center;
-    margin-top: 10px;
+    margin-top: 8px;
     transition: transform .12s ease;
     -webkit-tap-highlight-color: transparent;
     border: 0;
-    animation: vibeGlow 2.6s ease-in-out infinite;
+    text-decoration: none;
   }
-  .vibe-btn:active { transform: scale(.96); }
-  .vibe-btn:disabled { opacity: .7; cursor: default; animation: none; }
-  .vibe-btn svg { width: 14px; height: 14px; flex: none; }
+  .loc-btn:active { transform: scale(.96); }
+  .loc-btn:disabled { opacity: .6; cursor: default; }
+  .loc-btn svg { width: 18px; height: 18px; flex: none; }
+
+  .loc-btn.vibe-cta {
+    animation: vibeGlow 2.8s ease-in-out infinite;
+  }
   @keyframes vibeGlow {
     0%, 100% { box-shadow: 0 4px 20px rgba(205,255,74,.35); }
-    50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 3px rgba(205,255,74,.2); }
+    50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 2px rgba(205,255,74,.25); }
   }
 
-  .go-btn {
-    pointer-events: auto;
-    display: inline-flex;
+  .vibe-banner{
+    position: fixed;
+    top: calc(60px + env(safe-area-inset-top, 0px));
+    left: 16px;
+    right: 16px;
+    z-index: 100;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 10px 10px 16px;
+    border-radius: 100px;
+    background: rgba(12,14,8,.85);
+    border: 1px solid rgba(205,255,74,.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: #CDFF4A;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 24px rgba(0,0,0,.4), 0 0 24px rgba(205,255,74,.15);
+    animation: bannerSlide .35s cubic-bezier(.2,.9,.3,1.4);
+  }
+  .vibe-banner.show { display: flex; }
+  @keyframes bannerSlide {
+    from { transform: translateY(-16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .vibe-banner-text { flex: 1; line-height: 1.25; }
+  .vibe-banner-text em { font-style: normal; color: #fff; font-weight: 500; }
+  .vibe-banner-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(205,255,74,.15);
+    color: #CDFF4A;
+    border: 0;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    padding: 10px 22px;
-    border-radius: 100px;
-    background: #CDFF4A;
-    color: #07070a;
-    font-family: 'Inter', sans-serif;
-    font-size: 12.5px;
-    font-weight: 700;
     cursor: pointer;
-    align-self: center;
-    margin-top: 8px;
-    transition: transform .12s ease, background .2s ease, color .2s ease, opacity .2s ease;
-    -webkit-tap-highlight-color: transparent;
-    border: 0;
-    text-decoration: none;
-    box-shadow: 0 4px 20px rgba(205,255,74,.35);
-    min-width: 0;
+    padding: 0;
+    transition: background .2s ease, transform .12s ease;
+    flex: none;
   }
-  .go-btn:active { transform: scale(.96); }
-  .go-btn[disabled] { cursor: default; transform: none; }
-  .go-btn[data-inflight="1"] { opacity: .7; }
-  .go-btn.subscribed {
-    background: rgba(205,255,74,.14);
-    color: #CDFF4A;
-    border: 1px solid rgba(205,255,74,.55);
-    box-shadow: none;
-    opacity: 1;
-  }
-  .go-btn svg { width: 14px; height: 14px; flex: none; }
+  .vibe-banner-close:active { background: rgba(205,255,74,.3); transform: scale(.92); }
+  .vibe-banner-close svg { width: 14px; height: 14px; }
 
   .actions-row {
     position: absolute;
     right: 14px;
-    bottom: 150px;
+    bottom: 170px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -245,7 +204,7 @@
     z-index: 10;
   }
 
-  .share-btn {
+  .top-vibe, .share-btn {
     pointer-events: auto;
     display: flex;
     flex-direction: column;
@@ -258,9 +217,9 @@
     padding: 0;
     color: inherit;
   }
-  .share-btn:disabled { opacity: .65; cursor: default; }
+  .top-vibe:disabled, .share-btn:disabled { opacity: .65; cursor: default; }
 
-  .ico-ph {
+  .tv-ph, .ico-ph {
     width: 34px;
     height: 34px;
     border-radius: 50%;
@@ -275,123 +234,65 @@
     transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
   }
 
-  .share-btn:active .ico-ph {
+  .top-vibe:active .tv-ph, .share-btn:active .ico-ph {
     transform: scale(.9);
-    background: rgba(205,255,74,.9);
-    color: #07070a;
-    border-color: rgba(205,255,74,.9);
   }
 
-  .ico-ph svg { width: 17px; height: 17px; display: block; }
+  .tv-ph svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: fill .2s ease;
+  }
 
-  .lbl {
+  .ico-ph svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+    fill: none;
+  }
+
+  .tv-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #CDFF4A;
+    line-height: 1;
+    text-shadow: 0 1px 4px rgba(0,0,0,.6);
+  }
+
+  .tv-label, .lbl {
     font-family: 'Inter', sans-serif;
     font-size: 8.5px;
     font-weight: 500;
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: rgba(255,255,255,.55);
+    color: rgba(255,255,255,.5);
     text-align: center;
-    text-shadow: 0 1px 3px rgba(0,0,0,.6);
   }
 
-  .vibe-banner{
-    position: fixed;
-    top: calc(60px + env(safe-area-inset-top, 0px));
-    left: 16px;
-    right: 16px;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px 10px 16px;
-    border-radius: 100px;
-    background: rgba(12,14,8,.85);
-    border: 1px solid rgba(205,255,74,.55);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    color: #CDFF4A;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    box-shadow: 0 4px 24px rgba(0,0,0,.4), 0 0 24px rgba(205,255,74,.15);
-    opacity: 0;
-    transform: translateY(-16px);
-    pointer-events: none;
-    transition: opacity .35s ease, transform .35s cubic-bezier(.2,.9,.3,1.4);
+  .top-vibe.voted .tv-ph {
+    background: rgba(205,255,74,.9);
+    color: #07070a;
+    border-color: rgba(205,255,74,.9);
   }
-  .vibe-banner.show {
-    opacity: 1;
-    transform: translateY(0);
+  .top-vibe.voted .tv-ph svg {
+    fill: #07070a;
+    stroke: #07070a;
   }
-  .vibe-banner-text { flex: 1; line-height: 1.25; }
-  .vibe-banner-text em { font-style: normal; color: #fff; font-weight: 500; }
+  .top-vibe.voted .tv-count { color: #CDFF4A; }
+  .top-vibe.voted .tv-label { color: #CDFF4A; }
 
-  .vibe-overlay{
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 22px;
-    background: rgba(7,7,10,.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    opacity: 0;
-    transition: opacity .3s ease;
-  }
-  .vibe-overlay.show { display: flex; opacity: 1; }
-  .vibe-overlay.hide { opacity: 0; }
-
-  .vibe-overlay-star{
-    width: 68px;
-    height: 68px;
-    color: #CDFF4A;
-    animation: overlayStarPulse 1.4s ease-in-out infinite;
-    filter: drop-shadow(0 0 24px rgba(205,255,74,.6));
-  }
-  .vibe-overlay-star svg { width: 100%; height: 100%; display: block; }
-  @keyframes overlayStarPulse {
-    0%, 100% { transform: scale(1) rotate(0deg); opacity: .85; }
-    50% { transform: scale(1.15) rotate(8deg); opacity: 1; }
-  }
-
-  .vibe-overlay-text{
-    font-family: 'Unbounded', sans-serif;
-    font-weight: 500;
-    font-size: 17px;
-    letter-spacing: -.02em;
-    color: #fff;
-    text-align: center;
-    max-width: 80vw;
-    line-height: 1.3;
-  }
-  .vibe-overlay-text em{
-    font-style: normal;
-    color: #CDFF4A;
-  }
-
-  .vibe-overlay-dots{
-    display: flex;
-    gap: 6px;
-    margin-top: -8px;
-  }
-  .vibe-overlay-dots i{
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #CDFF4A;
-    opacity: .4;
-    animation: overlayDot 1.2s ease-in-out infinite;
-  }
-  .vibe-overlay-dots i:nth-child(2) { animation-delay: .15s; }
-  .vibe-overlay-dots i:nth-child(3) { animation-delay: .3s; }
-  @keyframes overlayDot {
-    0%, 100% { opacity: .3; transform: scale(.8); }
-    50% { opacity: 1; transform: scale(1.15); }
-  }
+  @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
+  .tv-count.pulse{animation:countPulse .45s ease;}
+  
+  @keyframes iconPop{0%{transform:scale(1);}50%{transform:scale(1.25);}100%{transform:scale(1);}}
+  .tv-ph svg.pulse{animation:iconPop .35s cubic-bezier(.2,.9,.3,1.4);}
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
@@ -431,6 +332,19 @@
 
     <div class="onb-veil"></div>
 
+    <div class="onb-loader" aria-hidden="true">
+      <div class="onb-loader-mark">
+        <svg viewBox="0 0 40 40" fill="none">
+          <path d="M20 39V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M20 27C12.5 25.2 8 19.4 8 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M20 21C27.5 19.2 32 13.4 32 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="8" cy="11" r="2.1" fill="#CDFF4A"/>
+          <circle cx="32" cy="5" r="2.1" fill="#CDFF4A"/>
+          <circle cx="20" cy="13" r="2.1" fill="#CDFF4A"/>
+        </svg>
+      </div>
+    </div>
+
     <div class="lang-switch">
       <button type="button" data-lang="ru">RU</button>
       <button type="button" data-lang="en">EN</button>
@@ -449,7 +363,7 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Поиск событий <em>под твой вайб</em></div>
+      <div class="onb-tag" data-i18n="onboard_tag">Погрузись в собственный поток событий — <em>под свой вайб</em></div>
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
@@ -458,16 +372,9 @@
 
   <div class="vibe-banner" id="vibeBanner">
     <span class="vibe-banner-text" id="vibeBannerText">Поток</span>
-  </div>
-
-  <div class="vibe-overlay" id="vibeOverlay">
-    <div class="vibe-overlay-star">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/>
-      </svg>
-    </div>
-    <div class="vibe-overlay-text" id="vibeOverlayText">Собираем поток</div>
-    <div class="vibe-overlay-dots"><i></i><i></i><i></i></div>
+    <button class="vibe-banner-close" id="vibeBannerClose" aria-label="Закрыть">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
   </div>
 
   <div class="empty-state" id="emptyState">
@@ -518,60 +425,9 @@
       })();
 
       var I18N = {
-        ru: {
-          onboard_tag:'Поиск событий <em>под твой вайб</em>',
-          onboard_hint:'Листай вверх',
-          vibe_btn:'Перейти к событиям',
-          go_btn:'Получить приглашение',
-          go_subscribed:'Ты в списке',
-          go_error:'Не получилось, попробуй ещё',
-          go_ok_toast:'Готово! Пришлём в боте 🔔',
-          go_unsub_ok:'Подписка отменена',
-          share_label:'Поделиться',
-          share_text:'Пойдём вместе?',
-          overlay_collecting:'Собираем поток',
-          banner_stream:'Поток',
-          banner_one:'1 событие',
-          banner_many:'{n} событий',
-          toast_soon:'Скоро здесь',
-          min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
-        },
-        en: {
-          onboard_tag:'Find events <em>for your vibe</em>',
-          onboard_hint:'Swipe up',
-          vibe_btn:'Go to events',
-          go_btn:'Get invite',
-          go_subscribed:'You\'re in',
-          go_error:'Try again',
-          go_ok_toast:'Done! We\'ll ping you in the bot 🔔',
-          go_unsub_ok:'Unsubscribed',
-          share_label:'Share',
-          share_text:'Let\'s go together?',
-          overlay_collecting:'Collecting stream',
-          banner_stream:'Stream',
-          banner_one:'1 event',
-          banner_many:'{n} events',
-          toast_soon:'Coming soon',
-          min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
-        },
-        es: {
-          onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
-          onboard_hint:'Desliza hacia arriba',
-          vibe_btn:'Ir a eventos',
-          go_btn:'Obtener invitación',
-          go_subscribed:'Estás dentro',
-          go_error:'Inténtalo otra vez',
-          go_ok_toast:'¡Listo! Te avisamos en el bot 🔔',
-          go_unsub_ok:'Suscripción cancelada',
-          share_label:'Compartir',
-          share_text:'¿Vamos juntos?',
-          overlay_collecting:'Recolectando',
-          banner_stream:'Flujo',
-          banner_one:'1 evento',
-          banner_many:'{n} eventos',
-          toast_soon:'Pronto',
-          min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
-        }
+        ru: { onboard_tag:'Погрузись в собственный поток событий — <em>под свой вайб</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', share_text:'Пойдём вместе?', share_label:'Поделиться', vibe_btn:'В этот поток', vibe_stream_toast:'✦ Погружаемся в поток', vibe_single_toast:'Это первый такой вайб. Пришлём ещё 🔔', vibe_clear_toast:'Показали всё', vibe_banner_label:'Поток', vibe_banner_more:'ещё в ленте', vibe_banner_single:'пока один', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'Dive into your own stream of events — <em>to your own vibe</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', share_text:'Let\'s go together?', share_label:'Share', vibe_btn:'Into this stream', vibe_stream_toast:'✦ Diving into the stream', vibe_single_toast:'First one of its kind. We\'ll ping you 🔔', vibe_clear_toast:'Showing all', vibe_banner_label:'Stream', vibe_banner_more:'more in feed', vibe_banner_single:'one for now', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Sumérgete en tu propio flujo de eventos — <em>a tu propio rollo</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', share_text:'¿Vamos juntos?', share_label:'Compartir', vibe_btn:'En este flujo', vibe_stream_toast:'✦ Sumergiéndonos', vibe_single_toast:'El primero de su tipo. Te avisamos 🔔', vibe_clear_toast:'Mostrando todo', vibe_banner_label:'Flujo', vibe_banner_more:'más en el feed', vibe_banner_single:'uno por ahora', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -579,7 +435,6 @@
       if (!I18N[currentLang]) currentLang = 'ru';
 
       function t(key){ var d = I18N[currentLang] || I18N.ru; return d[key] != null ? d[key] : (I18N.ru[key] || key); }
-      function tFmt(key, vars){ var s = t(key); for (var k in vars) s = s.replace('{' + k + '}', vars[k]); return s; }
 
       function applyLang(lang){
         if (!I18N[lang]) lang = 'ru';
@@ -619,33 +474,34 @@
         }
       }
 
-      var audioUnlocked = false;
-      function unlockAudio(){
-        if (audioUnlocked) return;
-        audioUnlocked = true;
-        try {
-          var AC = window.AudioContext || window.webkitAudioContext;
-          if (AC) {
-            var ctx = new AC();
-            var buf = ctx.createBuffer(1, 1, 22050);
-            var src = ctx.createBufferSource();
-            src.buffer = buf;
-            src.connect(ctx.destination);
-            src.start(0);
-            if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
-          }
-        } catch(e){}
-        try {
-          var a = new Audio();
-          a.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-          a.volume = 0;
-          var pp = a.play();
-          if (pp && pp.catch) pp.catch(function(){});
-        } catch(e){}
+      var appDataPromise = null;
+      function fetchAppData() {
+        if (appDataPromise) return appDataPromise;
+        appDataPromise = (async function(){
+          var rows = [];
+          var likesCount = {};
+          try {
+            rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
+            if (!rows) rows = [];
+          } catch(e){ console.warn('reels error:', e); throw e; }
+          try {
+            var likesAll = await api('likes', 'select=slide_id');
+            if (likesAll && likesAll.length) {
+              likesAll.forEach(function(l){ if (l.slide_id) likesCount[l.slide_id] = (likesCount[l.slide_id] || 0) + 1; });
+            }
+          } catch(e){ console.warn('likes error:', e); }
+
+          rows.forEach(function(r){
+            var base = parseInt(r.base_votes, 10) || 0;
+            var real = likesCount[r.id] || 0;
+            r.__total = base + real;
+          });
+          rows.sort(function(a, b){ return b.__total - a.__total; });
+          return { reels: rows, likes: likesCount };
+        })();
+        appDataPromise.catch(function(){ appDataPromise = null; });
+        return appDataPromise;
       }
-      document.addEventListener('touchstart', unlockAudio, {once:true, passive:true});
-      document.addEventListener('click', unlockAudio, {once:true});
-      document.addEventListener('keydown', unlockAudio, {once:true});
 
       function timeAgo(iso){
         var diff = Date.now() - new Date(iso).getTime();
@@ -680,6 +536,7 @@
         } catch(e){}
         return null;
       }
+      function buildProfileUrl(u){ if (!u) return null; if (u.username) return 'https://t.me/' + u.username; return 'tg://user?id=' + u.id; }
       var EARLY_TG_USER = readTgUserFromHash();
       var EARLY_TG_ID = EARLY_TG_USER ? String(EARLY_TG_USER.id) : null;
       function readTgUser(){
@@ -697,40 +554,54 @@
       var toast = document.getElementById('toast');
       var vibeBanner = document.getElementById('vibeBanner');
       var vibeBannerText = document.getElementById('vibeBannerText');
-      var vibeOverlay = document.getElementById('vibeOverlay');
-      var vibeOverlayText = document.getElementById('vibeOverlayText');
+      var vibeBannerClose = document.getElementById('vibeBannerClose');
 
-      var vibeReels = [];
-      var allEventReels = [];
-      var currentVibe = null;
-      var mySubscribed = {};
+      var allReels = [];
+      var currentVibeFilter = null;
 
       var slides = [];
       var videoUrls = [];
       var currentIndex = 0;
       var slideEnteredAt = 0;
-      var soundEnabled = true;
+      var soundEnabled = false;
+      var myTopSlides = {};
+      var topCounts = {};
       var trackedSlideViews = {};
       var flushing = false;
       var tgIdWatchStarted = false;
       var pendingEvents = [];
-      var loaded = false;
+      var reelsLoaded = false;
       var onboardingDismissed = false;
       var feedBooted = false;
       var onboardingClosing = false;
-      var autoBootStarted = false;
+      var refreshing = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
       var flushTimer = null;
-      var bannerHideTimer = null;
+
+      // ===== Haptic helper (2.5) =====
+      function haptic(type){
+        try {
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if (!tg || !tg.HapticFeedback) return;
+          var hf = tg.HapticFeedback;
+          if ((type === 'light' || type === 'medium' || type === 'heavy') && typeof hf.impactOccurred === 'function') {
+            hf.impactOccurred(type);
+          } else if ((type === 'success' || type === 'error' || type === 'warning') && typeof hf.notificationOccurred === 'function') {
+            hf.notificationOccurred(type);
+          } else if (type === 'select' && typeof hf.selectionChanged === 'function') {
+            hf.selectionChanged();
+          }
+        } catch(e){}
+      }
 
       function showToast(text){
         if (!toast) return;
         toast.textContent = text;
         toast.classList.add('show');
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2400);
       }
 
       function showEmptyState(title, text, showRetry){
@@ -750,148 +621,26 @@
         return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       }
 
-      async function loadVibeReels(){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.vibe&order=sort_order.asc&limit=20');
-      }
-      async function loadEventsForVibe(category){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=sort_order.asc&limit=50');
-      }
-      async function loadReelById(id){
-        try {
-          var rows = await api('reels', 'select=*&id=eq.' + encodeURIComponent(id) + '&limit=1');
-          if (rows && rows.length) return rows[0];
-        } catch(e){ console.warn('loadReelById error:', e); }
-        return null;
-      }
+      function getVibeStream(currentReel, allReels){
+        var vibe = (currentReel.vibe_title || '').toLowerCase().trim();
+        var place = (currentReel.place || '').toLowerCase().trim();
+        if (!vibe && !place) return allReels.slice();
 
-      async function loadMySubscriptions(){
-        try {
-          var user = await authReady; if (!user) return;
-          var res = await supabaseClient.from('subscriptions').select('reel_id').eq('user_id', user.id);
-          if (res && res.data) {
-            res.data.forEach(function(r){
-              if (r && r.reel_id) mySubscribed[r.reel_id] = true;
-            });
-          }
-        } catch(e) {
-          console.warn('loadMySubscriptions error:', e);
-        }
-      }
-
-      function ticketBtnInner(){
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>' +
-          '<span data-i18n="go_btn">' + t('go_btn') + '</span>';
-      }
-      function checkBtnInner(){
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
-          '<span data-i18n="go_subscribed">' + t('go_subscribed') + '</span>';
-      }
-
-      function goBtnHtml(reel){
-        var isSub = !!mySubscribed[reel.id];
-        var cls = isSub ? 'go-btn subscribed' : 'go-btn';
-        var inner = isSub ? checkBtnInner() : ticketBtnInner();
-        return '<button class="' + cls + '" data-go type="button" ' +
-          'data-subscribed="' + (isSub ? '1' : '0') + '" ' +
-          'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
-          'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-          'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-          'data-place="' + escapeAttr(reel.place || '') + '">' +
-          inner +
-        '</button>';
-      }
-
-      function refreshSubscriptionUI(){
-        slides.forEach(function(slide){
-          var id = slide.dataset.id;
-          if (!id) return;
-          var btn = slide.querySelector('[data-go]');
-          if (!btn) return;
-          var shouldBeSub = !!mySubscribed[id];
-          var isSub = btn.dataset.subscribed === '1';
-          if (shouldBeSub === isSub) return;
-          if (shouldBeSub) {
-            btn.dataset.subscribed = '1';
-            btn.classList.add('subscribed');
-            btn.disabled = false;
-            btn.innerHTML = checkBtnInner();
-          } else {
-            btn.dataset.subscribed = '0';
-            btn.classList.remove('subscribed');
-            btn.disabled = false;
-            btn.innerHTML = ticketBtnInner();
-          }
+        var stream = allReels.filter(function(r){
+          var v = (r.vibe_title || '').toLowerCase().trim();
+          var p = (r.place || '').toLowerCase().trim();
+          return (vibe && v === vibe) || (place && p === place);
         });
+
+        stream = stream.filter(function(r){ return r.id !== currentReel.id; });
+        stream.unshift(currentReel);
+        return stream;
       }
 
-      function renderSlideShell(reel, mode){
-        var slide = document.createElement('div');
-        slide.className = 'slide';
-        slide.dataset.id = reel.id;
-
-        var badgeState = getBadgeState(reel.published_at);
-        var badgeClass = 'live-top hidden';
-        var badgeInner = '';
-        if (badgeState === 'live') {
-          badgeClass = 'live-top';
-          badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
-        }
-
-        var placeHtml = reel.place
-          ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
-          : '';
-
-        var organizerHtml = reel.organizer
-          ? '<div class="organizer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4.5 4L12 5l4.5 6L21 7l-1.5 11h-15z"/></svg>' + escapeHtml(reel.organizer) + '</div>'
-          : '';
-
-        var ctaHtml = '';
-        var actionsHtml = '';
-
-        if (mode === 'vibe') {
-          ctaHtml =
-            '<button class="vibe-btn" data-choose type="button" ' +
-              'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
-              'data-label="' + escapeAttr(reel.vibe_title || '') + '">' +
-              '<span data-i18n="vibe_btn">' + t('vibe_btn') + '</span>' +
-              '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/></svg>' +
-            '</button>';
-          actionsHtml = '';
-        } else {
-          ctaHtml = goBtnHtml(reel);
-
-          actionsHtml =
-            '<button class="share-btn" data-share>' +
-              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
-              '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
-            '</button>';
-        }
-
-        var actionsBlock = actionsHtml
-          ? '<div class="actions-row">' + actionsHtml + '</div>'
-          : '';
-
-        slide.innerHTML =
-          '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
-          '<div class="veil"></div>' +
-          '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
-          '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
-          '<div class="bottom">' +
-            '<div class="title-row"><div class="title">' + escapeHtml(reel.vibe_title || '') + '</div></div>' +
-            '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
-            placeHtml +
-            organizerHtml +
-            ctaHtml +
-            actionsBlock +
-          '</div>';
-
-        return slide;
-      }
-
-      function renderList(reels, mode){
+      function renderReels(reels){
         feed.innerHTML = '';
         if (!reels || reels.length === 0) {
-          showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет событий.', false);
+          showEmptyState('Пока пусто', 'Скоро тут появятся рилсы. Загляни позже.', false);
           slides = [];
           videoUrls = [];
           return;
@@ -899,7 +648,73 @@
         hideEmptyState();
 
         reels.forEach(function(reel){
-          feed.appendChild(renderSlideShell(reel, mode));
+          var slide = document.createElement('div');
+          slide.className = 'slide';
+          slide.dataset.id = reel.id;
+
+          var badgeState = getBadgeState(reel.published_at);
+          var badgeClass = 'live-top hidden';
+          var badgeInner = '';
+          if (badgeState === 'live') {
+            badgeClass = 'live-top';
+            badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
+          }
+
+          var baseVotes = parseInt(reel.base_votes, 10) || 0;
+          var totalVotes = baseVotes + (topCounts[reel.id] || 0);
+          var placeHtml = reel.place
+            ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
+            : '';
+
+          var ctaHtml =
+            '<button class="loc-btn vibe-cta" data-vibe type="button" ' +
+              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+              'data-place="' + escapeAttr(reel.place || '') + '">' +
+              '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+                '<path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/>' +
+              '</svg>' +
+              '<span>' + escapeHtml(t('vibe_btn')) + '</span>' +
+            '</button>';
+
+          var starSvg =
+            '<svg viewBox="0 0 24 24">' +
+              '<path d="M12 3l1.912 5.813a2 2 0 001.275 1.275L21 12l-5.813 1.912a2 2 0 00-1.275 1.275L12 21l-1.912-5.813a2 2 0 00-1.275-1.275L3 12l5.813-1.912a2 2 0 001.275-1.275L12 3z"/>' +
+            '</svg>';
+
+          slide.innerHTML =
+            '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
+            '<div class="veil"></div>' +
+            '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
+            '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
+            '<div class="bottom">' +
+              '<div class="title-row">' +
+                '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
+              '</div>' +
+              '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
+              placeHtml +
+              ctaHtml +
+              '<div class="actions-row">' +
+                '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
+                  '<span class="tv-ph">' + starSvg + '</span>' +
+                  '<span class="tv-count" data-count>' + totalVotes + '</span>' +
+                  '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
+                '</button>' +
+                '<button class="share-btn" data-share aria-label="Share">' +
+                  '<span class="ico-ph">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>' +
+                      '<circle cx="9" cy="7" r="4"/>' +
+                      '<path d="M19 8v6"/>' +
+                      '<path d="M22 11h-6"/>' +
+                    '</svg>' +
+                  '</span>' +
+                  '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
+                '</button>' +
+              '</div>' +
+            '</div>';
+
+          feed.appendChild(slide);
         });
 
         slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
@@ -913,24 +728,6 @@
         });
 
         bindHandlers();
-        refreshSubscriptionUI();
-      }
-
-      function renderSingleReel(reel){
-        if (!reel) return;
-        feed.classList.add('visible');
-        feed.innerHTML = '';
-        feed.appendChild(renderSlideShell(reel, 'event'));
-        slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
-        videoUrls = [reel.video_url || null];
-        bindHandlers();
-        refreshSubscriptionUI();
-        layoutReels();
-        currentIndex = 0;
-        slideEnteredAt = Date.now();
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(0);
       }
 
       function refreshLiveLabels(){
@@ -1009,19 +806,10 @@
         for (var i = 0; i < all.length; i++) all[i].style.height = vh + 'px';
       }
 
-      function getStartParam(){
-        try {
-          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-            return window.Telegram.WebApp.initDataUnsafe.start_param || null;
-          }
-        } catch(e){}
-        return null;
-      }
-
       function dismissOnboarding(){
         if (!onboarding || onboardingClosing) return;
-        unlockAudio();
         onboardingClosing = true;
+        haptic('medium');
         onboarding.style.transform = '';
         onboarding.classList.add('gone');
 
@@ -1036,7 +824,7 @@
         layoutReels();
         slideEnteredAt = Date.now();
         feed.classList.add('visible');
-        postOnboardingBoot();
+        if (reelsLoaded) bootFeed();
         setTimeout(function(){
           if (onboarding && onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
           onboarding = null;
@@ -1048,7 +836,6 @@
         var THRESHOLD = 60;
 
         function onStart(e){
-          unlockAudio();
           var pt = e.touches ? e.touches[0] : e;
           startY = pt.clientY; currentY = startY;
           dragging = true; moved = false;
@@ -1083,16 +870,42 @@
         document.addEventListener('mouseup', onEnd);
 
         onboarding.addEventListener('click', function(e){
-          unlockAudio();
           if (e.target.closest('.lang-switch')) return;
           if (moved) return;
           dismissOnboarding();
         });
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = 12;
-        // порядок: сначала 4 «главные» видео для первых видимых плиток, потом остальные
-        var loadOrder = [0, 6, 1, 7, 2, 8, 3, 9, 4, 10, 5, 11];
+        var onbIdx = 0, ONB_BATCH = 6;
+        var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
+
+        var onbReadyShown = false;
+        var onbReadyCount = 0;
+        var onbRequired = onbVids.length;
+        var onbMaxWaitTimer = null;
+
+        function showOnboardingReady(){
+          if (onbReadyShown) return;
+          onbReadyShown = true;
+          if (onboarding) onboarding.classList.add('ready');
+          if (onbMaxWaitTimer) { clearTimeout(onbMaxWaitTimer); onbMaxWaitTimer = null; }
+        }
+
+        function watchVideoReady(v){
+          if (!v || v.__onbWatched) return;
+          v.__onbWatched = true;
+          var fire = function(){
+            if (v.__onbFired) return;
+            v.__onbFired = true;
+            onbReadyCount++;
+            if (onbReadyCount >= onbRequired) showOnboardingReady();
+          };
+          if (v.readyState >= 2) { fire(); return; }
+          v.addEventListener('loadeddata', fire, { once: true });
+          v.addEventListener('error', fire, { once: true });
+        }
+
+        onbMaxWaitTimer = setTimeout(showOnboardingReady, 3000);
 
         function loadOnbBatch(){
           if (!onboarding) return;
@@ -1108,13 +921,15 @@
               try { v.setAttribute('preload','auto'); } catch(e){}
               v.src = url; try { v.load(); } catch(e){}
               var p = v.play(); if (p && p.catch) p.catch(function(){});
+              watchVideoReady(v);
             })(onbVids[targetIdx]);
           }
+          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 100);
         }
 
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
-          api('reels', 'select=video_url&is_active=eq.true&order=sort_order.asc&limit=12', null, 6000)
+          api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
             .then(function(rows){
               if (!onboarding) return;
               try {
@@ -1126,7 +941,7 @@
                   }
                 }
                 if (!urls.length) {
-                  if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 300 * attempt);
+                  if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
                   return;
                 }
 
@@ -1158,22 +973,12 @@
                   }
                   loadOnbBatch();
                 }
-              } catch(err){}
+              } catch(err){ console.warn('loadOnb parse error:', err); }
             })
-            .catch(function(){
-              if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 300 * attempt);
+            .catch(function(err){
+              if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
             });
         })();
-
-        // показываем видео-элемент, как только появился первый кадр
-        onbVids.forEach(function(v){
-          v.addEventListener('loadeddata', function(){
-            v.classList.add('ready');
-          }, { once: true });
-          v.addEventListener('canplay', function(){
-            v.classList.add('ready');
-          }, { once: true });
-        });
 
         var kickAll = function(){
           if (!onboarding) return;
@@ -1185,7 +990,7 @@
         var langBtns = document.querySelectorAll('[data-lang]');
         for (var li = 0; li < langBtns.length; li++) {
           (function(b){
-            b.addEventListener('click', function(e){ e.stopPropagation(); applyLang(b.getAttribute('data-lang')); });
+            b.addEventListener('click', function(e){ e.stopPropagation(); haptic('select'); applyLang(b.getAttribute('data-lang')); });
             b.addEventListener('touchstart', function(e){ e.stopPropagation(); }, {passive:true});
             b.addEventListener('touchend', function(e){ e.stopPropagation(); });
           })(langBtns[li]);
@@ -1197,6 +1002,7 @@
 
       applyLang(currentLang);
 
+      // ===== Sound =====
       var soundBtns = [];
       function bindSoundBtns(){
         soundBtns = feed.querySelectorAll('[data-sound-btn]');
@@ -1217,19 +1023,20 @@
       }
       function enableSound(){
         if (soundEnabled) return;
+        haptic('light');
         soundEnabled = true; updateIcons();
         var v = getVideo(currentIndex);
         if (v) { var p = v.play(); var unmute = function(){ try { v.muted = false; v.volume = 1; } catch(e){} }; if (p && p.then) p.then(unmute).catch(function(){}); else unmute(); }
         trackEvent('sound_on', {});
       }
-      function disableSound(){ if (!soundEnabled) return; soundEnabled = false; updateIcons(); var v = getVideo(currentIndex); if (v) { try { v.muted = true; } catch(e){} } }
+      function disableSound(){ if (!soundEnabled) return; haptic('light'); soundEnabled = false; updateIcons(); var v = getVideo(currentIndex); if (v) { try { v.muted = true; } catch(e){} } }
 
+      // ===== Share =====
       function bindShareBtns(){
         document.querySelectorAll('[data-share]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
           btn.addEventListener('click', function(e){
             e.stopPropagation();
+            haptic('light');
             if (window.ym) { try { ym(113067752, 'reachGoal', 'share'); } catch(err){} }
             var slide = btn.closest('.slide');
             var id = slide ? slide.dataset.id : '';
@@ -1251,103 +1058,147 @@
         });
       }
 
-      function bindChooseBtns(){
-        document.querySelectorAll('[data-choose]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
-          btn.addEventListener('click', function(e){
+      // ===== Top Vibe (лайки) =====
+      function bindTopBtns(){
+        document.querySelectorAll('[data-top]').forEach(function(btn){
+          btn.addEventListener('click', async function(e){
             e.stopPropagation();
             if (btn.disabled) return;
-            var category = btn.getAttribute('data-category');
-            var label = btn.getAttribute('data-label') || category;
-            selectVibe(btn, category, label);
+            var slide = btn.closest('.slide');
+            var id = slide ? slide.dataset.id : null; if (!id) return;
+
+            btn.disabled = true;
+            var wasVoted = !!myTopSlides[id];
+            var nowVoted = !wasVoted;
+
+            try {
+              if (nowVoted) {
+                myTopSlides[id] = true;
+                topCounts[id] = (topCounts[id] || 0) + 1;
+                var cnt = btn.querySelector('[data-count]');
+                if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
+                var svg = btn.querySelector('.tv-ph svg');
+                if (svg) { svg.classList.remove('pulse'); void svg.offsetWidth; svg.classList.add('pulse'); }
+                haptic('light');
+              } else {
+                delete myTopSlides[id];
+                topCounts[id] = Math.max(0, (topCounts[id] || 0) - 1);
+                haptic('select');
+              }
+              refreshTopUI();
+              if (window.ym) { try { ym(113067752, 'reachGoal', 'top_vibe'); } catch(err){} }
+              trackEvent('top_vibe', { slide_id: id, voted: nowVoted });
+
+              try {
+                var user = await authReady; if (!user) return;
+                if (nowVoted) await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
+                else await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
+              } catch(err){ console.warn('vote sync error:', err); }
+            } finally {
+              btn.disabled = false;
+            }
           });
         });
       }
 
-      async function selectVibe(btn, category, label){
-        var isAuto = !btn;
-        if (btn) btn.disabled = true;
-        trackEvent('vibe_select', { category: category, label: label, auto: isAuto });
-        if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
-
-        if (!isAuto) {
-          showVibeOverlay(label);
-        }
-
-        var delayP = isAuto ? Promise.resolve() : new Promise(function(r){ setTimeout(r, 900); });
-        var eventsP = loadEventsForVibe(category).catch(function(){ return []; });
-
-        var results = await Promise.all([eventsP, delayP]);
-        var events = results[0] || [];
-
-        if (!events.length) {
-          if (!isAuto) hideVibeOverlay();
-          if (btn) btn.disabled = false;
-          showToast(t('toast_soon'));
-          return;
-        }
-
-        allEventReels = events;
-        currentVibe = { category: category, label: label, events: events };
-
-        if (!isAuto) {
-          hideVibeOverlay();
-          await new Promise(function(r){ setTimeout(r, 260); });
-        }
-
-        if (currentIO) { currentIO.disconnect(); currentIO = null; }
-        if (slideIO) { slideIO.disconnect(); slideIO = null; }
-
-        renderList(events, 'event');
-        layoutReels();
-
-        initIO();
-        initSlideViewsIO();
-
-        var startParam = getStartParam();
-        var targetIdx = 0;
-        if (startParam) {
-          for (var si = 0; si < slides.length; si++) {
-            if (slides[si].dataset.id === startParam) { targetIdx = si; break; }
-          }
-        }
-
-        currentIndex = targetIdx;
-        slideEnteredAt = Date.now();
-        setActiveSlide(targetIdx);
-
-        try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
-
-        if (!isAuto) {
-          showVibeBanner(label, events.length);
-        }
-
-        if (btn) btn.disabled = false;
+      function refreshTopUI(){
+        slides.forEach(function(slide){
+          var id = slide.dataset.id; if (!id) return;
+          var btn = slide.querySelector('[data-top]'); if (!btn) return;
+          var base = parseInt(btn.dataset.base || '0', 10) || 0;
+          var count = topCounts[id] || 0;
+          var total = base + count; if (total < 0) total = 0;
+          var cnt = btn.querySelector('[data-count]'); if (cnt) cnt.textContent = total;
+          if (myTopSlides[id]) btn.classList.add('voted'); else btn.classList.remove('voted');
+        });
       }
 
-      function showVibeOverlay(label){
-        if (!vibeOverlay) return;
-        vibeOverlayText.innerHTML = t('overlay_collecting') + ' · <em>' + escapeHtml(label) + '</em>';
-        vibeOverlay.classList.remove('hide');
-        vibeOverlay.classList.add('show');
-      }
-      function hideVibeOverlay(){
-        if (!vibeOverlay) return;
-        vibeOverlay.classList.add('hide');
-        setTimeout(function(){
-          vibeOverlay.classList.remove('show');
-          vibeOverlay.classList.remove('hide');
-        }, 300);
-      }
+      // ===== Vibe CTA =====
+      async function handleVibeClick(btn, reelId, vibeTitle, place) {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        haptic('medium');
 
-      async function subscribeToReel(reelId, vibeTitle, place){
         try {
-          var user = await authReady; if (!user) return false;
+          trackEvent('vibe_click', { reel_id: reelId, vibe_title: vibeTitle, place: place });
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_click'); } catch(err){} }
+
+          subscribeNotifySilent(reelId, vibeTitle, place);
+
+          var currentReel = allReels.find(function(r){ return r.id === reelId; });
+          if (!currentReel) return;
+
+          var stream = getVibeStream(currentReel, allReels);
+
+          if (stream.length >= 2) {
+            currentVibeFilter = { label: vibeTitle || place || '', reels: stream };
+            renderReels(stream);
+            layoutReels();
+
+            if (currentIO) { currentIO.disconnect(); currentIO = null; }
+            if (slideIO) { slideIO.disconnect(); slideIO = null; }
+
+            currentIndex = 0;
+            slideEnteredAt = Date.now();
+            initIO();
+            initSlideViewsIO();
+            setActiveSlide(0);
+            refreshTopUI();
+
+            try { feed.scrollTop = 0; } catch(e){}
+
+            showVibeBanner(stream.length, vibeTitle || place);
+            showToast(t('vibe_stream_toast'));
+
+            haptic('success');
+          } else {
+            haptic('warning');
+            showToast(t('vibe_single_toast'));
+          }
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      function showVibeBanner(count, label) {
+        if (!vibeBanner || !vibeBannerText) return;
+        var displayLabel = label || 'этот вайб';
+        var moreCount = Math.max(0, count - 1);
+        var tail = moreCount > 0 ? (moreCount + ' ' + t('vibe_banner_more')) : t('vibe_banner_single');
+        vibeBannerText.innerHTML = '✦ <em>' + escapeHtml(displayLabel) + '</em> · ' + tail;
+        vibeBanner.classList.add('show');
+      }
+
+      function hideVibeBanner() {
+        if (vibeBanner) vibeBanner.classList.remove('show');
+      }
+
+      function clearVibeFilter() {
+        currentVibeFilter = null;
+        hideVibeBanner();
+        if (allReels.length) {
+          renderReels(allReels);
+          layoutReels();
+          if (currentIO) { currentIO.disconnect(); currentIO = null; }
+          if (slideIO) { slideIO.disconnect(); slideIO = null; }
+          currentIndex = 0;
+          slideEnteredAt = Date.now();
+          initIO();
+          initSlideViewsIO();
+          setActiveSlide(0);
+          refreshTopUI();
+          try { feed.scrollTop = 0; } catch(e){}
+          showToast(t('vibe_clear_toast'));
+        }
+      }
+
+      async function subscribeNotifySilent(reelId, vibeTitle, place) {
+        try {
+          var user = await authReady;
+          if (!user) return;
           var tgUser = readTgUser();
           var tgId = tgUser ? String(tgUser.id) : null;
-          if (!tgId) return false;
-          if (!reelId) return false;
+          if (!tgId) return;
 
           await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
             method: 'PATCH',
@@ -1360,135 +1211,59 @@
             body: JSON.stringify({ wants_notify: true })
           });
 
-          var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
-            method: 'POST',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json',
-              'Prefer': 'resolution=ignore-duplicates,return=minimal'
-            },
-            body: JSON.stringify([{
-              user_id: user.id,
-              tg_id: tgId,
-              reel_id: reelId,
-              vibe_title: vibeTitle || null,
-              place: place || null
-            }])
-          });
-          return r.ok;
-        } catch(e) {
-          console.warn('subscribeToReel error:', e);
-          return false;
-        }
+          if (reelId) {
+            await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                'Content-Type': 'application/json',
+                'Prefer': 'resolution=ignore-duplicates,return=minimal'
+              },
+              body: JSON.stringify([{
+                user_id: user.id,
+                tg_id: tgId,
+                reel_id: reelId,
+                vibe_title: vibeTitle || null,
+                place: place || null
+              }])
+            });
+          }
+        } catch(e) { console.warn('subscribe silent error:', e); }
       }
 
-      async function unsubscribeFromReel(reelId){
-        try {
-          var user = await authReady; if (!user) return false;
-          if (!reelId) return false;
-
-          var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions?user_id=eq.' + encodeURIComponent(user.id) + '&reel_id=eq.' + encodeURIComponent(reelId), {
-            method: 'DELETE',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Prefer': 'return=minimal'
-            }
-          });
-          return r.ok;
-        } catch(e) {
-          console.warn('unsubscribeFromReel error:', e);
-          return false;
-        }
-      }
-
-      function showVibeBanner(label, count){
-        if (!vibeBanner || !vibeBannerText) return;
-        var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
-        vibeBannerText.innerHTML = '✦ ' + escapeHtml(t('banner_stream')) + ' <em>' + escapeHtml(label) + '</em> · ' + countText;
-        vibeBanner.classList.remove('show');
-        void vibeBanner.offsetWidth;
-        vibeBanner.classList.add('show');
-
-        clearTimeout(bannerHideTimer);
-        bannerHideTimer = setTimeout(function(){
-          vibeBanner.classList.remove('show');
-        }, 2800);
-      }
-
-      function bindGoBtns(){
-        document.querySelectorAll('[data-go]').forEach(function(btn){
+      function bindVibeBtns(){
+        document.querySelectorAll('[data-vibe]').forEach(function(btn){
           if (btn.__bound) return;
           btn.__bound = true;
-          btn.addEventListener('click', async function(e){
+          btn.addEventListener('click', function(e){
             e.stopPropagation();
-            if (btn.dataset.inflight === '1') return;
-
-            var ctaUrl = btn.getAttribute('data-cta-url') || '';
-            var reelId = btn.getAttribute('data-reel-id') || '';
-            var vibeTitle = btn.getAttribute('data-vibe-title') || '';
-            var place = btn.getAttribute('data-place') || '';
-            var isSub = btn.dataset.subscribed === '1';
-
-            if (ctaUrl && !isSub) {
-              trackEvent('go_click', { slide_id: reelId, has_url: true });
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
-              try {
-                if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
-                  window.Telegram.WebApp.openLink(ctaUrl);
-                } else {
-                  window.open(ctaUrl, '_blank', 'noopener,noreferrer');
-                }
-              } catch(e){ location.href = ctaUrl; }
-              return;
-            }
-
-            btn.dataset.inflight = '1';
-
-            if (isSub) {
-              var okU = await unsubscribeFromReel(reelId);
-              btn.dataset.inflight = '0';
-              if (okU) {
-                delete mySubscribed[reelId];
-                btn.dataset.subscribed = '0';
-                btn.classList.remove('subscribed');
-                btn.innerHTML = ticketBtnInner();
-                applyLang(currentLang);
-                showToast(t('go_unsub_ok'));
-                trackEvent('unsubscribe_reel', { slide_id: reelId });
-              } else {
-                showToast(t('go_error'));
-              }
-            } else {
-              trackEvent('go_click', { slide_id: reelId, has_url: false });
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
-              var okS = await subscribeToReel(reelId, vibeTitle, place);
-              btn.dataset.inflight = '0';
-              if (okS) {
-                mySubscribed[reelId] = true;
-                btn.dataset.subscribed = '1';
-                btn.classList.add('subscribed');
-                btn.innerHTML = checkBtnInner();
-                applyLang(currentLang);
-                showToast(t('go_ok_toast'));
-                trackEvent('subscribe_reel', { slide_id: reelId });
-                if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
-              } else {
-                showToast(t('go_error'));
-              }
-            }
+            handleVibeClick(
+              btn,
+              btn.getAttribute('data-reel-id'),
+              btn.getAttribute('data-vibe-title'),
+              btn.getAttribute('data-place')
+            );
           });
+        });
+      }
+
+      if (vibeBannerClose) {
+        vibeBannerClose.addEventListener('click', function(e){
+          e.stopPropagation();
+          haptic('select');
+          clearVibeFilter();
         });
       }
 
       function bindHandlers(){
         bindSoundBtns();
         bindShareBtns();
-        bindChooseBtns();
-        bindGoBtns();
+        bindTopBtns();
+        bindVibeBtns();
       }
 
+      // ===== Observers =====
       var currentIO = null;
       function initIO(){
         if (currentIO) currentIO.disconnect();
@@ -1499,6 +1274,7 @@
           if (best && bestRatio > 0.55) {
             var idx = slides.indexOf(best);
             if (idx !== -1 && idx !== currentIndex) {
+              haptic('light');
               flushDwell(currentIndex);
               currentIndex = idx;
               slideEnteredAt = Date.now();
@@ -1523,19 +1299,6 @@
         slides.forEach(function(s){ slideIO.observe(s); });
       }
 
-      function postOnboardingBoot(){
-        if (autoBootStarted) return;
-        if (!loaded) return;
-        autoBootStarted = true;
-
-        if (vibeReels.length === 1) {
-          var v = vibeReels[0];
-          selectVibe(null, v.vibe_category, v.vibe_title || v.vibe_category);
-        } else {
-          bootFeed();
-        }
-      }
-
       function bootFeed(){
         if (feedBooted) return;
         if (!slides.length) return;
@@ -1543,7 +1306,12 @@
         feed.classList.add('visible');
         layoutReels();
 
-        var startParam = getStartParam();
+        var startParam = null;
+        try {
+          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+            startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
+          }
+        } catch(e){}
 
         var startIdx = 0;
         if (startParam) {
@@ -1556,12 +1324,79 @@
         initIO();
         initSlideViewsIO();
         setActiveSlide(startIdx);
-        refreshSubscriptionUI();
+        refreshTopUI();
 
         if (startIdx > 0) {
           setTimeout(function(){
             try { if (feed) feed.scrollTop = startIdx * feed.clientHeight; } catch(e){}
           }, 250);
+        }
+      }
+
+      async function refreshReels(){
+        if (refreshing) return;
+        if (!reelsLoaded) return;
+        if (document.hidden) return;
+        if (!onboardingDismissed) return;
+        refreshing = true;
+        try {
+          var rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
+          if (!rows) rows = [];
+          var likesAll = [];
+          try { likesAll = await api('likes', 'select=slide_id') || []; } catch(e){}
+          var newLikes = {};
+          likesAll.forEach(function(l){ if (l.slide_id) newLikes[l.slide_id] = (newLikes[l.slide_id] || 0) + 1; });
+
+          rows.forEach(function(r){
+            var base = parseInt(r.base_votes, 10) || 0;
+            r.__total = base + (newLikes[r.id] || 0);
+          });
+          rows.sort(function(a, b){ return b.__total - a.__total; });
+
+          allReels = rows;
+          topCounts = newLikes;
+
+          if (currentVibeFilter) {
+            refreshTopUI();
+            return;
+          }
+
+          var oldIds = slides.map(function(s){ return s.dataset.id; }).join('|');
+          var newIds = rows.map(function(r){ return r.id; }).join('|');
+
+          if (oldIds === newIds) {
+            refreshTopUI();
+            return;
+          }
+
+          var curId = slides[currentIndex] ? slides[currentIndex].dataset.id : null;
+          if (currentIO) { currentIO.disconnect(); currentIO = null; }
+          if (slideIO) { slideIO.disconnect(); slideIO = null; }
+
+          renderReels(rows);
+          reelsLoaded = true;
+
+          var newIdx = 0;
+          if (curId) {
+            for (var i = 0; i < slides.length; i++) {
+              if (slides[i].dataset.id === curId) { newIdx = i; break; }
+            }
+          }
+          currentIndex = newIdx;
+          initIO();
+          initSlideViewsIO();
+          setActiveSlide(newIdx);
+          refreshTopUI();
+
+          requestAnimationFrame(function(){
+            try { if (feed) feed.scrollTop = newIdx * feed.clientHeight; } catch(e){}
+          });
+
+          layoutReels();
+        } catch(e) {
+          console.warn('refresh error:', e);
+        } finally {
+          refreshing = false;
         }
       }
 
@@ -1594,8 +1429,8 @@
             await new Promise(function(r){ setTimeout(r, 200); });
           }
         }
-        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) return null; return r.data.user; }
-        catch(e){ return null; }
+        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) { console.warn('anon auth error:', r.error.message); return null; } return r.data.user; }
+        catch(e){ console.warn('anon auth exception:', e); return null; }
       })();
 
       function startTgIdWatch(){
@@ -1650,62 +1485,49 @@
       window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
       window.addEventListener('resize', layoutReels);
 
-      retryBtn.addEventListener('click', function(){ location.reload(); });
+      retryBtn.addEventListener('click', function(){ haptic('medium'); location.reload(); });
 
       authReady.then(function(u){
         if (!u) return;
         trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
       });
 
-      async function initApp(retryCount){
+      async function initFeed(retryCount){
         retryCount = retryCount || 0;
         try {
-          var deepId = getStartParam();
-          if (deepId) {
-            var reel = await loadReelById(deepId);
-            if (reel) {
-              onboardingDismissed = true;
-              onboardingClosing = true;
-              autoBootStarted = true;
+          var data = await fetchAppData();
+          allReels = data.reels;
+          topCounts = data.likes;
+          renderReels(data.reels);
+          reelsLoaded = true;
 
-              if (onboarding) {
-                try {
-                  onboarding.querySelectorAll('video').forEach(function(v){
-                    try { v.muted = true; v.pause(); v.removeAttribute('src'); v.load(); } catch(e){}
-                  });
-                } catch(e){}
-                if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-                onboarding = null;
-              }
-
-              try { await loadMySubscriptions(); } catch(e){}
-
-              renderSingleReel(reel);
-              loaded = true;
-              return;
+          try {
+            var user = await Promise.race([
+              authReady,
+              new Promise(function(r){ setTimeout(function(){ r(null); }, 2500); })
+            ]);
+            if (user) {
+              try {
+                var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
+                if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });
+              } catch(e){}
             }
-          }
+          } catch(e){}
 
-          var vibes = await loadVibeReels();
-          if (!vibes) vibes = [];
-          vibeReels = vibes;
-          renderList(vibes, 'vibe');
-          loaded = true;
-          if (onboardingDismissed) postOnboardingBoot();
+          refreshTopUI();
+          if (onboardingDismissed) bootFeed();
+          setInterval(refreshReels, 60000);
 
-          loadMySubscriptions().then(function(){
-            refreshSubscriptionUI();
-          });
         } catch (err) {
-          console.warn('initApp error:', err);
+          console.warn('initFeed error:', err);
           if (retryCount < 3) {
-            setTimeout(function(){ initApp(retryCount + 1); }, 1500 * (retryCount + 1));
+            setTimeout(function(){ initFeed(retryCount + 1); }, 1500 * (retryCount + 1));
           } else {
             showEmptyState('Не удалось загрузить', 'Проверьте соединение и попробуйте снова.', true);
           }
         }
       }
-      initApp(0);
+      initFeed(0);
 
     })();
   </script>

@@ -1092,7 +1092,7 @@
         });
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = 6;
+        var onbIdx = 0, ONB_BATCH = 3;
         var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
 
         var onbReadyShown = false;
@@ -1135,12 +1135,14 @@
               v.muted = true;
               v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
               try { v.setAttribute('preload','auto'); } catch(e){}
-              v.src = url; try { v.load(); } catch(e){}
+              v.src = url;
+              try { v.load(); } catch(e){}
+              v.addEventListener('loadeddata', function(){ try { v.play().catch(function(){}); } catch(e){} }, { once: true });
               var p = v.play(); if (p && p.catch) p.catch(function(){});
               watchVideoReady(v);
             })(onbVids[targetIdx]);
           }
-          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 100);
+          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 600);
         }
 
         (function loadOnbFromSupabase(attempt){

@@ -111,60 +111,31 @@
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  .vibe-btn {
+  .loc-btn {
     pointer-events: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 9px;
-    padding: 14px 40px;
+    gap: 7px;
+    padding: 12px 36px;
     border-radius: 100px;
     background: #CDFF4A;
     color: #07070a;
     font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: -.01em;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
     align-self: center;
-    margin-top: 10px;
-    transition: transform .12s ease;
-    -webkit-tap-highlight-color: transparent;
-    border: 0;
-    animation: vibeGlow 2.6s ease-in-out infinite;
-  }
-  .vibe-btn:active { transform: scale(.96); }
-  .vibe-btn:disabled { opacity: .7; cursor: default; animation: none; }
-  .vibe-btn svg { width: 16px; height: 16px; flex: none; }
-  @keyframes vibeGlow {
-    0%, 100% { box-shadow: 0 4px 20px rgba(205,255,74,.35); }
-    50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 3px rgba(205,255,74,.2); }
-  }
-
-  .go-btn {
-    pointer-events: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 13px 40px;
-    border-radius: 100px;
-    background: #CDFF4A;
-    color: #07070a;
-    font-family: 'Inter', sans-serif;
-    font-size: 13.5px;
-    font-weight: 700;
-    cursor: pointer;
-    align-self: center;
-    margin-top: 8px;
-    transition: transform .12s ease;
+    margin-top: 6px;
+    box-shadow: 0 4px 20px rgba(205,255,74,.35);
+    transition: transform .12s ease, background .2s ease;
     -webkit-tap-highlight-color: transparent;
     border: 0;
     text-decoration: none;
-    box-shadow: 0 4px 20px rgba(205,255,74,.35);
   }
-  .go-btn:active { transform: scale(.96); }
-  .go-btn svg { width: 16px; height: 16px; flex: none; }
+  .loc-btn:active { transform: scale(.96); }
+  .loc-btn:disabled { opacity: .6; cursor: default; }
+  .loc-btn svg { width: 16px; height: 16px; flex: none; }
 
   .actions-row {
     position: absolute;
@@ -178,7 +149,7 @@
     z-index: 10;
   }
 
-  .share-btn, .map-btn {
+  .share-btn {
     pointer-events: auto;
     display: flex;
     flex-direction: column;
@@ -191,7 +162,7 @@
     padding: 0;
     color: inherit;
   }
-  .share-btn:disabled, .map-btn:disabled { opacity: .65; cursor: default; }
+  .share-btn:disabled { opacity: .65; cursor: default; }
 
   .ico-ph {
     width: 34px;
@@ -208,14 +179,15 @@
     transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
   }
 
-  .share-btn:active .ico-ph, .map-btn:active .ico-ph {
+  .share-btn:active .ico-ph {
     transform: scale(.9);
-    background: rgba(205,255,74,.9);
-    color: #07070a;
-    border-color: rgba(205,255,74,.9);
   }
 
-  .ico-ph svg { width: 17px; height: 17px; display: block; }
+  .ico-ph svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
 
   .lbl {
     font-family: 'Inter', sans-serif;
@@ -223,159 +195,8 @@
     font-weight: 500;
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: rgba(255,255,255,.55);
+    color: rgba(255,255,255,.5);
     text-align: center;
-    text-shadow: 0 1px 3px rgba(0,0,0,.6);
-  }
-
-  /* ===== Кнопка «Сменить вайб» (слева внизу) ===== */
-  .back-vibe-btn {
-    position: fixed;
-    left: 16px;
-    bottom: calc(90px + env(safe-area-inset-bottom, 0px));
-    z-index: 50;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    pointer-events: auto;
-    background: transparent;
-    border: 0;
-    padding: 0;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .back-vibe-btn.show { display: flex; }
-  .back-vibe-btn-inner {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: rgba(0,0,0,.55);
-    border: 1px solid rgba(205,255,74,.45);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #CDFF4A;
-    transition: transform .15s ease, background .2s ease;
-  }
-  .back-vibe-btn:active .back-vibe-btn-inner {
-    transform: scale(.9);
-    background: rgba(205,255,74,.2);
-  }
-  .back-vibe-btn-inner svg {
-    width: 20px;
-    height: 20px;
-  }
-  .back-vibe-btn-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 8.5px;
-    font-weight: 500;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,.65);
-    text-shadow: 0 1px 3px rgba(0,0,0,.7);
-  }
-
-  /* ===== Всплывающая плашка сверху (само исчезает) ===== */
-  .vibe-banner{
-    position: fixed;
-    top: calc(60px + env(safe-area-inset-top, 0px));
-    left: 16px;
-    right: 16px;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px 10px 16px;
-    border-radius: 100px;
-    background: rgba(12,14,8,.85);
-    border: 1px solid rgba(205,255,74,.55);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    color: #CDFF4A;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    box-shadow: 0 4px 24px rgba(0,0,0,.4), 0 0 24px rgba(205,255,74,.15);
-    opacity: 0;
-    transform: translateY(-16px);
-    pointer-events: none;
-    transition: opacity .35s ease, transform .35s cubic-bezier(.2,.9,.3,1.4);
-  }
-  .vibe-banner.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .vibe-banner-text { flex: 1; line-height: 1.25; }
-  .vibe-banner-text em { font-style: normal; color: #fff; font-weight: 500; }
-
-  /* ===== Overlay «собираем поток» ===== */
-  .vibe-overlay{
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 22px;
-    background: rgba(7,7,10,.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    opacity: 0;
-    transition: opacity .3s ease;
-  }
-  .vibe-overlay.show { display: flex; opacity: 1; }
-  .vibe-overlay.hide { opacity: 0; }
-
-  .vibe-overlay-star{
-    width: 68px;
-    height: 68px;
-    color: #CDFF4A;
-    animation: overlayStarPulse 1.4s ease-in-out infinite;
-    filter: drop-shadow(0 0 24px rgba(205,255,74,.6));
-  }
-  .vibe-overlay-star svg { width: 100%; height: 100%; display: block; }
-  @keyframes overlayStarPulse {
-    0%, 100% { transform: scale(1) rotate(0deg); opacity: .85; }
-    50% { transform: scale(1.15) rotate(8deg); opacity: 1; }
-  }
-
-  .vibe-overlay-text{
-    font-family: 'Unbounded', sans-serif;
-    font-weight: 500;
-    font-size: 17px;
-    letter-spacing: -.02em;
-    color: #fff;
-    text-align: center;
-    max-width: 80vw;
-    line-height: 1.3;
-  }
-  .vibe-overlay-text em{
-    font-style: normal;
-    color: #CDFF4A;
-  }
-
-  .vibe-overlay-dots{
-    display: flex;
-    gap: 6px;
-    margin-top: -8px;
-  }
-  .vibe-overlay-dots i{
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #CDFF4A;
-    opacity: .4;
-    animation: overlayDot 1.2s ease-in-out infinite;
-  }
-  .vibe-overlay-dots i:nth-child(2) { animation-delay: .15s; }
-  .vibe-overlay-dots i:nth-child(3) { animation-delay: .3s; }
-  @keyframes overlayDot {
-    0%, 100% { opacity: .3; transform: scale(.8); }
-    50% { opacity: 1; transform: scale(1.15); }
   }
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
@@ -447,36 +268,12 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Поиск событий <em>под твой вайб</em></div>
+      <div class="onb-tag" data-i18n="onboard_tag">Погрузись в собственный поток событий — <em>под свой вайб</em></div>
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
 
   <div class="feed" id="feed"></div>
-
-  <div class="vibe-banner" id="vibeBanner">
-    <span class="vibe-banner-text" id="vibeBannerText">Поток</span>
-  </div>
-
-  <div class="vibe-overlay" id="vibeOverlay">
-    <div class="vibe-overlay-star">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/>
-      </svg>
-    </div>
-    <div class="vibe-overlay-text" id="vibeOverlayText">Собираем поток</div>
-    <div class="vibe-overlay-dots"><i></i><i></i><i></i></div>
-  </div>
-
-  <button class="back-vibe-btn" id="backVibeBtn" type="button">
-    <span class="back-vibe-btn-inner">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 12a9 9 0 1 0 3-6.7"/>
-        <path d="M3 4v5h5"/>
-      </svg>
-    </span>
-    <span class="back-vibe-btn-label" data-i18n="back_label">Сменить</span>
-  </button>
 
   <div class="empty-state" id="emptyState">
     <div class="es-icon">
@@ -526,60 +323,9 @@
       })();
 
       var I18N = {
-        ru: {
-          onboard_tag:'Поиск событий <em>под твой вайб</em>',
-          onboard_hint:'Листай вверх',
-          vibe_btn:'Перейти к событиям',
-          go_btn:'Выбрать',
-          map_label:'На карте',
-          share_label:'Поделиться',
-          share_text:'Пойдём вместе?',
-          overlay_collecting:'Собираем поток',
-          banner_stream:'Поток',
-          banner_one:'1 событие',
-          banner_many:'{n} событий',
-          back_label:'Сменить',
-          toast_no_location:'Адрес не указан',
-          toast_soon:'Скоро здесь',
-          toast_back:'Вернулись к выбору',
-          min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
-        },
-        en: {
-          onboard_tag:'Find events <em>for your vibe</em>',
-          onboard_hint:'Swipe up',
-          vibe_btn:'Go to events',
-          go_btn:'Choose',
-          map_label:'On map',
-          share_label:'Share',
-          share_text:'Let\'s go together?',
-          overlay_collecting:'Collecting stream',
-          banner_stream:'Stream',
-          banner_one:'1 event',
-          banner_many:'{n} events',
-          back_label:'Change',
-          toast_no_location:'No address',
-          toast_soon:'Coming soon',
-          toast_back:'Back to selection',
-          min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
-        },
-        es: {
-          onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
-          onboard_hint:'Desliza hacia arriba',
-          vibe_btn:'Ir a eventos',
-          go_btn:'Elegir',
-          map_label:'En mapa',
-          share_label:'Compartir',
-          share_text:'¿Vamos juntos?',
-          overlay_collecting:'Recolectando',
-          banner_stream:'Flujo',
-          banner_one:'1 evento',
-          banner_many:'{n} eventos',
-          back_label:'Cambiar',
-          toast_no_location:'Dirección no indicada',
-          toast_soon:'Pronto',
-          toast_back:'Volver a elegir',
-          min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
-        }
+        ru: { onboard_tag:'Погрузись в собственный поток событий — <em>под свой вайб</em>', onboard_hint:'Листай вверх', share_text:'Пойдём вместе?', share_label:'Поделиться', notify_btn:'Следить за вайбом', notify_ok:'Готово! Пришлём в боте 🔔', notify_already:'Уже подписан на уведомления', route_btn:'Смотреть маршрут', ticket_btn:'Купить билет', route_confirm:'Для построения точного маршрута поделитесь вашей геопозицией.', addr_missing:'Адрес не указан', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'Dive into your own stream of events — <em>to your own vibe</em>', onboard_hint:'Swipe up', share_text:'Let\'s go together?', share_label:'Share', notify_btn:'Follow this vibe', notify_ok:'Done! We\'ll ping you in the bot 🔔', notify_already:'Already subscribed', route_btn:'View route', ticket_btn:'Buy ticket', route_confirm:'Share your location to build an accurate route.', addr_missing:'Address not set', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Sumérgete en tu propio flujo de eventos — <em>a tu propio rollo</em>', onboard_hint:'Desliza hacia arriba', share_text:'¿Vamos juntos?', share_label:'Compartir', notify_btn:'Seguir este vibe', notify_ok:'¡Listo! Te avisamos en el bot 🔔', notify_already:'Ya estás suscrito', route_btn:'Ver ruta', ticket_btn:'Comprar entrada', route_confirm:'Comparte tu ubicación para crear una ruta precisa.', addr_missing:'Dirección no indicada', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -587,7 +333,6 @@
       if (!I18N[currentLang]) currentLang = 'ru';
 
       function t(key){ var d = I18N[currentLang] || I18N.ru; return d[key] != null ? d[key] : (I18N.ru[key] || key); }
-      function tFmt(key, vars){ var s = t(key); for (var k in vars) s = s.replace('{' + k + '}', vars[k]); return s; }
 
       function applyLang(lang){
         if (!I18N[lang]) lang = 'ru';
@@ -625,6 +370,21 @@
         } finally {
           clearTimeout(timer);
         }
+      }
+
+      var appDataPromise = null;
+      function fetchAppData() {
+        if (appDataPromise) return appDataPromise;
+        appDataPromise = (async function(){
+          var rows = [];
+          try {
+            rows = await api('reels', 'select=*&is_active=eq.true&order=published_at.desc&limit=100');
+            if (!rows) rows = [];
+          } catch(e){ console.warn('reels error:', e); throw e; }
+          return { reels: rows };
+        })();
+        appDataPromise.catch(function(){ appDataPromise = null; });
+        return appDataPromise;
       }
 
       function timeAgo(iso){
@@ -676,15 +436,6 @@
       var retryBtn = document.getElementById('retryBtn');
       var onboarding = document.getElementById('onboarding');
       var toast = document.getElementById('toast');
-      var vibeBanner = document.getElementById('vibeBanner');
-      var vibeBannerText = document.getElementById('vibeBannerText');
-      var vibeOverlay = document.getElementById('vibeOverlay');
-      var vibeOverlayText = document.getElementById('vibeOverlayText');
-      var backVibeBtn = document.getElementById('backVibeBtn');
-
-      var vibeReels = [];
-      var allEventReels = [];
-      var currentVibe = null;
 
       var slides = [];
       var videoUrls = [];
@@ -695,15 +446,15 @@
       var flushing = false;
       var tgIdWatchStarted = false;
       var pendingEvents = [];
-      var loaded = false;
+      var reelsLoaded = false;
       var onboardingDismissed = false;
       var feedBooted = false;
       var onboardingClosing = false;
+      var refreshing = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
       var flushTimer = null;
-      var bannerHideTimer = null;
 
       function showToast(text){
         if (!toast) return;
@@ -727,114 +478,101 @@
         });
       }
       function escapeAttr(s){
-        return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
       }
 
-      async function loadVibeReels(){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.vibe&order=created_at.asc&limit=20');
-      }
-      async function loadEventsForVibe(category){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=created_at.desc&limit=50');
-      }
-
-      function renderSlideShell(reel, mode){
-        var slide = document.createElement('div');
-        slide.className = 'slide';
-        slide.dataset.id = reel.id;
-
-        var badgeState = getBadgeState(reel.published_at);
-        var badgeClass = 'live-top hidden';
-        var badgeInner = '';
-        if (badgeState === 'live') {
-          badgeClass = 'live-top';
-          badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
-        }
-
-        var placeHtml = reel.place
-          ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
-          : '';
-
-        var ctaHtml = '';
-        var actionsHtml = '';
-
-        if (mode === 'vibe') {
-          // Экран выбора вайба: одна большая кнопка «Перейти к событиям» + иконка вайба справа
-          ctaHtml =
-            '<button class="vibe-btn" data-choose type="button" ' +
-              'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
-              'data-label="' + escapeAttr(reel.vibe_title || '') + '">' +
-              '<span data-i18n="vibe_btn">' + t('vibe_btn') + '</span>' +
-              '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4L22 12l-7.6 2.6L12 22l-2.4-7.4L2 12l7.6-2.6L12 2z"/></svg>' +
-            '</button>';
-          actionsHtml = '';
-        } else {
-          // Экран событий: «Выбрать» снизу + «На карте» и «Поделиться» справа
-          ctaHtml =
-            '<button class="go-btn" data-go type="button" ' +
-              'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
-              'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
-              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-              'data-place="' + escapeAttr(reel.place || '') + '">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
-              '<span data-i18n="go_btn">' + t('go_btn') + '</span>' +
-            '</button>';
-
-          actionsHtml =
-            '<button class="map-btn" data-map ' +
-              'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
-              'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-              'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-              'data-place="' + escapeAttr(reel.place || '') + '">' +
-              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>' +
-              '<span class="lbl" data-i18n="map_label">' + t('map_label') + '</span>' +
-            '</button>' +
-            '<button class="share-btn" data-share>' +
-              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
-              '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
-            '</button>';
-        }
-
-        var actionsBlock = actionsHtml
-          ? '<div class="actions-row">' + actionsHtml + '</div>'
-          : '';
-
-        slide.innerHTML =
-          '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
-          '<div class="veil"></div>' +
-          '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
-          '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
-          '<div class="bottom">' +
-            '<div class="title-row"><div class="title">' + escapeHtml(reel.vibe_title || '') + '</div></div>' +
-            '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
-            placeHtml +
-            ctaHtml +
-            actionsBlock +
-          '</div>';
-
-        return slide;
-      }
-
-      function renderList(reels, mode){
+      function renderReels(reels){
         feed.innerHTML = '';
         if (!reels || reels.length === 0) {
-          showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет событий.', false);
+          showEmptyState('Пока пусто', 'Скоро тут появятся рилсы. Загляни позже.', false);
           slides = [];
           videoUrls = [];
-          if (backVibeBtn) backVibeBtn.classList.remove('show');
           return;
         }
         hideEmptyState();
 
         reels.forEach(function(reel){
-          feed.appendChild(renderSlideShell(reel, mode));
-        });
+          var slide = document.createElement('div');
+          slide.className = 'slide';
+          slide.dataset.id = reel.id;
 
-        // Показываем кнопку «Сменить» только на экране событий
-        if (backVibeBtn) {
-          if (mode === 'event') backVibeBtn.classList.add('show');
-          else backVibeBtn.classList.remove('show');
-        }
+          var badgeState = getBadgeState(reel.published_at);
+          var badgeClass = 'live-top hidden';
+          var badgeInner = '';
+          if (badgeState === 'live') {
+            badgeClass = 'live-top';
+            badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
+          }
+
+          var placeHtml = reel.place
+            ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
+            : '';
+
+          var ctaType = reel.cta_type || 'subscribe';
+          var ctaHtml = '';
+
+          if (ctaType === 'ticket') {
+            var ticketUrl = reel.cta_url || 'https://qtickets.ru/event/260719';
+            ctaHtml =
+              '<a class="loc-btn" data-ticket href="' + escapeAttr(ticketUrl) + '" target="_blank" rel="noopener noreferrer">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4V7z"/><path d="M13 5v14"/></svg>' +
+                '<span>' + escapeHtml(reel.cta_label || t('ticket_btn')) + '</span>' +
+              '</a>';
+          } else if (ctaType === 'route') {
+            ctaHtml =
+              '<button class="loc-btn" data-route type="button" ' +
+                'data-location="' + escapeAttr(reel.location_coords || '') + '" ' +
+                'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+                'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+                'data-place="' + escapeAttr(reel.place || '') + '">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+                '<span>' + escapeHtml(reel.cta_label || t('route_btn')) + '</span>' +
+              '</button>';
+          } else {
+            ctaHtml =
+              '<button class="loc-btn" data-notify type="button" ' +
+                'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
+                'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
+                'data-place="' + escapeAttr(reel.place || '') + '">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>' +
+                '<span>' + escapeHtml(reel.cta_label || t('notify_btn')) + '</span>' +
+              '</button>';
+          }
+
+          slide.innerHTML =
+            '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
+            '<div class="veil"></div>' +
+            '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
+            '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
+            '<div class="bottom">' +
+              '<div class="title-row">' +
+                '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
+              '</div>' +
+              '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
+              placeHtml +
+              ctaHtml +
+              '<div class="actions-row">' +
+                '<button class="share-btn" data-share aria-label="Share">' +
+                  '<span class="ico-ph">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>' +
+                      '<circle cx="9" cy="7" r="4"/>' +
+                      '<path d="M19 8v6"/>' +
+                      '<path d="M22 11h-6"/>' +
+                    '</svg>' +
+                  '</span>' +
+                  '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
+                '</button>' +
+              '</div>' +
+            '</div>';
+
+          feed.appendChild(slide);
+        });
 
         slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
         videoUrls = [];
@@ -942,7 +680,7 @@
         layoutReels();
         slideEnteredAt = Date.now();
         feed.classList.add('visible');
-        if (loaded) bootFeed();
+        if (reelsLoaded) bootFeed();
         setTimeout(function(){
           if (onboarding && onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
           onboarding = null;
@@ -955,8 +693,10 @@
 
         function onStart(e){
           var pt = e.touches ? e.touches[0] : e;
-          startY = pt.clientY; currentY = startY;
-          dragging = true; moved = false;
+          startY = pt.clientY;
+          currentY = startY;
+          dragging = true;
+          moved = false;
           onboarding.classList.add('dragging');
         }
         function onMove(e){
@@ -975,14 +715,18 @@
           dragging = false;
           onboarding.classList.remove('dragging');
           var delta = currentY - startY;
-          if (delta < -THRESHOLD) dismissOnboarding();
-          else onboarding.style.transform = '';
+          if (delta < -THRESHOLD) {
+            dismissOnboarding();
+          } else {
+            onboarding.style.transform = '';
+          }
         }
 
         onboarding.addEventListener('touchstart', onStart, {passive:true});
         onboarding.addEventListener('touchmove', onMove, {passive:false});
         onboarding.addEventListener('touchend', onEnd);
         onboarding.addEventListener('touchcancel', onEnd);
+
         onboarding.addEventListener('mousedown', onStart);
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
@@ -995,6 +739,7 @@
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
         var onbIdx = 0, ONB_BATCH = 6;
+
         var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
 
         var onbReadyShown = false;
@@ -1023,7 +768,9 @@
           v.addEventListener('error', fire, { once: true });
         }
 
-        onbMaxWaitTimer = setTimeout(showOnboardingReady, 3000);
+        onbMaxWaitTimer = setTimeout(function(){
+          showOnboardingReady();
+        }, 3000);
 
         function loadOnbBatch(){
           if (!onboarding) return;
@@ -1047,11 +794,12 @@
 
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
-          api('reels', 'select=video_url&is_active=eq.true&order=created_at.desc&limit=12')
+          api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
             .then(function(rows){
               if (!onboarding) return;
               try {
-                var seen = {}, urls = [];
+                var seen = {};
+                var urls = [];
                 if (rows && rows.length) {
                   for (var i = 0; i < rows.length; i++) {
                     var u = rows[i] && rows[i].video_url;
@@ -1063,7 +811,10 @@
                   return;
                 }
 
-                var n = urls.length, left = [], right = [];
+                var n = urls.length;
+                var left = [];
+                var right = [];
+
                 if (n >= 6) {
                   left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
                   right = [urls[3], urls[4], urls[5], urls[3], urls[4], urls[5]];
@@ -1091,9 +842,12 @@
                   }
                   loadOnbBatch();
                 }
-              } catch(err){ console.warn('loadOnb parse error:', err); }
+              } catch(err){
+                console.warn('loadOnbFromSupabase parse error:', err);
+              }
             })
-            .catch(function(){
+            .catch(function(err){
+              console.warn('onb supabase error:', err);
               if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
             });
         })();
@@ -1149,8 +903,6 @@
 
       function bindShareBtns(){
         document.querySelectorAll('[data-share]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
           btn.addEventListener('click', function(e){
             e.stopPropagation();
             if (window.ym) { try { ym(113067752, 'reachGoal', 'share'); } catch(err){} }
@@ -1174,87 +926,18 @@
         });
       }
 
-      function bindChooseBtns(){
-        document.querySelectorAll('[data-choose]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
-          btn.addEventListener('click', function(e){
-            e.stopPropagation();
-            if (btn.disabled) return;
-            var category = btn.getAttribute('data-category');
-            var label = btn.getAttribute('data-label') || category;
-            selectVibe(btn, category, label);
-          });
-        });
-      }
-
-      async function selectVibe(btn, category, label){
-        btn.disabled = true;
-        trackEvent('vibe_select', { category: category, label: label });
-        if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
-
-        showVibeOverlay(label);
-
-        var delayP = new Promise(function(r){ setTimeout(r, 900); });
-        subscribeVibe(category, label);
-        var eventsP = loadEventsForVibe(category).catch(function(){ return []; });
-
-        var results = await Promise.all([eventsP, delayP]);
-        var events = results[0] || [];
-
-        if (!events.length) {
-          hideVibeOverlay();
-          btn.disabled = false;
-          showToast(t('toast_soon'));
-          return;
-        }
-
-        allEventReels = events;
-        currentVibe = { category: category, label: label, events: events };
-
-        hideVibeOverlay();
-        await new Promise(function(r){ setTimeout(r, 260); });
-
-        if (currentIO) { currentIO.disconnect(); currentIO = null; }
-        if (slideIO) { slideIO.disconnect(); slideIO = null; }
-
-        renderList(events, 'event');
-        layoutReels();
-
-        currentIndex = 0;
-        slideEnteredAt = Date.now();
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(0);
-
-        try { feed.scrollTop = 0; } catch(e){}
-
-        showVibeBanner(label, events.length);
-
-        btn.disabled = false;
-      }
-
-      function showVibeOverlay(label){
-        if (!vibeOverlay) return;
-        vibeOverlayText.innerHTML = t('overlay_collecting') + ' · <em>' + escapeHtml(label) + '</em>';
-        vibeOverlay.classList.remove('hide');
-        vibeOverlay.classList.add('show');
-      }
-      function hideVibeOverlay(){
-        if (!vibeOverlay) return;
-        vibeOverlay.classList.add('hide');
-        setTimeout(function(){
-          vibeOverlay.classList.remove('show');
-          vibeOverlay.classList.remove('hide');
-        }, 300);
-      }
-
-      async function subscribeVibe(category, label){
+      var notifyInFlight = false;
+      async function subscribeNotify(btn, reelId, vibeTitle, place){
+        if (notifyInFlight) return;
+        notifyInFlight = true;
+        if (btn) btn.disabled = true;
         try {
-          var user = await authReady; if (!user) return;
+          var user = await authReady;
+          if (!user) { showToast('Нужна авторизация'); return; }
+
           var tgUser = readTgUser();
           var tgId = tgUser ? String(tgUser.id) : null;
-          if (!tgId) return;
+          if (!tgId) { showToast(t('notify_already')); return; }
 
           await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
             method: 'PATCH',
@@ -1267,116 +950,207 @@
             body: JSON.stringify({ wants_notify: true })
           });
 
-          await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
-            method: 'POST',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json',
-              'Prefer': 'resolution=ignore-duplicates,return=minimal'
-            },
-            body: JSON.stringify([{
-              user_id: user.id,
-              tg_id: tgId,
-              reel_id: 'vibe:' + category,
-              vibe_title: label || null,
-              place: category || null
-            }])
-          });
-        } catch(e) { console.warn('subscribeVibe error:', e); }
+          if (reelId) {
+            await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                'Content-Type': 'application/json',
+                'Prefer': 'resolution=ignore-duplicates,return=minimal'
+              },
+              body: JSON.stringify([{
+                user_id: user.id,
+                tg_id: tgId,
+                reel_id: reelId,
+                vibe_title: vibeTitle || null,
+                place: place || null
+              }])
+            });
+          }
+
+          showToast(t('notify_ok'));
+          trackEvent('notify_subscribe', { reel_id: reelId, vibe_title: vibeTitle, place: place });
+          if (window.ym) { try { ym(113067752, 'reachGoal', 'notify_subscribe'); } catch(err){} }
+        } catch(err) {
+          console.warn('subscribeNotify error:', err);
+        } finally {
+          notifyInFlight = false;
+          if (btn) btn.disabled = false;
+        }
       }
 
-      function showVibeBanner(label, count){
-        if (!vibeBanner || !vibeBannerText) return;
-        var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
-        vibeBannerText.innerHTML = '✦ ' + escapeHtml(t('banner_stream')) + ' <em>' + escapeHtml(label) + '</em> · ' + countText;
-        // Принудительно перезапускаем анимацию
-        vibeBanner.classList.remove('show');
-        void vibeBanner.offsetWidth;
-        vibeBanner.classList.add('show');
-
-        // Автоскрытие через 2.8 секунды
-        clearTimeout(bannerHideTimer);
-        bannerHideTimer = setTimeout(function(){
-          vibeBanner.classList.remove('show');
-        }, 2800);
-      }
-      function hideVibeBanner(){ if (vibeBanner) vibeBanner.classList.remove('show'); }
-
-      async function backToVibes(){
-        currentVibe = null;
-        hideVibeBanner();
-        if (currentIO) { currentIO.disconnect(); currentIO = null; }
-        if (slideIO) { slideIO.disconnect(); slideIO = null; }
-
-        renderList(vibeReels, 'vibe');
-        layoutReels();
-        currentIndex = 0;
-        slideEnteredAt = Date.now();
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(0);
-        try { feed.scrollTop = 0; } catch(e){}
-        showToast(t('toast_back'));
-      }
-
-      function bindGoBtns(){
-        document.querySelectorAll('[data-go]').forEach(function(btn){
+      function bindNotifyBtns(){
+        document.querySelectorAll('[data-notify]').forEach(function(btn){
           if (btn.__bound) return;
           btn.__bound = true;
           btn.addEventListener('click', function(e){
             e.stopPropagation();
-            var ctaUrl = btn.getAttribute('data-cta-url') || '';
-            var loc = btn.getAttribute('data-location') || '';
-            var reelId = btn.getAttribute('data-reel-id') || '';
-            var vibeTitle = btn.getAttribute('data-vibe-title') || '';
-            var place = btn.getAttribute('data-place') || '';
+            subscribeNotify(
+              btn,
+              btn.getAttribute('data-reel-id'),
+              btn.getAttribute('data-vibe-title'),
+              btn.getAttribute('data-place')
+            );
+          });
+        });
+      }
 
-            trackEvent('go_click', { slide_id: reelId, has_url: !!ctaUrl, has_loc: !!loc });
-            if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
+      function bindTicketBtns(){
+        document.querySelectorAll('[data-ticket]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', function(e){
+            var slide = btn.closest('.slide');
+            var id = slide ? slide.dataset.id : null;
+            trackEvent('ticket_click', { slide_id: id });
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'cta_click'); } catch(err){} }
+          });
+        });
+      }
 
-            if (ctaUrl) {
-              try {
-                if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
-                  window.Telegram.WebApp.openLink(ctaUrl);
-                } else {
-                  window.open(ctaUrl, '_blank', 'noopener,noreferrer');
-                }
-              } catch(e){ location.href = ctaUrl; }
-              return;
+      var GEO_CACHE_KEY = 'vetka_geo_v1';
+      var GEO_CACHE_TTL = 30 * 60 * 1000;
+      var LOC_QUEUE_KEY = 'vetka_loc_queue_v1';
+
+      function getCachedCoords() {
+        try {
+          var raw = localStorage.getItem(GEO_CACHE_KEY);
+          if (!raw) return null;
+          var c = JSON.parse(raw);
+          if (!c || typeof c.lat !== 'number' || typeof c.lng !== 'number') return null;
+          if (Date.now() - c.ts > GEO_CACHE_TTL) return null;
+          return { lat: c.lat, lng: c.lng };
+        } catch(e) { return null; }
+      }
+      function setCachedCoords(lat, lng) {
+        try { localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ lat: lat, lng: lng, ts: Date.now() })); } catch(e){}
+      }
+      function requestUserLocation() {
+        return new Promise(function(resolve, reject){
+          if (!navigator.geolocation) { reject(new Error('Geolocation not supported')); return; }
+          navigator.geolocation.getCurrentPosition(
+            function(p){ resolve({ lat: p.coords.latitude, lng: p.coords.longitude }); },
+            function(err){ reject(err); },
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+          );
+        });
+      }
+      function uuid(){
+        try { if (crypto && crypto.randomUUID) return crypto.randomUUID(); } catch(e){}
+        return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+      }
+      function readLocQueue() {
+        try { return JSON.parse(localStorage.getItem(LOC_QUEUE_KEY) || '[]'); } catch(e){ return []; }
+      }
+      function writeLocQueue(q) {
+        try { localStorage.setItem(LOC_QUEUE_KEY, JSON.stringify(q)); } catch(e){}
+      }
+      function removeFromQueueById(id) {
+        try {
+          var q = readLocQueue();
+          var filtered = q.filter(function(it){ return it.client_event_id !== id; });
+          if (filtered.length !== q.length) writeLocQueue(filtered);
+        } catch(e){}
+      }
+      function queueLocationItem(item) {
+        try {
+          var q = readLocQueue();
+          for (var i = 0; i < q.length; i++) { if (q[i].client_event_id === item.client_event_id) return; }
+          q.push(item);
+          if (q.length > 200) q = q.slice(-200);
+          writeLocQueue(q);
+        } catch(e) { console.warn('queueLocationItem fail:', e); }
+      }
+      async function flushLocationQueue() {
+        var q = readLocQueue();
+        if (!q.length) return;
+
+        var token = null;
+        var userId = null;
+        try {
+          var s = await supabaseClient.auth.getSession();
+          if (s && s.data && s.data.session && s.data.session.access_token) {
+            token = s.data.session.access_token;
+            userId = s.data.session.user.id;
+          }
+        } catch(e){}
+
+        if (!token) {
+          try {
+            var anon = await supabaseClient.auth.signInAnonymously();
+            if (anon.error) return;
+            var s2 = await supabaseClient.auth.getSession();
+            if (s2 && s2.data && s2.data.session) {
+              token = s2.data.session.access_token;
+              userId = s2.data.session.user.id;
             }
+          } catch(e){ return; }
+        }
+        if (!token || !userId) return;
 
-            if (loc) { openMap(loc, reelId, vibeTitle, place); return; }
+        var tgUser = readTgUser();
+        q = readLocQueue();
 
-            showToast(t('toast_soon'));
-          });
-        });
+        for (var i = 0; i < q.length; i++) {
+          var it = q[i];
+          if (!it || !it.client_event_id) continue;
+          try {
+            var body = [{
+              client_event_id: it.client_event_id,
+              user_id: userId,
+              tg_id: tgUser ? String(tgUser.id) : null,
+              username: tgUser ? (tgUser.username || null) : null,
+              first_name: tgUser ? (tgUser.first_name || null) : null,
+              last_name: tgUser ? (tgUser.last_name || null) : null,
+              profile_url: tgUser ? buildProfileUrl(tgUser) : null,
+              reel_id: it.reel_id,
+              reel_title: it.reel_title,
+              reel_place: it.reel_place,
+              latitude: it.lat,
+              longitude: it.lng,
+              destination_coords: it.dest_coords,
+              consent_given: true,
+              geo_source: it.geo_source,
+              route_created_at: it.ts_iso
+            }];
+
+            var res = await fetch(SUPABASE_URL + '/rest/v1/user_locations', {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify(body),
+              keepalive: true
+            });
+
+            if (res.ok || res.status === 409) {
+              removeFromQueueById(it.client_event_id);
+            }
+          } catch(e) {}
+        }
       }
-
-      function bindMapBtns(){
-        document.querySelectorAll('[data-map]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
-          btn.addEventListener('click', function(e){
-            e.stopPropagation();
-            var loc = btn.getAttribute('data-location') || '';
-            var reelId = btn.getAttribute('data-reel-id') || '';
-            var vibeTitle = btn.getAttribute('data-vibe-title') || '';
-            var place = btn.getAttribute('data-place') || '';
-
-            if (!loc) { showToast(t('toast_no_location')); return; }
-
-            trackEvent('map_click', { slide_id: reelId });
-            if (window.ym) { try { ym(113067752, 'reachGoal', 'map_click'); } catch(err){} }
-
-            openMap(loc, reelId, vibeTitle, place);
-          });
-        });
+      function saveUserLocationAsync(lat, lng, reelId, reelTitle, reelPlace, destCoords, geoSource) {
+        var item = {
+          client_event_id: uuid(),
+          lat: (typeof lat === 'number' && isFinite(lat)) ? lat : null,
+          lng: (typeof lng === 'number' && isFinite(lng)) ? lng : null,
+          reel_id: reelId,
+          reel_title: reelTitle,
+          reel_place: reelPlace,
+          dest_coords: destCoords,
+          geo_source: geoSource || 'unknown',
+          ts_iso: new Date().toISOString(),
+          ts: Date.now()
+        };
+        queueLocationItem(item);
+        flushLocationQueue();
       }
-
-      function openMap(destCoords, reelId, vibeTitle, place){
+      function openYandexRoute(destCoords) {
         var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
-        trackEvent('route_open', { slide_id: reelId, dest: destCoords });
         try {
           if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
             window.Telegram.WebApp.openLink(url);
@@ -1386,12 +1160,62 @@
         try { window.open(url, '_blank', 'noopener,noreferrer'); } catch(e){ location.href = url; }
       }
 
+      function bindRouteBtns(){
+        document.querySelectorAll('[data-route]').forEach(function(btn){
+          if (btn.__bound) return;
+          btn.__bound = true;
+          btn.addEventListener('click', async function(e){
+            e.stopPropagation();
+            var reelId = btn.getAttribute('data-reel-id');
+            var destCoords = btn.getAttribute('data-location');
+            var vibeTitle = btn.getAttribute('data-vibe-title');
+            var place = btn.getAttribute('data-place');
+
+            if (!destCoords) { showToast(t('addr_missing')); return; }
+
+            trackEvent('route_click', { slide_id: reelId, dest: destCoords });
+            if (window.ym) { try { ym(113067752, 'reachGoal', 'route_click'); } catch(err){} }
+
+            var cached = getCachedCoords();
+            if (cached) {
+              saveUserLocationAsync(cached.lat, cached.lng, reelId, vibeTitle, place, destCoords, 'cache');
+              openYandexRoute(destCoords);
+              return;
+            }
+
+            var userAgreed = confirm(t('route_confirm'));
+            if (!userAgreed) {
+              saveUserLocationAsync(null, null, reelId, vibeTitle, place, destCoords, 'user_declined');
+              openYandexRoute(destCoords);
+              return;
+            }
+
+            var coords = null;
+            try {
+              coords = await Promise.race([
+                requestUserLocation(),
+                new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('gps timeout')); }, 5000); })
+              ]);
+            } catch(err) {}
+
+            if (coords) {
+              setCachedCoords(coords.lat, coords.lng);
+              saveUserLocationAsync(coords.lat, coords.lng, reelId, vibeTitle, place, destCoords, 'fresh');
+            } else {
+              saveUserLocationAsync(null, null, reelId, vibeTitle, place, destCoords, 'gps_failed');
+            }
+
+            openYandexRoute(destCoords);
+          });
+        });
+      }
+
       function bindHandlers(){
         bindSoundBtns();
         bindShareBtns();
-        bindChooseBtns();
-        bindGoBtns();
-        bindMapBtns();
+        bindNotifyBtns();
+        bindTicketBtns();
+        bindRouteBtns();
       }
 
       var currentIO = null;
@@ -1461,6 +1285,51 @@
         }
       }
 
+      async function refreshReels(){
+        if (refreshing) return;
+        if (!reelsLoaded) return;
+        if (document.hidden) return;
+        if (!onboardingDismissed) return;
+        refreshing = true;
+        try {
+          var rows = await api('reels', 'select=*&is_active=eq.true&order=published_at.desc&limit=100');
+          if (!rows) rows = [];
+
+          var oldIds = slides.map(function(s){ return s.dataset.id; }).join('|');
+          var newIds = rows.map(function(r){ return r.id; }).join('|');
+
+          if (oldIds === newIds) return;
+
+          var curId = slides[currentIndex] ? slides[currentIndex].dataset.id : null;
+          if (currentIO) { currentIO.disconnect(); currentIO = null; }
+          if (slideIO) { slideIO.disconnect(); slideIO = null; }
+
+          renderReels(rows);
+          reelsLoaded = true;
+
+          var newIdx = 0;
+          if (curId) {
+            for (var i = 0; i < slides.length; i++) {
+              if (slides[i].dataset.id === curId) { newIdx = i; break; }
+            }
+          }
+          currentIndex = newIdx;
+          initIO();
+          initSlideViewsIO();
+          setActiveSlide(newIdx);
+
+          requestAnimationFrame(function(){
+            try { if (feed) feed.scrollTop = newIdx * feed.clientHeight; } catch(e){}
+          });
+
+          layoutReels();
+        } catch(e) {
+          console.warn('refresh error:', e);
+        } finally {
+          refreshing = false;
+        }
+      }
+
       function copyToClipboard(text){
         if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
         return new Promise(function(resolve, reject){
@@ -1490,8 +1359,8 @@
             await new Promise(function(r){ setTimeout(r, 200); });
           }
         }
-        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) return null; return r.data.user; }
-        catch(e){ return null; }
+        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) { console.warn('anon auth error:', r.error.message); return null; } return r.data.user; }
+        catch(e){ console.warn('anon auth exception:', e); return null; }
       })();
 
       function startTgIdWatch(){
@@ -1543,15 +1412,8 @@
         if (document.hidden) { flushDwell(currentIndex); flushEvents(); }
         else { slideEnteredAt = Date.now(); }
       });
-      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
+      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); flushLocationQueue(); });
       window.addEventListener('resize', layoutReels);
-
-      if (backVibeBtn) {
-        backVibeBtn.addEventListener('click', function(e){
-          e.stopPropagation();
-          backToVibes();
-        });
-      }
 
       retryBtn.addEventListener('click', function(){ location.reload(); });
 
@@ -1560,25 +1422,34 @@
         trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
       });
 
-      async function initApp(retryCount){
+      async function initFeed(retryCount){
         retryCount = retryCount || 0;
         try {
-          var vibes = await loadVibeReels();
-          if (!vibes) vibes = [];
-          vibeReels = vibes;
-          renderList(vibes, 'vibe');
-          loaded = true;
+          var data = await fetchAppData();
+          renderReels(data.reels);
+          reelsLoaded = true;
+
+          try {
+            var user = await Promise.race([
+              authReady,
+              new Promise(function(r){ setTimeout(function(){ r(null); }, 2500); })
+            ]);
+          } catch(e){}
+
           if (onboardingDismissed) bootFeed();
+          setInterval(refreshReels, 60000);
+          setInterval(flushLocationQueue, 60000);
+
         } catch (err) {
-          console.warn('initApp error:', err);
+          console.warn('initFeed error:', err);
           if (retryCount < 3) {
-            setTimeout(function(){ initApp(retryCount + 1); }, 1500 * (retryCount + 1));
+            setTimeout(function(){ initFeed(retryCount + 1); }, 1500 * (retryCount + 1));
           } else {
             showEmptyState('Не удалось загрузить', 'Проверьте соединение и попробуйте снова.', true);
           }
         }
       }
-      initApp(0);
+      initFeed(0);
 
     })();
   </script>

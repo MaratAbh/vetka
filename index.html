@@ -147,12 +147,53 @@
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
 
-  /* Заголовок в тизерах — крупнее */
-  .slide.vibe-slide .title{
-    font-size:clamp(26px,7.5vw,36px);
+  /* Title + CTA в одной строке для вайба */
+  .vibe-title-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    pointer-events:none;
+    min-width:0;
+  }
+  .vibe-title-row .title{
+    flex:1 1 auto;
+    min-width:0;
+    font-family:'Unbounded',sans-serif;
+    font-weight:500;
+    font-size:clamp(22px,6.2vw,30px);
     line-height:1.05;
     letter-spacing:-.025em;
+    color:#fff;
+    text-shadow:0 2px 14px rgba(0,0,0,.7);
   }
+
+  /* Компактная кнопка Перейти */
+  .vibe-btn {
+    pointer-events: auto;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 12px 8px 15px;
+    border-radius: 100px;
+    background: #CDFF4A;
+    color: #07070a;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    line-height: 1;
+    cursor: pointer;
+    border: 0;
+    white-space: nowrap;
+    box-shadow: 0 2px 14px rgba(205,255,74,.35);
+    transition: transform .12s ease, opacity .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .vibe-btn:active { transform: scale(.96); }
+  .vibe-btn:disabled { opacity: .7; cursor: default; }
+  .vibe-btn svg { width: 12px; height: 12px; flex: none; }
 
   .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);min-height:0;}
   .meta:empty{display:none;}
@@ -185,36 +226,6 @@
     height:11px;
     flex:none;
     color:#CDFF4A;
-  }
-
-  .vibe-btn {
-    pointer-events: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 11px 26px;
-    border-radius: 100px;
-    background: #CDFF4A;
-    color: #07070a;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: -.01em;
-    cursor: pointer;
-    align-self: center;
-    margin-top: 10px;
-    transition: transform .12s ease;
-    -webkit-tap-highlight-color: transparent;
-    border: 0;
-    animation: vibeGlow 2.6s ease-in-out infinite;
-  }
-  .vibe-btn:active { transform: scale(.96); }
-  .vibe-btn:disabled { opacity: .7; cursor: default; animation: none; }
-  .vibe-btn svg { width: 14px; height: 14px; flex: none; }
-  @keyframes vibeGlow {
-    0%, 100% { box-shadow: 0 4px 20px rgba(205,255,74,.35); }
-    50% { box-shadow: 0 4px 32px rgba(205,255,74,.7), 0 0 0 3px rgba(205,255,74,.2); }
   }
 
   .go-btn {
@@ -346,17 +357,18 @@
   .vibe-banner-text { flex: 1; line-height: 1.25; }
   .vibe-banner-text em { font-style: normal; color: #fff; font-weight: 500; }
 
+  /* Ещё вайбы: текст сверху, стрелка снизу, смотрит вниз */
   .vibe-swipe-hint{
-    margin-top:2px;
+    margin-top:8px;
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:3px;
+    gap:4px;
     font-family:'Inter',sans-serif;
     font-size:9px;
     font-weight:600;
-    color:rgba(255,255,255,.4);
-    letter-spacing:.16em;
+    color:rgba(255,255,255,.42);
+    letter-spacing:.18em;
     text-transform:uppercase;
     align-self:center;
     pointer-events:none;
@@ -364,12 +376,12 @@
   .vibe-swipe-hint svg{
     width:13px;
     height:13px;
-    color:rgba(255,255,255,.5);
-    animation:swipeBounce 1.8s ease-in-out infinite;
+    color:rgba(255,255,255,.55);
+    animation:swipeBounceDown 1.9s ease-in-out infinite;
   }
-  @keyframes swipeBounce{
-    0%,100%{transform:translateY(0);opacity:.45;}
-    50%{transform:translateY(-4px);opacity:.9;}
+  @keyframes swipeBounceDown{
+    0%,100%{transform:translateY(0);opacity:.4;}
+    50%{transform:translateY(4px);opacity:.9;}
   }
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
@@ -510,7 +522,7 @@
         ru: {
           onboard_tag:'Поиск событий <em>под твой вайб</em>',
           onboard_hint:'Листай вверх',
-          vibe_btn:'Смотреть события',
+          vibe_btn:'Перейти',
           vibe_hint_next:'Ещё вайбы',
           go_btn:'Следить за анонсом',
           go_buy:'Купить билет',
@@ -529,7 +541,7 @@
         en: {
           onboard_tag:'Find events <em>for your vibe</em>',
           onboard_hint:'Swipe up',
-          vibe_btn:'View events',
+          vibe_btn:'Go',
           vibe_hint_next:'More vibes',
           go_btn:'Follow announcement',
           go_buy:'Buy ticket',
@@ -548,7 +560,7 @@
         es: {
           onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
           onboard_hint:'Desliza hacia arriba',
-          vibe_btn:'Ver eventos',
+          vibe_btn:'Ir',
           vibe_hint_next:'Más vibes',
           go_btn:'Seguir anuncio',
           go_buy:'Comprar entrada',
@@ -908,49 +920,54 @@
           ? '<div class="organizer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4.5 4L12 5l4.5 6L21 7l-1.5 11h-15z"/></svg>' + escapeHtml(reel.organizer) + '</div>'
           : '';
 
-        var ctaHtml = '';
-        var actionsHtml = '';
-        var swipeHintHtml = '';
+        var bottomContent = '';
 
         if (mode === 'vibe') {
-          ctaHtml =
-            '<button class="vibe-btn" data-choose type="button" ' +
-              'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
-              'data-label="' + escapeAttr(reel.vibe_title || '') + '">' +
-              '<span data-i18n="vibe_btn">' + t('vibe_btn') + '</span>' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>' +
-            '</button>';
-
+          var swipeHintHtml = '';
           if (total > 1 && idx < total - 1) {
-            swipeHintHtml = '<div class="vibe-swipe-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg><span>' + escapeHtml(t('vibe_hint_next')) + '</span></div>';
+            swipeHintHtml =
+              '<div class="vibe-swipe-hint">' +
+                '<span>' + escapeHtml(t('vibe_hint_next')) + '</span>' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>' +
+              '</div>';
           }
+
+          bottomContent =
+            '<div class="vibe-title-row">' +
+              '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
+              '<button class="vibe-btn" data-choose type="button" ' +
+                'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
+                'data-label="' + escapeAttr(reel.vibe_title || '') + '">' +
+                '<span data-i18n="vibe_btn">' + t('vibe_btn') + '</span>' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>' +
+              '</button>' +
+            '</div>' +
+            '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
+            placeHtml +
+            swipeHintHtml;
+
         } else {
-          ctaHtml = goBtnHtml(reel);
-          actionsHtml =
+          var actionsHtml =
             '<button class="share-btn" data-share>' +
               '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
               '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
             '</button>';
-        }
 
-        var actionsBlock = actionsHtml
-          ? '<div class="actions-row">' + actionsHtml + '</div>'
-          : '';
+          bottomContent =
+            '<div class="title-row"><div class="title">' + escapeHtml(reel.vibe_title || '') + '</div></div>' +
+            '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
+            placeHtml +
+            organizerHtml +
+            goBtnHtml(reel) +
+            '<div class="actions-row">' + actionsHtml + '</div>';
+        }
 
         slide.innerHTML =
           '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
           '<div class="veil"></div>' +
           '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
           '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
-          '<div class="bottom">' +
-            '<div class="title-row"><div class="title">' + escapeHtml(reel.vibe_title || '') + '</div></div>' +
-            '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
-            placeHtml +
-            organizerHtml +
-            ctaHtml +
-            swipeHintHtml +
-            actionsBlock +
-          '</div>';
+          '<div class="bottom">' + bottomContent + '</div>';
 
         return slide;
       }

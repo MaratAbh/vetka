@@ -505,7 +505,8 @@
           onboard_tag:'Поиск событий <em>под твой вайб</em>',
           onboard_hint:'Листай вверх',
           vibe_btn:'Перейти к событиям',
-          go_btn:'Получить приглашение',
+          go_btn:'Следить за анонсом',
+          go_buy:'Купить билет',
           go_subscribed:'Ты в списке',
           go_error:'Не получилось, попробуй ещё',
           go_ok_toast:'Готово! Пришлём в боте 🔔',
@@ -523,7 +524,8 @@
           onboard_tag:'Find events <em>for your vibe</em>',
           onboard_hint:'Swipe up',
           vibe_btn:'Go to events',
-          go_btn:'Get invite',
+          go_btn:'Follow announcement',
+          go_buy:'Buy ticket',
           go_subscribed:'You\'re in',
           go_error:'Try again',
           go_ok_toast:'Done! We\'ll ping you in the bot 🔔',
@@ -541,7 +543,8 @@
           onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
           onboard_hint:'Desliza hacia arriba',
           vibe_btn:'Ir a eventos',
-          go_btn:'Obtener invitación',
+          go_btn:'Seguir anuncio',
+          go_buy:'Comprar entrada',
           go_subscribed:'Estás dentro',
           go_error:'Inténtalo otra vez',
           go_ok_toast:'¡Listo! Te avisamos en el bot 🔔',
@@ -761,27 +764,53 @@
         }
       }
 
-      function ticketBtnInner(){
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>' +
-          '<span data-i18n="go_btn">' + t('go_btn') + '</span>';
+      function findReelById(id){
+        for (var i = 0; i < allEventReels.length; i++) {
+          if (allEventReels[i].id === id) return allEventReels[i];
+        }
+        return null;
       }
-      function checkBtnInner(){
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
-          '<span data-i18n="go_subscribed">' + t('go_subscribed') + '</span>';
+
+      function ctaState(reel){
+        var cta = String(reel.cta_url == null ? '' : reel.cta_url).trim();
+        if (cta.toLowerCase() === 'none') return 'hidden';
+        if (cta) return 'buy';
+        return 'follow';
+      }
+
+      function goBtnIcon(isSub){
+        if (isSub) {
+          return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+        }
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>';
+      }
+
+      function goBtnLabel(reel, isSub){
+        if (isSub) return t('go_subscribed');
+        if (reel.cta_label && String(reel.cta_label).trim()) return String(reel.cta_label).trim();
+        return ctaState(reel) === 'buy' ? t('go_buy') : t('go_btn');
       }
 
       function goBtnHtml(reel){
+        if (ctaState(reel) === 'hidden') return '';
         var isSub = !!mySubscribed[reel.id];
         var cls = isSub ? 'go-btn subscribed' : 'go-btn';
-        var inner = isSub ? checkBtnInner() : ticketBtnInner();
+        var label = goBtnLabel(reel, isSub);
         return '<button class="' + cls + '" data-go type="button" ' +
           'data-subscribed="' + (isSub ? '1' : '0') + '" ' +
           'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
           'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
           'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
           'data-place="' + escapeAttr(reel.place || '') + '">' +
-          inner +
+          goBtnIcon(isSub) + '<span>' + escapeHtml(label) + '</span>' +
         '</button>';
+      }
+
+      function updateGoBtn(btn, reel, isSub){
+        if (!btn || !reel) return;
+        btn.dataset.subscribed = isSub ? '1' : '0';
+        if (isSub) btn.classList.add('subscribed'); else btn.classList.remove('subscribed');
+        btn.innerHTML = goBtnIcon(isSub) + '<span>' + escapeHtml(goBtnLabel(reel, isSub)) + '</span>';
       }
 
       function refreshSubscriptionUI(){
@@ -790,20 +819,10 @@
           if (!id) return;
           var btn = slide.querySelector('[data-go]');
           if (!btn) return;
-          var shouldBeSub = !!mySubscribed[id];
-          var isSub = btn.dataset.subscribed === '1';
-          if (shouldBeSub === isSub) return;
-          if (shouldBeSub) {
-            btn.dataset.subscribed = '1';
-            btn.classList.add('subscribed');
-            btn.disabled = false;
-            btn.innerHTML = checkBtnInner();
-          } else {
-            btn.dataset.subscribed = '0';
-            btn.classList.remove('subscribed');
-            btn.disabled = false;
-            btn.innerHTML = ticketBtnInner();
-          }
+          var reel = findReelById(id);
+          if (!reel) return;
+          updateGoBtn(btn, reel, !!mySubscribed[id]);
+          btn.disabled = false;
         });
       }
 
@@ -1273,7 +1292,6 @@
         trackEvent('vibe_select', { category: category, label: label, auto: isAuto });
         if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
 
-        // Оверлей показываем только при ручном переходе (когда вайбов 2+)
         if (!isAuto) {
           showVibeOverlay(label);
         }
@@ -1429,12 +1447,13 @@
             if (btn.dataset.inflight === '1') return;
 
             var ctaUrl = btn.getAttribute('data-cta-url') || '';
+            var cta = String(ctaUrl).trim().toLowerCase();
             var reelId = btn.getAttribute('data-reel-id') || '';
             var vibeTitle = btn.getAttribute('data-vibe-title') || '';
             var place = btn.getAttribute('data-place') || '';
             var isSub = btn.dataset.subscribed === '1';
 
-            if (ctaUrl && !isSub) {
+            if (cta && cta !== 'none' && !isSub) {
               trackEvent('go_click', { slide_id: reelId, has_url: true });
               if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
               try {
@@ -1449,15 +1468,20 @@
 
             btn.dataset.inflight = '1';
 
+            var reel = findReelById(reelId) || {
+              id: reelId,
+              cta_url: ctaUrl,
+              cta_label: null,
+              vibe_title: vibeTitle,
+              place: place
+            };
+
             if (isSub) {
               var okU = await unsubscribeFromReel(reelId);
               btn.dataset.inflight = '0';
               if (okU) {
                 delete mySubscribed[reelId];
-                btn.dataset.subscribed = '0';
-                btn.classList.remove('subscribed');
-                btn.innerHTML = ticketBtnInner();
-                applyLang(currentLang);
+                updateGoBtn(btn, reel, false);
                 showToast(t('go_unsub_ok'));
                 trackEvent('unsubscribe_reel', { slide_id: reelId });
               } else {
@@ -1470,10 +1494,7 @@
               btn.dataset.inflight = '0';
               if (okS) {
                 mySubscribed[reelId] = true;
-                btn.dataset.subscribed = '1';
-                btn.classList.add('subscribed');
-                btn.innerHTML = checkBtnInner();
-                applyLang(currentLang);
+                updateGoBtn(btn, reel, true);
                 showToast(t('go_ok_toast'));
                 trackEvent('subscribe_reel', { slide_id: reelId });
                 if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }

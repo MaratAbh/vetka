@@ -27,55 +27,35 @@
 
 <style>
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;outline:none;border:0;}
-  html,body{background:#07070a;color:#fff;font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;height:100%;width:100%;-webkit-font-smoothing:antialiased;color-scheme:dark;overscroll-behavior:none;}
+  html,body{background:#07070a;color:#fff;font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;height:100%;-webkit-font-smoothing:antialiased;color-scheme:dark;overscroll-behavior:none;}
 
-  .onboarding{position:fixed;top:0;left:0;right:0;bottom:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;overscroll-behavior:none;display:flex;flex-direction:column;}
+  .onboarding{position:fixed;inset:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;overscroll-behavior:none;}
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
-
-  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;transition:opacity .5s ease;}
-  .onboarding.ready .onb-bg{opacity:1;}
-
+  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;opacity:0;animation:onbBgFade 1.2s .1s ease forwards;}
+  @keyframes onbBgFade{to{opacity:1;}}
   .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
   .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
   .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;z-index:1;}
   .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#0a0a12;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;}
-
-  .onb-col-up{animation:colUp 60s linear infinite;animation-play-state:paused;}
-  .onb-col-down{animation:colDown 60s linear infinite;animation-play-state:paused;}
+  .onb-col-up{animation:colUp 60s linear infinite;}
+  .onb-col-down{animation:colDown 60s linear infinite;}
   @keyframes colUp{from{transform:translateY(0);}to{transform:translateY(-50%);}}
   @keyframes colDown{from{transform:translateY(-50%);}to{transform:translateY(0);}}
-  .onboarding.ready .onb-col-up,
-  .onboarding.ready .onb-col-down{animation-play-state:running;}
-
-  .onb-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.55) 0%,rgba(7,7,10,.15) 30%,rgba(7,7,10,.35) 55%,rgba(7,7,10,.85) 85%,rgba(7,7,10,.98) 100%);opacity:0;transition:opacity .5s ease;}
-  .onboarding.ready .onb-veil{opacity:1;}
-
-  .onb-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;transition:opacity .35s ease;}
-  .onb-loader-mark{width:56px;height:56px;color:#CDFF4A;opacity:.7;animation:onbLoaderPulse 1.6s ease-in-out infinite;}
-  .onb-loader-mark svg{width:100%;height:100%;display:block;}
-  @keyframes onbLoaderPulse{0%,100%{opacity:.35;transform:scale(1);}50%{opacity:1;transform:scale(1.08);}}
-  .onboarding.ready .onb-loader{opacity:0;}
-
+  .onb-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.55) 0%,rgba(7,7,10,.15) 30%,rgba(7,7,10,.35) 55%,rgba(7,7,10,.85) 85%,rgba(7,7,10,.98) 100%);}
   .onb-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(42px + env(safe-area-inset-bottom,0px));z-index:2;pointer-events:none;}
-
-  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;animation:onbFade .9s .2s ease forwards;}
   .onb-mark svg{width:100%;height:100%;display:block;}
-  .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);opacity:0;animation:onbFade .9s .35s ease forwards;}
   .onb-logo em{font-style:normal;color:#CDFF4A;}
-  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;animation:onbFade .9s .55s ease forwards;}
   .onb-tag em{font-style:normal;color:#CDFF4A;}
-  .onb-hint{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .onb-hint{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;animation:onbFade .9s .75s ease forwards;}
   .onb-hint i{display:block;width:1.5px;height:34px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));animation:onbHint 2s ease-in-out infinite;}
   @keyframes onbHint{0%{transform:translateY(-10px) scaleY(.3);opacity:0;}45%{opacity:1;}100%{transform:translateY(10px) scaleY(1);opacity:0;}}
+  @keyframes onbFade{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 
-  .onboarding.ready .onb-mark{opacity:1;transform:none;transition-delay:.1s;}
-  .onboarding.ready .onb-logo{opacity:1;transform:none;transition-delay:.2s;}
-  .onboarding.ready .onb-tag{opacity:1;transform:none;transition-delay:.35s;}
-  .onboarding.ready .onb-hint{opacity:1;transform:none;transition-delay:.5s;}
-
-  .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;opacity:0;transition:opacity .5s ease;}
-  .onboarding.ready .lang-switch{opacity:1;transition-delay:.3s;}
+  .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;opacity:0;animation:onbFade .9s .5s ease forwards;}
   .lang-switch button{background:transparent;border:0;color:rgba(255,255,255,.6);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;padding:6px 11px;border-radius:100px;cursor:pointer;transition:background .2s ease, color .2s ease, transform .12s ease;}
   .lang-switch button.active{background:#CDFF4A;color:#07070a;}
   .lang-switch button:active{transform:scale(.94);}
@@ -96,47 +76,6 @@
   .live-top .dot{width:5px;height:5px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);animation:pulse 1.8s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.75);}}
   .live-top.hidden{display:none;}
-  body.in-event-feed .live-top { display: none !important; }
-
-  .vibe-top{
-    position: fixed;
-    top: calc(16px + env(safe-area-inset-top, 0px));
-    left: 16px;
-    z-index: 50;
-    max-width: calc(100vw - 100px);
-    display: none;
-  }
-  .vibe-top.show { display: block; }
-  .vibe-back-btn{
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 6px 4px 0;
-    border: 0;
-    background: transparent;
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    max-width: 100%;
-    text-shadow: 0 1px 4px rgba(0,0,0,.85);
-    -webkit-tap-highlight-color: transparent;
-    transition: opacity .15s ease;
-  }
-  .vibe-back-btn:active { opacity: .65; }
-  .vibe-back-btn svg{
-    width: 18px;
-    height: 18px;
-    flex: none;
-    color: #fff;
-    filter: drop-shadow(0 1px 3px rgba(0,0,0,.8));
-  }
-  .vibe-back-btn span{
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
 
   .bottom{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:5;padding:0 16px 14px;display:flex;flex-direction:column;gap:9px;pointer-events:none;}
   .bottom .actions-row{pointer-events:auto;}
@@ -146,126 +85,39 @@
 
   .title{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,5.2vw,20px);line-height:1.1;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6);min-height:0;}
   .title:empty{display:none;}
-
-  /* Название + кнопка в одной строке */
-  .vibe-title-row{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    pointer-events:none;
-    width:100%;
-    min-width:0;
-  }
-  .vibe-title-row .title{
-    flex:1 1 auto;
-    min-width:0;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    font-family:'Unbounded',sans-serif;
-    font-weight:500;
-    font-size:clamp(20px,5.8vw,28px);
-    line-height:1.05;
-    letter-spacing:-.025em;
-    color:#fff;
-    text-shadow:0 2px 14px rgba(0,0,0,.7);
-  }
-
-  /* Компактная круглая кнопка со стрелкой */
-  .vibe-btn {
-    pointer-events: auto;
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #CDFF4A;
-    color: #07070a;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: 0;
-    padding: 0;
-    box-shadow: 0 3px 16px rgba(205,255,74,.4);
-    transition: transform .12s ease, box-shadow .2s ease;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .vibe-btn:active { transform: scale(.92); box-shadow: 0 2px 10px rgba(205,255,74,.3); }
-  .vibe-btn:disabled { opacity: .7; cursor: default; }
-  .vibe-btn svg { width: 18px; height: 18px; flex: none; }
-
   .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.85);min-height:0;}
   .meta:empty{display:none;}
 
   .place{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.7);align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .place svg{width:12px;height:12px;flex:none;color:#CDFF4A;filter:drop-shadow(0 0 4px rgba(205,255,74,.3));}
 
-  .organizer-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    padding:3px 9px;
-    border-radius:100px;
-    background:rgba(0,0,0,.45);
-    border:1px solid rgba(255,255,255,.12);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-    font-family:'Inter',sans-serif;
-    font-size:10.5px;
-    font-weight:600;
-    color:rgba(255,255,255,.7);
-    align-self:flex-start;
-    max-width:100%;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-  .organizer-badge svg{
-    width:11px;
-    height:11px;
-    flex:none;
-    color:#CDFF4A;
-  }
-
-  .go-btn {
+  .loc-btn {
     pointer-events: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 7px;
-    padding: 10px 22px;
+    padding: 12px 36px;
     border-radius: 100px;
     background: #CDFF4A;
     color: #07070a;
     font-family: 'Inter', sans-serif;
-    font-size: 12.5px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
     align-self: center;
-    margin-top: 8px;
-    transition: transform .12s ease, background .2s ease, color .2s ease, opacity .2s ease;
-    -webkit-tap-highlight-color: transparent;
-    border: 0;
-    text-decoration: none;
+    margin-top: 6px;
     box-shadow: 0 4px 20px rgba(205,255,74,.35);
-    min-width: 0;
+    transition: transform .12s ease, background .2s ease;
+    -webkit-tap-highlight-color: transparent;
   }
-  .go-btn:active { transform: scale(.96); }
-  .go-btn[disabled] { cursor: default; transform: none; }
-  .go-btn[data-inflight="1"] { opacity: .7; }
-  .go-btn.subscribed {
-    background: rgba(205,255,74,.14);
-    color: #CDFF4A;
-    border: 1px solid rgba(205,255,74,.55);
-    box-shadow: none;
-    opacity: 1;
-  }
-  .go-btn svg { width: 14px; height: 14px; flex: none; }
+  .loc-btn:active { transform: scale(.96); }
+  .loc-btn svg { width: 16px; height: 16px; flex: none; }
 
   .actions-row {
     position: absolute;
     right: 14px;
-    bottom: 150px;
+    bottom: 170px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -274,7 +126,7 @@
     z-index: 10;
   }
 
-  .share-btn {
+  .top-vibe, .share-btn {
     pointer-events: auto;
     display: flex;
     flex-direction: column;
@@ -287,9 +139,9 @@
     padding: 0;
     color: inherit;
   }
-  .share-btn:disabled { opacity: .65; cursor: default; }
+  .top-vibe:disabled, .share-btn:disabled { opacity: .65; cursor: default; }
 
-  .ico-ph {
+  .tv-ph, .ico-ph {
     width: 34px;
     height: 34px;
     border-radius: 50%;
@@ -304,83 +156,52 @@
     transition: transform .15s ease, background .2s ease, color .2s ease, border-color .2s ease;
   }
 
-  .share-btn:active .ico-ph {
+  .top-vibe:active .tv-ph, .share-btn:active .ico-ph {
     transform: scale(.9);
-    background: rgba(205,255,74,.9);
-    color: #07070a;
-    border-color: rgba(205,255,74,.9);
   }
 
-  .ico-ph svg { width: 17px; height: 17px; display: block; }
+  .tv-ph svg, .ico-ph svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
 
-  .lbl {
+  .tv-ph .tv-icon{width:26px;height:26px;display:block;overflow:visible;}
+  .tv-icon .tv-wave{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;transform-box:fill-box;transform-origin:center;transition:opacity .2s ease,transform .3s cubic-bezier(.4,0,.2,1);}
+  .tv-icon .tv-beam{fill:currentColor;opacity:0;transform:scaleY(.05);transform-box:fill-box;transform-origin:center bottom;transition:opacity .2s ease,transform .3s cubic-bezier(.2,.9,.3,1.4);}
+  .tv-icon .tv-spark{fill:currentColor;transform-box:fill-box;transform-origin:center;transition:transform .35s cubic-bezier(.2,.9,.3,1.4);}
+
+  .tv-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #CDFF4A;
+    line-height: 1;
+    text-shadow: 0 1px 4px rgba(0,0,0,.6);
+  }
+
+  .tv-label, .lbl {
     font-family: 'Inter', sans-serif;
     font-size: 8.5px;
     font-weight: 500;
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: rgba(255,255,255,.55);
+    color: rgba(255,255,255,.5);
     text-align: center;
-    text-shadow: 0 1px 3px rgba(0,0,0,.6);
   }
 
-  .vibe-banner{
-    position: fixed;
-    top: calc(60px + env(safe-area-inset-top, 0px));
-    left: 16px;
-    right: 16px;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px 10px 16px;
-    border-radius: 100px;
-    background: rgba(12,14,8,.85);
-    border: 1px solid rgba(205,255,74,.55);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    color: #CDFF4A;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    box-shadow: 0 4px 24px rgba(0,0,0,.4), 0 0 24px rgba(205,255,74,.15);
-    opacity: 0;
-    transform: translateY(-16px);
-    pointer-events: none;
-    transition: opacity .35s ease, transform .35s cubic-bezier(.2,.9,.3,1.4);
+  .top-vibe.voted .tv-ph {
+    background: rgba(205,255,74,.9);
+    color: #07070a;
+    border-color: rgba(205,255,74,.9);
   }
-  .vibe-banner.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .vibe-banner-text { flex: 1; line-height: 1.25; }
-  .vibe-banner-text em { font-style: normal; color: #fff; font-weight: 500; }
+  .top-vibe.voted .tv-count { color: #CDFF4A; }
+  .top-vibe.voted .tv-label { color: #CDFF4A; }
 
-  .vibe-swipe-hint{
-    margin-top:8px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:4px;
-    font-family:'Inter',sans-serif;
-    font-size:9px;
-    font-weight:600;
-    color:rgba(255,255,255,.42);
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    align-self:center;
-    pointer-events:none;
-  }
-  .vibe-swipe-hint svg{
-    width:13px;
-    height:13px;
-    color:rgba(255,255,255,.55);
-    animation:swipeBounceDown 1.9s ease-in-out infinite;
-  }
-  @keyframes swipeBounceDown{
-    0%,100%{transform:translateY(0);opacity:.4;}
-    50%{transform:translateY(4px);opacity:.9;}
-  }
+  @keyframes countPulse{0%{transform:scale(1);}40%{transform:scale(1.18);}100%{transform:scale(1);}}
+  .tv-count.pulse{animation:countPulse .45s ease;}
+  @keyframes triPulse{0%{transform:translateY(0);}40%{transform:translateY(-3px);}100%{transform:translateY(0);}}
+  .tv-ph svg.pulse{animation:triPulse .4s ease;}
 
   .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%, 20px);z-index:200;padding:12px 20px;border-radius:100px;background:rgba(0,0,0,.88);border:1px solid rgba(205,255,74,.35);backdrop-filter:blur(12px);color:#fff;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 0 24px rgba(205,255,74,.2);display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);}
   .toast::before{content:'';width:6px;height:6px;border-radius:50%;background:#CDFF4A;box-shadow:0 0 8px rgba(205,255,74,.9);flex:none;}
@@ -420,19 +241,6 @@
 
     <div class="onb-veil"></div>
 
-    <div class="onb-loader" aria-hidden="true">
-      <div class="onb-loader-mark">
-        <svg viewBox="0 0 40 40" fill="none">
-          <path d="M20 39V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 27C12.5 25.2 8 19.4 8 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 21C27.5 19.2 32 13.4 32 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <circle cx="8" cy="11" r="2.1" fill="#CDFF4A"/>
-          <circle cx="32" cy="5" r="2.1" fill="#CDFF4A"/>
-          <circle cx="20" cy="13" r="2.1" fill="#CDFF4A"/>
-        </svg>
-      </div>
-    </div>
-
     <div class="lang-switch">
       <button type="button" data-lang="ru">RU</button>
       <button type="button" data-lang="en">EN</button>
@@ -451,23 +259,12 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Поиск событий <em>под твой вайб</em></div>
+      <div class="onb-tag" data-i18n="onboard_tag">Это вайб-лента. Моменты, события и места - <em>в реальном времени</em></div>
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
 
-  <div class="vibe-top" id="vibeTop">
-    <button class="vibe-back-btn" id="vibeBackBtn" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      <span id="vibeTopLabel"></span>
-    </button>
-  </div>
-
   <div class="feed" id="feed"></div>
-
-  <div class="vibe-banner" id="vibeBanner">
-    <span class="vibe-banner-text" id="vibeBannerText">Поток</span>
-  </div>
 
   <div class="empty-state" id="emptyState">
     <div class="es-icon">
@@ -480,7 +277,7 @@
     <button class="retry-btn" id="retryBtn" type="button" style="display:none;">Попробовать снова</button>
   </div>
 
-  <div class="toast" id="toast">Ссылка скопирована</div>
+  <div class="toast" id="toast">Вайб продвинут ⬆️</div>
 
   <script type="text/javascript">
      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -517,60 +314,9 @@
       })();
 
       var I18N = {
-        ru: {
-          onboard_tag:'Поиск событий <em>под твой вайб</em>',
-          onboard_hint:'Листай вверх',
-          vibe_hint_next:'Ещё вайбы',
-          go_btn:'Следить за анонсом',
-          go_buy:'Купить билет',
-          go_subscribed:'Ты в списке',
-          go_error:'Не получилось, попробуй ещё',
-          go_ok_toast:'Готово! Пришлём в боте 🔔',
-          go_unsub_ok:'Подписка отменена',
-          share_label:'Поделиться',
-          share_text:'Пойдём вместе?',
-          banner_stream:'Поток',
-          banner_one:'1 событие',
-          banner_many:'{n} событий',
-          toast_soon:'Скоро здесь',
-          min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
-        },
-        en: {
-          onboard_tag:'Find events <em>for your vibe</em>',
-          onboard_hint:'Swipe up',
-          vibe_hint_next:'More vibes',
-          go_btn:'Follow announcement',
-          go_buy:'Buy ticket',
-          go_subscribed:'You\'re in',
-          go_error:'Try again',
-          go_ok_toast:'Done! We\'ll ping you in the bot 🔔',
-          go_unsub_ok:'Unsubscribed',
-          share_label:'Share',
-          share_text:'Let\'s go together?',
-          banner_stream:'Stream',
-          banner_one:'1 event',
-          banner_many:'{n} events',
-          toast_soon:'Coming soon',
-          min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
-        },
-        es: {
-          onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
-          onboard_hint:'Desliza hacia arriba',
-          vibe_hint_next:'Más vibes',
-          go_btn:'Seguir anuncio',
-          go_buy:'Comprar entrada',
-          go_subscribed:'Estás dentro',
-          go_error:'Inténtalo otra vez',
-          go_ok_toast:'¡Listo! Te avisamos en el bot 🔔',
-          go_unsub_ok:'Suscripción cancelada',
-          share_label:'Compartir',
-          share_text:'¿Vamos juntos?',
-          banner_stream:'Flujo',
-          banner_one:'1 evento',
-          banner_many:'{n} eventos',
-          toast_soon:'Pronto',
-          min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora'
-        }
+        ru: { onboard_tag:'Это вайб-лента. Моменты, события и места - <em>в реальном времени</em>', onboard_hint:'Листай вверх', top_vibe:'Топ вайб', top_ok:'Вайб продвинут ⬆️', top_removed:'Голос отозван', share_text:'Пойдём вместе?', share_label:'Поделиться', loc_btn:'Смотреть маршрут', min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что' },
+        en: { onboard_tag:'This is a vibe feed. Moments, events and places - <em>in real time</em>', onboard_hint:'Swipe up', top_vibe:'Top vibe', top_ok:'Vibe promoted ⬆️', top_removed:'Vote withdrawn', share_text:'Let\'s go together?', share_label:'Share', loc_btn:'View route', min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now' },
+        es: { onboard_tag:'Este es un vibe feed. Momentos, eventos y lugares - <em>en tiempo real</em>', onboard_hint:'Desliza hacia arriba', top_vibe:'Top vibe', top_ok:'Vibe promovido ⬆️', top_removed:'Voto retirado', share_text:'¿Vamos juntos?', share_label:'Compartir', loc_btn:'Ver ruta', min_ago:'min', hour_ago:'h', yesterday:'ayer', day_ago:'d', just_now:'ahora' }
       };
 
       var currentLang = 'ru';
@@ -578,7 +324,6 @@
       if (!I18N[currentLang]) currentLang = 'ru';
 
       function t(key){ var d = I18N[currentLang] || I18N.ru; return d[key] != null ? d[key] : (I18N.ru[key] || key); }
-      function tFmt(key, vars){ var s = t(key); for (var k in vars) s = s.replace('{' + k + '}', vars[k]); return s; }
 
       function applyLang(lang){
         if (!I18N[lang]) lang = 'ru';
@@ -618,33 +363,34 @@
         }
       }
 
-      var audioUnlocked = false;
-      function unlockAudio(){
-        if (audioUnlocked) return;
-        audioUnlocked = true;
-        try {
-          var AC = window.AudioContext || window.webkitAudioContext;
-          if (AC) {
-            var ctx = new AC();
-            var buf = ctx.createBuffer(1, 1, 22050);
-            var src = ctx.createBufferSource();
-            src.buffer = buf;
-            src.connect(ctx.destination);
-            src.start(0);
-            if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
-          }
-        } catch(e){}
-        try {
-          var a = new Audio();
-          a.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-          a.volume = 0;
-          var pp = a.play();
-          if (pp && pp.catch) pp.catch(function(){});
-        } catch(e){}
+      var appDataPromise = null;
+      function fetchAppData() {
+        if (appDataPromise) return appDataPromise;
+        appDataPromise = (async function(){
+          var rows = [];
+          var likesCount = {};
+          try {
+            rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
+            if (!rows) rows = [];
+          } catch(e){ console.warn('reels error:', e); throw e; }
+          try {
+            var likesAll = await api('likes', 'select=slide_id');
+            if (likesAll && likesAll.length) {
+              likesAll.forEach(function(l){ if (l.slide_id) likesCount[l.slide_id] = (likesCount[l.slide_id] || 0) + 1; });
+            }
+          } catch(e){ console.warn('likes error:', e); }
+
+          rows.forEach(function(r){
+            var base = parseInt(r.base_votes, 10) || 0;
+            var real = likesCount[r.id] || 0;
+            r.__total = base + real;
+          });
+          rows.sort(function(a, b){ return b.__total - a.__total; });
+          return { reels: rows, likes: likesCount };
+        })();
+        appDataPromise.catch(function(){ appDataPromise = null; });
+        return appDataPromise;
       }
-      document.addEventListener('touchstart', unlockAudio, {once:true, passive:true});
-      document.addEventListener('click', unlockAudio, {once:true});
-      document.addEventListener('keydown', unlockAudio, {once:true});
 
       function timeAgo(iso){
         var diff = Date.now() - new Date(iso).getTime();
@@ -679,6 +425,7 @@
         } catch(e){}
         return null;
       }
+      function buildProfileUrl(u){ if (!u) return null; if (u.username) return 'https://t.me/' + u.username; return 'tg://user?id=' + u.id; }
       var EARLY_TG_USER = readTgUserFromHash();
       var EARLY_TG_ID = EARLY_TG_USER ? String(EARLY_TG_USER.id) : null;
       function readTgUser(){
@@ -694,39 +441,27 @@
       var retryBtn = document.getElementById('retryBtn');
       var onboarding = document.getElementById('onboarding');
       var toast = document.getElementById('toast');
-      var vibeBanner = document.getElementById('vibeBanner');
-      var vibeBannerText = document.getElementById('vibeBannerText');
-
-      var vibeTopEl = document.getElementById('vibeTop');
-      var vibeTopLabel = document.getElementById('vibeTopLabel');
-      var vibeBackBtn = document.getElementById('vibeBackBtn');
-
-      var vibeReels = [];
-      var allEventReels = [];
-      var currentVibe = null;
-      var lastVibeCategory = null;
-      var vibeEventsCache = {};
-      var mySubscribed = {};
 
       var slides = [];
       var videoUrls = [];
       var currentIndex = 0;
       var slideEnteredAt = 0;
-      var soundEnabled = true;
+      var soundEnabled = false;
+      var myTopSlides = {};
+      var topCounts = {};
       var trackedSlideViews = {};
       var flushing = false;
       var tgIdWatchStarted = false;
       var pendingEvents = [];
-      var loaded = false;
+      var reelsLoaded = false;
       var onboardingDismissed = false;
       var feedBooted = false;
       var onboardingClosing = false;
-      var autoBootStarted = false;
+      var refreshing = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
       var flushTimer = null;
-      var bannerHideTimer = null;
 
       function showToast(text){
         if (!toast) return;
@@ -750,235 +485,87 @@
         });
       }
       function escapeAttr(s){
-        return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
       }
 
-      async function loadVibeReels(){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.vibe&order=sort_order.asc&limit=20');
-      }
-      async function loadEventsForVibe(category){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=sort_order.asc&limit=50');
-      }
-      async function loadReelById(id){
-        try {
-          var rows = await api('reels', 'select=*&id=eq.' + encodeURIComponent(id) + '&limit=1');
-          if (rows && rows.length) return rows[0];
-        } catch(e){ console.warn('loadReelById error:', e); }
-        return null;
-      }
-
-      async function loadMySubscriptions(){
-        try {
-          var user = await authReady; if (!user) return;
-          var res = await supabaseClient.from('subscriptions').select('reel_id').eq('user_id', user.id);
-          if (res && res.data) {
-            res.data.forEach(function(r){
-              if (r && r.reel_id) mySubscribed[r.reel_id] = true;
-            });
-          }
-        } catch(e) {
-          console.warn('loadMySubscriptions error:', e);
-        }
-      }
-
-      function prefetchVibeEvents(){
-        vibeReels.forEach(function(v){
-          var cat = v.vibe_category;
-          if (!cat) return;
-          if (vibeEventsCache[cat] !== undefined) return;
-          loadEventsForVibe(cat).then(function(events){
-            vibeEventsCache[cat] = events || [];
-          }).catch(function(){});
-        });
-      }
-
-      function findReelById(id){
-        for (var i = 0; i < allEventReels.length; i++) {
-          if (allEventReels[i].id === id) return allEventReels[i];
-        }
-        return null;
-      }
-
-      function ctaState(reel){
-        var cta = String(reel.cta_url == null ? '' : reel.cta_url).trim();
-        if (cta.toLowerCase() === 'none') return 'hidden';
-        if (cta) return 'buy';
-        return 'follow';
-      }
-
-      function goBtnIcon(isSub){
-        if (isSub) {
-          return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
-        }
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2"/><path d="M13 11v2"/><path d="M13 17v2"/></svg>';
-      }
-
-      function goBtnLabel(reel, isSub){
-        if (isSub) return t('go_subscribed');
-        if (reel.cta_label && String(reel.cta_label).trim()) return String(reel.cta_label).trim();
-        return ctaState(reel) === 'buy' ? t('go_buy') : t('go_btn');
-      }
-
-      function goBtnHtml(reel){
-        if (ctaState(reel) === 'hidden') return '';
-        var isSub = !!mySubscribed[reel.id];
-        var cls = isSub ? 'go-btn subscribed' : 'go-btn';
-        var label = goBtnLabel(reel, isSub);
-        return '<button class="' + cls + '" data-go type="button" ' +
-          'data-subscribed="' + (isSub ? '1' : '0') + '" ' +
-          'data-cta-url="' + escapeAttr(reel.cta_url || '') + '" ' +
-          'data-reel-id="' + escapeAttr(reel.id || '') + '" ' +
-          'data-vibe-title="' + escapeAttr(reel.vibe_title || '') + '" ' +
-          'data-place="' + escapeAttr(reel.place || '') + '">' +
-          goBtnIcon(isSub) + '<span>' + escapeHtml(label) + '</span>' +
-        '</button>';
-      }
-
-      function updateGoBtn(btn, reel, isSub){
-        if (!btn || !reel) return;
-        btn.dataset.subscribed = isSub ? '1' : '0';
-        if (isSub) btn.classList.add('subscribed'); else btn.classList.remove('subscribed');
-        btn.innerHTML = goBtnIcon(isSub) + '<span>' + escapeHtml(goBtnLabel(reel, isSub)) + '</span>';
-      }
-
-      function refreshSubscriptionUI(){
-        slides.forEach(function(slide){
-          var id = slide.dataset.id;
-          if (!id) return;
-          var btn = slide.querySelector('[data-go]');
-          if (!btn) return;
-          var reel = findReelById(id);
-          if (!reel) return;
-          updateGoBtn(btn, reel, !!mySubscribed[id]);
-          btn.disabled = false;
-        });
-      }
-
-      function showVibeTop(label){
-        if (!vibeTopEl || !vibeTopLabel) return;
-        vibeTopLabel.textContent = label || '';
-        vibeTopEl.classList.add('show');
-        document.body.classList.add('in-event-feed');
-      }
-      function hideVibeTop(){
-        if (!vibeTopEl) return;
-        vibeTopEl.classList.remove('show');
-        document.body.classList.remove('in-event-feed');
-      }
-
-      function backToVibes(){
-        if (currentIO) { currentIO.disconnect(); currentIO = null; }
-        if (slideIO) { slideIO.disconnect(); slideIO = null; }
-        currentVibe = null;
-        allEventReels = [];
-        hideVibeTop();
-        hideVibeBanner();
-        renderList(vibeReels, 'vibe');
-        layoutReels();
-
-        var targetIdx = 0;
-        if (lastVibeCategory) {
-          for (var k = 0; k < vibeReels.length; k++) {
-            if (vibeReels[k].vibe_category === lastVibeCategory) { targetIdx = k; break; }
-          }
-        }
-
-        currentIndex = targetIdx;
-        slideEnteredAt = Date.now();
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(targetIdx);
-        try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
-      }
-
-      function renderSlideShell(reel, mode, idx, total){
-        var slide = document.createElement('div');
-        slide.className = 'slide' + (mode === 'vibe' ? ' vibe-slide' : '');
-        slide.dataset.id = reel.id;
-
-        var badgeClass = 'live-top hidden';
-        var badgeInner = '';
-
-        if (mode === 'event') {
-          var badgeState = getBadgeState(reel.published_at);
-          if (badgeState === 'live') {
-            badgeClass = 'live-top';
-            badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
-          }
-        }
-
-        var placeHtml = reel.place
-          ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
-          : '';
-
-        var organizerHtml = (mode === 'event' && reel.organizer)
-          ? '<div class="organizer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4.5 4L12 5l4.5 6L21 7l-1.5 11h-15z"/></svg>' + escapeHtml(reel.organizer) + '</div>'
-          : '';
-
-        var bottomContent = '';
-
-        if (mode === 'vibe') {
-          var swipeHintHtml = '';
-          if (total > 1 && idx < total - 1) {
-            swipeHintHtml =
-              '<div class="vibe-swipe-hint">' +
-                '<span>' + escapeHtml(t('vibe_hint_next')) + '</span>' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>' +
-              '</div>';
-          }
-
-          bottomContent =
-            '<div class="vibe-title-row">' +
-              '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
-              '<button class="vibe-btn" data-choose type="button" aria-label="next" ' +
-                'data-category="' + escapeAttr(reel.vibe_category || '') + '" ' +
-                'data-label="' + escapeAttr(reel.vibe_title || '') + '">' +
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>' +
-              '</button>' +
-            '</div>' +
-            '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
-            placeHtml +
-            swipeHintHtml;
-
-        } else {
-          var actionsHtml =
-            '<button class="share-btn" data-share>' +
-              '<span class="ico-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg></span>' +
-              '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
-            '</button>';
-
-          bottomContent =
-            '<div class="title-row"><div class="title">' + escapeHtml(reel.vibe_title || '') + '</div></div>' +
-            '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
-            placeHtml +
-            organizerHtml +
-            goBtnHtml(reel) +
-            '<div class="actions-row">' + actionsHtml + '</div>';
-        }
-
-        slide.innerHTML =
-          '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
-          '<div class="veil"></div>' +
-          '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
-          '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
-          '<div class="bottom">' + bottomContent + '</div>';
-
-        return slide;
-      }
-
-      function renderList(reels, mode){
+      function renderReels(reels){
         feed.innerHTML = '';
         if (!reels || reels.length === 0) {
-          showEmptyState('Пока пусто', mode === 'vibe' ? 'Скоро тут появятся вайбы.' : 'В этом потоке пока нет событий.', false);
+          showEmptyState('Пока пусто', 'Скоро тут появятся рилсы. Загляни позже.', false);
           slides = [];
           videoUrls = [];
-          hideVibeTop();
           return;
         }
         hideEmptyState();
 
-        reels.forEach(function(reel, idx){
-          feed.appendChild(renderSlideShell(reel, mode, idx, reels.length));
+        reels.forEach(function(reel){
+          var slide = document.createElement('div');
+          slide.className = 'slide';
+          slide.dataset.id = reel.id;
+
+          var badgeState = getBadgeState(reel.published_at);
+          var badgeClass = 'live-top hidden';
+          var badgeInner = '';
+          if (badgeState === 'live') {
+            badgeClass = 'live-top';
+            badgeInner = '<span class="dot"></span><span class="live-time">LIVE · ' + timeAgo(reel.published_at) + '</span>';
+          }
+
+          var baseVotes = parseInt(reel.base_votes, 10) || 0;
+          var totalVotes = baseVotes + (topCounts[reel.id] || 0);
+          var placeHtml = reel.place
+            ? '<div class="place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + escapeHtml(reel.place) + '</div>'
+            : '';
+
+          slide.innerHTML =
+            '<div class="video"><video data-src="' + escapeAttr(reel.video_url) + '" loop playsinline preload="none" muted></video></div>' +
+            '<div class="veil"></div>' +
+            '<div class="' + badgeClass + '" data-published="' + escapeAttr(reel.published_at) + '">' + badgeInner + '</div>' +
+            '<div class="sound-btn" data-sound-btn><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M22 9l-6 6"/><path d="M16 9l6 6"/></svg></div>' +
+            '<div class="bottom">' +
+              '<div class="title-row">' +
+                '<div class="title">' + escapeHtml(reel.vibe_title || '') + '</div>' +
+              '</div>' +
+              '<div class="meta">' + escapeHtml(reel.vibe_subtitle || '') + '</div>' +
+              placeHtml +
+              '<button class="loc-btn" data-loc data-location="' + escapeAttr(reel.location_coords || '') + '">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+                '<span data-i18n="loc_btn">' + t('loc_btn') + '</span>' +
+              '</button>' +
+              '<div class="actions-row">' +
+                '<button class="top-vibe" data-top data-base="' + baseVotes + '">' +
+                  '<span class="tv-ph">' +
+                    '<svg class="tv-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">' +
+                      '<path class="tv-wave" d="M7 20 Q14 15 21 20"/>' +
+                      '<path class="tv-wave" d="M9 16 Q14 11.5 19 16"/>' +
+                      '<path class="tv-wave" d="M11 12 Q14 9 17 12"/>' +
+                      '<rect class="tv-beam" x="13" y="4" width="2" height="20" rx="1"/>' +
+                      '<path class="tv-spark" d="M20 4 L20.9 6 L22.9 6.9 L20.9 7.8 L20 9.8 L19.1 7.8 L17.1 6.9 L19.1 6 Z"/>' +
+                    '</svg>' +
+                  '</span>' +
+                  '<span class="tv-count" data-count>' + totalVotes + '</span>' +
+                  '<span class="tv-label" data-i18n="top_vibe">' + t('top_vibe') + '</span>' +
+                '</button>' +
+                '<button class="share-btn" data-share aria-label="Share">' +
+                  '<span class="ico-ph">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>' +
+                      '<circle cx="9" cy="7" r="4"/>' +
+                      '<path d="M19 8v6"/>' +
+                      '<path d="M22 11h-6"/>' +
+                    '</svg>' +
+                  '</span>' +
+                  '<span class="lbl" data-i18n="share_label">' + t('share_label') + '</span>' +
+                '</button>' +
+              '</div>' +
+            '</div>';
+
+          feed.appendChild(slide);
         });
 
         slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
@@ -992,30 +579,6 @@
         });
 
         bindHandlers();
-        refreshSubscriptionUI();
-
-        if (mode === 'event' && currentVibe) {
-          showVibeTop(currentVibe.label || currentVibe.category || '');
-        } else {
-          hideVibeTop();
-        }
-      }
-
-      function renderSingleReel(reel){
-        if (!reel) return;
-        feed.classList.add('visible');
-        feed.innerHTML = '';
-        feed.appendChild(renderSlideShell(reel, 'event', 0, 1));
-        slides = Array.prototype.slice.call(feed.querySelectorAll('.slide'));
-        videoUrls = [reel.video_url || null];
-        bindHandlers();
-        refreshSubscriptionUI();
-        layoutReels();
-        currentIndex = 0;
-        slideEnteredAt = Date.now();
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(0);
       }
 
       function refreshLiveLabels(){
@@ -1094,18 +657,8 @@
         for (var i = 0; i < all.length; i++) all[i].style.height = vh + 'px';
       }
 
-      function getStartParam(){
-        try {
-          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-            return window.Telegram.WebApp.initDataUnsafe.start_param || null;
-          }
-        } catch(e){}
-        return null;
-      }
-
       function dismissOnboarding(){
         if (!onboarding || onboardingClosing) return;
-        unlockAudio();
         onboardingClosing = true;
         onboarding.style.transform = '';
         onboarding.classList.add('gone');
@@ -1121,7 +674,7 @@
         layoutReels();
         slideEnteredAt = Date.now();
         feed.classList.add('visible');
-        postOnboardingBoot();
+        if (reelsLoaded) bootFeed();
         setTimeout(function(){
           if (onboarding && onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
           onboarding = null;
@@ -1133,10 +686,11 @@
         var THRESHOLD = 60;
 
         function onStart(e){
-          unlockAudio();
           var pt = e.touches ? e.touches[0] : e;
-          startY = pt.clientY; currentY = startY;
-          dragging = true; moved = false;
+          startY = pt.clientY;
+          currentY = startY;
+          dragging = true;
+          moved = false;
           onboarding.classList.add('dragging');
         }
         function onMove(e){
@@ -1155,56 +709,34 @@
           dragging = false;
           onboarding.classList.remove('dragging');
           var delta = currentY - startY;
-          if (delta < -THRESHOLD) dismissOnboarding();
-          else onboarding.style.transform = '';
+          if (delta < -THRESHOLD) {
+            dismissOnboarding();
+          } else {
+            onboarding.style.transform = '';
+          }
         }
 
         onboarding.addEventListener('touchstart', onStart, {passive:true});
         onboarding.addEventListener('touchmove', onMove, {passive:false});
         onboarding.addEventListener('touchend', onEnd);
         onboarding.addEventListener('touchcancel', onEnd);
+
         onboarding.addEventListener('mousedown', onStart);
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onEnd);
 
         onboarding.addEventListener('click', function(e){
-          unlockAudio();
           if (e.target.closest('.lang-switch')) return;
           if (moved) return;
           dismissOnboarding();
         });
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = 3;
+        var onbIdx = 0, ONB_BATCH = 6;
+
+        // Проверенный порядок: чередуем левую/правую колонки,
+        // начиная с верхних тайлов. 12 индексов = 6 левых + 6 правых.
         var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
-
-        var onbReadyShown = false;
-        var onbReadyCount = 0;
-        var onbRequired = onbVids.length;
-        var onbMaxWaitTimer = null;
-
-        function showOnboardingReady(){
-          if (onbReadyShown) return;
-          onbReadyShown = true;
-          if (onboarding) onboarding.classList.add('ready');
-          if (onbMaxWaitTimer) { clearTimeout(onbMaxWaitTimer); onbMaxWaitTimer = null; }
-        }
-
-        function watchVideoReady(v){
-          if (!v || v.__onbWatched) return;
-          v.__onbWatched = true;
-          var fire = function(){
-            if (v.__onbFired) return;
-            v.__onbFired = true;
-            onbReadyCount++;
-            if (onbReadyCount >= onbRequired) showOnboardingReady();
-          };
-          if (v.readyState >= 2) { fire(); return; }
-          v.addEventListener('loadeddata', fire, { once: true });
-          v.addEventListener('error', fire, { once: true });
-        }
-
-        onbMaxWaitTimer = setTimeout(showOnboardingReady, 3000);
 
         function loadOnbBatch(){
           if (!onboarding) return;
@@ -1218,23 +750,21 @@
               v.muted = true;
               v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
               try { v.setAttribute('preload','auto'); } catch(e){}
-              v.src = url;
-              try { v.load(); } catch(e){}
-              v.addEventListener('loadeddata', function(){ try { v.play().catch(function(){}); } catch(e){} }, { once: true });
+              v.src = url; try { v.load(); } catch(e){}
               var p = v.play(); if (p && p.catch) p.catch(function(){});
-              watchVideoReady(v);
             })(onbVids[targetIdx]);
           }
-          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 600);
+          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 100);
         }
 
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
-          api('reels', 'select=video_url&is_active=eq.true&order=sort_order.asc&limit=12')
+          api('reels', 'select=video_url&is_active=eq.true&order=published_at.desc&limit=12')
             .then(function(rows){
               if (!onboarding) return;
               try {
-                var seen = {}, urls = [];
+                var seen = {};
+                var urls = [];
                 if (rows && rows.length) {
                   for (var i = 0; i < rows.length; i++) {
                     var u = rows[i] && rows[i].video_url;
@@ -1246,7 +776,10 @@
                   return;
                 }
 
-                var n = urls.length, left = [], right = [];
+                var n = urls.length;
+                var left = [];
+                var right = [];
+
                 if (n >= 6) {
                   left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
                   right = [urls[3], urls[4], urls[5], urls[3], urls[4], urls[5]];
@@ -1267,6 +800,7 @@
                   right = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
                 }
 
+                // onbVids = 12 штук: индексы 0-5 = левая колонка, 6-11 = правая.
                 if (onbVids.length >= 12) {
                   for (var j = 0; j < 6; j++) {
                     onbVids[j].dataset.src = left[j];
@@ -1274,9 +808,12 @@
                   }
                   loadOnbBatch();
                 }
-              } catch(err){}
+              } catch(err){
+                console.warn('loadOnbFromSupabase parse error:', err);
+              }
             })
-            .catch(function(){
+            .catch(function(err){
+              console.warn('onb supabase error:', err);
               if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
             });
         })();
@@ -1302,13 +839,6 @@
       }
 
       applyLang(currentLang);
-
-      if (vibeBackBtn) {
-        vibeBackBtn.addEventListener('click', function(e){
-          e.stopPropagation();
-          backToVibes();
-        });
-      }
 
       var soundBtns = [];
       function bindSoundBtns(){
@@ -1339,8 +869,6 @@
 
       function bindShareBtns(){
         document.querySelectorAll('[data-share]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
           btn.addEventListener('click', function(e){
             e.stopPropagation();
             if (window.ym) { try { ym(113067752, 'reachGoal', 'share'); } catch(err){} }
@@ -1364,208 +892,254 @@
         });
       }
 
-      function bindChooseBtns(){
-        document.querySelectorAll('[data-choose]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
-          btn.addEventListener('click', function(e){
+      function bindTopBtns(){
+        document.querySelectorAll('[data-top]').forEach(function(btn){
+          btn.addEventListener('click', async function(e){
             e.stopPropagation();
             if (btn.disabled) return;
-            var category = btn.getAttribute('data-category');
-            var label = btn.getAttribute('data-label') || category;
-            selectVibe(btn, category, label);
+            var slide = btn.closest('.slide');
+            var id = slide ? slide.dataset.id : null; if (!id) return;
+
+            btn.disabled = true;
+            var wasVoted = !!myTopSlides[id];
+            var nowVoted = !wasVoted;
+
+            try {
+              if (nowVoted) {
+                myTopSlides[id] = true;
+                topCounts[id] = (topCounts[id] || 0) + 1;
+                showToast(t('top_ok'));
+                var cnt = btn.querySelector('[data-count]');
+                if (cnt) { cnt.classList.remove('pulse'); void cnt.offsetWidth; cnt.classList.add('pulse'); }
+                var tri = btn.querySelector('.tv-ph svg');
+                if (tri) { tri.classList.remove('pulse'); void tri.offsetWidth; tri.classList.add('pulse'); }
+                try { if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) window.Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(err){}
+              } else {
+                delete myTopSlides[id];
+                topCounts[id] = Math.max(0, (topCounts[id] || 0) - 1);
+                showToast(t('top_removed'));
+              }
+              refreshTopUI();
+              if (window.ym) { try { ym(113067752, 'reachGoal', 'top_vibe'); } catch(err){} }
+              trackEvent('top_vibe', { slide_id: id, voted: nowVoted });
+
+              try {
+                var user = await authReady; if (!user) return;
+                if (nowVoted) await supabaseClient.from('likes').insert([{ user_id: user.id, slide_id: id }]);
+                else await supabaseClient.from('likes').delete().eq('user_id', user.id).eq('slide_id', id);
+              } catch(err){ console.warn('vote sync error:', err); }
+            } finally {
+              btn.disabled = false;
+            }
           });
         });
       }
 
-      async function selectVibe(btn, category, label){
-        if (btn) btn.disabled = true;
-        lastVibeCategory = category;
-        trackEvent('vibe_select', { category: category, label: label });
-        if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
+      function openYandexRoute(destCoords) {
+        var url = 'https://yandex.ru/maps/?rtext=~' + encodeURIComponent(destCoords) + '&rtt=auto';
+        try {
+          if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
+            window.Telegram.WebApp.openLink(url);
+            return;
+          }
+        } catch(e){}
+        try { window.open(url, '_blank', 'noopener,noreferrer'); } catch(e){ location.href = url; }
+      }
 
-        var events = vibeEventsCache[category];
-        if (events === undefined) {
-          try { events = await loadEventsForVibe(category); } catch(e){ events = []; }
-          vibeEventsCache[category] = events || [];
+      var GEO_CACHE_KEY = 'vetka_geo_v1';
+      var GEO_CACHE_TTL = 30 * 60 * 1000;
+
+      function getCachedCoords() {
+        try {
+          var raw = localStorage.getItem(GEO_CACHE_KEY);
+          if (!raw) return null;
+          var c = JSON.parse(raw);
+          if (!c || typeof c.lat !== 'number' || typeof c.lng !== 'number') return null;
+          if (Date.now() - c.ts > GEO_CACHE_TTL) return null;
+          return { lat: c.lat, lng: c.lng };
+        } catch(e) { return null; }
+      }
+      function setCachedCoords(lat, lng) {
+        try { localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ lat: lat, lng: lng, ts: Date.now() })); } catch(e){}
+      }
+      function requestUserLocation() {
+        return new Promise(function(resolve, reject){
+          if (!navigator.geolocation) { reject(new Error('Geolocation not supported')); return; }
+          navigator.geolocation.getCurrentPosition(
+            function(p){ resolve({ lat: p.coords.latitude, lng: p.coords.longitude }); },
+            function(err){ reject(err); },
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+          );
+        });
+      }
+
+      var LOC_QUEUE_KEY = 'vetka_loc_queue_v1';
+      function uuid(){
+        try { if (crypto && crypto.randomUUID) return crypto.randomUUID(); } catch(e){}
+        return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+      }
+      function readLocQueue() {
+        try { return JSON.parse(localStorage.getItem(LOC_QUEUE_KEY) || '[]'); } catch(e){ return []; }
+      }
+      function writeLocQueue(q) {
+        try { localStorage.setItem(LOC_QUEUE_KEY, JSON.stringify(q)); } catch(e){}
+      }
+      function removeFromQueueById(id) {
+        try {
+          var q = readLocQueue();
+          var filtered = q.filter(function(it){ return it.client_event_id !== id; });
+          if (filtered.length !== q.length) writeLocQueue(filtered);
+        } catch(e){}
+      }
+      function queueLocationItem(item) {
+        try {
+          var q = readLocQueue();
+          for (var i = 0; i < q.length; i++) { if (q[i].client_event_id === item.client_event_id) return; }
+          q.push(item);
+          if (q.length > 200) q = q.slice(-200);
+          writeLocQueue(q);
+        } catch(e) { console.warn('queueLocationItem fail:', e); }
+      }
+
+      async function flushLocationQueue() {
+        var q = readLocQueue();
+        if (!q.length) return;
+
+        var token = null;
+        var userId = null;
+        try {
+          var s = await supabaseClient.auth.getSession();
+          if (s && s.data && s.data.session && s.data.session.access_token) {
+            token = s.data.session.access_token;
+            userId = s.data.session.user.id;
+          }
+        } catch(e){}
+
+        if (!token) {
+          try {
+            var anon = await supabaseClient.auth.signInAnonymously();
+            if (anon.error) { console.warn('flush: anon fail', anon.error.message); return; }
+            var s2 = await supabaseClient.auth.getSession();
+            if (s2 && s2.data && s2.data.session) {
+              token = s2.data.session.access_token;
+              userId = s2.data.session.user.id;
+            }
+          } catch(e){ return; }
         }
+        if (!token || !userId) return;
 
-        if (!events || !events.length) {
-          if (btn) btn.disabled = false;
-          showToast(t('toast_soon'));
-          return;
-        }
+        var tgUser = readTgUser();
+        q = readLocQueue();
 
-        allEventReels = events;
-        currentVibe = { category: category, label: label, events: events };
+        for (var i = 0; i < q.length; i++) {
+          var it = q[i];
+          if (!it || !it.client_event_id) continue;
+          try {
+            var body = [{
+              client_event_id: it.client_event_id,
+              user_id: userId,
+              tg_id: tgUser ? String(tgUser.id) : null,
+              username: tgUser ? (tgUser.username || null) : null,
+              first_name: tgUser ? (tgUser.first_name || null) : null,
+              last_name: tgUser ? (tgUser.last_name || null) : null,
+              profile_url: tgUser ? buildProfileUrl(tgUser) : null,
+              reel_id: it.reel_id,
+              reel_title: it.reel_title,
+              reel_place: it.reel_place,
+              latitude: it.lat,
+              longitude: it.lng,
+              destination_coords: it.dest_coords,
+              consent_given: true,
+              geo_source: it.geo_source,
+              route_created_at: it.ts_iso
+            }];
 
-        if (currentIO) { currentIO.disconnect(); currentIO = null; }
-        if (slideIO) { slideIO.disconnect(); slideIO = null; }
+            var res = await fetch(SUPABASE_URL + '/rest/v1/user_locations', {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify(body),
+              keepalive: true
+            });
 
-        renderList(events, 'event');
-        layoutReels();
-
-        initIO();
-        initSlideViewsIO();
-
-        var startParam = getStartParam();
-        var targetIdx = 0;
-        if (startParam) {
-          for (var si = 0; si < slides.length; si++) {
-            if (slides[si].dataset.id === startParam) { targetIdx = si; break; }
+            if (res.ok || res.status === 409) {
+              removeFromQueueById(it.client_event_id);
+            } else {
+              var txt = '';
+              try { txt = await res.text(); } catch(e){}
+              console.warn('flush failed:', res.status, txt);
+            }
+          } catch(e) {
+            console.warn('flush exception:', e);
           }
         }
-
-        currentIndex = targetIdx;
-        slideEnteredAt = Date.now();
-        setActiveSlide(targetIdx);
-
-        try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
-
-        if (btn) btn.disabled = false;
       }
 
-      async function subscribeToReel(reelId, vibeTitle, place){
-        try {
-          var user = await authReady; if (!user) return false;
-          var tgUser = readTgUser();
-          var tgId = tgUser ? String(tgUser.id) : null;
-          if (!tgId) return false;
-          if (!reelId) return false;
-
-          await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
-            method: 'PATCH',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify({ wants_notify: true })
-          });
-
-          var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
-            method: 'POST',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json',
-              'Prefer': 'resolution=ignore-duplicates,return=minimal'
-            },
-            body: JSON.stringify([{
-              user_id: user.id,
-              tg_id: tgId,
-              reel_id: reelId,
-              vibe_title: vibeTitle || null,
-              place: place || null
-            }])
-          });
-          return r.ok;
-        } catch(e) {
-          console.warn('subscribeToReel error:', e);
-          return false;
-        }
+      function saveUserLocationAsync(lat, lng, reelId, reelTitle, reelPlace, destCoords, geoSource) {
+        var item = {
+          client_event_id: uuid(),
+          lat: (typeof lat === 'number' && isFinite(lat)) ? lat : null,
+          lng: (typeof lng === 'number' && isFinite(lng)) ? lng : null,
+          reel_id: reelId,
+          reel_title: reelTitle,
+          reel_place: reelPlace,
+          dest_coords: destCoords,
+          geo_source: geoSource || 'unknown',
+          ts_iso: new Date().toISOString(),
+          ts: Date.now()
+        };
+        queueLocationItem(item);
+        flushLocationQueue();
       }
 
-      async function unsubscribeFromReel(reelId){
-        try {
-          var user = await authReady; if (!user) return false;
-          if (!reelId) return false;
-
-          var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions?user_id=eq.' + encodeURIComponent(user.id) + '&reel_id=eq.' + encodeURIComponent(reelId), {
-            method: 'DELETE',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Prefer': 'return=minimal'
-            }
-          });
-          return r.ok;
-        } catch(e) {
-          console.warn('unsubscribeFromReel error:', e);
-          return false;
-        }
-      }
-
-      function showVibeBanner(label, count){
-        if (!vibeBanner || !vibeBannerText) return;
-        var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
-        vibeBannerText.innerHTML = '✦ ' + escapeHtml(t('banner_stream')) + ' <em>' + escapeHtml(label) + '</em> · ' + countText;
-        vibeBanner.classList.remove('show');
-        void vibeBanner.offsetWidth;
-        vibeBanner.classList.add('show');
-
-        clearTimeout(bannerHideTimer);
-        bannerHideTimer = setTimeout(function(){
-          vibeBanner.classList.remove('show');
-        }, 2800);
-      }
-      function hideVibeBanner(){ if (vibeBanner) vibeBanner.classList.remove('show'); }
-
-      function bindGoBtns(){
-        document.querySelectorAll('[data-go]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
-          btn.addEventListener('click', async function(e){
+      function bindLocBtns() {
+        document.querySelectorAll('[data-loc]').forEach(function(btn) {
+          btn.addEventListener('click', async function(e) {
             e.stopPropagation();
-            if (btn.dataset.inflight === '1') return;
+            var slide = btn.closest('.slide');
+            var reelId = slide ? slide.dataset.id : null;
+            var destCoords = btn.getAttribute('data-location');
+            var reelTitle = slide.querySelector('.title') ? slide.querySelector('.title').textContent.trim() : '';
+            var reelPlace = slide.querySelector('.place') ? slide.querySelector('.place').textContent.trim() : '';
 
-            var ctaUrl = btn.getAttribute('data-cta-url') || '';
-            var cta = String(ctaUrl).trim().toLowerCase();
-            var reelId = btn.getAttribute('data-reel-id') || '';
-            var vibeTitle = btn.getAttribute('data-vibe-title') || '';
-            var place = btn.getAttribute('data-place') || '';
-            var isSub = btn.dataset.subscribed === '1';
+            if (!destCoords) { showToast('Адрес не указан'); return; }
 
-            if (cta && cta !== 'none' && !isSub) {
-              trackEvent('go_click', { slide_id: reelId, has_url: true });
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
-              try {
-                if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
-                  window.Telegram.WebApp.openLink(ctaUrl);
-                } else {
-                  window.open(ctaUrl, '_blank', 'noopener,noreferrer');
-                }
-              } catch(e){ location.href = ctaUrl; }
+            var cached = getCachedCoords();
+            if (cached) {
+              saveUserLocationAsync(cached.lat, cached.lng, reelId, reelTitle, reelPlace, destCoords, 'cache');
+              openYandexRoute(destCoords);
               return;
             }
 
-            btn.dataset.inflight = '1';
-
-            var reel = findReelById(reelId) || {
-              id: reelId,
-              cta_url: ctaUrl,
-              cta_label: null,
-              vibe_title: vibeTitle,
-              place: place
-            };
-
-            if (isSub) {
-              var okU = await unsubscribeFromReel(reelId);
-              btn.dataset.inflight = '0';
-              if (okU) {
-                delete mySubscribed[reelId];
-                updateGoBtn(btn, reel, false);
-                showToast(t('go_unsub_ok'));
-                trackEvent('unsubscribe_reel', { slide_id: reelId });
-              } else {
-                showToast(t('go_error'));
-              }
-            } else {
-              trackEvent('go_click', { slide_id: reelId, has_url: false });
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
-              var okS = await subscribeToReel(reelId, vibeTitle, place);
-              btn.dataset.inflight = '0';
-              if (okS) {
-                mySubscribed[reelId] = true;
-                updateGoBtn(btn, reel, true);
-                showToast(t('go_ok_toast'));
-                trackEvent('subscribe_reel', { slide_id: reelId });
-                if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
-              } else {
-                showToast(t('go_error'));
-              }
+            var userAgreed = confirm('Для построения точного маршрута поделитесь вашей геопозицией.');
+            if (!userAgreed) {
+              saveUserLocationAsync(null, null, reelId, reelTitle, reelPlace, destCoords, 'user_declined');
+              openYandexRoute(destCoords);
+              return;
             }
+
+            var coords = null;
+            try {
+              coords = await Promise.race([
+                requestUserLocation(),
+                new Promise(function(_, rej){ setTimeout(function(){ rej(new Error('gps timeout')); }, 5000); })
+              ]);
+            } catch(err) {
+              console.log('GPS fail:', err && err.message ? err.message : err);
+            }
+
+            if (coords) {
+              setCachedCoords(coords.lat, coords.lng);
+              saveUserLocationAsync(coords.lat, coords.lng, reelId, reelTitle, reelPlace, destCoords, 'fresh');
+            } else {
+              saveUserLocationAsync(null, null, reelId, reelTitle, reelPlace, destCoords, 'gps_failed');
+            }
+
+            openYandexRoute(destCoords);
           });
         });
       }
@@ -1573,8 +1147,20 @@
       function bindHandlers(){
         bindSoundBtns();
         bindShareBtns();
-        bindChooseBtns();
-        bindGoBtns();
+        bindTopBtns();
+        bindLocBtns();
+      }
+
+      function refreshTopUI(){
+        slides.forEach(function(slide){
+          var id = slide.dataset.id; if (!id) return;
+          var btn = slide.querySelector('[data-top]'); if (!btn) return;
+          var base = parseInt(btn.dataset.base || '0', 10) || 0;
+          var count = topCounts[id] || 0;
+          var total = base + count; if (total < 0) total = 0;
+          var cnt = btn.querySelector('[data-count]'); if (cnt) cnt.textContent = total;
+          if (myTopSlides[id]) btn.classList.add('voted'); else btn.classList.remove('voted');
+        });
       }
 
       var currentIO = null;
@@ -1611,13 +1197,6 @@
         slides.forEach(function(s){ slideIO.observe(s); });
       }
 
-      function postOnboardingBoot(){
-        if (autoBootStarted) return;
-        if (!loaded) return;
-        autoBootStarted = true;
-        bootFeed();
-      }
-
       function bootFeed(){
         if (feedBooted) return;
         if (!slides.length) return;
@@ -1625,7 +1204,12 @@
         feed.classList.add('visible');
         layoutReels();
 
-        var startParam = getStartParam();
+        var startParam = null;
+        try {
+          if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+            startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
+          }
+        } catch(e){}
 
         var startIdx = 0;
         if (startParam) {
@@ -1638,12 +1222,73 @@
         initIO();
         initSlideViewsIO();
         setActiveSlide(startIdx);
-        refreshSubscriptionUI();
+        refreshTopUI();
 
         if (startIdx > 0) {
           setTimeout(function(){
             try { if (feed) feed.scrollTop = startIdx * feed.clientHeight; } catch(e){}
           }, 250);
+        }
+      }
+
+      async function refreshReels(){
+        if (refreshing) return;
+        if (!reelsLoaded) return;
+        if (document.hidden) return;
+        if (!onboardingDismissed) return;
+        refreshing = true;
+        try {
+          var rows = await api('reels', 'select=*&is_active=eq.true&limit=100');
+          if (!rows) rows = [];
+          var likesAll = [];
+          try { likesAll = await api('likes', 'select=slide_id') || []; } catch(e){}
+          var newLikes = {};
+          likesAll.forEach(function(l){ if (l.slide_id) newLikes[l.slide_id] = (newLikes[l.slide_id] || 0) + 1; });
+
+          rows.forEach(function(r){
+            var base = parseInt(r.base_votes, 10) || 0;
+            r.__total = base + (newLikes[r.id] || 0);
+          });
+          rows.sort(function(a, b){ return b.__total - a.__total; });
+
+          var oldIds = slides.map(function(s){ return s.dataset.id; }).join('|');
+          var newIds = rows.map(function(r){ return r.id; }).join('|');
+
+          if (oldIds === newIds) {
+            topCounts = newLikes;
+            refreshTopUI();
+            return;
+          }
+
+          var curId = slides[currentIndex] ? slides[currentIndex].dataset.id : null;
+          if (currentIO) { currentIO.disconnect(); currentIO = null; }
+          if (slideIO) { slideIO.disconnect(); slideIO = null; }
+
+          topCounts = newLikes;
+          renderReels(rows);
+          reelsLoaded = true;
+
+          var newIdx = 0;
+          if (curId) {
+            for (var i = 0; i < slides.length; i++) {
+              if (slides[i].dataset.id === curId) { newIdx = i; break; }
+            }
+          }
+          currentIndex = newIdx;
+          initIO();
+          initSlideViewsIO();
+          setActiveSlide(newIdx);
+          refreshTopUI();
+
+          requestAnimationFrame(function(){
+            try { if (feed) feed.scrollTop = newIdx * feed.clientHeight; } catch(e){}
+          });
+
+          layoutReels();
+        } catch(e) {
+          console.warn('refresh error:', e);
+        } finally {
+          refreshing = false;
         }
       }
 
@@ -1676,8 +1321,8 @@
             await new Promise(function(r){ setTimeout(r, 200); });
           }
         }
-        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) return null; return r.data.user; }
-        catch(e){ return null; }
+        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) { console.warn('anon auth error:', r.error.message); return null; } return r.data.user; }
+        catch(e){ console.warn('anon auth exception:', e); return null; }
       })();
 
       function startTgIdWatch(){
@@ -1729,7 +1374,11 @@
         if (document.hidden) { flushDwell(currentIndex); flushEvents(); }
         else { slideEnteredAt = Date.now(); }
       });
-      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
+      window.addEventListener('pagehide', function(){
+        flushDwell(currentIndex);
+        flushEvents();
+        flushLocationQueue();
+      });
       window.addEventListener('resize', layoutReels);
 
       retryBtn.addEventListener('click', function(){ location.reload(); });
@@ -1739,59 +1388,44 @@
         trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
       });
 
-      async function initApp(retryCount){
+      async function initFeed(retryCount){
         retryCount = retryCount || 0;
         try {
-          var deepId = getStartParam();
-          if (deepId) {
-            var reel = await loadReelById(deepId);
-            if (reel) {
-              onboardingDismissed = true;
-              onboardingClosing = true;
-              autoBootStarted = true;
+          var data = await fetchAppData();
+          topCounts = data.likes;
+          renderReels(data.reels);
+          reelsLoaded = true;
 
-              if (onboarding) {
-                try {
-                  onboarding.querySelectorAll('video').forEach(function(v){
-                    try { v.muted = true; v.pause(); v.removeAttribute('src'); v.load(); } catch(e){}
-                  });
-                } catch(e){}
-                if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-                onboarding = null;
-              }
-
-              try { await loadMySubscriptions(); } catch(e){}
-
-              renderSingleReel(reel);
-              loaded = true;
-              return;
+          try {
+            var user = await Promise.race([
+              authReady,
+              new Promise(function(r){ setTimeout(function(){ r(null); }, 2500); })
+            ]);
+            if (user) {
+              try {
+                var mine = await supabaseClient.from('likes').select('slide_id').eq('user_id', user.id);
+                if (mine && mine.data) mine.data.forEach(function(r){ if (r.slide_id) myTopSlides[r.slide_id] = true; });
+              } catch(e){}
             }
-          }
+          } catch(e){}
 
-          var vibes = await loadVibeReels();
-          if (!vibes) vibes = [];
-          vibeReels = vibes;
+          refreshTopUI();
+          if (onboardingDismissed) bootFeed();
+          setInterval(refreshReels, 60000);
 
-          renderList(vibes, 'vibe');
-          loaded = true;
+          setTimeout(flushLocationQueue, 10000);
+          setInterval(flushLocationQueue, 60000);
 
-          prefetchVibeEvents();
-
-          if (onboardingDismissed) postOnboardingBoot();
-
-          loadMySubscriptions().then(function(){
-            refreshSubscriptionUI();
-          });
         } catch (err) {
-          console.warn('initApp error:', err);
+          console.warn('initFeed error:', err);
           if (retryCount < 3) {
-            setTimeout(function(){ initApp(retryCount + 1); }, 1500 * (retryCount + 1));
+            setTimeout(function(){ initFeed(retryCount + 1); }, 1500 * (retryCount + 1));
           } else {
             showEmptyState('Не удалось загрузить', 'Проверьте соединение и попробуйте снова.', true);
           }
         }
       }
-      initApp(0);
+      initFeed(0);
 
     })();
   </script>

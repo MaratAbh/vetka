@@ -455,6 +455,9 @@
       var vibeEventsCache = {};
       var mySubscribed = {};
 
+      // DIRECT_EVENTS_MODE: если нет vibe-дверей — показываем event-рилсы напрямую
+      var directEventsMode = false;
+
       var slides = [];
       var videoUrls = [];
       var currentIndex = 0;
@@ -502,6 +505,9 @@
 
       async function loadVibeReels(){
         return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.vibe&order=sort_order.asc&limit=20');
+      }
+      async function loadAllEvents(){
+        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&order=sort_order.asc&limit=50');
       }
       async function loadEventsForVibe(category){
         return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=sort_order.asc&limit=50');
@@ -733,7 +739,6 @@
         slides.forEach(function(s, i){
           var v = s.querySelector('video');
           videoUrls[i] = v ? (v.dataset.src || null) : null;
-          // Ничего не грузим здесь — preload="none", src пустой
         });
 
         bindHandlers();
@@ -781,10 +786,6 @@
       }
       setInterval(refreshLiveLabels, 60000);
 
-      // === ЛЕНТА: жёсткая экономия загрузки ===
-      // Текущий слайд: preload="auto", src установлен, играет
-      // Соседи (idx-1, idx+1): preload="metadata", src установлен
-      // Дальше: src выгружен, загрузка прервана
       var WINDOW_FWD = 1;
       function getVideo(idx){
         if (idx < 0 || idx >= slides.length) return null;
@@ -799,7 +800,6 @@
       }
       function loadVideo(v, url, mode){
         if (!v || !url) return;
-        // mode: 'play' | 'prime' | 'meta'
         if (!v.getAttribute('src') || v.dataset.currentSrc !== url) {
           v.dataset.currentSrc = url;
           v.src = url;
@@ -815,27 +815,21 @@
           var p = v.play();
           if (p && p.catch) p.catch(function(){});
         } else if (mode === 'prime') {
-          // Прогрев: играем и сразу пауза, чтобы буфер заполнился чуть-чуть
           try {
             var pp = v.play();
             if (pp && pp.then) pp.then(function(){ try { v.pause(); v.currentTime = 0; } catch(e){} }).catch(function(){});
             else { try { v.pause(); v.currentTime = 0; } catch(e){} }
           } catch(e){}
         }
-        // mode === 'meta' — только метаданные, play не вызываем
       }
 
       function setActiveSlide(idx){
         if (!slides.length) return;
-
-        // Перебираем все слайды — распределяем режимы загрузки
         for (var i = 0; i < slides.length; i++) {
           var v = getVideo(i);
           if (!v) continue;
           var url = videoUrls[i];
-
           if (i === idx) {
-            // Текущий: играет с preload=auto
             try { v.muted = true; } catch(e){}
             loadVideo(v, url, 'play');
             try { v.currentTime = 0; } catch(e){}
@@ -844,13 +838,11 @@
             if (p && p.then) p.then(unmute).catch(function(){});
             else requestAnimationFrame(unmute);
           } else if (Math.abs(i - idx) === 1) {
-            // Соседи: preload=metadata, только заголовок
             try { v.pause(); } catch(e){}
             try { v.currentTime = 0; } catch(e){}
             try { v.muted = true; } catch(e){}
             loadVideo(v, url, 'meta');
           } else {
-            // Дальние: полностью освободить
             releaseVideo(v);
           }
         }
@@ -880,7 +872,6 @@
         onboarding.style.transform = '';
         onboarding.classList.add('gone');
 
-        // Полностью выгружаем все видео онбординга
         var onbVids = onboarding.querySelectorAll('video');
         for (var i = 0; i < onbVids.length; i++) {
           try { onbVids[i].muted = true; } catch(e){}
@@ -900,7 +891,6 @@
         }, 600);
       }
 
-      // === ОНБОРДИНГ: загрузка по viewport, луп на 3с, max 4-6 видео одновременно ===
       var onbIO = null;
 
       function loopAt3s(v){
@@ -918,7 +908,6 @@
             }
           };
           v.requestVideoFrameCallback(step);
-          // Перебиндить при возобновлении
           v.addEventListener('play', function(){
             if (!v.__loopRunning) {
               v.__loopRunning = true;
@@ -936,7 +925,6 @@
             }
           });
         } else {
-          // Fallback: setInterval 50ms
           setInterval(function(){
             if (v.paused || !v.getAttribute('src')) return;
             if (v.currentTime >= stopAt) {
@@ -956,7 +944,6 @@
         v.setAttribute('playsinline','');
         v.setAttribute('webkit-playsinline','');
         v.setAttribute('preload','auto');
-        // Media fragment — помогает Chrome/Safari начать с 0-й секунды и запросить range
         v.src = url + '#t=0,3';
         try { v.load(); } catch(e){}
         loopAt3s(v);
@@ -980,7 +967,6 @@
         if (!onboarding) return;
         var allVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
 
-        // IntersectionObserver: грузим только видимые (+ запас 400px), разгружаем ушедшие за 600px
         if ('IntersectionObserver' in window) {
           onbIO = new IntersectionObserver(function(entries){
             entries.forEach(function(entry){
@@ -988,7 +974,6 @@
               if (entry.isIntersecting) {
                 onbLoadVideo(v);
               } else if (entry.intersectionRatio === 0) {
-                // Ушло из viewport полностью — разгружаем
                 onbReleaseVideo(v);
               }
             });
@@ -999,7 +984,6 @@
           });
           allVids.forEach(function(v){ onbIO.observe(v); });
         } else {
-          // Fallback: грузим первые 4 и 4 (по 2 сверху в каждой колонке)
           [0,1,6,7].forEach(function(i){
             if (allVids[i]) onbLoadVideo(allVids[i]);
           });
@@ -1054,7 +1038,6 @@
           dismissOnboarding();
         });
 
-        // Загружаем URL'ы, распределяем по плиткам, включаем viewport-загрузку
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
           api('reels', 'select=video_url&is_active=eq.true&order=sort_order.asc&limit=12')
@@ -1100,7 +1083,6 @@
                     onbVids[j].dataset.src = left[j];
                     onbVids[j + 6].dataset.src = right[j];
                   }
-                  // Инициализируем viewport-загрузку — грузит только видимые
                   initOnboardingVideos();
                 }
               } catch(err){}
@@ -1591,17 +1573,39 @@
             }
           }
 
+          // === КЛЮЧЕВОЕ: грузим vibe-двери ===
           var vibes = await loadVibeReels();
           if (!vibes) vibes = [];
           vibeReels = vibes;
 
+          // === FALLBACK: если дверей нет — сразу event-рилсы ===
+          if (vibeReels.length === 0) {
+            directEventsMode = true;
+            console.log('[VETKA] no vibe doors → direct events mode');
+            var evs = [];
+            try { evs = await loadAllEvents(); } catch(e){ evs = []; }
+            allEventReels = evs || [];
+
+            if (allEventReels.length === 0) {
+              // Совсем ничего — пустое состояние
+              renderList([], 'event');
+              loaded = true;
+              if (onboardingDismissed) postOnboardingBoot();
+              return;
+            }
+
+            renderList(allEventReels, 'event');
+            loaded = true;
+            if (onboardingDismissed) postOnboardingBoot();
+            loadMySubscriptions().then(function(){ refreshSubscriptionUI(); });
+            return;
+          }
+
+          // === Обычный режим: двери → внутрь ===
           renderList(vibes, 'vibe');
           loaded = true;
-
           prefetchVibeEvents();
-
           if (onboardingDismissed) postOnboardingBoot();
-
           loadMySubscriptions().then(function(){
             refreshSubscriptionUI();
           });

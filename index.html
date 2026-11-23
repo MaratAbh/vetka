@@ -9,6 +9,8 @@
 
 <link rel="preconnect" href="https://telegram.org" crossorigin>
 <link rel="dns-prefetch" href="https://telegram.org">
+<link rel="preconnect" href="https://storage.yandexcloud.net" crossorigin>
+<link rel="dns-prefetch" href="https://storage.yandexcloud.net">
 <link rel="preconnect" href="https://rlkjsjgktyltvxnfyski.supabase.co" crossorigin>
 <link rel="dns-prefetch" href="https://rlkjsjgktyltvxnfyski.supabase.co">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -455,7 +457,6 @@
       var vibeEventsCache = {};
       var mySubscribed = {};
 
-      // DIRECT_EVENTS_MODE: если нет vibe-дверей — показываем event-рилсы напрямую
       var directEventsMode = false;
 
       var slides = [];
@@ -529,9 +530,7 @@
               if (r && r.reel_id) mySubscribed[r.reel_id] = true;
             });
           }
-        } catch(e) {
-          console.warn('loadMySubscriptions error:', e);
-        }
+        } catch(e) { console.warn('loadMySubscriptions error:', e); }
       }
 
       function prefetchVibeEvents(){
@@ -786,7 +785,6 @@
       }
       setInterval(refreshLiveLabels, 60000);
 
-      var WINDOW_FWD = 1;
       function getVideo(idx){
         if (idx < 0 || idx >= slides.length) return null;
         var c = slides[idx].querySelector('.video');
@@ -803,23 +801,15 @@
         if (!v.getAttribute('src') || v.dataset.currentSrc !== url) {
           v.dataset.currentSrc = url;
           v.src = url;
-          v.setAttribute('preload', mode === 'play' ? 'auto' : (mode === 'meta' ? 'metadata' : 'auto'));
+          v.setAttribute('preload', mode === 'play' ? 'auto' : 'metadata');
           try { v.load(); } catch(e){}
-        } else if (mode === 'play') {
-          v.setAttribute('preload', 'auto');
-        } else if (mode === 'meta') {
-          v.setAttribute('preload', 'metadata');
+        } else {
+          v.setAttribute('preload', mode === 'play' ? 'auto' : 'metadata');
         }
         if (mode === 'play') {
           v.muted = true;
           var p = v.play();
           if (p && p.catch) p.catch(function(){});
-        } else if (mode === 'prime') {
-          try {
-            var pp = v.play();
-            if (pp && pp.then) pp.then(function(){ try { v.pause(); v.currentTime = 0; } catch(e){} }).catch(function(){});
-            else { try { v.pause(); v.currentTime = 0; } catch(e){} }
-          } catch(e){}
         }
       }
 
@@ -891,7 +881,20 @@
         }, 600);
       }
 
+      // === ОНБОРДИНГ: Yandex Cloud + concurrency limit ===
       var onbIO = null;
+      var onbActiveCount = 0;
+      var ONB_MAX_ACTIVE = 4;
+      var onbLoadingQueue = [];
+
+      function onbDrainQueue(){
+        while (onbActiveCount < ONB_MAX_ACTIVE && onbLoadingQueue.length) {
+          var v = onbLoadingQueue.shift();
+          if (v && v.dataset.src && !v.__loaded) {
+            onbLoadVideo(v);
+          }
+        }
+      }
 
       function loopAt3s(v){
         if (!v || v.__loopBound) return;
@@ -899,30 +902,20 @@
         var stopAt = 3.0;
 
         if ('requestVideoFrameCallback' in v) {
-          var step = function(){
-            if (v.currentTime >= stopAt) {
-              try { v.currentTime = 0; } catch(e){}
-            }
-            if (!v.paused && v.getAttribute('src')) {
-              v.requestVideoFrameCallback(step);
-            }
-          };
-          v.requestVideoFrameCallback(step);
           v.addEventListener('play', function(){
-            if (!v.__loopRunning) {
-              v.__loopRunning = true;
-              var s2 = function(){
-                if (v.currentTime >= stopAt) {
-                  try { v.currentTime = 0; } catch(e){}
-                }
-                if (!v.paused && v.getAttribute('src')) {
-                  v.requestVideoFrameCallback(s2);
-                } else {
-                  v.__loopRunning = false;
-                }
-              };
-              v.requestVideoFrameCallback(s2);
-            }
+            if (v.__loopRunning) return;
+            v.__loopRunning = true;
+            var step = function(){
+              if (v.paused || !v.getAttribute('src')) {
+                v.__loopRunning = false;
+                return;
+              }
+              if (v.currentTime >= stopAt) {
+                try { v.currentTime = 0; } catch(e){}
+              }
+              v.requestVideoFrameCallback(step);
+            };
+            v.requestVideoFrameCallback(step);
           });
         } else {
           setInterval(function(){
@@ -938,13 +931,22 @@
         if (!v || v.__loaded) return;
         var url = v.dataset.src;
         if (!url) return;
+
+        if (onbActiveCount >= ONB_MAX_ACTIVE) {
+          // В очередь
+          if (onbLoadingQueue.indexOf(v) === -1) onbLoadingQueue.push(v);
+          return;
+        }
+
         v.__loaded = true;
+        onbActiveCount++;
         v.muted = true;
         v.setAttribute('muted','');
         v.setAttribute('playsinline','');
         v.setAttribute('webkit-playsinline','');
         v.setAttribute('preload','auto');
-        v.src = url + '#t=0,3';
+        v.setAttribute('loop','');
+        v.src = url;
         try { v.load(); } catch(e){}
         loopAt3s(v);
         v.addEventListener('loadeddata', function(){
@@ -957,10 +959,12 @@
 
       function onbReleaseVideo(v){
         if (!v || !v.__loaded) return;
+        v.__loaded = false;
+        onbActiveCount = Math.max(0, onbActiveCount - 1);
         try { v.pause(); } catch(e){}
         try { v.removeAttribute('src'); v.load(); } catch(e){}
         v.classList.remove('loaded');
-        v.__loaded = false;
+        onbDrainQueue();
       }
 
       function initOnboardingVideos(){
@@ -974,12 +978,15 @@
               if (entry.isIntersecting) {
                 onbLoadVideo(v);
               } else if (entry.intersectionRatio === 0) {
+                // Полностью ушло — освобождаем слот
+                var qi = onbLoadingQueue.indexOf(v);
+                if (qi !== -1) onbLoadingQueue.splice(qi, 1);
                 onbReleaseVideo(v);
               }
             });
           }, {
             root: onboarding,
-            rootMargin: '400px 0px 400px 0px',
+            rootMargin: '150px 0px 150px 0px',
             threshold: [0, 0.01]
           });
           allVids.forEach(function(v){ onbIO.observe(v); });
@@ -1040,14 +1047,14 @@
 
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
-          api('reels', 'select=video_url&is_active=eq.true&order=sort_order.asc&limit=12')
+          api('reels', 'select=preview_url,video_url&is_active=eq.true&order=sort_order.asc&limit=12')
             .then(function(rows){
               if (!onboarding) return;
               try {
                 var seen = {}, urls = [];
                 if (rows && rows.length) {
                   for (var i = 0; i < rows.length; i++) {
-                    var u = rows[i] && rows[i].video_url;
+                    var u = (rows[i] && (rows[i].preview_url || rows[i].video_url));
                     if (u && !seen[u]) { seen[u] = 1; urls.push(u); }
                   }
                 }
@@ -1223,9 +1230,7 @@
         currentIndex = targetIdx;
         slideEnteredAt = Date.now();
         setActiveSlide(targetIdx);
-
         try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
-
         if (btn) btn.disabled = false;
       }
 
@@ -1265,17 +1270,13 @@
             }])
           });
           return r.ok;
-        } catch(e) {
-          console.warn('subscribeToReel error:', e);
-          return false;
-        }
+        } catch(e) { console.warn('subscribeToReel error:', e); return false; }
       }
 
       async function unsubscribeFromReel(reelId){
         try {
           var user = await authReady; if (!user) return false;
           if (!reelId) return false;
-
           var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions?user_id=eq.' + encodeURIComponent(user.id) + '&reel_id=eq.' + encodeURIComponent(reelId), {
             method: 'DELETE',
             headers: {
@@ -1285,10 +1286,7 @@
             }
           });
           return r.ok;
-        } catch(e) {
-          console.warn('unsubscribeFromReel error:', e);
-          return false;
-        }
+        } catch(e) { console.warn('unsubscribeFromReel error:', e); return false; }
       }
 
       function showVibeBanner(label, count){
@@ -1298,11 +1296,8 @@
         vibeBanner.classList.remove('show');
         void vibeBanner.offsetWidth;
         vibeBanner.classList.add('show');
-
         clearTimeout(bannerHideTimer);
-        bannerHideTimer = setTimeout(function(){
-          vibeBanner.classList.remove('show');
-        }, 2800);
+        bannerHideTimer = setTimeout(function(){ vibeBanner.classList.remove('show'); }, 2800);
       }
       function hideVibeBanner(){ if (vibeBanner) vibeBanner.classList.remove('show'); }
 
@@ -1335,14 +1330,7 @@
             }
 
             btn.dataset.inflight = '1';
-
-            var reel = findReelById(reelId) || {
-              id: reelId,
-              cta_url: ctaUrl,
-              cta_label: null,
-              vibe_title: vibeTitle,
-              place: place
-            };
+            var reel = findReelById(reelId) || { id: reelId, cta_url: ctaUrl, cta_label: null, vibe_title: vibeTitle, place: place };
 
             if (isSub) {
               var okU = await unsubscribeFromReel(reelId);
@@ -1352,9 +1340,7 @@
                 updateGoBtn(btn, reel, false);
                 showToast(t('go_unsub_ok'));
                 trackEvent('unsubscribe_reel', { slide_id: reelId });
-              } else {
-                showToast(t('go_error'));
-              }
+              } else { showToast(t('go_error')); }
             } else {
               trackEvent('go_click', { slide_id: reelId, has_url: false });
               if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
@@ -1366,9 +1352,7 @@
                 showToast(t('go_ok_toast'));
                 trackEvent('subscribe_reel', { slide_id: reelId });
                 if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
-              } else {
-                showToast(t('go_error'));
-              }
+              } else { showToast(t('go_error')); }
             }
           });
         });
@@ -1430,7 +1414,6 @@
         layoutReels();
 
         var startParam = getStartParam();
-
         var startIdx = 0;
         if (startParam) {
           for (var i = 0; i < slides.length; i++) {
@@ -1553,7 +1536,6 @@
               onboardingDismissed = true;
               onboardingClosing = true;
               autoBootStarted = true;
-
               if (onboarding) {
                 try {
                   if (onbIO) { onbIO.disconnect(); onbIO = null; }
@@ -1564,36 +1546,28 @@
                 if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
                 onboarding = null;
               }
-
               try { await loadMySubscriptions(); } catch(e){}
-
               renderSingleReel(reel);
               loaded = true;
               return;
             }
           }
 
-          // === КЛЮЧЕВОЕ: грузим vibe-двери ===
           var vibes = await loadVibeReels();
           if (!vibes) vibes = [];
           vibeReels = vibes;
 
-          // === FALLBACK: если дверей нет — сразу event-рилсы ===
           if (vibeReels.length === 0) {
             directEventsMode = true;
-            console.log('[VETKA] no vibe doors → direct events mode');
             var evs = [];
             try { evs = await loadAllEvents(); } catch(e){ evs = []; }
             allEventReels = evs || [];
-
             if (allEventReels.length === 0) {
-              // Совсем ничего — пустое состояние
               renderList([], 'event');
               loaded = true;
               if (onboardingDismissed) postOnboardingBoot();
               return;
             }
-
             renderList(allEventReels, 'event');
             loaded = true;
             if (onboardingDismissed) postOnboardingBoot();
@@ -1601,14 +1575,11 @@
             return;
           }
 
-          // === Обычный режим: двери → внутрь ===
           renderList(vibes, 'vibe');
           loaded = true;
           prefetchVibeEvents();
           if (onboardingDismissed) postOnboardingBoot();
-          loadMySubscriptions().then(function(){
-            refreshSubscriptionUI();
-          });
+          loadMySubscriptions().then(function(){ refreshSubscriptionUI(); });
         } catch (err) {
           console.warn('initApp error:', err);
           if (retryCount < 3) {
@@ -1619,7 +1590,6 @@
         }
       }
       initApp(0);
-
     })();
   </script>
 

@@ -29,57 +29,6 @@
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;outline:none;border:0;}
   html,body{background:#07070a;color:#fff;font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;height:100%;width:100%;-webkit-font-smoothing:antialiased;color-scheme:dark;overscroll-behavior:none;}
 
-  .onboarding{position:fixed;top:0;left:0;right:0;bottom:0;z-index:600;background:#07070a;overflow:hidden;transition:transform .45s cubic-bezier(.32,.72,.24,1),opacity .45s ease;touch-action:none;overscroll-behavior:none;display:flex;flex-direction:column;}
-  .onboarding.dragging{transition:none;}
-  .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
-
-  .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;transition:opacity .5s ease;}
-  .onboarding.ready .onb-bg{opacity:1;}
-
-  .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
-  .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
-  .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;z-index:1;}
-  .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#0a0a12;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;}
-
-  .onb-col-up{animation:colUp 60s linear infinite;animation-play-state:paused;}
-  .onb-col-down{animation:colDown 60s linear infinite;animation-play-state:paused;}
-  @keyframes colUp{from{transform:translateY(0);}to{transform:translateY(-50%);}}
-  @keyframes colDown{from{transform:translateY(-50%);}to{transform:translateY(0);}}
-  .onboarding.ready .onb-col-up,
-  .onboarding.ready .onb-col-down{animation-play-state:running;}
-
-  .onb-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.55) 0%,rgba(7,7,10,.15) 30%,rgba(7,7,10,.35) 55%,rgba(7,7,10,.85) 85%,rgba(7,7,10,.98) 100%);opacity:0;transition:opacity .5s ease;}
-  .onboarding.ready .onb-veil{opacity:1;}
-
-  .onb-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;transition:opacity .35s ease;}
-  .onb-loader-mark{width:56px;height:56px;color:#CDFF4A;opacity:.7;animation:onbLoaderPulse 1.6s ease-in-out infinite;}
-  .onb-loader-mark svg{width:100%;height:100%;display:block;}
-  @keyframes onbLoaderPulse{0%,100%{opacity:.35;transform:scale(1);}50%{opacity:1;transform:scale(1.08);}}
-  .onboarding.ready .onb-loader{opacity:0;}
-
-  .onb-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(42px + env(safe-area-inset-bottom,0px));z-index:2;pointer-events:none;}
-
-  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
-  .onb-mark svg{width:100%;height:100%;display:block;}
-  .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
-  .onb-logo em{font-style:normal;color:#CDFF4A;}
-  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
-  .onb-tag em{font-style:normal;color:#CDFF4A;}
-  .onb-hint{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
-  .onb-hint i{display:block;width:1.5px;height:34px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));animation:onbHint 2s ease-in-out infinite;}
-  @keyframes onbHint{0%{transform:translateY(-10px) scaleY(.3);opacity:0;}45%{opacity:1;}100%{transform:translateY(10px) scaleY(1);opacity:0;}}
-
-  .onboarding.ready .onb-mark{opacity:1;transform:none;transition-delay:.1s;}
-  .onboarding.ready .onb-logo{opacity:1;transform:none;transition-delay:.2s;}
-  .onboarding.ready .onb-tag{opacity:1;transform:none;transition-delay:.35s;}
-  .onboarding.ready .onb-hint{opacity:1;transform:none;transition-delay:.5s;}
-
-  .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;opacity:0;transition:opacity .5s ease;}
-  .onboarding.ready .lang-switch{opacity:1;transition-delay:.3s;}
-  .lang-switch button{background:transparent;border:0;color:rgba(255,255,255,.6);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;padding:6px 11px;border-radius:100px;cursor:pointer;transition:background .2s ease, color .2s ease, transform .12s ease;}
-  .lang-switch button.active{background:#CDFF4A;color:#07070a;}
-  .lang-switch button:active{transform:scale(.94);}
-
   .feed{position:fixed;inset:0;height:100vh;height:100dvh;overflow-y:scroll;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;z-index:1;opacity:0;pointer-events:none;transition:opacity .25s ease;overscroll-behavior:none;}
   .feed.visible{opacity:1;pointer-events:auto;}
   .feed::-webkit-scrollbar{display:none;}
@@ -252,64 +201,6 @@
 </head>
 <body>
 
-  <div class="onboarding" id="onboarding">
-    <div class="onb-bg" id="onbBg">
-      <div class="onb-col onb-col-up">
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-      </div>
-      <div class="onb-col onb-col-down">
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-      </div>
-    </div>
-
-    <div class="onb-veil"></div>
-
-    <div class="onb-loader" aria-hidden="true">
-      <div class="onb-loader-mark">
-        <svg viewBox="0 0 40 40" fill="none">
-          <path d="M20 39V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 27C12.5 25.2 8 19.4 8 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 21C27.5 19.2 32 13.4 32 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <circle cx="8" cy="11" r="2.1" fill="#CDFF4A"/>
-          <circle cx="32" cy="5" r="2.1" fill="#CDFF4A"/>
-          <circle cx="20" cy="13" r="2.1" fill="#CDFF4A"/>
-        </svg>
-      </div>
-    </div>
-
-    <div class="lang-switch">
-      <button type="button" data-lang="ru">RU</button>
-      <button type="button" data-lang="en">EN</button>
-      <button type="button" data-lang="es">ES</button>
-    </div>
-
-    <div class="onb-content">
-      <div class="onb-mark">
-        <svg viewBox="0 0 40 40" fill="none">
-          <path d="M20 39V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 27C12.5 25.2 8 19.4 8 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 21C27.5 19.2 32 13.4 32 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <circle cx="8" cy="11" r="2.1" fill="#CDFF4A"/>
-          <circle cx="32" cy="5" r="2.1" fill="#CDFF4A"/>
-          <circle cx="20" cy="13" r="2.1" fill="#CDFF4A"/>
-        </svg>
-      </div>
-      <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Поиск событий <em>под твой вайб</em></div>
-      <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
-    </div>
-  </div>
-
   <div class="feed" id="feed"></div>
 
   <div class="empty-state" id="emptyState">
@@ -361,8 +252,6 @@
 
       var I18N = {
         ru: {
-          onboard_tag:'Поиск событий <em>под твой вайб</em>',
-          onboard_hint:'Листай вверх',
           go_btn:'Следить за анонсом',
           go_buy:'Купить билет',
           go_subscribed:'Ты в списке',
@@ -374,8 +263,6 @@
           min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
         },
         en: {
-          onboard_tag:'Find events <em>for your vibe</em>',
-          onboard_hint:'Swipe up',
           go_btn:'Follow announcement',
           go_buy:'Buy ticket',
           go_subscribed:'You\'re in',
@@ -387,8 +274,6 @@
           min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
         },
         es: {
-          onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
-          onboard_hint:'Desliza hacia arriba',
           go_btn:'Seguir anuncio',
           go_buy:'Comprar entrada',
           go_subscribed:'Estás dentro',
@@ -416,12 +301,6 @@
           var k = nodes[i].getAttribute('data-i18n');
           var d = I18N[lang];
           if (d && d[k] != null) nodes[i].innerHTML = d[k];
-        }
-        var btns = document.querySelectorAll('[data-lang]');
-        for (var j = 0; j < btns.length; j++) {
-          var b = btns[j];
-          if (b.getAttribute('data-lang') === lang) b.classList.add('active');
-          else b.classList.remove('active');
         }
       }
 
@@ -519,7 +398,6 @@
       var esTitle = document.getElementById('esTitle');
       var esText = document.getElementById('esText');
       var retryBtn = document.getElementById('retryBtn');
-      var onboarding = document.getElementById('onboarding');
       var toast = document.getElementById('toast');
 
       var allEventReels = [];
@@ -535,9 +413,7 @@
       var tgIdWatchStarted = false;
       var pendingEvents = [];
       var loaded = false;
-      var onboardingDismissed = false;
       var feedBooted = false;
-      var onboardingClosing = false;
 
       var SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now());
       var toastTimer;
@@ -828,206 +704,6 @@
         } catch(e){}
         return null;
       }
-
-      function dismissOnboarding(){
-        if (!onboarding || onboardingClosing) return;
-        unlockAudio();
-        onboardingClosing = true;
-        onboarding.style.transform = '';
-        onboarding.classList.add('gone');
-
-        var onbVids = onboarding.querySelectorAll('video');
-        for (var i = 0; i < onbVids.length; i++) {
-          try { onbVids[i].muted = true; } catch(e){}
-          try { onbVids[i].pause(); } catch(e){}
-          try { onbVids[i].removeAttribute('src'); onbVids[i].load(); } catch(e){}
-        }
-
-        onboardingDismissed = true;
-        layoutReels();
-        slideEnteredAt = Date.now();
-        feed.classList.add('visible');
-        bootFeed();
-        setTimeout(function(){
-          if (onboarding && onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-          onboarding = null;
-        }, 600);
-      }
-
-      if (onboarding) {
-        var startY = 0, currentY = 0, dragging = false, moved = false;
-        var THRESHOLD = 60;
-
-        function onStart(e){
-          unlockAudio();
-          var pt = e.touches ? e.touches[0] : e;
-          startY = pt.clientY; currentY = startY;
-          dragging = true; moved = false;
-          onboarding.classList.add('dragging');
-        }
-        function onMove(e){
-          if (!dragging) return;
-          var pt = e.touches ? e.touches[0] : e;
-          currentY = pt.clientY;
-          var delta = currentY - startY;
-          if (Math.abs(delta) > 6) moved = true;
-          if (delta < 0) {
-            onboarding.style.transform = 'translateY(' + delta + 'px)';
-            if (e.cancelable) e.preventDefault();
-          }
-        }
-        function onEnd(){
-          if (!dragging) return;
-          dragging = false;
-          onboarding.classList.remove('dragging');
-          var delta = currentY - startY;
-          if (delta < -THRESHOLD) dismissOnboarding();
-          else onboarding.style.transform = '';
-        }
-
-        onboarding.addEventListener('touchstart', onStart, {passive:true});
-        onboarding.addEventListener('touchmove', onMove, {passive:false});
-        onboarding.addEventListener('touchend', onEnd);
-        onboarding.addEventListener('touchcancel', onEnd);
-        onboarding.addEventListener('mousedown', onStart);
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onEnd);
-
-        onboarding.addEventListener('click', function(e){
-          unlockAudio();
-          if (e.target.closest('.lang-switch')) return;
-          if (moved) return;
-          dismissOnboarding();
-        });
-
-        var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = 3;
-        var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
-
-        var onbReadyShown = false;
-        var onbReadyCount = 0;
-        var onbRequired = onbVids.length;
-        var onbMaxWaitTimer = null;
-
-        function showOnboardingReady(){
-          if (onbReadyShown) return;
-          onbReadyShown = true;
-          if (onboarding) onboarding.classList.add('ready');
-          if (onbMaxWaitTimer) { clearTimeout(onbMaxWaitTimer); onbMaxWaitTimer = null; }
-        }
-
-        function watchVideoReady(v){
-          if (!v || v.__onbWatched) return;
-          v.__onbWatched = true;
-          var fire = function(){
-            if (v.__onbFired) return;
-            v.__onbFired = true;
-            onbReadyCount++;
-            if (onbReadyCount >= onbRequired) showOnboardingReady();
-          };
-          if (v.readyState >= 2) { fire(); return; }
-          v.addEventListener('loadeddata', fire, { once: true });
-          v.addEventListener('error', fire, { once: true });
-        }
-
-        onbMaxWaitTimer = setTimeout(showOnboardingReady, 3000);
-
-        function loadOnbBatch(){
-          if (!onboarding) return;
-          var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
-          for (; onbIdx < end; onbIdx++) {
-            var targetIdx = loadOrder[onbIdx] !== undefined ? loadOrder[onbIdx] : onbIdx;
-            (function(v){
-              if (!v || v.dataset.started) return;
-              v.dataset.started = '1';
-              var url = v.dataset.src; if (!url) return;
-              v.muted = true;
-              v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
-              try { v.setAttribute('preload','auto'); } catch(e){}
-              v.src = url;
-              try { v.load(); } catch(e){}
-              v.addEventListener('loadeddata', function(){ try { v.play().catch(function(){}); } catch(e){} }, { once: true });
-              var p = v.play(); if (p && p.catch) p.catch(function(){});
-              watchVideoReady(v);
-            })(onbVids[targetIdx]);
-          }
-          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 600);
-        }
-
-        (function loadOnbFromSupabase(attempt){
-          attempt = attempt || 1;
-          api('reels', 'select=video_url&is_active=eq.true&order=sort_order.asc&limit=12')
-            .then(function(rows){
-              if (!onboarding) return;
-              try {
-                var seen = {}, urls = [];
-                if (rows && rows.length) {
-                  for (var i = 0; i < rows.length; i++) {
-                    var u = rows[i] && rows[i].video_url;
-                    if (u && !seen[u]) { seen[u] = 1; urls.push(u); }
-                  }
-                }
-                if (!urls.length) {
-                  if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
-                  return;
-                }
-
-                var n = urls.length, left = [], right = [];
-                if (n >= 6) {
-                  left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-                  right = [urls[3], urls[4], urls[5], urls[3], urls[4], urls[5]];
-                } else if (n === 5) {
-                  left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-                  right = [urls[3], urls[4], urls[3], urls[4], urls[3], urls[4]];
-                } else if (n === 4) {
-                  left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
-                  right = [urls[2], urls[3], urls[2], urls[3], urls[2], urls[3]];
-                } else if (n === 3) {
-                  left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
-                  right = [urls[1], urls[2], urls[0], urls[1], urls[2], urls[0]];
-                } else if (n === 2) {
-                  left = [urls[0], urls[1], urls[0], urls[1], urls[0], urls[1]];
-                  right = [urls[1], urls[0], urls[1], urls[0], urls[1], urls[0]];
-                } else {
-                  left = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
-                  right = [urls[0], urls[0], urls[0], urls[0], urls[0], urls[0]];
-                }
-
-                if (onbVids.length >= 12) {
-                  for (var j = 0; j < 6; j++) {
-                    onbVids[j].dataset.src = left[j];
-                    onbVids[j + 6].dataset.src = right[j];
-                  }
-                  loadOnbBatch();
-                }
-              } catch(err){}
-            })
-            .catch(function(){
-              if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
-            });
-        })();
-
-        var kickAll = function(){
-          if (!onboarding) return;
-          onboarding.querySelectorAll('video').forEach(function(v){ if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } });
-        };
-        onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
-        onboarding.addEventListener('click', kickAll, {once:true});
-
-        var langBtns = document.querySelectorAll('[data-lang]');
-        for (var li = 0; li < langBtns.length; li++) {
-          (function(b){
-            b.addEventListener('click', function(e){ e.stopPropagation(); applyLang(b.getAttribute('data-lang')); });
-            b.addEventListener('touchstart', function(e){ e.stopPropagation(); }, {passive:true});
-            b.addEventListener('touchend', function(e){ e.stopPropagation(); });
-          })(langBtns[li]);
-        }
-      } else {
-        onboardingDismissed = true;
-        feed.classList.add('visible');
-      }
-
-      applyLang(currentLang);
 
       var soundBtns = [];
       function bindSoundBtns(){
@@ -1378,23 +1054,13 @@
       async function initApp(retryCount){
         retryCount = retryCount || 0;
         try {
+          applyLang(currentLang);
+          feed.classList.add('visible');
+
           var deepId = getStartParam();
           if (deepId) {
             var reel = await loadReelById(deepId);
             if (reel) {
-              onboardingDismissed = true;
-              onboardingClosing = true;
-
-              if (onboarding) {
-                try {
-                  onboarding.querySelectorAll('video').forEach(function(v){
-                    try { v.muted = true; v.pause(); v.removeAttribute('src'); v.load(); } catch(e){}
-                  });
-                } catch(e){}
-                if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-                onboarding = null;
-              }
-
               try { await loadMySubscriptions(); } catch(e){}
               renderSingleReel(reel);
               loaded = true;
@@ -1408,8 +1074,7 @@
 
           renderList(events);
           loaded = true;
-
-          if (onboardingDismissed) bootFeed();
+          bootFeed();
 
           loadMySubscriptions().then(function(){
             refreshSubscriptionUI();

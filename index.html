@@ -163,20 +163,20 @@
   <div class="onboarding" id="onboarding">
     <div class="onb-bg" id="onbBg">
       <div class="onb-col onb-col-up">
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
       </div>
       <div class="onb-col onb-col-down">
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
-        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted loop playsinline preload="none" data-src=""></video></div>
       </div>
     </div>
 
@@ -457,8 +457,6 @@
       var vibeEventsCache = {};
       var mySubscribed = {};
 
-      var directEventsMode = false;
-
       var slides = [];
       var videoUrls = [];
       var currentIndex = 0;
@@ -507,9 +505,6 @@
       async function loadVibeReels(){
         return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.vibe&order=sort_order.asc&limit=20');
       }
-      async function loadAllEvents(){
-        return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&order=sort_order.asc&limit=50');
-      }
       async function loadEventsForVibe(category){
         return await api('reels', 'select=*&is_active=eq.true&reel_kind=eq.event&vibe_category=eq.' + encodeURIComponent(category) + '&order=sort_order.asc&limit=50');
       }
@@ -530,7 +525,9 @@
               if (r && r.reel_id) mySubscribed[r.reel_id] = true;
             });
           }
-        } catch(e) { console.warn('loadMySubscriptions error:', e); }
+        } catch(e) {
+          console.warn('loadMySubscriptions error:', e);
+        }
       }
 
       function prefetchVibeEvents(){
@@ -785,6 +782,7 @@
       }
       setInterval(refreshLiveLabels, 60000);
 
+      // === ЛЕНТА: preload="none", release far videos ===
       function getVideo(idx){
         if (idx < 0 || idx >= slides.length) return null;
         var c = slides[idx].querySelector('.video');
@@ -794,7 +792,6 @@
         if (!v) return;
         try { v.pause(); } catch(e){}
         try { v.removeAttribute('src'); v.load(); } catch(e){}
-        v.classList.remove('loaded');
       }
       function loadVideo(v, url, mode){
         if (!v || !url) return;
@@ -819,6 +816,7 @@
           var v = getVideo(i);
           if (!v) continue;
           var url = videoUrls[i];
+
           if (i === idx) {
             try { v.muted = true; } catch(e){}
             loadVideo(v, url, 'play');
@@ -881,74 +879,22 @@
         }, 600);
       }
 
-      // === ОНБОРДИНГ: Yandex Cloud + concurrency limit ===
+      // === ОНБОРДИНГ: preview_url + loop + viewport-загрузка ===
       var onbIO = null;
-      var onbActiveCount = 0;
-      var ONB_MAX_ACTIVE = 4;
-      var onbLoadingQueue = [];
-
-      function onbDrainQueue(){
-        while (onbActiveCount < ONB_MAX_ACTIVE && onbLoadingQueue.length) {
-          var v = onbLoadingQueue.shift();
-          if (v && v.dataset.src && !v.__loaded) {
-            onbLoadVideo(v);
-          }
-        }
-      }
-
-      function loopAt3s(v){
-        if (!v || v.__loopBound) return;
-        v.__loopBound = true;
-        var stopAt = 3.0;
-
-        if ('requestVideoFrameCallback' in v) {
-          v.addEventListener('play', function(){
-            if (v.__loopRunning) return;
-            v.__loopRunning = true;
-            var step = function(){
-              if (v.paused || !v.getAttribute('src')) {
-                v.__loopRunning = false;
-                return;
-              }
-              if (v.currentTime >= stopAt) {
-                try { v.currentTime = 0; } catch(e){}
-              }
-              v.requestVideoFrameCallback(step);
-            };
-            v.requestVideoFrameCallback(step);
-          });
-        } else {
-          setInterval(function(){
-            if (v.paused || !v.getAttribute('src')) return;
-            if (v.currentTime >= stopAt) {
-              try { v.currentTime = 0; } catch(e){}
-            }
-          }, 50);
-        }
-      }
 
       function onbLoadVideo(v){
         if (!v || v.__loaded) return;
         var url = v.dataset.src;
         if (!url) return;
-
-        if (onbActiveCount >= ONB_MAX_ACTIVE) {
-          // В очередь
-          if (onbLoadingQueue.indexOf(v) === -1) onbLoadingQueue.push(v);
-          return;
-        }
-
         v.__loaded = true;
-        onbActiveCount++;
         v.muted = true;
         v.setAttribute('muted','');
         v.setAttribute('playsinline','');
         v.setAttribute('webkit-playsinline','');
         v.setAttribute('preload','auto');
-        v.setAttribute('loop','');
+        v.setAttribute('loop','');  // настоящий loop — файл уже 3 сек
         v.src = url;
         try { v.load(); } catch(e){}
-        loopAt3s(v);
         v.addEventListener('loadeddata', function(){
           try { v.play().catch(function(){}); } catch(e){}
           v.classList.add('loaded');
@@ -959,12 +905,10 @@
 
       function onbReleaseVideo(v){
         if (!v || !v.__loaded) return;
-        v.__loaded = false;
-        onbActiveCount = Math.max(0, onbActiveCount - 1);
         try { v.pause(); } catch(e){}
         try { v.removeAttribute('src'); v.load(); } catch(e){}
         v.classList.remove('loaded');
-        onbDrainQueue();
+        v.__loaded = false;
       }
 
       function initOnboardingVideos(){
@@ -978,20 +922,17 @@
               if (entry.isIntersecting) {
                 onbLoadVideo(v);
               } else if (entry.intersectionRatio === 0) {
-                // Полностью ушло — освобождаем слот
-                var qi = onbLoadingQueue.indexOf(v);
-                if (qi !== -1) onbLoadingQueue.splice(qi, 1);
                 onbReleaseVideo(v);
               }
             });
           }, {
             root: onboarding,
-            rootMargin: '150px 0px 150px 0px',
+            rootMargin: '600px 0px 600px 0px',  // файлы лёгкие — грузим с запасом
             threshold: [0, 0.01]
           });
           allVids.forEach(function(v){ onbIO.observe(v); });
         } else {
-          [0,1,6,7].forEach(function(i){
+          [0,1,2,6,7,8].forEach(function(i){
             if (allVids[i]) onbLoadVideo(allVids[i]);
           });
         }
@@ -1045,6 +986,7 @@
           dismissOnboarding();
         });
 
+        // Загружаем preview_url || video_url
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
           api('reels', 'select=preview_url,video_url&is_active=eq.true&order=sort_order.asc&limit=12')
@@ -1193,405 +1135,4 @@
         if (btn) btn.disabled = true;
         lastVibeCategory = category;
         trackEvent('vibe_select', { category: category, label: label });
-        if (window.ym) { try { ym(113067752, 'reachGoal', 'vibe_select'); } catch(err){} }
-
-        var events = vibeEventsCache[category];
-        if (events === undefined) {
-          try { events = await loadEventsForVibe(category); } catch(e){ events = []; }
-          vibeEventsCache[category] = events || [];
-        }
-
-        if (!events || !events.length) {
-          if (btn) btn.disabled = false;
-          showToast(t('toast_soon'));
-          return;
-        }
-
-        allEventReels = events;
-        currentVibe = { category: category, label: label, events: events };
-
-        if (currentIO) { currentIO.disconnect(); currentIO = null; }
-        if (slideIO) { slideIO.disconnect(); slideIO = null; }
-
-        renderList(events, 'event');
-        layoutReels();
-
-        initIO();
-        initSlideViewsIO();
-
-        var startParam = getStartParam();
-        var targetIdx = 0;
-        if (startParam) {
-          for (var si = 0; si < slides.length; si++) {
-            if (slides[si].dataset.id === startParam) { targetIdx = si; break; }
-          }
-        }
-
-        currentIndex = targetIdx;
-        slideEnteredAt = Date.now();
-        setActiveSlide(targetIdx);
-        try { feed.scrollTop = targetIdx * feed.clientHeight; } catch(e){}
-        if (btn) btn.disabled = false;
-      }
-
-      async function subscribeToReel(reelId, vibeTitle, place){
-        try {
-          var user = await authReady; if (!user) return false;
-          var tgUser = readTgUser();
-          var tgId = tgUser ? String(tgUser.id) : null;
-          if (!tgId) return false;
-          if (!reelId) return false;
-
-          await fetch(SUPABASE_URL + '/rest/v1/users?tg_id=eq.' + encodeURIComponent(tgId), {
-            method: 'PATCH',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify({ wants_notify: true })
-          });
-
-          var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions', {
-            method: 'POST',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Content-Type': 'application/json',
-              'Prefer': 'resolution=ignore-duplicates,return=minimal'
-            },
-            body: JSON.stringify([{
-              user_id: user.id,
-              tg_id: tgId,
-              reel_id: reelId,
-              vibe_title: vibeTitle || null,
-              place: place || null
-            }])
-          });
-          return r.ok;
-        } catch(e) { console.warn('subscribeToReel error:', e); return false; }
-      }
-
-      async function unsubscribeFromReel(reelId){
-        try {
-          var user = await authReady; if (!user) return false;
-          if (!reelId) return false;
-          var r = await fetch(SUPABASE_URL + '/rest/v1/subscriptions?user_id=eq.' + encodeURIComponent(user.id) + '&reel_id=eq.' + encodeURIComponent(reelId), {
-            method: 'DELETE',
-            headers: {
-              'apikey': SUPABASE_ANON_KEY,
-              'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-              'Prefer': 'return=minimal'
-            }
-          });
-          return r.ok;
-        } catch(e) { console.warn('unsubscribeFromReel error:', e); return false; }
-      }
-
-      function showVibeBanner(label, count){
-        if (!vibeBanner || !vibeBannerText) return;
-        var countText = count === 1 ? t('banner_one') : tFmt('banner_many', { n: count });
-        vibeBannerText.innerHTML = '✦ ' + escapeHtml(t('banner_stream')) + ' <em>' + escapeHtml(label) + '</em> · ' + countText;
-        vibeBanner.classList.remove('show');
-        void vibeBanner.offsetWidth;
-        vibeBanner.classList.add('show');
-        clearTimeout(bannerHideTimer);
-        bannerHideTimer = setTimeout(function(){ vibeBanner.classList.remove('show'); }, 2800);
-      }
-      function hideVibeBanner(){ if (vibeBanner) vibeBanner.classList.remove('show'); }
-
-      function bindGoBtns(){
-        document.querySelectorAll('[data-go]').forEach(function(btn){
-          if (btn.__bound) return;
-          btn.__bound = true;
-          btn.addEventListener('click', async function(e){
-            e.stopPropagation();
-            if (btn.dataset.inflight === '1') return;
-
-            var ctaUrl = btn.getAttribute('data-cta-url') || '';
-            var cta = String(ctaUrl).trim().toLowerCase();
-            var reelId = btn.getAttribute('data-reel-id') || '';
-            var vibeTitle = btn.getAttribute('data-vibe-title') || '';
-            var place = btn.getAttribute('data-place') || '';
-            var isSub = btn.dataset.subscribed === '1';
-
-            if (cta && cta !== 'none' && !isSub) {
-              trackEvent('go_click', { slide_id: reelId, has_url: true });
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
-              try {
-                if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === 'function') {
-                  window.Telegram.WebApp.openLink(ctaUrl);
-                } else {
-                  window.open(ctaUrl, '_blank', 'noopener,noreferrer');
-                }
-              } catch(e){ location.href = ctaUrl; }
-              return;
-            }
-
-            btn.dataset.inflight = '1';
-            var reel = findReelById(reelId) || { id: reelId, cta_url: ctaUrl, cta_label: null, vibe_title: vibeTitle, place: place };
-
-            if (isSub) {
-              var okU = await unsubscribeFromReel(reelId);
-              btn.dataset.inflight = '0';
-              if (okU) {
-                delete mySubscribed[reelId];
-                updateGoBtn(btn, reel, false);
-                showToast(t('go_unsub_ok'));
-                trackEvent('unsubscribe_reel', { slide_id: reelId });
-              } else { showToast(t('go_error')); }
-            } else {
-              trackEvent('go_click', { slide_id: reelId, has_url: false });
-              if (window.ym) { try { ym(113067752, 'reachGoal', 'go_click'); } catch(err){} }
-              var okS = await subscribeToReel(reelId, vibeTitle, place);
-              btn.dataset.inflight = '0';
-              if (okS) {
-                mySubscribed[reelId] = true;
-                updateGoBtn(btn, reel, true);
-                showToast(t('go_ok_toast'));
-                trackEvent('subscribe_reel', { slide_id: reelId });
-                if (window.ym) { try { ym(113067752, 'reachGoal', 'subscribe_reel'); } catch(err){} }
-              } else { showToast(t('go_error')); }
-            }
-          });
-        });
-      }
-
-      function bindHandlers(){
-        bindSoundBtns();
-        bindShareBtns();
-        bindChooseBtns();
-        bindGoBtns();
-      }
-
-      var currentIO = null;
-      function initIO(){
-        if (currentIO) currentIO.disconnect();
-        if (!feed) return;
-        currentIO = new IntersectionObserver(function(entries){
-          var best = null, bestRatio = 0;
-          entries.forEach(function(e){ if (e.isIntersecting && e.intersectionRatio > bestRatio) { bestRatio = e.intersectionRatio; best = e.target; } });
-          if (best && bestRatio > 0.55) {
-            var idx = slides.indexOf(best);
-            if (idx !== -1 && idx !== currentIndex) {
-              flushDwell(currentIndex);
-              currentIndex = idx;
-              slideEnteredAt = Date.now();
-              setActiveSlide(idx);
-            }
-          }
-        }, { root: feed, threshold: [0.1, 0.55, 0.9] });
-        slides.forEach(function(s){ currentIO.observe(s); });
-      }
-
-      var slideIO = null;
-      function initSlideViewsIO(){
-        if (slideIO) slideIO.disconnect();
-        slideIO = new IntersectionObserver(function(entries){
-          entries.forEach(function(e){
-            if (e.isIntersecting && e.intersectionRatio > 0.5) {
-              var slideId = e.target.dataset.id;
-              if (slideId && !trackedSlideViews[slideId]) { trackedSlideViews[slideId] = true; trackEvent('slide_view', { slide_id: slideId }); }
-            }
-          });
-        }, { root: feed, threshold: [0, 0.55, 0.9] });
-        slides.forEach(function(s){ slideIO.observe(s); });
-      }
-
-      function postOnboardingBoot(){
-        if (autoBootStarted) return;
-        if (!loaded) return;
-        autoBootStarted = true;
-        bootFeed();
-      }
-
-      function bootFeed(){
-        if (feedBooted) return;
-        if (!slides.length) return;
-        feedBooted = true;
-        feed.classList.add('visible');
-        layoutReels();
-
-        var startParam = getStartParam();
-        var startIdx = 0;
-        if (startParam) {
-          for (var i = 0; i < slides.length; i++) {
-            if (slides[i].dataset.id === startParam) { startIdx = i; break; }
-          }
-        }
-
-        currentIndex = startIdx;
-        initIO();
-        initSlideViewsIO();
-        setActiveSlide(startIdx);
-        refreshSubscriptionUI();
-
-        if (startIdx > 0) {
-          setTimeout(function(){
-            try { if (feed) feed.scrollTop = startIdx * feed.clientHeight; } catch(e){}
-          }, 250);
-        }
-      }
-
-      function copyToClipboard(text){
-        if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
-        return new Promise(function(resolve, reject){
-          try {
-            var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'absolute'; ta.style.left = '-9999px';
-            document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); resolve();
-          } catch(e){ reject(e); }
-        });
-      }
-
-      var STORAGE_KEY = EARLY_TG_ID ? 'sb-rlkjsjgktyltvxnfyski-auth-token-' + EARLY_TG_ID : 'sb-rlkjsjgktyltvxnfyski-auth-token';
-      var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { detectSessionInUrl: false, persistSession: true, autoRefreshToken: true, storageKey: STORAGE_KEY } });
-
-      function readTgId(){ var u = readTgUser(); return u ? String(u.id) : null; }
-      function getAnonId(){
-        var key = EARLY_TG_ID ? 'vetka_anon_id_' + EARLY_TG_ID : 'vetka_anon_id';
-        var id = null; try { id = localStorage.getItem(key); } catch(e){}
-        if (!id) { id = (crypto.randomUUID ? crypto.randomUUID() : 'anon-' + Date.now()); try { localStorage.setItem(key, id); } catch(e){} }
-        return id;
-      }
-
-      var authReady = (async function(){
-        var hasStored = false; try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch(e){}
-        if (hasStored) {
-          for (var i = 0; i < 15; i++) {
-            try { var s = await supabaseClient.auth.getSession(); if (s.data && s.data.session && s.data.session.user) return s.data.session.user; } catch(e){}
-            await new Promise(function(r){ setTimeout(r, 200); });
-          }
-        }
-        try { var r = await supabaseClient.auth.signInAnonymously(); if (r.error) return null; return r.data.user; }
-        catch(e){ return null; }
-      })();
-
-      function startTgIdWatch(){
-        if (tgIdWatchStarted) return;
-        tgIdWatchStarted = true;
-        var tries = 0;
-        var iv = setInterval(function(){
-          tries++;
-          if (readTgId()) { clearInterval(iv); flushEvents(); }
-          else if (tries >= 25) { clearInterval(iv); flushEvents(); }
-        }, 200);
-        setTimeout(flushEvents, 5200);
-      }
-
-      async function flushEvents(){
-        if (flushing) return;
-        if (pendingEvents.length === 0) return;
-        flushing = true;
-        var batch = pendingEvents.slice(); pendingEvents = [];
-        try {
-          var user = await authReady; if (!user) { flushing = false; return; }
-          var tgId = readTgId(); var anonId = getAnonId();
-          var rows = batch.map(function(e){ return { user_id: user.id, tg_id: tgId, anon_id: anonId, event_type: e.type, event_data: e.data, session_id: SESSION_ID }; });
-          await supabaseClient.from('events').insert(rows);
-        } catch(e){}
-        flushing = false;
-        if (pendingEvents.length > 0) flushEvents();
-      }
-
-      function scheduleFlush(){ if (flushTimer) return; flushTimer = setTimeout(function(){ flushTimer = null; flushEvents(); }, 1500); }
-      function trackEvent(type, data){
-        pendingEvents.push({ type: type, data: data || {} });
-        if (readTgId()) scheduleFlush();
-        else if (window.Telegram && window.Telegram.WebApp) startTgIdWatch();
-        else scheduleFlush();
-      }
-
-      function flushDwell(idx){
-        if (idx < 0 || idx >= slides.length) return;
-        if (!slideEnteredAt) return;
-        var dur = Date.now() - slideEnteredAt;
-        slideEnteredAt = 0;
-        if (dur < 500 || dur > 30 * 60 * 1000) return;
-        var slideId = slides[idx].dataset.id;
-        if (slideId) trackEvent('slide_dwell', { slide_id: slideId, duration_ms: dur });
-      }
-
-      document.addEventListener('visibilitychange', function(){
-        if (document.hidden) { flushDwell(currentIndex); flushEvents(); }
-        else { slideEnteredAt = Date.now(); }
-      });
-      window.addEventListener('pagehide', function(){ flushDwell(currentIndex); flushEvents(); });
-      window.addEventListener('resize', layoutReels);
-
-      retryBtn.addEventListener('click', function(){ location.reload(); });
-
-      authReady.then(function(u){
-        if (!u) return;
-        trackEvent('visit', { referrer: document.referrer || null, ua: navigator.userAgent });
-      });
-
-      async function initApp(retryCount){
-        retryCount = retryCount || 0;
-        try {
-          var deepId = getStartParam();
-          if (deepId) {
-            var reel = await loadReelById(deepId);
-            if (reel) {
-              onboardingDismissed = true;
-              onboardingClosing = true;
-              autoBootStarted = true;
-              if (onboarding) {
-                try {
-                  if (onbIO) { onbIO.disconnect(); onbIO = null; }
-                  onboarding.querySelectorAll('video').forEach(function(v){
-                    try { v.muted = true; v.pause(); v.removeAttribute('src'); v.load(); } catch(e){}
-                  });
-                } catch(e){}
-                if (onboarding.parentNode) onboarding.parentNode.removeChild(onboarding);
-                onboarding = null;
-              }
-              try { await loadMySubscriptions(); } catch(e){}
-              renderSingleReel(reel);
-              loaded = true;
-              return;
-            }
-          }
-
-          var vibes = await loadVibeReels();
-          if (!vibes) vibes = [];
-          vibeReels = vibes;
-
-          if (vibeReels.length === 0) {
-            directEventsMode = true;
-            var evs = [];
-            try { evs = await loadAllEvents(); } catch(e){ evs = []; }
-            allEventReels = evs || [];
-            if (allEventReels.length === 0) {
-              renderList([], 'event');
-              loaded = true;
-              if (onboardingDismissed) postOnboardingBoot();
-              return;
-            }
-            renderList(allEventReels, 'event');
-            loaded = true;
-            if (onboardingDismissed) postOnboardingBoot();
-            loadMySubscriptions().then(function(){ refreshSubscriptionUI(); });
-            return;
-          }
-
-          renderList(vibes, 'vibe');
-          loaded = true;
-          prefetchVibeEvents();
-          if (onboardingDismissed) postOnboardingBoot();
-          loadMySubscriptions().then(function(){ refreshSubscriptionUI(); });
-        } catch (err) {
-          console.warn('initApp error:', err);
-          if (retryCount < 3) {
-            setTimeout(function(){ initApp(retryCount + 1); }, 1500 * (retryCount + 1));
-          } else {
-            showEmptyState('Не удалось загрузить', 'Проверьте соединение и попробуйте снова.', true);
-          }
-        }
-      }
-      initApp(0);
-    })();
-  </script>
-
-</body>
-</html>
+       

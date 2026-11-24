@@ -33,13 +33,16 @@
   .onboarding.dragging{transition:none;}
   .onboarding.gone{transform:translateY(-100%);opacity:0;pointer-events:none;}
 
+  /* Мозаика: скрыта по умолчанию, плавно проявляется при .ready */
   .onb-bg{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:6px;transform:scale(1.2);opacity:0;transition:opacity .5s ease;}
   .onboarding.ready .onb-bg{opacity:1;}
 
   .onb-col{display:flex;flex-direction:column;gap:6px;will-change:transform;}
   .onb-col .tile{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1a26 0%,#0a0a12 100%);border-radius:10px;overflow:hidden;flex:none;}
   .onb-col .tile::before{content:'';position:absolute;inset:0;background:radial-gradient(60% 40% at 30% 30%,rgba(205,255,74,.06),transparent 60%),radial-gradient(50% 40% at 70% 70%,rgba(122,108,255,.08),transparent 60%);pointer-events:none;z-index:1;}
-  .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#0a0a12;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;}
+  /* Видео прозрачное пока не загрузилось — плитка показывает градиент, не чёрный */
+  .onb-col .tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:transparent;transform:translateZ(0);backface-visibility:hidden;pointer-events:none;opacity:0;transition:opacity .5s ease;}
+  .onb-col .tile video.loaded{opacity:1;}
 
   .onb-col-up{animation:colUp 60s linear infinite;animation-play-state:paused;}
   .onb-col-down{animation:colDown 60s linear infinite;animation-play-state:paused;}
@@ -53,11 +56,12 @@
 
   .onb-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(42px + env(safe-area-inset-bottom,0px));z-index:2;pointer-events:none;}
 
-  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  /* Текст онбординга виден сразу — без задержки */
+  .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;}
   .onb-mark svg{width:100%;height:100%;display:block;}
-  .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .onb-logo{font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(48px,15vw,68px);line-height:.94;letter-spacing:-.045em;color:#fff;text-shadow:0 4px 32px rgba(0,0,0,.7);}
   .onb-logo em{font-style:normal;color:#CDFF4A;}
-  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);}
   .onb-tag em{font-style:normal;color:#CDFF4A;}
   .onb-description{
     margin-top:12px;
@@ -69,24 +73,15 @@
     letter-spacing:-.01em;
     color:rgba(255,255,255,.76);
     text-shadow:0 2px 16px rgba(0,0,0,.8);
-    opacity:0;
-    transform:translateY(16px);
-    transition:opacity .7s ease,transform .7s ease;
   }
   .onb-description p{margin:0;}
   .onb-description p + p{margin-top:8px;}
-  .onb-hint{margin-top:26px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .onb-hint{margin-top:26px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);}
   .onb-hint i{display:block;width:1.5px;height:34px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));animation:onbHint 2s ease-in-out infinite;}
   @keyframes onbHint{0%{transform:translateY(-10px) scaleY(.3);opacity:0;}45%{opacity:1;}100%{transform:translateY(10px) scaleY(1);opacity:0;}}
 
-  .onboarding.ready .onb-mark{opacity:1;transform:none;transition-delay:.1s;}
-  .onboarding.ready .onb-logo{opacity:1;transform:none;transition-delay:.2s;}
-  .onboarding.ready .onb-tag{opacity:1;transform:none;transition-delay:.35s;}
-  .onboarding.ready .onb-description{opacity:1;transform:none;transition-delay:.45s;}
-  .onboarding.ready .onb-hint{opacity:1;transform:none;transition-delay:.5s;}
-
-  .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;opacity:0;transition:opacity .5s ease;}
-  .onboarding.ready .lang-switch{opacity:1;transition-delay:.3s;}
+  /* Lang-switch виден сразу */
+  .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;}
   .lang-switch button{background:transparent;border:0;color:rgba(255,255,255,.6);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;padding:6px 11px;border-radius:100px;cursor:pointer;transition:background .2s ease, color .2s ease, transform .12s ease;}
   .lang-switch button.active{background:#CDFF4A;color:#07070a;}
   .lang-switch button:active{transform:scale(.94);}
@@ -263,23 +258,23 @@
 </head>
 <body>
 
-  <div class="onboarding ready" id="onboarding">
+  <div class="onboarding" id="onboarding">
     <div class="onb-bg" id="onbBg">
       <div class="onb-col onb-col-up">
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
       </div>
       <div class="onb-col onb-col-down">
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
-        <div class="tile"><video muted loop playsinline preload="none"></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
+        <div class="tile"><video muted playsinline preload="none" data-src=""></video></div>
       </div>
     </div>
 
@@ -857,6 +852,119 @@
         }, 600);
       }
 
+      // ===== ОНБОРДИНГ: правильная логика загрузки =====
+      var onbFirstLeft = false;
+      var onbFirstRight = false;
+      var onbMosaicShown = false;
+
+      function onbShowMosaic(){
+        if (onbMosaicShown) return;
+        if (!onboarding || onboardingClosing) return;
+        onbMosaicShown = true;
+        onboarding.classList.add('ready');
+      }
+
+      function onbLoadFirstTile(v, slot){
+        if (!v) {
+          if (slot === 'left') onbFirstLeft = true;
+          if (slot === 'right') onbFirstRight = true;
+          if (onbFirstLeft && onbFirstRight) onbShowMosaic();
+          return;
+        }
+        var url = v.dataset.src;
+        if (!url) {
+          if (slot === 'left') onbFirstLeft = true;
+          if (slot === 'right') onbFirstRight = true;
+          if (onbFirstLeft && onbFirstRight) onbShowMosaic();
+          return;
+        }
+
+        v.muted = true;
+        v.setAttribute('muted','');
+        v.setAttribute('playsinline','');
+        v.setAttribute('webkit-playsinline','');
+        v.setAttribute('preload','auto');
+        v.setAttribute('loop','');
+
+        var fired = false;
+        var fire = function(){
+          if (fired) return;
+          fired = true;
+          if (slot === 'left') onbFirstLeft = true;
+          if (slot === 'right') onbFirstRight = true;
+          if (onbFirstLeft && onbFirstRight) onbShowMosaic();
+        };
+
+        // Слушатели вешаем ДО src, чтобы не пропустить события
+        v.addEventListener('playing', fire, { once: true });
+        v.addEventListener('loadeddata', function(){
+          v.classList.add('loaded');
+          var p = v.play();
+          if (p && p.catch) p.catch(function(){});
+        }, { once: true });
+        v.addEventListener('error', function(){
+          v.__failed = true;
+          // Плитка остаётся с градиентом — видео не показываем
+          fire();
+        }, { once: true });
+
+        v.src = url;
+        try { v.load(); } catch(e){}
+        var p = v.play();
+        if (p && p.catch) p.catch(function(){});
+      }
+
+      function onbLoadBackgroundTile(v){
+        if (!v || v.dataset.bgStarted) return;
+        var url = v.dataset.src;
+        if (!url) return;
+        v.dataset.bgStarted = '1';
+
+        v.muted = true;
+        v.setAttribute('muted','');
+        v.setAttribute('playsinline','');
+        v.setAttribute('webkit-playsinline','');
+        v.setAttribute('preload','auto');
+        v.setAttribute('loop','');
+
+        v.addEventListener('loadeddata', function(){
+          v.classList.add('loaded');
+          var p = v.play();
+          if (p && p.catch) p.catch(function(){});
+        }, { once: true });
+        v.addEventListener('error', function(){
+          v.__failed = true;
+        }, { once: true });
+
+        v.src = url;
+        try { v.load(); } catch(e){}
+        var p = v.play();
+        if (p && p.catch) p.catch(function(){});
+      }
+
+      function onbStartMosaic(){
+        if (!onboarding) return;
+        var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
+        if (onbVids.length < 12) return;
+
+        // Первые два — по одному в каждой колонке.
+        // UP-колонка при translateY(0) показывает tile 0 (верхний).
+        // DOWN-колонка стартует при translateY(-50%) → видимый верхний = tile 9.
+        onbLoadFirstTile(onbVids[0], 'left');
+        onbLoadFirstTile(onbVids[9], 'right');
+
+        // Fallback: если через 2.5с мозаика ещё не показана — показываем
+        setTimeout(onbShowMosaic, 2500);
+
+        // Остальные грузим в фоне, по визуальному приоритету
+        var rest = [1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
+        rest.forEach(function(i, idx){
+          setTimeout(function(){
+            if (onbVids[i]) onbLoadBackgroundTile(onbVids[i]);
+          }, 400 + idx * 200);
+        });
+      }
+
       if (onboarding) {
         var startY = 0, currentY = 0, dragging = false, moved = false;
         var THRESHOLD = 60;
@@ -903,78 +1011,28 @@
           dismissOnboarding();
         });
 
-        var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        var onbIdx = 0, ONB_BATCH = 3;
-        var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
-
-        var onbReadyShown = false;
-        var onbReadyCount = 0;
-        var onbRequired = onbVids.length;
-        var onbMaxWaitTimer = null;
-
-        function showOnboardingReady(){
-          if (onbReadyShown) return;
-          onbReadyShown = true;
-          if (onboarding) onboarding.classList.add('ready');
-          if (onbMaxWaitTimer) { clearTimeout(onbMaxWaitTimer); onbMaxWaitTimer = null; }
-        }
-
-        function watchVideoReady(v){
-          if (!v || v.__onbWatched) return;
-          v.__onbWatched = true;
-          var fire = function(){
-            if (v.__onbFired) return;
-            v.__onbFired = true;
-            onbReadyCount++;
-            if (onbReadyCount >= onbRequired) showOnboardingReady();
-          };
-          if (v.readyState >= 2) { fire(); return; }
-          v.addEventListener('loadeddata', fire, { once: true });
-          v.addEventListener('error', fire, { once: true });
-        }
-
-        onbMaxWaitTimer = setTimeout(showOnboardingReady, 3000);
-
-        function loadOnbBatch(){
-          if (!onboarding) return;
-          var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
-          for (; onbIdx < end; onbIdx++) {
-            var targetIdx = loadOrder[onbIdx] !== undefined ? loadOrder[onbIdx] : onbIdx;
-            (function(v){
-              if (!v || v.dataset.started) return;
-              v.dataset.started = '1';
-              var url = v.dataset.src; if (!url) return;
-              v.muted = true;
-              v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
-              try { v.setAttribute('preload','auto'); } catch(e){}
-              v.src = url;
-              try { v.load(); } catch(e){}
-              v.addEventListener('loadeddata', function(){ try { v.play().catch(function(){}); } catch(e){} }, { once: true });
-              var p = v.play(); if (p && p.catch) p.catch(function(){});
-              watchVideoReady(v);
-            })(onbVids[targetIdx]);
-          }
-          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 600);
-        }
-
+        // Запрашиваем ссылки сразу при старте
         (function loadOnbFromSupabase(attempt){
           attempt = attempt || 1;
-          api('reels', 'select=video_url&is_active=eq.true&order=sort_order.asc&limit=12')
+          api('reels', 'select=preview_url,video_url&is_active=eq.true&order=sort_order.asc&limit=12')
             .then(function(rows){
               if (!onboarding) return;
               try {
                 var seen = {}, urls = [];
                 if (rows && rows.length) {
                   for (var i = 0; i < rows.length; i++) {
-                    var u = rows[i] && rows[i].video_url;
+                    var u = (rows[i] && (rows[i].preview_url || rows[i].video_url));
                     if (u && !seen[u]) { seen[u] = 1; urls.push(u); }
                   }
                 }
                 if (!urls.length) {
                   if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
+                  // Нет контента — всё равно покажем мозаику (просто с градиентами)
+                  setTimeout(onbShowMosaic, 800);
                   return;
                 }
 
+                var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
                 var n = urls.length, left = [], right = [];
                 if (n >= 6) {
                   left = [urls[0], urls[1], urls[2], urls[0], urls[1], urls[2]];
@@ -1001,21 +1059,15 @@
                     onbVids[j].dataset.src = left[j];
                     onbVids[j + 6].dataset.src = right[j];
                   }
-                  loadOnbBatch();
+                  onbStartMosaic();
                 }
               } catch(err){}
             })
             .catch(function(){
               if (attempt < 5) return setTimeout(function(){ loadOnbFromSupabase(attempt + 1); }, 500 * attempt);
+              setTimeout(onbShowMosaic, 800);
             });
         })();
-
-        var kickAll = function(){
-          if (!onboarding) return;
-          onboarding.querySelectorAll('video').forEach(function(v){ if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); } });
-        };
-        onboarding.addEventListener('touchstart', kickAll, {once:true, passive:true});
-        onboarding.addEventListener('click', kickAll, {once:true});
 
         var langBtns = document.querySelectorAll('[data-lang]');
         for (var li = 0; li < langBtns.length; li++) {

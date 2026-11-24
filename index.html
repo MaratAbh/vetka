@@ -904,14 +904,13 @@
         });
 
         var onbVids = Array.prototype.slice.call(onboarding.querySelectorAll('video'));
-        // Load the first visible tiles in both columns first, then fill the rest.
-        var loadOrder = [0, 6, 1, 7, 2, 8, 3, 9, 4, 10, 5, 11];
+        var onbIdx = 0, ONB_BATCH = 3;
+        var loadOrder = [0, 9, 1, 10, 2, 11, 3, 6, 4, 7, 5, 8];
+
         var onbReadyShown = false;
         var onbReadyCount = 0;
         var onbRequired = onbVids.length;
         var onbMaxWaitTimer = null;
-        var onbLoadedCount = 0;
-        var onbSecondaryStarted = false;
 
         function showOnboardingReady(){
           if (onbReadyShown) return;
@@ -934,81 +933,28 @@
           v.addEventListener('error', fire, { once: true });
         }
 
-        // The onboarding is visible immediately; this is only a fallback for older markup.
-        onbMaxWaitTimer = setTimeout(showOnboardingReady, 1200);
-
-        function addVideoPreconnect(url){
-          try {
-            var origin = new URL(url, window.location.href).origin;
-            if (!origin || document.querySelector('link[data-onb-preconnect="' + origin + '"]')) return;
-            var link = document.createElement('link');
-            link.rel = 'preconnect';
-            link.href = origin;
-            link.crossOrigin = 'anonymous';
-            link.setAttribute('data-onb-preconnect', origin);
-            document.head.appendChild(link);
-          } catch(e){}
-        }
-
-        function startOnbVideo(index, priority){
-          var v = onbVids[index];
-          if (!v || v.dataset.started) return;
-          var url = v.dataset.src;
-          if (!url) return;
-          v.dataset.started = '1';
-          v.muted = true;
-          v.setAttribute('muted','');
-          v.setAttribute('playsinline','');
-          v.setAttribute('webkit-playsinline','');
-          v.setAttribute('autoplay','');
-          v.setAttribute('preload','auto');
-          if (priority) {
-            try { v.setAttribute('fetchpriority', 'high'); } catch(e){}
-          }
-          watchVideoReady(v);
-          v.addEventListener('loadeddata', function(){
-            var p = v.play();
-            if (p && p.catch) p.catch(function(){});
-          }, { once: true });
-          v.src = url;
-          try { v.load(); } catch(e){}
-          var p = v.play();
-          if (p && p.catch) p.catch(function(){});
-          onbLoadedCount++;
-        }
+        onbMaxWaitTimer = setTimeout(showOnboardingReady, 3000);
 
         function loadOnbBatch(){
           if (!onboarding) return;
-          // First six tiles are started together so both columns become animated quickly.
-          for (var i = 0; i < 6; i++) {
-            var firstIndex = loadOrder[i];
-            if (firstIndex !== undefined) {
-              addVideoPreconnect(onbVids[firstIndex] && onbVids[firstIndex].dataset.src || '');
-              startOnbVideo(firstIndex, i < 4);
-            }
+          var end = Math.min(onbIdx + ONB_BATCH, onbVids.length);
+          for (; onbIdx < end; onbIdx++) {
+            var targetIdx = loadOrder[onbIdx] !== undefined ? loadOrder[onbIdx] : onbIdx;
+            (function(v){
+              if (!v || v.dataset.started) return;
+              v.dataset.started = '1';
+              var url = v.dataset.src; if (!url) return;
+              v.muted = true;
+              v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline',''); v.setAttribute('autoplay','');
+              try { v.setAttribute('preload','auto'); } catch(e){}
+              v.src = url;
+              try { v.load(); } catch(e){}
+              v.addEventListener('loadeddata', function(){ try { v.play().catch(function(){}); } catch(e){} }, { once: true });
+              var p = v.play(); if (p && p.catch) p.catch(function(){});
+              watchVideoReady(v);
+            })(onbVids[targetIdx]);
           }
-          // Start the remaining tiles as soon as the first frames begin arriving,
-          // with a short safety timeout so slow connections do not stall the sequence.
-          var secondaryStarted = false;
-          function startSecondary(){
-            if (secondaryStarted || !onboarding) return;
-            secondaryStarted = true;
-            for (var j = 6; j < loadOrder.length; j++) {
-              var nextIndex = loadOrder[j];
-              startOnbVideo(nextIndex, false);
-            }
-          }
-          var firstVideos = loadOrder.slice(0, 2).map(function(i){ return onbVids[i]; }).filter(Boolean);
-          var readyCount = 0;
-          firstVideos.forEach(function(v){
-            if (v.readyState >= 2) { readyCount++; return; }
-            v.addEventListener('loadeddata', function(){
-              readyCount++;
-              if (readyCount >= firstVideos.length) startSecondary();
-            }, { once: true });
-          });
-          if (readyCount >= firstVideos.length) startSecondary();
-          setTimeout(startSecondary, 250);
+          if (onbIdx < onbVids.length) setTimeout(loadOnbBatch, 600);
         }
 
         (function loadOnbFromSupabase(attempt){

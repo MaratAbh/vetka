@@ -65,13 +65,30 @@
   .onb-logo em{font-style:normal;color:#CDFF4A;}
   .onb-tag{margin-top:14px;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(17px,4.8vw,22px);line-height:1.2;letter-spacing:-.025em;color:#fff;max-width:100%;text-shadow:0 2px 20px rgba(0,0,0,.7);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
   .onb-tag em{font-style:normal;color:#CDFF4A;}
-  .onb-hint{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .onb-description{
+    margin-top:12px;
+    max-width:340px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    font-weight:400;
+    line-height:1.55;
+    letter-spacing:-.01em;
+    color:rgba(255,255,255,.76);
+    text-shadow:0 2px 16px rgba(0,0,0,.8);
+    opacity:0;
+    transform:translateY(16px);
+    transition:opacity .7s ease,transform .7s ease;
+  }
+  .onb-description p{margin:0;}
+  .onb-description p + p{margin-top:8px;}
+  .onb-hint{margin-top:26px;display:flex;align-items:center;gap:12px;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.55);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
   .onb-hint i{display:block;width:1.5px;height:34px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));animation:onbHint 2s ease-in-out infinite;}
   @keyframes onbHint{0%{transform:translateY(-10px) scaleY(.3);opacity:0;}45%{opacity:1;}100%{transform:translateY(10px) scaleY(1);opacity:0;}}
 
   .onboarding.ready .onb-mark{opacity:1;transform:none;transition-delay:.1s;}
   .onboarding.ready .onb-logo{opacity:1;transform:none;transition-delay:.2s;}
   .onboarding.ready .onb-tag{opacity:1;transform:none;transition-delay:.35s;}
+  .onboarding.ready .onb-description{opacity:1;transform:none;transition-delay:.45s;}
   .onboarding.ready .onb-hint{opacity:1;transform:none;transition-delay:.5s;}
 
   .lang-switch{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:16px;z-index:10;display:flex;gap:2px;padding:4px;border-radius:100px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);pointer-events:auto;opacity:0;transition:opacity .5s ease;}
@@ -305,7 +322,12 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Поиск событий <em>под твой вайб</em></div>
+      <div class="onb-tag" data-i18n="onboard_tag">Найди свой вайб. <em>Открой новые события.</em></div>
+      <div class="onb-description" data-i18n="onboard_description">
+        <p>VETKA — это видеолента сообществ, людей и событий, которые могут стать частью твоей жизни.</p>
+        <p>Смотри короткие видео, знакомься с атмосферой разных направлений и находи то, что тебе действительно интересно.</p>
+        <p>Понравилось? Подпишись на события и будь в курсе того, что происходит.</p>
+      </div>
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
   </div>
@@ -361,7 +383,8 @@
 
       var I18N = {
         ru: {
-          onboard_tag:'Поиск событий <em>под твой вайб</em>',
+          onboard_tag:'Найди свой вайб. <em>Открой новые события.</em>',
+          onboard_description:'<p>VETKA — это видеолента сообществ, людей и событий, которые могут стать частью твоей жизни.</p><p>Смотри короткие видео, знакомься с атмосферой разных направлений и находи то, что тебе действительно интересно.</p><p>Понравилось? Подпишись на события и будь в курсе того, что происходит.</p>',
           onboard_hint:'Листай вверх',
           go_btn:'Следить за анонсом',
           go_buy:'Купить билет',
@@ -374,7 +397,8 @@
           min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
         },
         en: {
-          onboard_tag:'Find events <em>for your vibe</em>',
+          onboard_tag:'Find your vibe. <em>Discover new events.</em>',
+          onboard_description:'<p>VETKA is a video feed of communities, people, and events that could become part of your life.</p><p>Watch short videos, get a feel for different scenes, and find what genuinely interests you.</p><p>Like what you see? Follow events to keep up with what’s happening.</p>',
           onboard_hint:'Swipe up',
           go_btn:'Follow announcement',
           go_buy:'Buy ticket',
@@ -387,7 +411,8 @@
           min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
         },
         es: {
-          onboard_tag:'Encuentra eventos <em>para tu vibe</em>',
+          onboard_tag:'Encuentra tu ambiente. <em>Descubre nuevos eventos.</em>',
+          onboard_description:'<p>VETKA es un feed de vídeos de comunidades, personas y eventos que pueden formar parte de tu vida.</p><p>Mira vídeos cortos, descubre el ambiente de diferentes actividades y encuentra lo que realmente te interesa.</p><p>¿Te gusta? Sigue los eventos para estar al tanto de lo que pasa.</p>',
           onboard_hint:'Desliza hacia arriba',
           go_btn:'Seguir anuncio',
           go_buy:'Comprar entrada',

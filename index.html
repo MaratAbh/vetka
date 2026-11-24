@@ -51,12 +51,6 @@
   .onb-veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,10,.55) 0%,rgba(7,7,10,.15) 30%,rgba(7,7,10,.35) 55%,rgba(7,7,10,.85) 85%,rgba(7,7,10,.98) 100%);opacity:0;transition:opacity .5s ease;}
   .onboarding.ready .onb-veil{opacity:1;}
 
-  .onb-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;transition:opacity .35s ease;}
-  .onb-loader-mark{width:56px;height:56px;color:#CDFF4A;opacity:.7;animation:onbLoaderPulse 1.6s ease-in-out infinite;}
-  .onb-loader-mark svg{width:100%;height:100%;display:block;}
-  @keyframes onbLoaderPulse{0%,100%{opacity:.35;transform:scale(1);}50%{opacity:1;transform:scale(1.08);}}
-  .onboarding.ready .onb-loader{opacity:0;}
-
   .onb-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(40px + env(safe-area-inset-top,0px)) 26px calc(42px + env(safe-area-inset-bottom,0px));z-index:2;pointer-events:none;}
 
   .onb-mark{width:44px;height:44px;color:#fff;margin-bottom:16px;opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
@@ -269,7 +263,7 @@
 </head>
 <body>
 
-  <div class="onboarding" id="onboarding">
+  <div class="onboarding ready" id="onboarding">
     <div class="onb-bg" id="onbBg">
       <div class="onb-col onb-col-up">
         <div class="tile"><video muted loop playsinline preload="none"></video></div>
@@ -290,20 +284,6 @@
     </div>
 
     <div class="onb-veil"></div>
-
-    <div class="onb-loader" aria-hidden="true">
-      <div class="onb-loader-mark">
-        <svg viewBox="0 0 40 40" fill="none">
-          <path d="M20 39V13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 27C12.5 25.2 8 19.4 8 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M20 21C27.5 19.2 32 13.4 32 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <circle cx="8" cy="11" r="2.1" fill="#CDFF4A"/>
-          <circle cx="32" cy="5" r="2.1" fill="#CDFF4A"/>
-          <circle cx="20" cy="13" r="2.1" fill="#CDFF4A"/>
-        </svg>
-      </div>
-    </div>
-
     <div class="lang-switch">
       <button type="button" data-lang="ru">RU</button>
       <button type="button" data-lang="en">EN</button>
@@ -322,11 +302,9 @@
         </svg>
       </div>
       <div class="onb-logo">VETKA<em>.</em></div>
-      <div class="onb-tag" data-i18n="onboard_tag">Найди свой вайб. <em>Открой новые события.</em></div>
+      <div class="onb-tag" data-i18n="onboard_tag">Меньше афиши. <em>Больше вайба.</em></div>
       <div class="onb-description" data-i18n="onboard_description">
-        <p>VETKA — это видеолента сообществ, людей и событий, которые могут стать частью твоей жизни.</p>
-        <p>Смотри короткие видео, знакомься с атмосферой разных направлений и находи то, что тебе действительно интересно.</p>
-        <p>Понравилось? Подпишись на события и будь в курсе того, что происходит.</p>
+        <p>Смотри короткие видео событий, погружайся в атмосферу и находи то, что тебе действительно интересно.</p>
       </div>
       <div class="onb-hint"><i></i><span data-i18n="onboard_hint">Листай вверх</span></div>
     </div>
@@ -383,8 +361,8 @@
 
       var I18N = {
         ru: {
-          onboard_tag:'Найди свой вайб. <em>Открой новые события.</em>',
-          onboard_description:'<p>VETKA — это видеолента сообществ, людей и событий, которые могут стать частью твоей жизни.</p><p>Смотри короткие видео, знакомься с атмосферой разных направлений и находи то, что тебе действительно интересно.</p><p>Понравилось? Подпишись на события и будь в курсе того, что происходит.</p>',
+          onboard_tag:'Меньше афиши. <em>Больше вайба.</em>',
+          onboard_description:'<p>Смотри короткие видео событий, погружайся в атмосферу и находи то, что тебе действительно интересно.</p>',
           onboard_hint:'Листай вверх',
           go_btn:'Следить за анонсом',
           go_buy:'Купить билет',
@@ -397,8 +375,8 @@
           min_ago:'мин назад', hour_ago:'ч назад', yesterday:'вчера', day_ago:'дн назад', just_now:'только что'
         },
         en: {
-          onboard_tag:'Find your vibe. <em>Discover new events.</em>',
-          onboard_description:'<p>VETKA is a video feed of communities, people, and events that could become part of your life.</p><p>Watch short videos, get a feel for different scenes, and find what genuinely interests you.</p><p>Like what you see? Follow events to keep up with what’s happening.</p>',
+          onboard_tag:'Less listings. <em>More vibe.</em>',
+          onboard_description:'<p>Watch short videos of events, immerse yourself in the atmosphere, and discover what genuinely interests you.</p>',
           onboard_hint:'Swipe up',
           go_btn:'Follow announcement',
           go_buy:'Buy ticket',
@@ -411,8 +389,8 @@
           min_ago:'min ago', hour_ago:'h ago', yesterday:'yesterday', day_ago:'d ago', just_now:'just now'
         },
         es: {
-          onboard_tag:'Encuentra tu ambiente. <em>Descubre nuevos eventos.</em>',
-          onboard_description:'<p>VETKA es un feed de vídeos de comunidades, personas y eventos que pueden formar parte de tu vida.</p><p>Mira vídeos cortos, descubre el ambiente de diferentes actividades y encuentra lo que realmente te interesa.</p><p>¿Te gusta? Sigue los eventos para estar al tanto de lo que pasa.</p>',
+          onboard_tag:'Menos agenda. <em>Más ambiente.</em>',
+          onboard_description:'<p>Mira vídeos cortos de eventos, sumérgete en el ambiente y descubre lo que realmente te interesa.</p>',
           onboard_hint:'Desliza hacia arriba',
           go_btn:'Seguir anuncio',
           go_buy:'Comprar entrada',
